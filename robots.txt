@@ -1,2 +1,6 @@
 User-agent: *
+Allow: /apresentacao/
+Allow: /checklist/
+Allow: /data-deletion/
+Allow: /privacy/
 Disallow: /
