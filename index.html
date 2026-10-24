@@ -1306,8 +1306,9 @@ function criaMapa(){
   function onda(){   // os pontos da tela nascem em onda a partir do centro
     if(QUIETO) return;
     const b = M.getBounds(), c = M.getSize().divideBy(2);
-    for(const m of MARK.values()){ if(!b.contains(m.getLatLng())) continue;
-      const d = M.latLngToContainerPoint(m.getLatLng()).distanceTo(c);
+    const vis = [...MARK.values()].filter(m => b.contains(m.getLatLng()));
+    if(vis.length > 450) return;   // país inteiro na tela: animar milhares de pontos pesa no celular e quase não se vê
+    for(const m of vis){ const d = M.latLngToContainerPoint(m.getLatLng()).distanceTo(c);
       mola(m, raioL(m.lote), 520, Math.min(d * .9, 600), 0); }
   }
   const estBase = l => HIST(l) ? {weight: 1, color: "#7B8391"} : {weight: 1.2, color: "#0C0E12"};
@@ -1594,7 +1595,10 @@ document.querySelectorAll(".tabs button").forEach(b => b.onclick = () => {
   if(b.dataset.v === "mapa" && MAPA) setTimeout(() => MAPA.invalida(), 50);
   try{ localStorage.setItem("vitrine_aba", b.dataset.v); }catch(e){}
 });
-["#fBusca","#fUf","#fCo","#fTipo","#fSit","#fAte","#fMax","#fTip","#fOn","#fSeg"].forEach(s => $(s).addEventListener("input", () => { mostrar = PAG; render(); }));
+// digitar na busca ou num valor redesenha uma vez quando a pessoa para (antes: grade e ~2.700 pontos do mapa a cada tecla)
+let tRender = 0;
+const renderLogo = e => { clearTimeout(tRender); tRender = setTimeout(() => { mostrar = PAG; render(); }, /^(search|number|text)$/.test(e.target.type) ? 220 : 0); };
+["#fBusca","#fUf","#fCo","#fTipo","#fSit","#fAte","#fMax","#fTip","#fOn","#fSeg"].forEach(s => $(s).addEventListener("input", renderLogo));
 $("#fOrd").addEventListener("input", () => { if($("#fOrd").value === "gap" && !ASSIN){ $("#fOrd").value = "d"; abreAssina(); } mostrar = PAG; render(); });
 
 function critTexto(){ $("#critTxt").textContent = CRIT
