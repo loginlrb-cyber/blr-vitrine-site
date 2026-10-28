@@ -980,7 +980,7 @@ function abreEntrar(){
     <form class="fcad" id="fConta"><label>E-mail<input name="email" type="email" autocomplete="username" required></label>
       <label>Senha<input name="senha" type="password" autocomplete="current-password" required></label>
       <button class="cta" type="submit">Entrar</button><div class="nota" id="entErro"></div></form>
-    <div class="nota">Esqueceu a senha? Fale com a BLR Development: ela manda um link novo.</div>
+    <div class="nota">Esqueceu a senha? <button type="button" class="lnk" id="btEsq">Receber um link para criar uma senha nova</button></div>
     <details class="nota"><summary>Tenho só a senha do mês</summary>
     <form class="fcad" id="fEnt"><label>Senha do mês<input name="senha" type="password" autocomplete="off" required></label>
       <label class="chk"><input type="checkbox" name="lembra" checked> Lembrar neste aparelho</label>
@@ -993,10 +993,28 @@ function abreEntrar(){
       $("#entErro").textContent = [401, 403, 429].includes(er.st) ? (er.message !== "falha" ? er.message
         : er.st === 401 ? "E-mail ou senha não conferem." : er.st === 403 ? "Acesso bloqueado ou vencido. Fale com a BLR." : "Muitas tentativas. Espere 15 minutos.")
         : "O login não respondeu agora. Tente de novo em instantes ou use a senha do mês."; } };
+  $("#btEsq").onclick = () => abreEsqueci($("#fConta").email.value);
   $("#fEnt").onsubmit = async e => { e.preventDefault(); const f = new FormData(e.target), bt = e.target.querySelector("button[type=submit]");
     bt.disabled = true; bt.textContent = "Abrindo…";
     try{ await entra(f.get("senha"), !!f.get("lembra")); fechaModal(); }
     catch(er){ bt.disabled = false; bt.textContent = "Entrar com a senha do mês"; $("#entErro2").textContent = "Senha não confere. Confira a do mês mais recente."; } };
+}
+/* esqueci a senha (28/10): o servidor da Clauds já cria a senha por link (/api/senha); enquanto ele não tiver /api/esqueci
+   (404), o pedido vai para a BLR pelo envia() e o admin manda o "Novo link" no /admin. A resposta é a mesma exista ou não a conta. */
+function abreEsqueci(email0){
+  abreModal(`<h3 id="mTit">Criar uma senha nova</h3><p>Digite o e-mail do seu acesso. Se ele tiver acesso, você recebe um link (vale por pouco tempo e uma vez só) para escolher a senha nova.</p>
+    <form class="fcad" id="fEsq"><label>E-mail<input name="email" type="email" autocomplete="username" required value="${esc(email0 || "")}"></label>
+      <button class="cta" type="submit">Receber o link</button><div class="nota" id="esqErro"></div></form>
+    <div class="nota"><button type="button" class="lnk" id="btVoltaEnt">Voltar para entrar</button></div>`);
+  $("#btVoltaEnt").onclick = abreEntrar;
+  $("#fEsq").onsubmit = async e => { e.preventDefault(); const email = new FormData(e.target).get("email").trim(), bt = e.target.querySelector("button[type=submit]");
+    bt.disabled = true; bt.textContent = "Enviando…";
+    try{ await api("/api/esqueci", {email});
+      abreModal(`<h3 id="mTit">Confira o seu e-mail</h3><p class="ok-msg">Se ${esc(email)} tiver acesso BLR, o link para criar a senha nova chega em alguns minutos. Veja também a caixa de spam.</p><button class="cta" type="button" onclick="fechaModal()">Fechar</button>`); }
+    catch(er){
+      if(er.st === 429){ bt.disabled = false; bt.textContent = "Receber o link"; $("#esqErro").textContent = "Muitos pedidos. Espere 15 minutos."; return; }
+      envia({tipo: "senha nova", nome: CAD.nome || email, email, msg: "Esqueci a senha do site. Peço um link novo para criar a senha."},
+        "Pedido recebido. A BLR confere o seu acesso e manda o link para criar a senha nova por e-mail."); } };
 }
 if(SITE){ $("#btEntrar").hidden = false; $("#btEntrar").onclick = abreEntrar;
   setTimeout(() => api("/api/me").then(entraConta).catch(() => {
