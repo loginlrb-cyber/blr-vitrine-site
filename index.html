@@ -290,6 +290,9 @@ body{transition:padding-right .25s ease}
 .preco-ass{display:flex;align-items:baseline;gap:8px;margin:4px 0 14px}
 .preco-ass b{font-family:var(--f-d);font-size:34px}
 .preco-ass span{color:var(--mute)}
+.trilha .truf{margin-left:auto;display:flex;align-items:center;gap:6px;font-size:12px;color:var(--mute)}
+.trilha .truf select{background:var(--surf);color:var(--tx);border:1px solid var(--line2);border-radius:8px;padding:4px 6px;font:inherit;font-size:12.5px}
+.leiinfo .insc{margin-top:8px;width:100%}
 .fcad{display:grid;gap:10px}
 .fcad label{display:flex;flex-direction:column;gap:4px;font-size:11px;color:var(--mute);text-transform:uppercase;letter-spacing:.07em}
 .fcad input,.fcad select,.fcad textarea{background:var(--surf);color:var(--tx);border:1px solid var(--line2);border-radius:9px;padding:10px;font:inherit;font-size:14px;text-transform:none;letter-spacing:0}
@@ -540,7 +543,7 @@ body{transition:padding-right .5s var(--mola)}
     <div class="filtros">
       <label class="f-sempre">Buscar<input type="search" id="fBusca" placeholder="Cidade, condado ou CEP"></label>
       <button type="button" class="btFiltros" id="btFiltros" aria-expanded="false">Mais filtros ▾</button>
-      <label>Estado<select id="fUf"><option value="">Todos</option></select></label>
+      <label class="f-sempre">Estado<select id="fUf"><option value="">Todos</option></select></label>
       <label>Condado<select id="fCo"><option value="">Todos</option></select></label>
       <label>Tipo<select id="fTipo"><option value="">Todos</option></select></label>
       <label>Situação<select id="fSit"><option value="prox">Leilão pela frente</option><option value="hist">Já leiloados (histórico)</option><option value="todos">Todos</option></select></label>
@@ -682,6 +685,10 @@ function abreCores(){
 }
 const nvL = l => l.desc == null ? 0 : l.desc < 40 ? 1 : l.desc < 60 ? 2 : l.desc < 75 ? 3 : l.desc < 90 ? 4 : 5;
 const forcaDe = l => LIST(l) ? nvL(l) : (l.nv || 0);
+/* sem dado (Cris 28/10): listado sem lance de abertura ou sem valor de cadastro não é "sem saída"; vira anel cinza vazado
+   (contorno cheio, sem recheio), diferente do histórico (tracejado, recheio fraco). O branco fica só para quem não tem saída. */
+const SEMDADO = l => LIST(l) && l.desc == null && !(l.ab && l.jv);
+const faltaTxt = l => !l.ab && !l.jv ? "sem lance de abertura e sem valor de cadastro" : !l.ab ? "o leilão não publica lance de abertura" : "o condado não publica valor de cadastro";
 const corL = l => (LIST(l) ? RAMPA_L : RAMPA_B)[forcaDe(l)];
 const corDe = corL;
 const FORCA_T = ["sem saída", "fraca", "só com disputa fraca", "com folga se a disputa for fraca", "fecha no típico", "fecha no típico com folga"];
@@ -1320,6 +1327,23 @@ function abreInfo(i){
       ${campos()}<button class="cta" type="submit">Enviar pedido</button></form>`);
   formDe("fInfo", d => envia({tipo: "informação", lotes: [l.i], ...d}, "Pedido de informação recebido."));
 }
+/* inscrição no leilão em um passo (Cris 28/10): o membro diz se quer a BLR dando o lance ou o passo a passo para ele mesmo;
+   o pedido sai com o leilão, o prazo e os lotes que ele acompanha nesse condado */
+function abreInsc(a){
+  const meus = L.filter(l => !HIST(l) && l.uf === a.uf && l.co === a.co && l.d === a.d && (CARR.includes(l.i) || segue(l.i))).map(l => l.i);
+  abreModal(`<h3 id="mTit">Participar do leilão de ${esc(a.co)} County (${esc(a.uf)})</h3>
+    <p>${esc(a.t)} em ${dm(a.d)}/${a.d.slice(0, 4)}${a.pi ? ` · <b>inscrição até ${dm(a.pi)}</b>` : ""}${a.on ? ` · ${esc(a.on)}` : ""}.${meus.length ? ` Vão junto os ${plural(meus.length, "lote", "lotes")} que você separou neste leilão.` : ""}</p>
+    <form class="fcad" id="fInsc"><div class="chks" style="grid-template-columns:1fr">
+      <label><input type="radio" name="quer" value="A BLR dá o lance por mim" checked> A BLR faz a inscrição e dá o lance por mim</label>
+      <label><input type="radio" name="quer" value="Passo a passo para eu me inscrever"> Quero me inscrever eu mesmo: me mandem o passo a passo e o depósito</label></div>
+      ${campos(`<label>Até quanto quer gastar (opcional)<input name="msg" placeholder="Ex.: até US$ 30 mil no total"></label>`)}
+      <button class="cta" type="submit">Enviar</button>
+      <div class="nota">A BLR confere o edital, o prazo e o depósito e responde antes do fim da inscrição. Enviar não é lance nem compromisso.</div></form>`);
+  const f = $("#fInsc");
+  f.addEventListener("submit", e => { e.preventDefault(); const d = Object.fromEntries(new FormData(f));
+    envia({tipo: "inscrição em leilão", lotes: meus, ...d, quer: [d.quer], msg: `Leilão ${a.co} County (${a.uf}) em ${a.d}${a.pi ? ", inscrição até " + a.pi : ""}.${d.msg ? " Limite: " + d.msg : ""}`},
+      "Pedido de inscrição recebido. A BLR responde antes do fim do prazo."); });
+}
 function abreCarr(){
   const it = CARR.map(i => L.find(l => l.i === i)).filter(Boolean);
   if(!it.length){ abreModal(`<h3 id="mTit">Carrinho vazio</h3><p>Use <b>+ Carrinho</b> nos lotes que te interessam. Para fechar, a BLR pede um cadastro rápido e entra em contato com cada lote antes do leilão.</p><button class="cta" type="button" onclick="fechaModal()">Ver os lotes</button>`); return; }
@@ -1420,14 +1444,14 @@ function criaMapa(){
   const raioL = l => { const zz = z(), b = zz < 6 ? 2.2 : zz < Z_CO ? 3.4 : 5;   // mais força, bola maior
     return HIST(l) ? b * .85 : b + forcaDe(l) * (zz >= Z_CO ? .5 : .15); };
   const ttL = l => HIST(l) ? `<b>${esc(l.ci || l.co)}</b> · ${esc(resTxt(l))}<br><span style="color:var(--mute)">Leilão de ${dm(l.d)} · abertura ${usd(l.ab)}</span>`
-    : `${forcaHTML(l)} <span style="color:var(--mute)">${LIST(l) ? "desconto " + (l.desc ?? "—") + "%" : FORCA_T[forcaDe(l)]}</span><br><b>${esc(l.ci || l.co)}</b> · ${usd(l.ab)}<br>${l.et === "final" ? (ASSIN ? `Teto ${k(l.teto)} · ARV ${l.arv ? k(l.arv[0]) + "–" + k(l.arv[1]).replace(sim() + " ", "") : "—"}` : `Nos critérios BLR · teto para assinantes`)
+    : `${SEMDADO(l) ? `<span style="color:var(--mute)">Sem dado para a conta: ${faltaTxt(l)}</span>` : `${forcaHTML(l)} <span style="color:var(--mute)">${LIST(l) ? "desconto " + (l.desc ?? "—") + "%" : FORCA_T[forcaDe(l)]}</span>`}<br><b>${esc(l.ci || l.co)}</b> · ${usd(l.ab)}<br>${l.et === "final" ? (ASSIN ? `Teto ${k(l.teto)} · ARV ${l.arv ? k(l.arv[0]) + "–" + k(l.arv[1]).replace(sim() + " ", "") : "—"}` : `Nos critérios BLR · teto para assinantes`)
     : LIST(l) ? `<span style="color:var(--mute)">Listado · ${rotLance(l).toLowerCase()} · cadastro ${k(l.jv)}</span>` : `<span style="color:var(--mute)">Fora: ${esc(ETAPA[l.et] || l.et)}</span>`}<br><span style="color:var(--mute)">${l.d ? "Leilão " + dm(l.d) : VD}</span>`;
   let ULT = [];
   function pontos(r){
     ULT = r; camL.clearLayers(); MARK.clear();
     const rr = [...r].sort((a, b) => HIST(b) - HIST(a) || forcaDe(a) - forcaDe(b));   // histórico embaixo, mais forte por cima
     for(const l of rr){ const p = EXATO[l.i], la = p ? p.la : l.la, ln = p ? p.ln : l.ln; if(la == null || ln == null) continue;
-      const m = Lf.circleMarker([la, ln], {renderer: rLotes, radius: raioL(l), ...estBase(l), fillColor: corL(l), fillOpacity: HIST(l) ? .3 : .95, dashArray: HIST(l) ? "2 2" : null});
+      const m = Lf.circleMarker([la, ln], {renderer: rLotes, radius: raioL(l), ...estBase(l), fillColor: corL(l), fillOpacity: HIST(l) ? .3 : SEMDADO(l) ? 0 : .95, dashArray: HIST(l) ? "2 2" : null});
       m.bindTooltip(() => ttL(l), {className: "tt-l", direction: "top", offset: [0, -4]}); m.on("click", () => abre(l.i)); m.lote = l; m.addTo(camL); MARK.set(l.i, m);
       m.on("mouseover", () => mola(m, raioL(l) * 1.6, 220)); m.on("mouseout", () => mola(m, raioL(l), 260)); }
     onda(); rotulosARV(); if(ON.sat && !SITE) satLotes();
@@ -1451,7 +1475,7 @@ function criaMapa(){
     for(const m of vis){ const d = M.latLngToContainerPoint(m.getLatLng()).distanceTo(c);
       mola(m, raioL(m.lote), 520, Math.min(d * .9, 600), 0); }
   }
-  const estBase = l => HIST(l) ? {weight: 1, color: "#7B8391"} : {weight: 1.2, color: "#0C0E12"};
+  const estBase = l => HIST(l) ? {weight: 1, color: "#7B8391"} : SEMDADO(l) ? {weight: 1.8, color: "#B4BCC8"} : {weight: 1.2, color: "#0C0E12"};
   // imóveis que a BLR já comprou (Cris 26/10): bola própria, por cima de tudo, em qualquer zoom; membro vê na posição exata
   const camComp = Lf.layerGroup();
   function comprados(){
@@ -1603,6 +1627,7 @@ function criaMapa(){
     const pts = `<span class="rampa">Força BLR <span class="r">${RAMPA_B.map(sw).join("")}</span></span>
       <span style="color:var(--mute);font-size:11px;max-width:250px">branco: sem saída · cor mais forte: fecha no típico com folga até o teto</span>
       <span class="rampa">Listado: desconto <span class="r">${RAMPA_L.map(sw).join("")}</span></span>
+      <span><i style="background:transparent;border:2px solid #B4BCC8;border-radius:50%;width:10px;box-sizing:border-box"></i>Sem dado para a conta (falta lance ou cadastro)</span>
       ${HISTON ? `<span><i style="background:rgba(244,241,234,.3);border:1px dashed #7B8391;border-radius:50%;width:10px"></i>Já leiloado (histórico)</span>` : ""}
       ${COMP.length ? `<button class="tgcomp" type="button" data-comp aria-pressed="${COMPON}" title="Mostrar ou esconder"><i class="lgcomp"></i>Comprados pela BLR (${COMP.filter(c => c.st !== "vendido").length} na carteira${COMP.some(c => c.st === "vendido") ? ", " + COMP.filter(c => c.st === "vendido").length + " vendido" : ""})</button>` : ""}`;
     const poeLeg = h => { $("#leg").innerHTML = `<div class="lbar"><button class="lt" type="button" data-leg>Legenda ${LEGF ? "▸" : "▾"}</button><button class="lt" type="button" data-cores title="Escolher as cores (membros)">🎨 Cores${ASSIN ? "" : " 🔒"}</button></div>` + h; $("#leg").classList.toggle("fech", LEGF); };
@@ -1621,8 +1646,13 @@ function criaMapa(){
     const t = [nivel.uf ? `<button data-n="us">Estados Unidos</button>` : `<b>Estados Unidos</b>`];
     if(nivel.uf) t.push(nivel.f ? `<button data-n="uf">${esc(UFN[nivel.uf] || nivel.uf)}</button>` : `<b>${esc(UFN[nivel.uf] || nivel.uf)}</b>`);
     if(c) t.push(`<b>${esc(c.properties.name)} County</b>`);
-    $("#trilha").innerHTML = t.join(`<span aria-hidden="true">›</span>`);
+    // filtro de estado direto no mapa (Cris 28/10): escolher aqui filtra os lotes e voa até o estado; "Todos" volta ao país
+    const fu = $("#fUf").value, sel = fu || nivel.uf || "";
+    const ops = [...ufsCom].sort((a, b) => (UFN[a] || a).localeCompare(UFN[b] || b));
+    $("#trilha").innerHTML = t.join(`<span aria-hidden="true">›</span>`) + `<label class="truf">Estado <select id="trUf"><option value="">Todos</option>${ops.map(u => `<option value="${u}" ${u === sel ? "selected" : ""}>${esc(UFN[u] || u)}</option>`).join("")}</select></label>`;
   }
+  $("#trilha").addEventListener("change", e => { if(e.target.id !== "trUf") return; const v = e.target.value;
+    $("#fUf").value = v; $("#fUf").dispatchEvent(new Event("input")); v ? abreUF(v) : abreUS(); });
   $("#trilha").addEventListener("click", e => { const b = e.target.closest("button"); if(!b) return; b.dataset.n === "us" ? abreUS() : abreUF(nivel.uf); });
   /* painel */
   const linLeilao = a => { const n = lotesCo(a.f).filter(l => l.d === a.d).length;
@@ -1649,7 +1679,8 @@ function criaMapa(){
     $("#painelC").innerHTML = `<div class="ph"><h3>${esc(nome)}</h3><p>${esc(UFN[nivel.uf] || nivel.uf)} · ${ls.length ? plural(ls.length, "lote", "lotes") : "sem lote publicado ainda"}</p></div>
       <div class="pl">${v.map(a => `<div class="leiinfo"><div><b>Leilão ${dm(a.d)}/${a.d.slice(0,4)}</b> · ${esc(a.t)} ${selo(a.g)}</div>
         ${a.pi ? `<div>Inscrição até ${dm(a.pi)}${a.pi < HOJE ? " (encerrada)" : ""}</div>` : ""}${a.on ? `<div>${esc(a.on)}</div>` : ""}
-        ${a.lk ? `<a href="${esc(a.lk)}" target="_blank" rel="noopener">Lista oficial do leilão ↗</a>` : ""}</div>`).join("")}
+        ${a.lk ? `<a href="${esc(a.lk)}" target="_blank" rel="noopener">Lista oficial do leilão ↗</a>` : ""}
+        ${a.d >= HOJE && !(a.pi && a.pi < HOJE) ? `<button type="button" class="cta insc" data-insc="${a.f}|${a.d}">Quero participar deste leilão</button>` : ""}</div>`).join("")}
       ${ls.slice(0, 200).map(l => `<button class="mini" data-i="${l.i}">${fotoDe(l) ? `<img loading="lazy" src="${fotoDe(l).src}" alt="">` : `<span></span>`}
         <div><div class="pr num">${usd(l.ab)} <span class="sb">${rotLance(l).toLowerCase()}</span></div>
         <div class="sb">${esc(l.ci || l.co)} · ${esc(tipo(l.u))}${l.a ? " · " + l.a.toLocaleString("pt-BR") + " sqft" : ""} · ${l.d ? "leilão " + dm(l.d) : "land bank"}</div>
@@ -1664,6 +1695,7 @@ function criaMapa(){
       <div class="tp" style="color:var(--mute)">${esc(resTxt(l))}${l.rs && l.rs.v && l.ab ? ` · ${(l.rs.v / l.ab).toFixed(1).replace(".", ",")}× a abertura` : ""}</div></div></button>`).join(""); };
   $("#painelC").addEventListener("click", e => {
     const b = e.target.closest("button"); if(!b) return;
+    if(b.dataset.insc){ const [f, d] = b.dataset.insc.split("|"); const a = (porCo.get(f) || []).find(x => x.d === d); if(a) abreInsc(a); return; }
     if(b.dataset.uf) abreUF(b.dataset.uf); else if(b.dataset.i) abre(b.dataset.i); else if(b.dataset.f) abreCo(b.dataset.f);
   });
   /* navegação: botão leva até o nível; o zoom decide o nível */
