@@ -999,8 +999,12 @@ function abreEntrar(){
   $("#fConta").onsubmit = async e => { e.preventDefault(); const f = new FormData(e.target), bt = e.target.querySelector("button[type=submit]");
     bt.disabled = true; bt.textContent = "Entrando…";
     // o autopreenchimento do Chrome guardou o e-mail em MAIÚSCULAS e o servidor compara exato (28/10): sempre minúsculo e sem espaço
-    try{ await api("/api/login", {email: String(f.get("email")).trim().toLowerCase(), senha: f.get("senha")}); await entraConta(await api("/api/me")); fechaModal(); }
-    catch(er){ bt.disabled = false; bt.textContent = "Entrar";
+    // 28/10: diz em que etapa parou (login, /api/me ou pacote), para não confundir senha certa com pacote que não abriu
+    let etapa = "login";
+    try{ await api("/api/login", {email: String(f.get("email")).trim().toLowerCase(), senha: f.get("senha")});
+      etapa = "me"; const eu = await api("/api/me"); etapa = "pacote"; await entraConta(eu); fechaModal(); }
+    catch(er){ bt.disabled = false; bt.textContent = "Entrar"; console.warn("login BLR:", etapa, er.st, er.message);
+      if(etapa !== "login"){ $("#entErro").textContent = `A senha foi aceita, mas os dados de membro não abriram (etapa ${etapa}, código ${er.st || "sem resposta"}${er.message !== "falha" ? ": " + er.message : ""}). Avise a BLR com esta mensagem.`; return; }
       $("#entErro").textContent = [401, 403, 429].includes(er.st) ? (er.message !== "falha" ? er.message
         : er.st === 401 ? "E-mail ou senha não conferem." : er.st === 403 ? "Acesso bloqueado ou vencido. Fale com a BLR." : "Muitas tentativas. Espere 15 minutos.")
         : "O login não respondeu agora. Tente de novo em instantes ou use a senha do mês."; } };
