@@ -967,7 +967,9 @@ const api = (r, corpo) => fetch(API + r, corpo ? {method: "POST", credentials: "
   if(!x.ok) throw Object.assign(new Error(j.mensagem || "falha"), {st: x.status}); return j; });
 let SESSAO = null;
 async function entraConta(eu){
-  const pac = await api("/api/premium");   // só em memória (nunca no localStorage)
+  let pac = await api("/api/premium");   // só em memória (nunca no localStorage)
+  if(pac.z) pac = await new Response(new Blob([Uint8Array.from(atob(pac.z), c => c.charCodeAt(0))]).stream()
+    .pipeThrough(new DecompressionStream("gzip"))).json();   // pacote compactado (vitrine_site.py, 28/10)
   SESSAO = eu; MEMBRO = pac;
   await carregaPremium();
   $("#dot").classList.toggle("on", ASSIN); $("#whoTxt").textContent = String(eu.nome || eu.email || "Membro").split(" ")[0];
