@@ -988,7 +988,8 @@ function abreEntrar(){
     <div class="nota">Ainda não é membro? <button type="button" class="lnk" data-assina>Assine por US$ 9,99/mês</button>.</div>`);
   $("#fConta").onsubmit = async e => { e.preventDefault(); const f = new FormData(e.target), bt = e.target.querySelector("button[type=submit]");
     bt.disabled = true; bt.textContent = "Entrando…";
-    try{ await api("/api/login", {email: f.get("email"), senha: f.get("senha")}); await entraConta(await api("/api/me")); fechaModal(); }
+    // o autopreenchimento do Chrome guardou o e-mail em MAIÚSCULAS e o servidor compara exato (28/10): sempre minúsculo e sem espaço
+    try{ await api("/api/login", {email: String(f.get("email")).trim().toLowerCase(), senha: f.get("senha")}); await entraConta(await api("/api/me")); fechaModal(); }
     catch(er){ bt.disabled = false; bt.textContent = "Entrar";
       $("#entErro").textContent = [401, 403, 429].includes(er.st) ? (er.message !== "falha" ? er.message
         : er.st === 401 ? "E-mail ou senha não conferem." : er.st === 403 ? "Acesso bloqueado ou vencido. Fale com a BLR." : "Muitas tentativas. Espere 15 minutos.")
@@ -1007,7 +1008,7 @@ function abreEsqueci(email0){
       <button class="cta" type="submit">Receber o link</button><div class="nota" id="esqErro"></div></form>
     <div class="nota"><button type="button" class="lnk" id="btVoltaEnt">Voltar para entrar</button></div>`);
   $("#btVoltaEnt").onclick = abreEntrar;
-  $("#fEsq").onsubmit = async e => { e.preventDefault(); const email = new FormData(e.target).get("email").trim(), bt = e.target.querySelector("button[type=submit]");
+  $("#fEsq").onsubmit = async e => { e.preventDefault(); const email = new FormData(e.target).get("email").trim().toLowerCase(), bt = e.target.querySelector("button[type=submit]");
     bt.disabled = true; bt.textContent = "Enviando…";
     try{ await api("/api/esqueci", {email});
       abreModal(`<h3 id="mTit">Confira o seu e-mail</h3><p class="ok-msg">Se ${esc(email)} tiver acesso BLR, o link para criar a senha nova chega em alguns minutos. Veja também a caixa de spam.</p><button class="cta" type="button" onclick="fechaModal()">Fechar</button>`); }
