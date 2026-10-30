@@ -59,6 +59,7 @@ a{color:var(--info)}
 .filtros select,.filtros input[type=number],.filtros input[type=search]{background:var(--surf);color:var(--tx);border:1px solid var(--line2);border-radius:9px;padding:8px 10px;font:inherit;font-size:13.5px;min-width:0}
 .filtros input[type=search]{width:200px}
 .filtros input[type=number]{width:120px}
+.filtros input[type=date]{background:var(--surf);color:var(--tx);border:1px solid var(--line2);border-radius:9px;padding:7px 10px;font:inherit;font-size:13.5px;min-width:0;color-scheme:dark}
 .chk{flex-direction:row!important;align-items:center;gap:8px!important;text-transform:none!important;letter-spacing:0!important;font-size:13px!important;color:var(--tx2)!important;padding:8px 10px;border:1px solid var(--line2);border-radius:9px;cursor:pointer;align-self:flex-end}
 .chk input{accent-color:var(--ok)}
 .filtros .spacer{flex:1}
@@ -80,12 +81,19 @@ a{color:var(--info)}
 .gvazio{color:var(--mute);margin-top:20px}
 .git i.lgcomp{background:#16E0B0;border:2px solid #fff}
 @media (max-width:640px){.git{grid-template-columns:1fr}}
+.painel .lin.sel{background:var(--ok-bg);box-shadow:inset 3px 0 0 var(--acc)}
+.leiinfo.sel{background:var(--ok-bg);box-shadow:inset 3px 0 0 var(--acc)}
+.leiinfo .lnk{align-self:flex-start}
+.lsel{margin-top:8px;font-size:12.5px;color:var(--acc);display:flex;flex-wrap:wrap;gap:4px 10px;align-items:baseline}
+.tabx{overflow-x:auto}
+.tab3 th{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--mute);font-weight:600;text-align:right;padding:4px 0 6px 10px}
+.tab3 td+td{text-align:right;padding-left:10px;white-space:nowrap}.tab3 small{color:var(--mute);font-size:11px;white-space:normal}
 .fLimpa{align-self:flex-end;padding-bottom:9px;font-size:13px}
 /* 30/10 (Rodrigo): os mesmos filtros dentro do mapa; só os lotes que passam ficam no mapa e nas contagens do painel */
 .painel .filtros{margin:0;border:0;border-radius:0;border-bottom:1px solid var(--fio);background:transparent;padding:10px 12px;gap:8px;max-height:min(46vh,420px);overflow:auto}
 .painel .filtros>label:not(.f-lista){display:flex!important;flex:1 1 140px}
 .painel .filtros .f-lista,.painel .btFiltros{display:none!important}
-.painel .filtros input[type=search],.painel .filtros input[type=number],.painel .filtros select{width:100%;padding:6px 8px;font-size:12.5px}
+.painel .filtros input[type=search],.painel .filtros input[type=number],.painel .filtros input[type=date],.painel .filtros select{width:100%;padding:6px 8px;font-size:12.5px}
 .painel .filtros .chk{flex:1 1 100%!important;padding:6px 8px;font-size:12.5px!important}
 .painel .filtros .cont{padding-bottom:0}
 .cont{color:var(--tx2);font-size:13px;align-self:flex-end;padding-bottom:9px}
@@ -608,10 +616,10 @@ body{transition:padding-right .5s var(--mola)}
       <label class="f-sempre">Buscar<input type="search" id="fBusca" placeholder="Cidade, condado ou CEP"></label>
       <button type="button" class="btFiltros" id="btFiltros" aria-expanded="false">Mais filtros ▾</button>
       <label class="f-sempre f-lista">Estado<select id="fUf"><option value="">Todos</option></select></label>
-      <label>Condado<select id="fCo"><option value="">Todos</option></select></label>
       <label>Tipo<select id="fTipo"><option value="">Todos</option></select></label>
       <label class="f-lista">Situação<select id="fSit"><option value="prox">Leilão pela frente</option><option value="hist">Já leiloados (histórico)</option><option value="todos">Todos</option></select></label>
-      <label>Leilão até<select id="fAte"><option value="">Qualquer data</option><option value="7">7 dias</option><option value="14">14 dias</option><option value="30">30 dias</option></select></label>
+      <label>Leilão de<input type="date" id="fDe"></label>
+      <label>Leilão até<input type="date" id="fAte"></label>
       <label><span id="fMinRot">Lance de (US$)</span><input type="number" id="fMin" min="0" step="1000" placeholder="sem mínimo"></label>
       <label><span id="fMaxRot">Lance até (US$)</span><input type="number" id="fMax" min="0" step="1000" placeholder="sem limite"></label>
       <label>Força mínima<select id="fFz"><option value="">Qualquer</option><option value="2">2 ou mais</option><option value="3">3 ou mais</option><option value="4">4 ou mais</option><option value="5">Só 5</option></select></label>
@@ -642,6 +650,7 @@ body{transition:padding-right .5s var(--mola)}
           <button class="tg" id="tgSeg" type="button" aria-pressed="false" title="Só os lotes que acompanho" aria-label="Só os lotes que acompanho">★</button>
           <button class="tg" id="tgHist" type="button" aria-pressed="true">Histórico</button>
           <button class="tg" id="tgFil" type="button" aria-pressed="false" aria-controls="mFil">Filtros</button>
+          <button class="tg" id="tgReset" type="button" title="Limpar tudo e voltar ao mapa inteiro" aria-label="Limpar filtros e voltar ao mapa inteiro">↺</button>
           <button class="pmin" id="pMin" type="button" aria-label="Recolher a lista" aria-expanded="true">▾</button></div>
         <div class="mFil" id="mFil" hidden></div>
         <label class="truf">Estado <select id="trUf"><option value="">Todos os estados</option></select></label>
@@ -898,6 +907,9 @@ function alternaSeg(i){ const l = L.find(x => x.i === i); if(!l) return;
 const btSeg = l => `<button type="button" data-seg="${l.i}" class="${segue(l.i) ? "on" : ""}">${segue(l.i) ? "★ Acompanhando" : "☆ Acompanhar"}</button>`;
 let FSEG = false;   // filtro "só os que acompanho"
 let MF = null;   // lotes que passam nos filtros do mapa (o painel conta só estes)
+let LSEL = null;   // 30/10 (Rodrigo): leilão escolhido no painel {f, d}: o mapa mostra só os lotes dele
+// filtro de data (30/10): vale para os lotes e para a lista de leilões do painel; com data escolhida, lote sem data sai
+const naData = d => { const a = $("#fDe").value, b = $("#fAte").value; return (!a || (!!d && d >= a)) && (!b || (!!d && d <= b)); };
 async function carregaSeg(){
   if(!(PODE && DB && UID)) return;
   try{ const d = (await DB.doc(`interesses/${UID}/seguindo/lista`).get()).data();
@@ -1015,20 +1027,17 @@ function kpis(){
 function opcoes(){
   const ufs = [...new Set(L.map(l => l.uf))].sort();
   $("#fUf").insertAdjacentHTML("beforeend", ufs.map(u => `<option value="${u}">${esc(UFN[u] || u)}</option>`).join(""));
-  const cos = [...new Set(L.map(l => l.co + "|" + l.uf))].sort();
-  $("#fCo").insertAdjacentHTML("beforeend", cos.map(c => { const [co, uf] = c.split("|"); return `<option value="${esc(c)}">${esc(co)} (${uf})</option>`; }).join(""));
   const ts = [...new Set(L.map(l => l.u).filter(Boolean))].sort();
   $("#fTipo").insertAdjacentHTML("beforeend", ts.map(t => `<option value="${esc(t)}">${esc(tipo(t))}</option>`).join(""));
 }
-function filtrados(paraMapa){
-  const q = $("#fBusca").value.trim().toLowerCase(), uf = $("#fUf").value, co = $("#fCo").value, tp = $("#fTipo").value,
-        ate = +$("#fAte").value || 0, mx = +$("#fMax").value || 0, tip = $("#fTip").checked, on = $("#fOn").checked,
+function filtrados(paraMapa, semSel){
+  const q = $("#fBusca").value.trim().toLowerCase(), uf = $("#fUf").value, tp = $("#fTipo").value, mx = +$("#fMax").value || 0, tip = $("#fTip").checked, on = $("#fOn").checked,
         mn = +$("#fMin").value || 0, fz = +$("#fFz").value || 0, dsc = +$("#fDesc").value || 0, cta = ASSIN && $("#fFecha").checked;
   const sit = paraMapa ? (HISTON ? "todos" : "prox") : $("#fSit").value, sg = paraMapa ? FSEG : $("#fSeg").checked;
   const cr = paraMapa ? CRITM : CRIT;
   let r = L.filter(l => (!cr || noCrit(l)) && (sit === "todos" || (sit === "hist") === HIST(l)) && (!sg || segue(l.i)) &&
     (!q || [l.ci, l.co, l.zip].some(x => (x||"").toLowerCase().includes(q))) && (!uf || l.uf === uf) &&
-    (!co || l.co + "|" + l.uf === co) && (!tp || l.u === tp) && (!ate || HIST(l) || !l.d || dias(l.d) <= ate) &&
+    (!tp || l.u === tp) && naData(l.d) && (!paraMapa || semSel || !LSEL || (l.f === LSEL.f && l.d === LSEL.d)) &&
     (!mx || (l.ab || 0) * tx() <= mx) && (!tip || (l.et === "final" && l.ft === "tipico")) && (!on || (l.on && l.on !== "nao_consultado")) &&
     (!mn || (l.ab || 0) * tx() >= mn) && (!fz || forcaDe(l) >= fz) && (!dsc || (l.desc ?? -1) >= dsc) &&
     (!cta || (!HIST(l) && l.ab > 0 && l.teto >= l.ab)));
@@ -1071,11 +1080,12 @@ function cartao(l){
 const PAG = 120;
 let mostrar = PAG;
 // filtros em uso (Estado e Ordenar não contam: o mapa tem o seu seletor de estado)
-const F_VAL = ["#fBusca","#fCo","#fTipo","#fAte","#fMin","#fMax","#fFz","#fDesc"], F_CHK = ["#fTip","#fOn","#fFecha"];
+const F_VAL = ["#fBusca","#fTipo","#fDe","#fAte","#fMin","#fMax","#fFz","#fDesc"], F_CHK = ["#fTip","#fOn","#fFecha"];
 const nFiltros = () => F_VAL.filter(s => $(s).value.trim()).length + F_CHK.filter(s => $(s).checked).length;
 function render(){
   const r = filtrados(), fm = MAPA ? filtrados(true) : null, nf = nFiltros(), noMapa = !$("#v-mapa").hidden;
-  MF = fm && new Set(fm);
+  const fm0 = LSEL && fm ? filtrados(true, true) : fm;   // o painel conta sem o leilão escolhido (os outros leilões seguem com número)
+  MF = fm0 && new Set(fm0);
   $("#cont").textContent = noMapa && fm ? `${fm.filter(l => !HIST(l)).length.toLocaleString("pt-BR")} lotes no mapa`
     : `${r.length.toLocaleString("pt-BR")} de ${L.length.toLocaleString("pt-BR")} lotes`;
   $("#fLimpa").hidden = !nf;
@@ -1293,7 +1303,7 @@ async function abre(i){
       <tr class="dest"><td>Teto de lance estimado</td><td>${sel(l, l.teto > 0 ? k(l.teto) + (l.ab ? (l.teto >= l.ab ? " · fecharia" : " · não fecha") : "") : "não fecha")}</td></tr>`
         : `<tr class="dest"><td>Teto de lance BLR</td><td style="font-family:var(--f-b)">ainda não analisado</td></tr>`}</table>
       ${barrasHTML(l)}
-      ${l.aq && ASSIN && vaiConta(l) ? contaTab(l) : ""}
+      ${l.aq && ASSIN && vaiConta(l) ? contaTab(l) + jvTab(l) : ""}
       ${l.aq ? `<div class="nota">Estimativa sem comparáveis, ${l.aq === "b" ? "pelo valor de mercado que o condado publica" : l.aq === "m" ? "pelo preço/pé² vendido no CEP (Redfin) × a área da construção, com 10% de desconto" : "pelo valor das casas mais baratas do CEP (Zillow)"}${l.ae ? `; área estimada ~${l.ae.toLocaleString("pt-BR")} pé² (${AF_T[l.af] || "estimada"})` : ""}${l.un > 1 ? `; o cadastro registra ${l.un} unidades` : ""}${l.y ? `; construída em ${l.y}` : ""}. Serve para priorizar; não entra nos critérios BLR até a análise.</div>` : ""}
       <div class="nota">Fonte: ${esc(l.fo || "edital do condado")}. ${esc(l.nt || "")}</div>
       <div class="aviso" style="margin-top:10px">Quer que a BLR passe este lote pelo funil (comparáveis, reforma, teto de lance e ônus)? <button type="button" class="lnk" data-info="${l.i}">Peça a análise</button>.</div></div>`
@@ -1305,7 +1315,7 @@ async function abre(i){
       <tr><td>Folga até o teto${gl("folga")}</td><td>${sel(l, folgaTxt(gap))}</td></tr>
       <tr><td>ARV estimado (faixa)${gl("arv")}</td><td>${sel(l, fx(l.arv))}</td></tr></table>
       ${barrasHTML(l)}
-      ${ASSIN && vaiConta(l) ? contaTab(l) : ""}
+      ${ASSIN && vaiConta(l) ? contaTab(l) + jvTab(l) : ""}
       <div class="nota">Teto e ARV são estimativas da BLR (comparáveis e valor de mercado), arredondadas. Confirme antes de dar lance. <button type="button" class="lnk" data-calc>Como a BLR calcula?</button></div></div>`;
   $("#fBody").innerHTML = `
     ${fts.length ? fig(fts[0], "fhero") : `<div class="semfoto">${LIST(l) ? "Lote listado · sem foto" : "Sem foto deste lote"}${l.lote_m2 ? ` · ${rotLote(l)} ${l.lote_m2.toLocaleString("pt-BR")} m²` : ""}</div>`}
@@ -1625,7 +1635,10 @@ function criaMapa(){
     "South Carolina":"SC","South Dakota":"SD","Virginia":"VA","West Virginia":"WV","District of Columbia":"DC","Michigan":"MI","Minnesota":"MN","Texas":"TX","Washington":"WA"});
   const ufDe = d => UF_DE_NOME[d.properties.name];
   const PRE = Object.fromEntries(est.map(d => [ufDe(d), d.id]));
-  const porUF = d3.group(LEI, a => a.uf), porCo = d3.group(LEI, a => a.f);
+  const porUF0 = d3.group(LEI, a => a.uf), porCo0 = d3.group(LEI, a => a.f);
+  // vazio vira undefined, como no d3.group (o código abaixo usa "porUF.get(uf) || ...")
+  const soData = m => ({get: k => { const v = (m.get(k) || []).filter(a => naData(a.d)); return v.length ? v : undefined; }, has: k => m.has(k), values: () => m.values()});
+  const porUF = soData(porUF0), porCo = soData(porCo0);
   let lotesUF = d3.rollup(L.filter(l => !HIST(l)), v => v.length, l => l.uf);
   const maxN = d3.max([...porUF.values()], v => v.length) || 1;
   /* 28/10: estados em 4 classes de cinza-azulado com degraus bem separados (antes marrom→dourado contínuo, tons colados e
@@ -1894,7 +1907,7 @@ function criaMapa(){
   $("#trilha").addEventListener("click", e => { const b = e.target.closest("button"); if(!b) return; b.dataset.n === "us" ? abreUS() : abreUF(nivel.uf); });
   /* painel */
   const linLeilao = a => { const n = lotesCo(a.f).filter(l => l.d === a.d).length;
-    return `<button class="lin" data-f="${a.f}">${chipData(a.d)}
+    return `<button class="lin ${LSEL && LSEL.f === a.f && LSEL.d === a.d ? "sel" : ""}" data-f="${a.f}" data-d="${a.d}" title="Mostrar no mapa só os lotes deste leilão">${chipData(a.d)}
       <div><div class="nm">${esc(a.co)} County</div><div class="sb">${esc(a.t)}${a.pi && a.pi >= HOJE_L ? " · inscrição até " + dm(a.pi) : ""} ${selo(a.g)}${a.fr ? ` <span class="selo">fora do raio</span>` : ""}</div></div>
       ${n ? `<span class="qt">${plural(n, "lote", "lotes")}</span>` : `<span class="qt z">sem lotes</span>`}</button>`; };
   const contaUF = () => { lotesUF = d3.rollup(L.filter(l => !HIST(l) && (MF ? MF.has(l) : !CRITM || noCrit(l))), v => v.length, l => l.uf); };
@@ -1914,12 +1927,15 @@ function criaMapa(){
   function painelCo(f){
     const v = porCo.get(f) || [], ls = lotesCo(f).sort((a, b) => dk(a).localeCompare(dk(b)) || noCrit(b) - noCrit(a) || (b.desc ?? 0) - (a.desc ?? 0));
     const c = cty.find(c => c.id === f), nome = (c ? c.properties.name : v[0]?.co) + " County";
-    $("#painelC").innerHTML = `<div class="ph"><h3>${esc(nome)}</h3><p>${esc(UFN[nivel.uf] || nivel.uf)} · ${ls.length ? plural(ls.length, "lote", "lotes") : "sem lote publicado ainda"}</p></div>
-      <div class="pl">${v.map(a => `<div class="leiinfo"><div><b>Leilão ${dm(a.d)}/${a.d.slice(0,4)}</b> · ${esc(a.t)} ${selo(a.g)}</div>
+    const sl = LSEL && LSEL.f === f ? LSEL : null, lv = sl ? ls.filter(l => l.d === sl.d) : ls;
+    $("#painelC").innerHTML = `<div class="ph"><h3>${esc(nome)}</h3><p>${esc(UFN[nivel.uf] || nivel.uf)} · ${ls.length ? plural(ls.length, "lote", "lotes") : "sem lote publicado ainda"}</p>
+      ${sl ? `<div class="lsel">No mapa: só o leilão de ${dm(sl.d)} (${plural(lv.length, "lote", "lotes")}) <button type="button" class="lnk" data-lsclr>Mostrar todos</button></div>` : ""}</div>
+      <div class="pl">${v.map(a => `<div class="leiinfo ${sl && sl.d === a.d ? "sel" : ""}"><div><b>Leilão ${dm(a.d)}/${a.d.slice(0,4)}</b> · ${esc(a.t)} ${selo(a.g)}</div>
+        <button type="button" class="lnk" data-sel="${a.f}|${a.d}">${sl && sl.d === a.d ? "Mostrar todos os leilões" : "Destacar só este leilão no mapa"}</button>
         ${a.pi ? `<div>Inscrição até ${dm(a.pi)}${a.pi < HOJE_L ? " (encerrada)" : ""}</div>` : ""}${a.on ? `<div>${esc(a.on)}</div>` : ""}
         ${a.lk ? `<a href="${esc(a.lk)}" target="_blank" rel="noopener">Lista oficial do leilão ↗</a>` : ""}
         ${a.d >= HOJE_L && !(a.pi && a.pi < HOJE_L) ? `<button type="button" class="cta insc" data-insc="${a.f}|${a.d}">Quero participar deste leilão</button>` : ""}</div>`).join("")}
-      ${ls.slice(0, 200).map(l => `<button class="mini" data-i="${l.i}">${fotoDe(l) ? `<img loading="lazy" src="${fotoDe(l).src}" alt="">` : `<span></span>`}
+      ${lv.slice(0, 200).map(l => `<button class="mini" data-i="${l.i}">${fotoDe(l) ? `<img loading="lazy" src="${fotoDe(l).src}" alt="">` : `<span></span>`}
         <div><div class="pr num">${usd(l.ab)} <span class="sb">${rotLance(l).toLowerCase()}</span></div>
         <div class="sb">${esc(l.ci || l.co)} · ${esc(tipoL(l))}${l.a ? " · " + l.a.toLocaleString("pt-BR") + " sqft" : ""} · ${l.d ? "leilão " + dm(l.d) : "land bank"}</div>
         <div class="tp" ${l.et === "final" ? "" : 'style="color:var(--mute)"'}>${forcaHTML(l)} ${l.et === "final" ? (ASSIN ? `Teto BLR ${k(l.teto)}` : "Nos critérios BLR · teto 🔒") + (l.desc != null ? ` · −${l.desc}% do cadastro` : "")
@@ -1934,6 +1950,10 @@ function criaMapa(){
   $("#painelC").addEventListener("click", e => {
     const b = e.target.closest("button"); if(!b) return;
     if(b.dataset.insc){ const [f, d] = b.dataset.insc.split("|"); const a = (porCo.get(f) || []).find(x => x.d === d); if(a) abreInsc(a); return; }
+    if(b.dataset.lsclr != null){ LSEL = null; render(); return; }
+    if(b.dataset.sel){ const [f, d] = b.dataset.sel.split("|"); LSEL = LSEL && LSEL.f === f && LSEL.d === d ? null : {f, d}; render(); return; }
+    // 30/10 (Rodrigo): escolher um leilão na lista deixa no mapa só os lotes dele
+    if(b.dataset.f && b.dataset.d){ LSEL = {f: b.dataset.f, d: b.dataset.d}; render(); abreCo(b.dataset.f); return; }
     if(b.dataset.uf) abreUF(b.dataset.uf); else if(b.dataset.i) abre(b.dataset.i); else if(b.dataset.f) abreCo(b.dataset.f);
   });
   /* navegação: botão leva até o nível; o zoom decide o nível */
@@ -1974,6 +1994,7 @@ function criaMapa(){
     const n = nivelDaTela();
     if(n.uf !== nivel.uf || n.f !== nivel.f){
       nivel = n; camCo.setStyle(estilCo);
+      if(LSEL && n.f !== LSEL.f){ LSEL = null; setTimeout(render, 0); }   // saiu do condado do leilão escolhido: volta a mostrar todos
       if(n.f){ painelCo(n.f); bairrosDe(n.f); satDe(n.f); exatoDe(n.f); }
       else { if(camSet){ M.removeLayer(camSet); camSet = null; setF = null; } satDe(null); n.uf ? painelUF(n.uf) : painelUS(); }
       trilha(); legenda(); botoesCam();
@@ -1995,7 +2016,7 @@ function criaMapa(){
     if(e.target.closest("[data-sd]")){ SEMON = !SEMON; pontos(ULT); legenda(); } });
   return {atualiza: r => { pontos(r); if(nivel.f) painelCo(nivel.f); else if(nivel.uf) painelUF(nivel.uf); else painelUS(); legenda(); },
           legenda, comprados, foca: i => { const m = MARK.get(i); if(m) M.flyTo(m.getLatLng(), Math.max(z(), 13), {duration: VOO}); },
-          invalida: () => M.invalidateSize(), voa: (la, ln, zz) => M.setView([la, ln], zz)};
+          invalida: () => M.invalidateSize(), us: abreUS, voa: (la, ln, zz) => M.setView([la, ln], zz)};
 }
 
 /* ---------- cobertura ---------- */
@@ -2070,6 +2091,16 @@ function guia(){
       ["Juros", "Dinheiro parado 6 meses a 11% ao ano, sobre o lance e a reforma."],
       ["Teto", "O que sobra depois de tudo isso: o lance máximo."],
       ["N lotes fecham com a sua conta", "Quantos lotes analisados ficam com teto acima da abertura com os seus números; fora da Flórida, quantos fechariam na estimativa."]]],
+    ["Conta da JV", "A tabela do investidor de capital na ficha (term sheet v5)", [
+      ["Flip simples", "Sem reforma (limpeza, paisagismo e pintura simples) e venda abaixo do mercado (" + pct(CVENDA) + " do ARV). Menos caixa do investidor por projeto."],
+      ["Fix & Flip", "Reforma do nível escolhido na 🧮 Conta e venda a valor de mercado (ARV). Mais caixa e mais valor de venda."],
+      ["Comissão de venda 5%", "Paga no fechamento, com o dinheiro da venda (não sai do capital do investidor)."],
+      ["Administração do ativo", "Fix & Flip: 25% do custo da obra. Flip simples: o maior entre US$ 1.000 e 1% do ARV. É custo do projeto."],
+      ["Marketing, gestão e fechamento", "2,5% + 1% + 1% da venda: o investidor paga e recebe de volta na venda."],
+      ["Capital do investidor", "Todo o dinheiro que sai do bolso do investidor no projeto: lance, obra, administração, título e custos da venda. Sem juros."],
+      ["Resultado do projeto", "Venda menos a comissão e menos o capital devolvido ao investidor. Divide 50% investidor e 50% BLR."],
+      ["Retorno do investidor", "A metade do resultado dividida pelo capital que ele pôs no projeto."],
+      ["Lance máximo JV", "O maior lance em que cada parte ainda fica com a margem escolhida (padrão " + CONTA0.m + "% da venda para cada uma). ⚠ quando passa de 50% do ARV: aí depende da aprovação do investidor."]]],
     ["Leilão", "Termos que aparecem no calendário e no painel", [
       ["Tax deed", "Leilão do imóvel por imposto atrasado: quem ganha recebe a escritura."],
       ["Upset / judicial (PA)", "Upset: venda por imposto em que algumas dívidas continuam. Judicial: venda que limpa os gravames."],
@@ -2115,9 +2146,15 @@ document.querySelectorAll(".tabs button").forEach(b => b.onclick = () => {
 // digitar na busca ou num valor redesenha uma vez quando a pessoa para (antes: grade e ~2.700 pontos do mapa a cada tecla)
 let tRender = 0;
 const renderLogo = e => { clearTimeout(tRender); tRender = setTimeout(() => { mostrar = PAG; render(); }, /^(search|number|text)$/.test(e.target.type) ? 220 : 0); };
-["#fBusca","#fUf","#fCo","#fTipo","#fSit","#fAte","#fMin","#fMax","#fFz","#fDesc","#fTip","#fOn","#fSeg"].forEach(s => $(s).addEventListener("input", renderLogo));
+["#fBusca","#fUf","#fTipo","#fSit","#fDe","#fAte","#fMin","#fMax","#fFz","#fDesc","#fTip","#fOn","#fSeg"].forEach(s => $(s).addEventListener("input", renderLogo));
 // "fecha na minha conta" usa o teto (só assinante)
 $("#fFecha").addEventListener("input", e => { if(!ASSIN){ e.target.checked = false; abreAssina(); return; } renderLogo(e); });
+// ↺ (30/10, Rodrigo): limpa filtros, leilão escolhido, Critérios, ★ e estado, e volta ao país inteiro
+$("#tgReset").onclick = () => { F_VAL.forEach(s => $(s).value = ""); F_CHK.forEach(s => $(s).checked = false); $("#fUf").value = "";
+  LSEL = null; CRITM = false; FSEG = false; HISTON = true;
+  $("#segCritM").querySelectorAll("button").forEach(x => x.setAttribute("aria-pressed", x.dataset.crit === "0"));
+  $("#tgSeg").setAttribute("aria-pressed", false); $("#tgHist").setAttribute("aria-pressed", true);
+  mostrar = PAG; render(); if(MAPA) MAPA.us(); };
 $("#fLimpa").onclick = () => { F_VAL.forEach(s => $(s).value = ""); F_CHK.forEach(s => $(s).checked = false); mostrar = PAG; render(); };
 // 30/10 (Rodrigo): um conjunto só de filtros; no mapa ele mora no painel (botão Filtros), em Negócios no topo da lista
 function poeFiltros(){ const F = $(".filtros");
@@ -2174,7 +2211,46 @@ function contaRefaz(semRender){
   }
   kpis(); critTexto(); contaResumo();
   if(!semRender){ render();
-    const el = $("#contaTab"), l = ABERTO && L.find(x => x.i === ABERTO); if(el && l) el.outerHTML = contaTab(l); }
+    const el = $("#contaTab"), l = ABERTO && L.find(x => x.i === ABERTO); if(el && l) el.outerHTML = contaTab(l);
+    const ej = $("#jvTab"); if(ej && l) ej.outerHTML = jvTab(l); }
+}
+/* conta da JV (30/10, Rodrigo): term sheet v5 da JV com o investidor de capital (Drive "04 - Jurídico & Societário",
+   TermSheet_JointVenture_Afonso_5.docx, 16/10). Capital 100% do investidor, sem juros; na venda sai a comissão (até 5%),
+   volta ao investidor tudo o que ele aportou e o resultado divide 50/50. Duas modalidades: Flip simples (sem reforma, venda
+   abaixo do mercado) e Fix & Flip (reforma e venda a valor de mercado). */
+const JV = {com: .05, mkt: .025, gc: .01, fech: .01, adm: .25, admMin: 1000, admArv: .01, limpeza: 5, aprov: .50};
+const vaiJV = l => vaiConta(l) && !l.ct && !l.li && l.ab > 0 && (l.a || l.ae);
+function jvDe(l, mod){
+  const c = contaDe(l), area = l.a || l.ae, ff = mod === "ff";
+  const V = ff ? l.am : l.am * CVENDA;                                     // Fix & Flip: valor de mercado; Flip simples: venda rápida
+  const obra = ff ? c.reno : area * JV.limpeza;                            // reforma do nível escolhido · limpeza, paisagismo e pintura
+  const adm = ff ? JV.adm * obra : Math.max(JV.admMin, JV.admArv * l.am);  // administração do ativo (seção 5)
+  const tit = CFIXOS + c.qt, venda = V * (JV.mkt + JV.gc + JV.fech);
+  const cap = l.ab + obra + adm + tit + venda;                             // exposição de caixa do investidor
+  const res = V * (1 - JV.com) - cap;
+  const bmax = l.ab + res - 2 * CONTA.m / 100 * V;                         // cada parte fica com a margem escolhida sobre a venda
+  return {V, obra, adm, tit, venda, cap, res, bmax};
+}
+function jvTab(l){
+  if(!vaiJV(l)) return "";
+  const s = jvDe(l, "fs"), f = jvDe(l, "ff"), lin = (t, a, b, cl) => `<tr${cl ? ` class="${cl}"` : ""}><td>${t}</td><td>${a}</td><td>${b}</td></tr>`;
+  const neg = v => v ? "−" + NB + k(v) : "—", pc = (a, b) => b > 0 ? Math.round(a / b * 100) + "%" : "—", tt = CONTA.m * 2;
+  const lm = x => x.bmax <= 0 ? "não fecha" : k(Math.round(x.bmax / 500) * 500) + (x.bmax > JV.aprov * l.am ? " ⚠" : "");
+  return `<div id="jvTab"><h4 style="margin-top:18px">Conta da JV (investidor de capital)</h4><div class="tabx"><table class="tab2 tab3">
+    <tr><th></th><th>Flip simples</th><th>Fix &amp; Flip</th></tr>
+    ${lin("Venda", k(s.V) + `<br><small>${Math.round(CVENDA * 100)}% do ARV, sem reforma</small>`, k(f.V) + "<br><small>ARV, reformada</small>")}
+    ${lin("− comissão de venda 5% (no fechamento)", neg(s.V * JV.com), neg(f.V * JV.com))}
+    ${lin("Lance (abertura)", k(l.ab), k(l.ab))}
+    ${lin("Obra", k(s.obra) + `<br><small>limpeza e pintura, US$ ${JV.limpeza}/pé²</small>`, k(f.obra) + `<br><small>reforma ${esc((NIVEL_T[contaDe(l).nv] || "").toLowerCase())}</small>`)}
+    ${lin("Administração do ativo", k(s.adm) + "<br><small>maior entre US$ 1.000 e 1% do ARV</small>", k(f.adm) + "<br><small>25% da obra</small>")}
+    ${lin("Título e custos fixos", k(s.tit), k(f.tit))}
+    ${lin("Marketing 2,5% + gestão 1% + fechamento 1%", k(s.venda), k(f.venda))}
+    ${lin("Capital do investidor (exposição de caixa)", k(s.cap), k(f.cap), "dest")}
+    ${lin("Resultado do projeto", s.res > 0 ? k(s.res) : "prejuízo " + k(-s.res), f.res > 0 ? k(f.res) : "prejuízo " + k(-f.res))}
+    ${lin("Investidor 50% · BLR 50%", k(s.res / 2), k(f.res / 2), "cta2")}
+    ${lin("Retorno do investidor sobre o capital", pc(s.res / 2, s.cap), pc(f.res / 2, f.cap))}
+    ${lin(`Lance máximo JV (cada parte com ${CONTA.m}% da venda)`, lm(s), lm(f))}</table></div>
+    <div class="nota">Pelo term sheet v5 da JV (16/10): o investidor põe todo o caixa, sem juros; na venda ele recebe de volta o que aportou e o resultado divide 50/50. Margem: ${tt}% da venda no projeto (${CONTA.m}% para cada parte; muda na régua da 🧮 Conta). ⚠ = lance acima de ${Math.round(JV.aprov * 100)}% do ARV, que depende de aprovação do investidor. Impostos, seguro e utilidades até a venda e o imposto de transmissão ainda sem cotação: não somados.</div></div>`;
 }
 function contaTab(l){
   const c = contaDe(l), nvTxt = (NIVEL_T[c.nv] || c.nv).toLowerCase() + (CONTA.n === "ano" ? " (pelo ano)" : "");
