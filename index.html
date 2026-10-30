@@ -62,7 +62,24 @@ a{color:var(--info)}
 .chk{flex-direction:row!important;align-items:center;gap:8px!important;text-transform:none!important;letter-spacing:0!important;font-size:13px!important;color:var(--tx2)!important;padding:8px 10px;border:1px solid var(--line2);border-radius:9px;cursor:pointer;align-self:flex-end}
 .chk input{accent-color:var(--ok)}
 .filtros .spacer{flex:1}
-.filtros .cad{color:var(--acc);font-size:11px}
+.filtros .cad,.tabs .cad{color:var(--acc);font-size:11px}
+/* guia (assinante) */
+.vguia .hero,.vguia .crit{display:none}
+.guia{max-width:860px;padding-block:22px 70px}
+.gtopo h2{font-family:var(--f-d);font-size:26px;margin:0 0 4px;text-wrap:balance}
+.gtopo p{color:var(--tx2);margin:0 0 14px}
+.gtopo input{width:100%;max-width:420px;background:var(--surf);color:var(--tx);border:1px solid var(--line2);border-radius:9px;padding:9px 12px;font:inherit}
+.gsec{margin-top:28px}
+.gsec h3{font-size:13px;text-transform:uppercase;letter-spacing:.08em;color:var(--acc);margin:0}
+.gsub{color:var(--mute);font-size:12.5px;margin:2px 0 10px}
+.gsec dl{margin:0;border-top:1px solid var(--line)}
+.git{display:grid;grid-template-columns:minmax(150px,240px) 1fr;gap:6px 18px;padding:10px 0;border-bottom:1px solid var(--line)}
+.git dt{font-weight:600;color:var(--tx);display:flex;align-items:flex-start;gap:8px}
+.git dd{margin:0;color:var(--tx2);line-height:1.5;max-width:62ch}
+.gb{flex:0 0 auto;width:11px;height:11px;border-radius:50%;margin-top:4px;box-sizing:border-box;display:inline-block}
+.gvazio{color:var(--mute);margin-top:20px}
+.git i.lgcomp{background:#16E0B0;border:2px solid #fff}
+@media (max-width:640px){.git{grid-template-columns:1fr}}
 .fLimpa{align-self:flex-end;padding-bottom:9px;font-size:13px}
 /* 30/10 (Rodrigo): os mesmos filtros dentro do mapa; só os lotes que passam ficam no mapa e nas contagens do painel */
 .painel .filtros{margin:0;border:0;border-radius:0;border-bottom:1px solid var(--fio);background:transparent;padding:10px 12px;gap:8px;max-height:min(46vh,420px);overflow:auto}
@@ -560,6 +577,7 @@ body{transition:padding-right .5s var(--mola)}
     <button role="tab" data-v="mapa" aria-selected="true">Mapa</button>
     <button role="tab" data-v="negocios" aria-selected="false"><span class="lg-full">Negócios</span><span class="tb-curto">Lotes</span></button>
     <button role="tab" data-v="cobertura" aria-selected="false"><span class="lg-full">Cobertura</span><span class="tb-curto">EUA</span></button>
+    <button role="tab" data-v="guia" aria-selected="false" title="Explicação de cada item (assinantes)">Guia<span class="cad" id="guiaC"> 🔒</span></button>
   </nav>
   <div class="who"><span class="dot" id="dot"></span><span id="whoTxt">Visitante</span></div>
   <div class="acoes-top">
@@ -630,6 +648,8 @@ body{transition:padding-right .5s var(--mola)}
         <div id="painelC"></div></aside>
     </div>
   </section>
+
+  <section id="v-guia" hidden><div class="guia" id="guia"></div></section>
 
   <section id="v-cobertura" hidden>
     <div class="cob" id="cob"></div>
@@ -1218,7 +1238,7 @@ async function carregaPremium(){
   }
   if(ASSIN && PODE && UID){ try{ const c = (await DB.doc(`interesses/${UID}/prefs/cores`).get()).data(); if(c && c.p) CORES = c; }catch(e){} }
   aplicaCores();
-  $("#btAssina").hidden = ASSIN; $("#btConta").hidden = !ASSIN; $("#fContaC").hidden = ASSIN;   // a conta ao vivo é do assinante (precisa do ARV exato)
+  $("#btAssina").hidden = ASSIN; $("#btConta").hidden = !ASSIN; $("#fContaC").hidden = ASSIN; $("#guiaC").hidden = ASSIN; guia();   // a conta ao vivo é do assinante (precisa do ARV exato)
   if(ASSIN){ render(); }
 }
 const chavePriv = l => (l.uf + "_" + l.co).replace(/ /g,"_").replace(/\./g,"").replace(/'/g,"");
@@ -1980,6 +2000,94 @@ function criaMapa(){
 
 /* ---------- cobertura ---------- */
 /* 28/10: os números saem do mesmo POR_UF dos KPIs e do mapa (antes, texto fixo de 7 estados que não batia com o topo) */
+/* ---------- Guia (30/10, Rodrigo): aba de explicação só para assinante; cada item do mapa, do cartão e da ficha em linguagem simples ---------- */
+function guia(){
+  if(!ASSIN){ $("#guia").innerHTML = ""; return; }
+  const bola = c => `<i class="gb" style="background:${c}"></i>`, pct = x => Math.round(x * 100) + "%", P = CONTA0.p;
+  const S = [
+    ["O mapa", "O que cada desenho quer dizer", [
+      [bola(RAMPA_B[4]) + "Bolinha verde", "Vale a pena: o teto BLR passa do preço pelo qual casas assim costumam sair no leilão. Dá certo mesmo com disputa normal."],
+      [bola(RAMPA_B[2]) + "Bolinha amarela", "Só se a disputa for fraca: o teto passa do lance de abertura, mas não do preço típico. Fecha se pouca gente der lance."],
+      [bola(RAMPA_B[0]) + "Bolinha vermelha", "Não fecha a conta: mesmo no lance de abertura, sobra menos que a margem."],
+      [bola(COR_LIST) + "Bolinha azul-clara", "Listado: o lote está no edital, mas a BLR ainda não fez a análise completa (hoje só a Flórida é analisada por inteiro). O tamanho é igual para todos; o desconto aparece no detalhe."],
+      [`<i class="gb" style="border:1.5px solid rgba(180,188,200,.6)"></i>Anel vazio`, "Listado sem dado para a conta (falta área, valor ou ARV). Fica escondido por padrão; liga em “Mostrar listados sem análise” na legenda."],
+      [`<i class="gb" style="background:rgba(244,241,234,.3);border:1px dashed #7B8391"></i>Bolinha tracejada`, "Já leiloado (histórico). O resultado (vendido, resgatado, cancelado) aparece ao passar o mouse; o valor vendido e o comprador, só para assinante."],
+      [`<i class="gb lgcomp"></i>Bola verde-menta`, "Imóvel comprado pela BLR (carteira)."],
+      ["Tamanho da bolinha", "Quanto maior, mais Força BLR (nos lotes analisados)."],
+      ["Cor dos estados", "Quantos leilões cada estado tem no calendário dos próximos 120 dias: mais claro, mais leilões."]]],
+    ["Botões do mapa", "A barra do painel e as camadas", [
+      ["Todos / Critérios", "Todos: cada lote à venda. Critérios: só os que passaram em todo o funil BLR (casa construída, preço que fecha, sem dívida que passe ao comprador)."],
+      ["★", "Mostra só os lotes que você acompanha (estrela no cartão)."],
+      ["Histórico", "Liga ou desliga os lotes que já foram a leilão."],
+      ["Filtros", "Busca, condado, tipo, data, faixa de lance, força mínima, desconto mínimo, “fecha no típico”, “ônus conferido” e “fecha na minha conta”. Só o que passa fica no mapa e nas contagens. O número no botão diz quantos filtros estão ligados."],
+      ["Estado", "Escolhe o estado e voa até ele."],
+      ["Renda do bairro", "Pinta os bairros (setores do Censo) pela renda das famílias, comparada com a mediana do condado."],
+      ["Valor das casas", "Pinta os bairros pelo valor da casa típica. Ligada junto com a renda, o roxo escuro mostra onde os dois são altos."],
+      ["ARV BLR nos lotes", "Escreve o ARV em cima de cada lote."],
+      ["Foto de satélite", "Imagem aérea do condado; de perto, a foto do próprio lote."],
+      ["🎨 Cores", "Troca as cores das bolinhas (fica salvo para você)."]]],
+    ["Selos do lote", "O selo no canto da foto e no cartão", [
+      ["Fecha no típico", "O teto passa do preço típico do leilão (uns " + pct(CTIP) + " do valor no cadastro)."],
+      ["Faixa fraca", "O teto passa da abertura, mas não do preço típico."],
+      ["Listado · sem análise BLR", "Dado oficial do edital, ainda sem a conta completa da BLR."],
+      ["Fora: terreno", "Terreno vazio: não entra na conta de casa (pode ter a conta de terreno)."],
+      ["Fora: sem dados", "Falta dado para precificar (área, ARV ou vendas parecidas)."],
+      ["Fora: preço não fecha", "O teto ficou abaixo do lance de abertura."],
+      ["Fora: abertura suspeita", "Abertura abaixo de 5% do cadastro: costuma esconder dívida, lien ou erro do edital."],
+      ["Fora: dívida passa", "Há dívida pública (prefeitura, IRS) que continua com o comprador."],
+      ["⚠ ARV acima do bairro", "A estimativa passa de 1,5× a casa típica do bairro (comum em casa móvel e condomínio). A conta usa no máximo 1,5× e a Força fica no máximo 3."],
+      ["Leilão de lien", "Você compra a dívida, não o imóvel: o retorno vem dos juros se o dono pagar; o imóvel só vem se ele não pagar no prazo."],
+      ["Conta de terreno", "Lote sem casa: a conta usa o valor do terreno no cadastro, sem reforma."],
+      ["Land bank · venda direta", "Estoque do órgão público vendido sem leilão marcado."]]],
+    ["Números do lote", "Cada linha do cartão e da ficha", [
+      ["Lance de abertura / lance mínimo", "O menor lance aceito no leilão. É de onde a disputa começa."],
+      ["Valor no cadastro", "Valor do imóvel no cadastro do condado (base do imposto). Em Michigan é 2× o SEV."],
+      ["Desconto (−x% do cadastro)", "Quanto a abertura está abaixo do valor no cadastro. Nos listados, a nota de 1 a 5 vem daqui."],
+      ["ARV", "Quanto a casa deve valer depois de reformada, pelas vendas de casas parecidas no bairro. Aparece como faixa (mínimo–máximo)."],
+      ["ARV estimado", "Fora da Flórida: vem do valor de mercado oficial do condado, do preço por pé² do CEP × a área, ou das casas mais baratas do CEP (o nível usado aparece entre parênteses)."],
+      ["Teto BLR", "O lance máximo que ainda deixa a margem depois de reforma, custos, título e juros. Passou dele, não vale."],
+      ["Folga até o teto", "Quanto o lance pode subir acima da abertura antes de chegar ao teto."],
+      ["Força BLR (0 a 5)", "Quanto o teto sobra sobre o lance. 4–5: fecha no típico; 2–3: só com disputa fraca; 0–1: não fecha."],
+      ["Área construída", "Pés² da casa. “Estimada” quando vem da planta do prédio (FEMA) × andares, ou do ARV ÷ preço por pé²."],
+      ["Ano", "Ano de construção. Na conta “pelo ano”, ele decide o nível da reforma."],
+      ["Tipo", "Uso do imóvel pela descrição do condado (casa, condomínio, casa móvel, terreno...)."],
+      ["Ônus", "O que pesa sobre o imóvel no processo do leilão: “sem ônus público”, “só créditos do estado (caem no leilão)” ou “a BLR confere antes de dar o lance por você”."],
+      ["Resultado do funil BLR", "Em que etapa da análise o lote parou, ou “nos critérios” se passou em todas."]]],
+    ["Bairro e mercado", "O entorno do lote", [
+      ["Casa típica do bairro", "Valor da casa do meio do setor do Censo (ACS)."],
+      ["Renda mediana das famílias", "Renda do meio das famílias do setor, comparada com a do condado (ex.: 1,20× = 20% acima)."],
+      ["Casa típica (Zillow ZHVI)", "Índice do Zillow para o CEP; a “faixa baixa” são as casas mais baratas do CEP."],
+      ["Preço por pé² vendido (Redfin)", "Média do que foi vendido no CEP nos últimos 12 meses."],
+      ["Vendas em 12 meses · dias à venda", "Quantas casas venderam no CEP e quanto tempo levaram: mostra se o bairro gira."]]],
+    ["A conta, linha a linha", "O botão 🧮 Conta refaz o teto com os seus números", [
+      ["Venda rápida", pct(CVENDA) + " do ARV: preço para vender rápido depois da reforma."],
+      ["Venda do terreno", pct(CVENDA_T) + " do valor do terreno no cadastro."],
+      ["− margem que sobra", "O lucro que você quer deixar: padrão " + CONTA0.m + "% em casa e " + (CONTA0.m + CMARG_T) + "% em terreno. A régua muda."],
+      ["− saída " + pct(CSAIDA), "Corretor e custos de fechamento da venda."],
+      ["− custos fixos", "Busca de título, registro, inspeção e seguro: " + k(CFIXOS) + " por lote."],
+      ["− título (quiet title)", "Processo para limpar o título depois do leilão. Varia por estado (padrão " + k(QT0) + "); dá para tirar da conta."],
+      ["− reforma", `Área × custo por pé²: leve US$ ${P.leve}, média US$ ${P.media}, geral US$ ${P.geral}. “Pelo ano” escolhe o nível pela idade da casa.`],
+      ["Juros", "Dinheiro parado 6 meses a 11% ao ano, sobre o lance e a reforma."],
+      ["Teto", "O que sobra depois de tudo isso: o lance máximo."],
+      ["N lotes fecham com a sua conta", "Quantos lotes analisados ficam com teto acima da abertura com os seus números; fora da Flórida, quantos fechariam na estimativa."]]],
+    ["Leilão", "Termos que aparecem no calendário e no painel", [
+      ["Tax deed", "Leilão do imóvel por imposto atrasado: quem ganha recebe a escritura."],
+      ["Upset / judicial (PA)", "Upset: venda por imposto em que algumas dívidas continuam. Judicial: venda que limpa os gravames."],
+      ["Venda do xerife", "Leilão feito pelo xerife do condado, por imposto ou por execução."],
+      ["Inscrição até", "Último dia para se cadastrar e depositar a caução para poder dar lance."],
+      ["Resgatado", "O dono pagou a dívida antes do leilão (ou dentro do prazo de resgate) e o imóvel saiu da venda."],
+      ["Quero participar deste leilão", "Pede à BLR para inscrever e dar o lance por você."],
+      ["Lista oficial do leilão ↗", "Abre o edital no site do condado ou do leiloeiro (fonte do dado)."]]]
+  ];
+  $("#guia").innerHTML = `<div class="gtopo"><h2>Guia da vitrine</h2><p>Cada item do mapa, do cartão e da ficha, em linguagem simples.</p>
+    <input type="search" id="gBusca" placeholder="Procurar um termo (ex.: teto, lien, ARV)" aria-label="Procurar no guia"></div>
+    ${S.map(([t, sub, it]) => `<section class="gsec"><h3>${t}</h3><p class="gsub">${sub}</p><dl>${it.map(([a, b]) => `<div class="git"><dt>${a}</dt><dd>${b}</dd></div>`).join("")}</dl></section>`).join("")}
+    <p class="gvazio" id="gVazio" hidden>Nada com esse termo.</p>`;
+  $("#gBusca").addEventListener("input", e => { const q = e.target.value.trim().toLowerCase(); let n = 0;
+    document.querySelectorAll("#guia .git").forEach(d => { const v = !q || d.textContent.toLowerCase().includes(q); d.hidden = !v; n += v; });
+    document.querySelectorAll("#guia .gsec").forEach(s => s.hidden = !s.querySelector(".git:not([hidden])"));
+    $("#gVazio").hidden = !!n; });
+}
 function cobertura(){
   const NOTA = {FL: "Todos passados pelo funil BLR. Tax deed com ônus conferido pelo RealTDM onde o condado publica.",
     MI: "Leilão do Tesouro do condado (tax-sale.info). Ainda sem a análise BLR.", TX: "Venda do xerife (Linebarger). Atenção ao direito de resgate do antigo dono.",
@@ -1996,9 +2104,10 @@ function cobertura(){
 /* ---------- abas ---------- */
 document.body.classList.add("vmapa");
 document.querySelectorAll(".tabs button").forEach(b => b.onclick = () => {
+  if(b.dataset.v === "guia" && !ASSIN){ abreAssina(); return; }   // guia é só do assinante
   document.querySelectorAll(".tabs button").forEach(x => x.setAttribute("aria-selected", x === b));
-  document.body.classList.toggle("vmapa", b.dataset.v === "mapa");
-  ["negocios","mapa","cobertura"].forEach(v => $("#v-" + v).hidden = v !== b.dataset.v);
+  document.body.classList.toggle("vmapa", b.dataset.v === "mapa"); document.body.classList.toggle("vguia", b.dataset.v === "guia");
+  ["negocios","mapa","cobertura","guia"].forEach(v => $("#v-" + v).hidden = v !== b.dataset.v);
   poeFiltros(); render();
   if(b.dataset.v === "mapa" && MAPA) setTimeout(() => MAPA.invalida(), 50);
   try{ localStorage.setItem("vitrine_aba", b.dataset.v); }catch(e){}
