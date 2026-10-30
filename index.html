@@ -618,7 +618,7 @@ body{transition:padding-right .5s var(--mola)}
       <label>Desconto mínimo<select id="fDesc"><option value="">Qualquer</option><option value="40">40% do cadastro</option><option value="60">60%</option><option value="75">75%</option><option value="90">90%</option></select></label>
       <label class="chk"><input type="checkbox" id="fTip"> Só fecha no típico</label>
       <label class="chk"><input type="checkbox" id="fOn"> Ônus conferido</label>
-      <label class="chk"><input type="checkbox" id="fConta"> Fecha na minha conta<span class="cad" id="fContaC"> 🔒</span></label>
+      <label class="chk"><input type="checkbox" id="fFecha"> Fecha na minha conta<span class="cad" id="fFechaC"> 🔒</span></label>
       <label class="chk f-lista"><input type="checkbox" id="fSeg"> Só os que acompanho</label>
       <label class="f-sempre f-lista">Ordenar<select id="fOrd">
         <option value="d">Leilão mais próximo</option><option value="desc">Maior desconto</option>
@@ -1023,7 +1023,7 @@ function opcoes(){
 function filtrados(paraMapa){
   const q = $("#fBusca").value.trim().toLowerCase(), uf = $("#fUf").value, co = $("#fCo").value, tp = $("#fTipo").value,
         ate = +$("#fAte").value || 0, mx = +$("#fMax").value || 0, tip = $("#fTip").checked, on = $("#fOn").checked,
-        mn = +$("#fMin").value || 0, fz = +$("#fFz").value || 0, dsc = +$("#fDesc").value || 0, cta = ASSIN && $("#fConta").checked;
+        mn = +$("#fMin").value || 0, fz = +$("#fFz").value || 0, dsc = +$("#fDesc").value || 0, cta = ASSIN && $("#fFecha").checked;
   const sit = paraMapa ? (HISTON ? "todos" : "prox") : $("#fSit").value, sg = paraMapa ? FSEG : $("#fSeg").checked;
   const cr = paraMapa ? CRITM : CRIT;
   let r = L.filter(l => (!cr || noCrit(l)) && (sit === "todos" || (sit === "hist") === HIST(l)) && (!sg || segue(l.i)) &&
@@ -1071,7 +1071,7 @@ function cartao(l){
 const PAG = 120;
 let mostrar = PAG;
 // filtros em uso (Estado e Ordenar não contam: o mapa tem o seu seletor de estado)
-const F_VAL = ["#fBusca","#fCo","#fTipo","#fAte","#fMin","#fMax","#fFz","#fDesc"], F_CHK = ["#fTip","#fOn","#fConta"];
+const F_VAL = ["#fBusca","#fCo","#fTipo","#fAte","#fMin","#fMax","#fFz","#fDesc"], F_CHK = ["#fTip","#fOn","#fFecha"];
 const nFiltros = () => F_VAL.filter(s => $(s).value.trim()).length + F_CHK.filter(s => $(s).checked).length;
 function render(){
   const r = filtrados(), fm = MAPA ? filtrados(true) : null, nf = nFiltros(), noMapa = !$("#v-mapa").hidden;
@@ -1238,7 +1238,7 @@ async function carregaPremium(){
   }
   if(ASSIN && PODE && UID){ try{ const c = (await DB.doc(`interesses/${UID}/prefs/cores`).get()).data(); if(c && c.p) CORES = c; }catch(e){} }
   aplicaCores();
-  $("#btAssina").hidden = ASSIN; $("#btConta").hidden = !ASSIN; $("#fContaC").hidden = ASSIN; $("#guiaC").hidden = ASSIN; guia();   // a conta ao vivo é do assinante (precisa do ARV exato)
+  $("#btAssina").hidden = ASSIN; $("#btConta").hidden = !ASSIN; $("#fFechaC").hidden = ASSIN; $("#guiaC").hidden = ASSIN; guia();   // a conta ao vivo é do assinante (precisa do ARV exato)
   if(ASSIN){ render(); }
 }
 const chavePriv = l => (l.uf + "_" + l.co).replace(/ /g,"_").replace(/\./g,"").replace(/'/g,"");
@@ -2117,7 +2117,7 @@ let tRender = 0;
 const renderLogo = e => { clearTimeout(tRender); tRender = setTimeout(() => { mostrar = PAG; render(); }, /^(search|number|text)$/.test(e.target.type) ? 220 : 0); };
 ["#fBusca","#fUf","#fCo","#fTipo","#fSit","#fAte","#fMin","#fMax","#fFz","#fDesc","#fTip","#fOn","#fSeg"].forEach(s => $(s).addEventListener("input", renderLogo));
 // "fecha na minha conta" usa o teto (só assinante)
-$("#fConta").addEventListener("input", e => { if(!ASSIN){ e.target.checked = false; abreAssina(); return; } renderLogo(e); });
+$("#fFecha").addEventListener("input", e => { if(!ASSIN){ e.target.checked = false; abreAssina(); return; } renderLogo(e); });
 $("#fLimpa").onclick = () => { F_VAL.forEach(s => $(s).value = ""); F_CHK.forEach(s => $(s).checked = false); mostrar = PAG; render(); };
 // 30/10 (Rodrigo): um conjunto só de filtros; no mapa ele mora no painel (botão Filtros), em Negócios no topo da lista
 function poeFiltros(){ const F = $(".filtros");
