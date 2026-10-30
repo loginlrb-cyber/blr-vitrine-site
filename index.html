@@ -62,6 +62,15 @@ a{color:var(--info)}
 .chk{flex-direction:row!important;align-items:center;gap:8px!important;text-transform:none!important;letter-spacing:0!important;font-size:13px!important;color:var(--tx2)!important;padding:8px 10px;border:1px solid var(--line2);border-radius:9px;cursor:pointer;align-self:flex-end}
 .chk input{accent-color:var(--ok)}
 .filtros .spacer{flex:1}
+.filtros .cad{color:var(--acc);font-size:11px}
+.fLimpa{align-self:flex-end;padding-bottom:9px;font-size:13px}
+/* 30/10 (Rodrigo): os mesmos filtros dentro do mapa; só os lotes que passam ficam no mapa e nas contagens do painel */
+.painel .filtros{margin:0;border:0;border-radius:0;border-bottom:1px solid var(--fio);background:transparent;padding:10px 12px;gap:8px;max-height:min(46vh,420px);overflow:auto}
+.painel .filtros>label:not(.f-lista){display:flex!important;flex:1 1 140px}
+.painel .filtros .f-lista,.painel .btFiltros{display:none!important}
+.painel .filtros input[type=search],.painel .filtros input[type=number],.painel .filtros select{width:100%;padding:6px 8px;font-size:12.5px}
+.painel .filtros .chk{flex:1 1 100%!important;padding:6px 8px;font-size:12.5px!important}
+.painel .filtros .cont{padding-bottom:0}
 .cont{color:var(--tx2);font-size:13px;align-self:flex-end;padding-bottom:9px}
 /* grade */
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:16px;padding-bottom:60px}
@@ -580,19 +589,23 @@ body{transition:padding-right .5s var(--mola)}
     <div class="filtros">
       <label class="f-sempre">Buscar<input type="search" id="fBusca" placeholder="Cidade, condado ou CEP"></label>
       <button type="button" class="btFiltros" id="btFiltros" aria-expanded="false">Mais filtros ▾</button>
-      <label class="f-sempre">Estado<select id="fUf"><option value="">Todos</option></select></label>
+      <label class="f-sempre f-lista">Estado<select id="fUf"><option value="">Todos</option></select></label>
       <label>Condado<select id="fCo"><option value="">Todos</option></select></label>
       <label>Tipo<select id="fTipo"><option value="">Todos</option></select></label>
-      <label>Situação<select id="fSit"><option value="prox">Leilão pela frente</option><option value="hist">Já leiloados (histórico)</option><option value="todos">Todos</option></select></label>
+      <label class="f-lista">Situação<select id="fSit"><option value="prox">Leilão pela frente</option><option value="hist">Já leiloados (histórico)</option><option value="todos">Todos</option></select></label>
       <label>Leilão até<select id="fAte"><option value="">Qualquer data</option><option value="7">7 dias</option><option value="14">14 dias</option><option value="30">30 dias</option></select></label>
+      <label><span id="fMinRot">Lance de (US$)</span><input type="number" id="fMin" min="0" step="1000" placeholder="sem mínimo"></label>
       <label><span id="fMaxRot">Lance até (US$)</span><input type="number" id="fMax" min="0" step="1000" placeholder="sem limite"></label>
+      <label>Força mínima<select id="fFz"><option value="">Qualquer</option><option value="2">2 ou mais</option><option value="3">3 ou mais</option><option value="4">4 ou mais</option><option value="5">Só 5</option></select></label>
+      <label>Desconto mínimo<select id="fDesc"><option value="">Qualquer</option><option value="40">40% do cadastro</option><option value="60">60%</option><option value="75">75%</option><option value="90">90%</option></select></label>
       <label class="chk"><input type="checkbox" id="fTip"> Só fecha no típico</label>
       <label class="chk"><input type="checkbox" id="fOn"> Ônus conferido</label>
-      <label class="chk"><input type="checkbox" id="fSeg"> Só os que acompanho</label>
-      <label class="f-sempre">Ordenar<select id="fOrd">
+      <label class="chk"><input type="checkbox" id="fConta"> Fecha na minha conta<span class="cad" id="fContaC"> 🔒</span></label>
+      <label class="chk f-lista"><input type="checkbox" id="fSeg"> Só os que acompanho</label>
+      <label class="f-sempre f-lista">Ordenar<select id="fOrd">
         <option value="d">Leilão mais próximo</option><option value="desc">Maior desconto</option>
         <option value="ab">Menor lance</option><option value="nv">Mais força BLR</option><option value="gap">Maior folga até o teto (assinantes)</option></select></label>
-      <span class="spacer"></span><span class="cont" id="cont"></span>
+      <span class="spacer"></span><button type="button" class="lnk fLimpa" id="fLimpa" hidden>Limpar filtros</button><span class="cont" id="cont"></span>
     </div>
     <div class="grid" id="grid"></div>
   </section>
@@ -608,9 +621,11 @@ body{transition:padding-right .5s var(--mola)}
       <aside class="painel" id="painel">
         <div class="pbar"><div class="seg segCrit" id="segCritM" role="group" aria-label="Quais oportunidades mostrar">
           <button data-crit="0" aria-pressed="true">Todos</button><button data-crit="1" aria-pressed="false">Critérios</button></div>
-          <button class="tg" id="tgSeg" type="button" aria-pressed="false">★ Acompanho</button>
+          <button class="tg" id="tgSeg" type="button" aria-pressed="false" title="Só os lotes que acompanho" aria-label="Só os lotes que acompanho">★</button>
           <button class="tg" id="tgHist" type="button" aria-pressed="true">Histórico</button>
+          <button class="tg" id="tgFil" type="button" aria-pressed="false" aria-controls="mFil">Filtros</button>
           <button class="pmin" id="pMin" type="button" aria-label="Recolher a lista" aria-expanded="true">▾</button></div>
+        <div class="mFil" id="mFil" hidden></div>
         <label class="truf">Estado <select id="trUf"><option value="">Todos os estados</option></select></label>
         <div id="painelC"></div></aside>
     </div>
@@ -862,6 +877,7 @@ function alternaSeg(i){ const l = L.find(x => x.i === i); if(!l) return;
   if(FSEG) render(); }
 const btSeg = l => `<button type="button" data-seg="${l.i}" class="${segue(l.i) ? "on" : ""}">${segue(l.i) ? "★ Acompanhando" : "☆ Acompanhar"}</button>`;
 let FSEG = false;   // filtro "só os que acompanho"
+let MF = null;   // lotes que passam nos filtros do mapa (o painel conta só estes)
 async function carregaSeg(){
   if(!(PODE && DB && UID)) return;
   try{ const d = (await DB.doc(`interesses/${UID}/seguindo/lista`).get()).data();
@@ -986,13 +1002,16 @@ function opcoes(){
 }
 function filtrados(paraMapa){
   const q = $("#fBusca").value.trim().toLowerCase(), uf = $("#fUf").value, co = $("#fCo").value, tp = $("#fTipo").value,
-        ate = +$("#fAte").value || 0, mx = +$("#fMax").value || 0, tip = $("#fTip").checked, on = $("#fOn").checked;
+        ate = +$("#fAte").value || 0, mx = +$("#fMax").value || 0, tip = $("#fTip").checked, on = $("#fOn").checked,
+        mn = +$("#fMin").value || 0, fz = +$("#fFz").value || 0, dsc = +$("#fDesc").value || 0, cta = ASSIN && $("#fConta").checked;
   const sit = paraMapa ? (HISTON ? "todos" : "prox") : $("#fSit").value, sg = paraMapa ? FSEG : $("#fSeg").checked;
   const cr = paraMapa ? CRITM : CRIT;
   let r = L.filter(l => (!cr || noCrit(l)) && (sit === "todos" || (sit === "hist") === HIST(l)) && (!sg || segue(l.i)) &&
     (!q || [l.ci, l.co, l.zip].some(x => (x||"").toLowerCase().includes(q))) && (!uf || l.uf === uf) &&
     (!co || l.co + "|" + l.uf === co) && (!tp || l.u === tp) && (!ate || HIST(l) || !l.d || dias(l.d) <= ate) &&
-    (!mx || (l.ab || 0) * tx() <= mx) && (!tip || (l.et === "final" && l.ft === "tipico")) && (!on || (l.on && l.on !== "nao_consultado")));
+    (!mx || (l.ab || 0) * tx() <= mx) && (!tip || (l.et === "final" && l.ft === "tipico")) && (!on || (l.on && l.on !== "nao_consultado")) &&
+    (!mn || (l.ab || 0) * tx() >= mn) && (!fz || forcaDe(l) >= fz) && (!dsc || (l.desc ?? -1) >= dsc) &&
+    (!cta || (!HIST(l) && l.ab > 0 && l.teto >= l.ab)));
   let o = $("#fOrd").value;
   if(o === "gap" && !ASSIN){ o = "d"; }
   const gap = l => (l.teto || 0) - (l.ab || 0);
@@ -1031,12 +1050,19 @@ function cartao(l){
 }
 const PAG = 120;
 let mostrar = PAG;
+// filtros em uso (Estado e Ordenar não contam: o mapa tem o seu seletor de estado)
+const F_VAL = ["#fBusca","#fCo","#fTipo","#fAte","#fMin","#fMax","#fFz","#fDesc"], F_CHK = ["#fTip","#fOn","#fConta"];
+const nFiltros = () => F_VAL.filter(s => $(s).value.trim()).length + F_CHK.filter(s => $(s).checked).length;
 function render(){
-  const r = filtrados();
-  $("#cont").textContent = `${r.length.toLocaleString("pt-BR")} de ${L.length.toLocaleString("pt-BR")} lotes`;
+  const r = filtrados(), fm = MAPA ? filtrados(true) : null, nf = nFiltros(), noMapa = !$("#v-mapa").hidden;
+  MF = fm && new Set(fm);
+  $("#cont").textContent = noMapa && fm ? `${fm.filter(l => !HIST(l)).length.toLocaleString("pt-BR")} lotes no mapa`
+    : `${r.length.toLocaleString("pt-BR")} de ${L.length.toLocaleString("pt-BR")} lotes`;
+  $("#fLimpa").hidden = !nf;
+  $("#tgFil").textContent = nf ? `Filtros · ${nf}` : "Filtros";
   $("#grid").innerHTML = (r.slice(0, mostrar).map(cartao).join("") || `<p style="color:var(--mute)">Nenhum lote com esses filtros.</p>`)
     + (r.length > mostrar ? `<button class="bfi" id="maisCards" type="button" style="grid-column:1/-1;text-align:center;padding:12px">Mostrar mais ${Math.min(PAG, r.length - mostrar)} de ${r.length - mostrar}</button>` : "");
-  if(MAPA) MAPA.atualiza(filtrados(true));
+  if(MAPA) MAPA.atualiza(fm);
 }
 let HISTON = true;   // histórico no mapa (transparente)
 document.addEventListener("click", e => {
@@ -1192,7 +1218,7 @@ async function carregaPremium(){
   }
   if(ASSIN && PODE && UID){ try{ const c = (await DB.doc(`interesses/${UID}/prefs/cores`).get()).data(); if(c && c.p) CORES = c; }catch(e){} }
   aplicaCores();
-  $("#btAssina").hidden = ASSIN; $("#btConta").hidden = !ASSIN;   // a conta ao vivo é do assinante (precisa do ARV exato)
+  $("#btAssina").hidden = ASSIN; $("#btConta").hidden = !ASSIN; $("#fContaC").hidden = ASSIN;   // a conta ao vivo é do assinante (precisa do ARV exato)
   if(ASSIN){ render(); }
 }
 const chavePriv = l => (l.uf + "_" + l.co).replace(/ /g,"_").replace(/\./g,"").replace(/'/g,"");
@@ -1566,7 +1592,7 @@ const MES = ["jan","fev","mar","abr","mai","jun","jul","ago","set","out","nov","
 const chipData = d => `<div class="dt ${urg(d) ? "u" : ""}"><b>${d.slice(8,10)}</b><span>${MES[+d.slice(5,7)-1]}</span></div>`;
 const GRAV = {"sim":["gravame sobrevive","r"], "não":["livre de gravame","v"], "depende":["gravame: confira o edital",""]};
 const selo = g => GRAV[g] ? `<span class="selo ${GRAV[g][1]}">${GRAV[g][0]}</span>` : "";
-const lotesCo = f => L.filter(l => l.f === f && !HIST(l) && (!CRITM || noCrit(l)));
+const lotesCo = f => L.filter(l => l.f === f && !HIST(l) && (MF ? MF.has(l) : !CRITM || noCrit(l)));
 const histCo = f => L.filter(l => l.f === f && HIST(l) && (!CRITM || noCrit(l)));
 let SEMON = false;   // 28/10: "mostrar listados sem análise" (anéis sem dado); desligado, só esses anéis somem do mapa
 function criaMapa(){
@@ -1851,10 +1877,10 @@ function criaMapa(){
     return `<button class="lin" data-f="${a.f}">${chipData(a.d)}
       <div><div class="nm">${esc(a.co)} County</div><div class="sb">${esc(a.t)}${a.pi && a.pi >= HOJE_L ? " · inscrição até " + dm(a.pi) : ""} ${selo(a.g)}${a.fr ? ` <span class="selo">fora do raio</span>` : ""}</div></div>
       ${n ? `<span class="qt">${plural(n, "lote", "lotes")}</span>` : `<span class="qt z">sem lotes</span>`}</button>`; };
-  const contaUF = () => { lotesUF = d3.rollup(L.filter(l => !HIST(l) && (!CRITM || noCrit(l))), v => v.length, l => l.uf); };
+  const contaUF = () => { lotesUF = d3.rollup(L.filter(l => !HIST(l) && (MF ? MF.has(l) : !CRITM || noCrit(l))), v => v.length, l => l.uf); };
   function painelUS(){ contaUF();
     const ufs = [...ufsCom].sort((a, b) => (lotesUF.get(b) || 0) - (lotesUF.get(a) || 0) || ((porUF.get(a) || [{d: "9"}])[0].d).localeCompare((porUF.get(b) || [{d: "9"}])[0].d));
-    $("#painelC").innerHTML = `<div class="ph"><h3>Onde tem leilão</h3><p>${POR_UF.size} estados: ${LEI.length} leilões no calendário (120 dias) e ${L.filter(l => !HIST(l)).length.toLocaleString("pt-BR")} lotes à venda. Escolha o estado ou aproxime o mapa.</p></div>
+    $("#painelC").innerHTML = `<div class="ph"><h3>Onde tem leilão</h3><p>${POR_UF.size} estados: ${LEI.length} leilões no calendário (120 dias) e ${L.filter(l => !HIST(l)).length.toLocaleString("pt-BR")} lotes à venda${nFiltros() ? ` (${[...lotesUF.values()].reduce((a, b) => a + b, 0).toLocaleString("pt-BR")} com os seus filtros)` : ""}. Escolha o estado ou aproxime o mapa.</p></div>
       <div class="pl">${ufs.map(uf => { const v = porUF.get(uf) || [], n = lotesUF.get(uf) || 0;
         return `<button class="lin" data-uf="${uf}">${v[0] ? chipData(v[0].d) : "<span></span>"}<div><div class="nm">${esc(UFN[uf] || uf)}</div>
           <div class="sb">${leiTxt(uf)}${v[0] ? " · próximo em " + esc(v[0].co) : ""}</div></div>
@@ -1973,13 +1999,23 @@ document.querySelectorAll(".tabs button").forEach(b => b.onclick = () => {
   document.querySelectorAll(".tabs button").forEach(x => x.setAttribute("aria-selected", x === b));
   document.body.classList.toggle("vmapa", b.dataset.v === "mapa");
   ["negocios","mapa","cobertura"].forEach(v => $("#v-" + v).hidden = v !== b.dataset.v);
+  poeFiltros(); render();
   if(b.dataset.v === "mapa" && MAPA) setTimeout(() => MAPA.invalida(), 50);
   try{ localStorage.setItem("vitrine_aba", b.dataset.v); }catch(e){}
 });
 // digitar na busca ou num valor redesenha uma vez quando a pessoa para (antes: grade e ~2.700 pontos do mapa a cada tecla)
 let tRender = 0;
 const renderLogo = e => { clearTimeout(tRender); tRender = setTimeout(() => { mostrar = PAG; render(); }, /^(search|number|text)$/.test(e.target.type) ? 220 : 0); };
-["#fBusca","#fUf","#fCo","#fTipo","#fSit","#fAte","#fMax","#fTip","#fOn","#fSeg"].forEach(s => $(s).addEventListener("input", renderLogo));
+["#fBusca","#fUf","#fCo","#fTipo","#fSit","#fAte","#fMin","#fMax","#fFz","#fDesc","#fTip","#fOn","#fSeg"].forEach(s => $(s).addEventListener("input", renderLogo));
+// "fecha na minha conta" usa o teto (só assinante)
+$("#fConta").addEventListener("input", e => { if(!ASSIN){ e.target.checked = false; abreAssina(); return; } renderLogo(e); });
+$("#fLimpa").onclick = () => { F_VAL.forEach(s => $(s).value = ""); F_CHK.forEach(s => $(s).checked = false); mostrar = PAG; render(); };
+// 30/10 (Rodrigo): um conjunto só de filtros; no mapa ele mora no painel (botão Filtros), em Negócios no topo da lista
+function poeFiltros(){ const F = $(".filtros");
+  if(!$("#v-mapa").hidden){ if(F.parentElement !== $("#mFil")) $("#mFil").append(F); }
+  else if(F.parentElement !== $("#v-negocios")) $("#v-negocios").prepend(F); }
+$("#tgFil").onclick = () => { const a = $("#mFil").hidden; $("#mFil").hidden = !a; $("#tgFil").setAttribute("aria-pressed", a); if(a) minPainel(false); };
+poeFiltros();
 $("#fOrd").addEventListener("input", () => { if($("#fOrd").value === "gap" && !ASSIN){ $("#fOrd").value = "d"; abreAssina(); } mostrar = PAG; render(); });
 
 function critTexto(){ $("#critTxt").textContent = CRIT
@@ -2000,9 +2036,9 @@ if(window.innerWidth < 760) minPainel(true);
 /* moeda: só a exibição muda; o leilão é em dólar */
 const CEL = window.innerWidth < 760;   // celular: só o código da moeda cabe no topo
 $("#moeda").innerHTML = Object.entries(MOEDAS).filter(([c]) => c === "USD" || CAMBIO.r[c]).map(([c, [sm, n]]) => `<option value="${c}" ${c === MOEDA ? "selected" : ""}>${CEL ? c : c + " · " + n}</option>`).join("");
-$("#fMaxRot").textContent = `Lance até (${sim()})`;
+$("#fMaxRot").textContent = `Lance até (${sim()})`; $("#fMinRot").textContent = `Lance de (${sim()})`;
 $("#moeda").onchange = () => { MOEDA = $("#moeda").value; try{ localStorage.setItem("vitrine_moeda", MOEDA); }catch(e){}
-  $("#fMaxRot").textContent = `Lance até (${sim()})`; kpis(); rodape(); render(); if($("#ficha").classList.contains("on") && ABERTO) abre(ABERTO); };
+  $("#fMaxRot").textContent = `Lance até (${sim()})`; $("#fMinRot").textContent = `Lance de (${sim()})`; kpis(); rodape(); render(); if($("#ficha").classList.contains("on") && ABERTO) abre(ABERTO); };
 function verLote(i){ abre(i); if(MAPA && !$("#v-mapa").hidden) MAPA.foca(i); }
 
 /* ---------- conta BLR ao vivo (Cris 26/10): régua da margem que sobra no fim, nível da reforma (leve 20, média 30, geral 45
