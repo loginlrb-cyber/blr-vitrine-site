@@ -65,21 +65,56 @@ a{color:var(--info)}
 .filtros .spacer{flex:1}
 .filtros .cad,.tabs .cad{color:var(--acc);font-size:11px}
 /* assistente de IA (site, membro) */
-.iabox{position:fixed;left:16px;bottom:16px;width:min(400px,calc(100% - 32px));max-height:min(72vh,620px);z-index:1100;display:flex;flex-direction:column;background:var(--bg2);border:1px solid var(--line2);border-radius:16px;box-shadow:0 24px 60px rgba(0,0,0,.5);margin-bottom:env(safe-area-inset-bottom,0px)}
-.iah{display:flex;align-items:baseline;gap:8px;padding:12px 14px;border-bottom:1px solid var(--line)}
-.iah b{color:var(--acc)}.iah span{color:var(--mute);font-size:12px;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.iabox{position:fixed;right:16px;bottom:calc(92px + env(safe-area-inset-bottom,0px));width:min(400px,calc(100% - 32px));max-height:min(68vh,620px);z-index:1100;display:flex;flex-direction:column;background:var(--bg2);border:1px solid var(--line2);border-radius:18px;box-shadow:0 24px 60px rgba(0,0,0,.5);transform-origin:100% 100%;animation:iaAbre .28s var(--suave,ease)}
+@keyframes iaAbre{from{opacity:0;transform:translateY(10px) scale(.96)}}
+.iah{display:flex;align-items:center;gap:8px;padding:10px 12px 10px 12px;border-bottom:1px solid var(--line)}
+.iah svg{width:22px;height:22px;flex:none}
+.iah b{color:var(--tx);font-family:var(--f-d);font-size:15px;letter-spacing:.01em}.iah span{color:var(--mute);font-size:12px;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .iax{all:unset;cursor:pointer;color:var(--tx2);padding:2px 6px}
 .iam{flex:1;overflow-y:auto;padding:12px 14px;display:flex;flex-direction:column;gap:10px}
 .iab{padding:9px 12px;border-radius:12px;font-size:13.5px;line-height:1.5;white-space:pre-wrap;max-width:92%}
 .ia-r{background:var(--surf);color:var(--tx2);align-self:flex-start}.ia-u{background:var(--ok-bg);color:var(--tx);align-self:flex-end}
 .iab.esp{color:var(--mute);font-style:italic}.iab.erro{color:var(--mute)}
-.iaf{display:flex;gap:8px;padding:10px 12px;border-top:1px solid var(--line)}
-.iaf textarea{flex:1;resize:none;background:var(--surf);color:var(--tx);border:1px solid var(--line2);border-radius:10px;padding:8px 10px;font:inherit;font-size:13.5px}
+.iab.cortada{-webkit-mask-image:linear-gradient(#000 45%,transparent);mask-image:linear-gradient(#000 45%,transparent)}
+.iacta{align-self:stretch;display:flex;flex-direction:column;gap:6px;padding:12px;border:1px solid var(--ok-ln);border-radius:12px;background:var(--ok-bg);font-size:13px;color:var(--tx2)}
+.iacta b{color:var(--acc)}.iacta .cta{align-self:flex-start;margin-top:2px}
+.iaf{display:flex;gap:8px;padding:10px 12px 6px;border-top:1px solid var(--line);align-items:flex-end}
+.iaf textarea{flex:1;min-width:0;resize:none;background:var(--surf);color:var(--tx);border:1px solid var(--line2);border-radius:10px;padding:8px 10px;font:inherit;font-size:13.5px}
 .iaf .cta{padding:8px 14px}
+.iamic{all:unset;cursor:pointer;width:36px;height:36px;border-radius:50%;display:grid;place-items:center;border:1px solid var(--line2);color:var(--tx2);flex:none}
+.iamic svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round}.iamic rect{fill:currentColor;stroke:none}
+.iamic.on{color:#0C0E12;background:#6FD3B0;border-color:#6FD3B0;animation:iaPulso 1.2s ease-in-out infinite}
+.iapriv{font-size:11px;color:var(--mute);padding:0 12px 10px}
+/* botão flutuante: estrela-bússola BLR (dourado + rosa dos ventos verde-menta) */
+.iafab{all:unset;box-sizing:border-box;position:fixed;right:20px;bottom:calc(20px + env(safe-area-inset-bottom,0px));z-index:1150;width:58px;height:58px;border-radius:50%;cursor:pointer;display:grid;place-items:center;
+  background:radial-gradient(circle at 35% 30%,#232934,#0E1116 70%);border:1px solid rgba(226,172,72,.55);box-shadow:0 10px 30px rgba(0,0,0,.45),0 0 0 6px rgba(226,172,72,.07),0 0 24px rgba(226,172,72,.22);
+  touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;transition:transform .2s var(--suave,ease),right .3s var(--suave,ease)}
+.iafab svg{width:34px;height:34px;pointer-events:none;overflow:visible}
+.iafab .iaPta{transform-origin:24px 24px;animation:iaBrilho 4.5s ease-in-out infinite}
+.iafab .iaRosa{transform-origin:39px 9.5px}
+.iafab:hover{transform:translateY(-2px)}.iafab:active{transform:scale(.94)}
+.iafab:focus-visible{outline:2px solid var(--acc);outline-offset:3px}
+.iafab::before,.iafab::after{content:"";position:absolute;inset:-1px;border-radius:50%;border:2px solid #6FD3B0;opacity:0;pointer-events:none}
+.iafab.ouve{border-color:#6FD3B0;box-shadow:0 10px 30px rgba(0,0,0,.45),0 0 28px rgba(111,211,176,.45)}
+.iafab.ouve::before{animation:iaOnda 1.4s ease-out infinite}.iafab.ouve::after{animation:iaOnda 1.4s ease-out .7s infinite}
+.iafab.pensa .iaRosa{animation:iaGira 1.1s ease-in-out infinite}.iafab.pensa .iaPta{animation:iaFalaA 1.1s ease-in-out infinite alternate}
+.iafab.fala .iaPta{animation:iaFalaA .5s ease-in-out infinite alternate}
+.iaDica{position:absolute;right:68px;top:50%;transform:translateY(-50%);white-space:nowrap;background:var(--surf2);color:var(--tx2);border:1px solid var(--line2);border-radius:10px;padding:6px 10px;font-size:12px;opacity:0;pointer-events:none;transition:opacity .2s}
+.iafab:hover .iaDica{opacity:1}
+@keyframes iaBrilho{0%,86%,100%{transform:scale(1)}92%{transform:scale(1.12) rotate(8deg)}}
+@keyframes iaGira{50%{transform:scale(.4) rotate(90deg);opacity:.5}100%{transform:rotate(180deg)}}
+@keyframes iaFalaA{to{transform:scale(1.1)}}
+@keyframes iaOnda{0%{opacity:.8;transform:scale(1)}100%{opacity:0;transform:scale(1.7)}}
+@keyframes iaPulso{50%{box-shadow:0 0 0 6px rgba(111,211,176,.25)}}
+@media (prefers-reduced-motion:reduce){.iafab .iaPta,.iafab.pensa .iaRosa,.iafab.fala .iaPta,.iabox{animation:none}}
+@media (min-width:761px){body:has(#ficha.on) .iafab{right:calc(min(520px,100%) + 20px)}body:has(#ficha.on) .iabox{right:calc(min(520px,100%) + 16px)}}
+@media (max-width:760px){body:has(#ficha.on) .iafab{width:48px;height:48px;bottom:calc(84px + env(safe-area-inset-bottom,0px));right:14px}body:has(#ficha.on) .iafab svg{width:28px;height:28px}body:has(#ficha.on) .iabox{bottom:calc(140px + env(safe-area-inset-bottom,0px));max-height:55vh}.iaDica{display:none}}
+body:has(#contaBox:not([hidden])) .iafab,body:has(.modal:not([hidden])) .iafab,body:has(.modal:not([hidden])) .iabox{display:none}
+body:has(#cmpbar:not([hidden])) .iafab{bottom:calc(84px + env(safe-area-inset-bottom,0px))}
+@media (min-width:761px){body:has(#iaFab) .leg{right:88px}}   /* a legenda do mapa fica à esquerda do botão */
 .iaL{display:inline-block;margin-top:6px}
-@media (max-width:760px){#btIA{display:none!important}}
 @media (max-width:430px){.top #btEntrar{font-size:0;padding:7px 8px}.top #btEntrar::before{content:"👤";font-size:14px}.top #guiaC{display:none}.top .moeda{width:46px!important;padding-inline:2px!important}.top .acoes-top{gap:3px!important}}   /* site: o "Entrar" passava 15 px da tela; vira só o ícone */   /* celular: o topo não cabe; abre pelo menu do usuário, pelo Guia e pela ficha */
-@media (max-width:640px){.iabox{left:8px;right:8px;bottom:8px;width:auto;max-height:65vh}}
+@media (max-width:640px){.iabox{left:8px;right:8px;bottom:calc(86px + env(safe-area-inset-bottom,0px));width:auto;max-height:62vh}}
 /* guia (assinante) */
 .vguia .hero,.vguia .crit{display:none}
 .guia{max-width:860px;padding-block:22px 70px}
@@ -605,7 +640,6 @@ body{transition:padding-right .5s var(--mola)}
   </nav>
   <div class="who"><span class="dot" id="dot"></span><span id="whoTxt">Visitante</span></div>
   <div class="acoes-top">
-    <button class="hbt conta" id="btIA" type="button" hidden data-ia title="Assistente de IA da BLR (membros)">✦<span class="lg-full"> Assistente</span></button>
     <button class="hbt conta" id="btConta" type="button" hidden aria-pressed="false" title="Conta BLR: margem, reforma e título">🧮<span class="lg-full"> Conta</span></button>
     <select class="moeda" id="moeda" aria-label="Moeda dos valores"></select>
     <button class="hbt seg" id="btSeg" type="button" aria-label="Lotes que você acompanha">★ <b id="nSeg">0</b></button>
@@ -1232,56 +1266,136 @@ if(SITE){ $("#btEntrar").hidden = false; $("#btEntrar").onclick = abreEntrar;
     let s0 = null; try{ s0 = localStorage.getItem("vitrine_membro"); }catch(e){}
     if(s0) entra(s0, false).catch(() => { try{ localStorage.removeItem("vitrine_membro"); }catch(e){} }); }), 0); }
 
-/* ---------- assistente de IA (30/10, Rodrigo): só no site, só para membro logado ----------
-   A página manda a pergunta, o contexto (o Guia e, com uma ficha aberta, os números do lote e as duas contas) e as últimas
-   mensagens para POST /api/assistente no servidor de login (api.blrdevelopment.com). O servidor confere a sessão, aplica o
-   limite diário, põe as regras dele (ASSISTENTE.md) e chama a API da Anthropic com a chave que só ele tem. */
-const IA = {hist: [], ocupado: false};
+/* ---------- assistente de IA (30/10, Rodrigo): botão flutuante no canto direito, só no site ----------
+   Toque abre o chat; segurar ouve a pergunta e responde por voz (Web Speech do navegador). A página manda a pergunta, o
+   contexto (o Guia, o que está na tela e, com uma ficha aberta, os números do lote e as duas contas) e as últimas mensagens
+   para POST /api/assistente no servidor de login (api.blrdevelopment.com). O servidor confere a sessão, aplica o limite, guarda
+   a conversa para melhorias e chama a API da Anthropic com a chave que só ele tem. Visitante: uma pergunta por dia, e o
+   servidor devolve só a metade da resposta ({cortada: true}); o resto fica para quem assina. */
+const IA = {hist: [], ocupado: false, ouvindo: null, falar: false};
 const iaPode = () => SITE && !!SESSAO;
-function iaContexto(){
+const IA_SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+const hoje = () => new Date().toISOString().slice(0, 10);
+const iaAmostraUsada = () => { try{ return localStorage.getItem("vitrine_ia_amostra") === hoje(); }catch(e){ return false; } };
+function iaTela(){
+  const o = MAPA && MAPA.onde ? MAPA.onde() : {};
+  const t = {estado: o.uf ? (UFN[o.uf] || o.uf) : ($("#fUf").value ? UFN[$("#fUf").value] : null), condado: o.condado || null,
+    leilao_destacado: LSEL ? {condado: LSEL.f && o.condado, data: LSEL.d} : null, filtros_ligados: nFiltros(), so_acompanhados: FSEG || undefined,
+    lotes_no_mapa: MF ? MF.size : undefined, aba: document.body.classList.contains("vguia") ? "Guia" : undefined, visitante: SESSAO ? undefined : true};
+  for(const k in t) if(t[k] == null) delete t[k];
+  return t;
+}
+function iaContexto(canal){
   const g = guiaSecoes().map(([t, , it]) => "## " + t + "\n" + it.map(([a, b]) => "- " + a.replace(/<[^>]+>/g, "") + ": " + b).join("\n")).join("\n\n");
+  const base = {guia: g, tela: iaTela(), canal};
   const l = ABERTO && L.find(x => x.i === ABERTO);
-  if(!l) return {guia: g};
+  if(!l) return base;
   const lote = {};
   for(const c of ["uf", "co", "ci", "zip", "d", "ab", "jv", "desc", "teto", "arv", "am", "ac", "u", "a", "ae", "y", "et", "ft", "nv", "on", "rz", "rb", "vb", "mc",
                   "li", "lx", "ct", "arv_alto_txt", "lote_m2", "fo", "nt"]) if(l[c] != null && l[c] !== "") lote[c] = l[c];
   lote.etapa = ETAPA[l.et] || l.et; lote.forca = forcaDe(l); if(HIST(l)) lote.resultado = resTxt(l);
   const conta = vaiConta(l) ? (({venda, bruto, reno, qt, teto}) => ({venda, bruto, reno, qt, teto}))(contaDe(l)) : null;
   const jv = vaiJV(l) ? {flip_simples: jvDe(l, "fs"), fix_flip: jvDe(l, "ff")} : null;
-  return {guia: g, lote, conta, conta_jv: jv, regras: {margem: CONTA.m, reforma: CONTA.n, titulo: CONTA.t, venda: CVENDA, saida: CSAIDA, fixos: CFIXOS}};
+  return {...base, lote, conta, conta_jv: jv, regras: {margem: CONTA.m, reforma: CONTA.n, titulo: CONTA.t, venda: CVENDA, saida: CSAIDA, fixos: CFIXOS}};
 }
-function abreIA(){
+/* estrela BLR: quatro pontas em dourado e uma faísca verde-menta no alto (pisca ao pensar) */
+const IA_ESTRELA = `<svg viewBox="0 0 48 48" aria-hidden="true"><defs><linearGradient id="iaG" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#F7D88A"/><stop offset=".55" stop-color="#E2AC48"/><stop offset="1" stop-color="#B9822C"/></linearGradient></defs>
+  <path class="iaPta" d="M24 3c.9 9.6 3.4 14.4 7.2 16.8C34.9 22 39.2 23.2 45 24c-5.8.8-10.1 2-13.8 4.2C27.4 30.6 24.9 35.4 24 45c-.9-9.6-3.4-14.4-7.2-16.8C13.1 26 8.8 24.8 3 24c5.8-.8 10.1-2 13.8-4.2C20.6 17.4 23.1 12.6 24 3Z" fill="url(#iaG)"/>
+  <path class="iaRosa" d="M39 4.5c.4 3.4 1.3 4.6 4.5 5-3.2.4-4.1 1.6-4.5 5-.4-3.4-1.3-4.6-4.5-5 3.2-.4 4.1-1.6 4.5-5Z" fill="#6FD3B0"/></svg>`;
+function iaFab(){
+  if(!SITE || $("#iaFab")) return;
+  const b = document.createElement("button"); b.id = "iaFab"; b.type = "button"; b.className = "iafab";
+  b.setAttribute("aria-label", "Assistente BLR: toque para escrever, segure para falar");
+  b.innerHTML = `${IA_ESTRELA}<span class="iaDica" aria-hidden="true">Toque para escrever · segure para falar</span>`;
+  document.body.appendChild(b);
+  let t = null, longo = false;
+  b.addEventListener("contextmenu", e => e.preventDefault());
+  b.addEventListener("pointerdown", e => { if(e.button) return; longo = false; iaCala();
+    t = setTimeout(() => { t = null; longo = true; iaOuve(true); }, 380); });
+  const solta = () => { if(t){ clearTimeout(t); t = null; abreIA(); } else if(longo && IA.ouvindo) IA.ouvindo.stop(); };
+  b.addEventListener("pointerup", solta);
+  b.addEventListener("pointerleave", () => { if(t){ clearTimeout(t); t = null; } else if(longo && IA.ouvindo) IA.ouvindo.stop(); });
+  b.addEventListener("keydown", e => { if(e.key === "Enter" || e.key === " "){ e.preventDefault(); abreIA(); } });
+}
+function iaEstado(c){ const b = $("#iaFab"); if(b){ b.classList.remove("ouve", "pensa", "fala"); if(c) b.classList.add(c); } }
+function abreIA(abrir){
   if(!SITE) return;
-  if(!iaPode()){ SESSAO || MEMBRO ? abreModal(`<h3 id="mTit">Assistente BLR</h3><p>O assistente é dos membros com login individual (e-mail e senha). Entre com a sua conta para usar.</p><button class="cta" type="button" onclick="abreEntrar()">Entrar</button>`) : abreAssina(); return; }
+  if(MEMBRO && !SESSAO){ abreModal(`<h3 id="mTit">Assistente BLR</h3><p>O assistente é dos membros com login individual (e-mail e senha). Entre com a sua conta para usar.</p><button class="cta" type="button" onclick="abreEntrar()">Entrar</button>`); return; }
   let p = $("#iaBox");
-  if(p){ p.hidden = !p.hidden; if(!p.hidden) $("#iaTxt").focus(); return; }
+  if(p){ p.hidden = abrir ? false : !p.hidden; if(!p.hidden){ iaSobre(); $("#iaTxt").focus(); } return; }
   p = document.createElement("aside"); p.id = "iaBox"; p.className = "iabox"; p.setAttribute("aria-label", "Assistente BLR");
-  p.innerHTML = `<div class="iah"><b>✦ Assistente BLR</b><span id="iaSobre"></span><button type="button" class="iax" aria-label="Fechar">✕</button></div>
-    <div class="iam" id="iaMsgs" aria-live="polite"><div class="iab ia-r">Pergunte sobre qualquer item do mapa, um termo do leilão ou o lote aberto na ficha (o teto, a conta, a conta da JV, o bairro…). Eu explico com os números que a vitrine tem; não é recomendação de compra.</div></div>
-    <form class="iaf" id="iaF"><textarea id="iaTxt" rows="2" maxlength="800" placeholder="Ex.: por que este lote está na faixa fraca?"></textarea><button class="cta" type="submit">Enviar</button></form>`;
+  const ola = SESSAO ? "Pergunte sobre qualquer item do mapa, um termo do leilão ou o lote aberto na ficha (o teto, a conta, a conta da JV, o bairro…). Eu explico com os números que a vitrine tem; não é recomendação de compra."
+    : "Olá! Sou o assistente da BLR. Você pode fazer uma pergunta por dia como visitante; a resposta completa e as perguntas sem limite são dos assinantes.";
+  p.innerHTML = `<div class="iah">${IA_ESTRELA}<b>Assistente BLR</b><span id="iaSobre"></span><button type="button" class="iax" aria-label="Fechar">✕</button></div>
+    <div class="iam" id="iaMsgs" aria-live="polite"><div class="iab ia-r">${esc(ola)}</div></div>
+    <form class="iaf" id="iaF"><textarea id="iaTxt" rows="2" maxlength="800" placeholder="Ex.: por que este lote está na faixa fraca?"></textarea>
+      ${IA_SR ? `<button class="iamic" id="iaMic" type="button" aria-label="Falar a pergunta" title="Falar a pergunta"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21"/></svg></button>` : ""}
+      <button class="cta" type="submit">Enviar</button></form>
+    <div class="iapriv">As conversas ficam guardadas pela BLR para melhorar o assistente. Não escreva senhas nem dados pessoais.</div>`;
   document.body.appendChild(p);
-  p.querySelector(".iax").onclick = () => p.hidden = true;
+  p.querySelector(".iax").onclick = () => { p.hidden = true; iaCala(); };
   $("#iaTxt").addEventListener("keydown", e => { if(e.key === "Enter" && !e.shiftKey){ e.preventDefault(); $("#iaF").requestSubmit(); } });
   $("#iaF").onsubmit = e => { e.preventDefault(); iaEnvia(); };
+  if($("#iaMic")) $("#iaMic").onclick = () => IA.ouvindo ? IA.ouvindo.stop() : iaOuve(false);
   iaSobre(); $("#iaTxt").focus();
 }
-function iaSobre(){ const s = $("#iaSobre"); if(!s) return; const l = ABERTO && L.find(x => x.i === ABERTO);
-  s.textContent = l ? `sobre ${l.ci || l.co}, ${l.uf}` : "sobre a vitrine"; }
+function iaSobre(){ const s = $("#iaSobre"); if(!s) return; const l = ABERTO && L.find(x => x.i === ABERTO), o = MAPA && MAPA.onde ? MAPA.onde() : {};
+  s.textContent = l ? `sobre ${l.ci || l.co}, ${l.uf}` : o.condado ? `vendo ${o.condado}, ${o.uf}` : o.uf ? `vendo ${UFN[o.uf] || o.uf}` : "sobre a vitrine"; }
 function iaMsg(t, quem){ const d = document.createElement("div"); d.className = "iab ia-" + quem; d.textContent = t; $("#iaMsgs").appendChild(d); d.scrollIntoView({block: "end"}); return d; }
+function iaCorte(w){
+  w.classList.add("cortada");
+  const c = document.createElement("div"); c.className = "iacta";
+  c.innerHTML = `<b>Quer a resposta completa?</b><span>Os assinantes veem a resposta inteira, perguntam sem limite e podem falar com o assistente sobre cada lote.</span><button class="cta" type="button">Quero assinar</button>`;
+  c.querySelector("button").onclick = abreAssina; w.after(c); c.scrollIntoView({block: "end"});
+}
+/* voz: o navegador transcreve (pt-BR); a resposta é lida em voz alta quando a pergunta veio falada */
+function iaOuve(segurando){
+  if(!SITE) return;
+  if(!IA_SR){ abreIA(true); iaMsg("Este navegador não reconhece voz. Escreva a pergunta aqui (no Chrome, Edge ou Safari dá para falar).", "r"); return; }
+  if(MEMBRO && !SESSAO){ abreIA(); return; }
+  const r = new IA_SR(); r.lang = "pt-BR"; r.interimResults = true; r.continuous = segurando; r.maxAlternatives = 1;
+  let txt = "", bal = null;
+  abreIA(true); $("#iaTxt").value = ""; $("#iaTxt").placeholder = segurando ? "Ouvindo… solte o botão para enviar" : "Ouvindo… fale a pergunta";
+  IA.ouvindo = r; iaEstado("ouve"); $("#iaMic")?.classList.add("on");
+  r.onresult = e => { txt = [...e.results].map(x => x[0].transcript).join(" ").trim(); $("#iaTxt").value = txt; };
+  r.onerror = e => { bal = e.error; };
+  r.onend = () => { IA.ouvindo = null; iaEstado(); $("#iaMic")?.classList.remove("on"); $("#iaTxt").placeholder = "Ex.: por que este lote está na faixa fraca?";
+    if(txt){ IA.falar = true; iaEnvia(); }
+    else if(bal === "not-allowed" || bal === "service-not-allowed") iaMsg("O navegador não deixou usar o microfone. Libere o microfone para www.blrdevelopment.com no cadeado da barra de endereço.", "r");
+    else if(bal && bal !== "aborted") iaMsg("Não entendi o áudio. Tente de novo, perto do microfone, ou escreva a pergunta.", "r"); };
+  try{ r.start(); }catch(e){ IA.ouvindo = null; iaEstado(); }
+}
+function iaFala(t){
+  if(!window.speechSynthesis || !t) return;
+  speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(t.replace(/[*#_`>|]/g, "").replace(/US\$ ?/g, "").replace(/\n+/g, ". "));
+  u.lang = "pt-BR"; const v = speechSynthesis.getVoices().filter(v => /^pt(-|_)BR/i.test(v.lang));
+  u.voice = v.find(v => /natural|google|luciana|francisca|thalita/i.test(v.name)) || v[0] || null; u.rate = 1.05;
+  u.onstart = () => iaEstado("fala"); u.onend = u.onerror = () => iaEstado();
+  speechSynthesis.speak(u);
+}
+function iaCala(){ if(window.speechSynthesis && speechSynthesis.speaking) speechSynthesis.cancel(); iaEstado(); }
 async function iaEnvia(){
-  const t = $("#iaTxt").value.trim(); if(!t || IA.ocupado) return;
-  IA.ocupado = true; $("#iaTxt").value = ""; iaMsg(t, "u"); const w = iaMsg("Pensando…", "r"); w.classList.add("esp");
-  try{ const r = await api("/api/assistente", {pergunta: t, contexto: iaContexto(), historico: IA.hist.slice(-6)});
-    w.textContent = r.resposta || "Sem resposta."; w.classList.remove("esp");
-    IA.hist.push({role: "user", content: t}, {role: "assistant", content: r.resposta || ""}); }
-  catch(er){ w.classList.remove("esp"); w.classList.add("erro");
-    w.textContent = er.st === 404 ? "O assistente ainda está sendo ligado no servidor da BLR. Tente de novo mais tarde."
+  const t = $("#iaTxt").value.trim(), voz = IA.falar; IA.falar = false;
+  if(!t || IA.ocupado) return;
+  $("#iaTxt").value = ""; iaMsg(t, "u");
+  if(!SESSAO && iaAmostraUsada()){ iaCorte(iaMsg("Você já usou a pergunta de hoje como visitante.", "r")); return; }
+  IA.ocupado = true; const w = iaMsg("Pensando…", "r"); w.classList.add("esp"); iaEstado("pensa");
+  try{ const r = await api("/api/assistente", {pergunta: t, contexto: iaContexto(voz ? "voz" : "texto"), historico: IA.hist.slice(-6)});
+    const resp = r.resposta || "Sem resposta.";
+    w.textContent = resp + (r.cortada ? " …" : ""); w.classList.remove("esp"); iaEstado();
+    if(r.cortada){ try{ localStorage.setItem("vitrine_ia_amostra", hoje()); }catch(e){} iaCorte(w); }
+    else IA.hist.push({role: "user", content: t}, {role: "assistant", content: resp});
+    if(voz) try{ iaFala(resp + (r.cortada ? ". Para ouvir a resposta completa, torne-se assinante." : "")); }catch(e){ iaEstado(); } }
+  catch(er){ w.classList.remove("esp"); w.classList.add("erro"); iaEstado();
+    if(er.st === 401 && !SESSAO){ w.textContent = "O assistente é dos assinantes da BLR."; iaCorte(w); }
+    else w.textContent = er.st === 404 ? "O assistente ainda está sendo ligado no servidor da BLR. Tente de novo mais tarde."
       : er.st === 401 ? "A sua sessão expirou. Entre de novo." : er.st === 429 ? (er.message !== "falha" ? er.message : "Você chegou ao limite de perguntas de hoje.")
-      : "O assistente não respondeu agora. Tente de novo em instantes."; }
+      : er.message && er.message !== "falha" ? er.message : "O assistente não respondeu agora. Tente de novo em instantes."; }
   IA.ocupado = false;
 }
-if(SITE) $("#btIA").hidden = false;
-document.addEventListener("click", e => { if(e.target.closest("[data-ia]")){ e.stopPropagation(); abreIA(); } }, true);
+if(SITE){ iaFab(); if(window.speechSynthesis) speechSynthesis.getVoices(); }
+document.addEventListener("click", e => { if(e.target.closest("[data-ia]")){ e.stopPropagation(); abreIA(true); } }, true);
 
 /* ---------- acesso (endereço, análise e pedidos) ---------- */
 let DB = null, USER = null, UID = null, PODE = false, DONO = false;
@@ -2086,7 +2200,7 @@ function criaMapa(){
     if(e.target.closest("[data-sd]")){ SEMON = !SEMON; pontos(ULT); legenda(); } });
   return {atualiza: r => { pontos(r); if(nivel.f) painelCo(nivel.f); else if(nivel.uf) painelUF(nivel.uf); else painelUS(); legenda(); },
           legenda, comprados, foca: i => { const m = MARK.get(i); if(m) M.flyTo(m.getLatLng(), Math.max(z(), 13), {duration: VOO}); },
-          invalida: () => M.invalidateSize(), us: abreUS, voa: (la, ln, zz) => M.setView([la, ln], zz)};
+          invalida: () => M.invalidateSize(), us: abreUS, onde: () => { const c = nivel.f && cty.find(x => x.id === nivel.f); return {uf: nivel.uf, condado: c ? c.properties.name : null}; }, voa: (la, ln, zz) => M.setView([la, ln], zz)};
 }
 
 /* ---------- cobertura ---------- */
