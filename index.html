@@ -1381,7 +1381,10 @@ async function iaEnvia(){
   $("#iaTxt").value = ""; iaMsg(t, "u");
   if(!SESSAO && iaAmostraUsada()){ iaCorte(iaMsg("Você já usou a pergunta de hoje como visitante.", "r")); return; }
   IA.ocupado = true; const w = iaMsg("Pensando…", "r"); w.classList.add("esp"); iaEstado("pensa");
-  try{ const r = await api("/api/assistente", {pergunta: t, contexto: iaContexto(voz ? "voz" : "texto"), historico: IA.hist.slice(-6)});
+  try{ const ctx = iaContexto(voz ? "voz" : "texto");
+    let r = await api("/api/assistente", {pergunta: t, contexto: ctx, historico: IA.hist.slice(-6)});
+    // 30/10: com histórico o servidor às vezes devolve só o aviso "Não consegui montar uma resposta"; tenta 1× sem o histórico
+    if(IA.hist.length && /^não consegui montar/i.test(r.resposta || "")) r = await api("/api/assistente", {pergunta: t, contexto: ctx, historico: []});
     const resp = r.resposta || "Sem resposta.";
     w.textContent = resp + (r.cortada ? " …" : ""); w.classList.remove("esp"); iaEstado();
     if(r.cortada){ try{ localStorage.setItem("vitrine_ia_amostra", hoje()); }catch(e){} iaCorte(w); }
