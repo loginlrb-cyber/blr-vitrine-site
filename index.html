@@ -581,7 +581,7 @@ body{transition:padding-right .5s var(--mola)}
 .jv td+td small{font-family:var(--f-m)}
 .jv tr.grp td{padding:14px 0 4px;border-bottom:1px solid var(--line2);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--acc);font-weight:600;text-align:left;font-family:var(--f-b)}
 .jv tr.sub td{font-weight:600;color:var(--tx)}
-.jv th.esc{color:var(--acc)}.jv th span{display:block;font-size:9.5px;letter-spacing:.08em;color:var(--acc);font-weight:600}
+.jv th.esc{color:var(--acc)}.regua{display:grid;gap:10px;margin-bottom:6px}.regua input{width:100%}.jv th span{display:block;font-size:9.5px;letter-spacing:.08em;color:var(--acc);font-weight:600}
 #fBody .sec>h4{cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:8px;user-select:none}
 #fBody .sec>h4::after{content:"";width:7px;height:7px;border-right:1.5px solid currentColor;border-bottom:1.5px solid currentColor;transform:rotate(45deg);transition:transform .15s;margin-right:3px}
 #fBody .sec.fech>h4{margin-bottom:0}#fBody .sec.fech>h4::after{transform:rotate(-45deg)}#fBody .sec.fech>:not(h4){display:none}
@@ -1604,7 +1604,8 @@ function secoesConta(l){
   const b = barrasHTML(l), conta = ASSIN && vaiConta(l) && (!LIST(l) || l.aq);
   return (b ? `<div class="sec"><h4>Lance, teto e casa típica do bairro</h4>${b}</div>` : "")
     + (conta ? `<div class="sec"><h4>Do ARV ao lance máximo, degrau a degrau</h4><div id="contaSvg">${cascataSVG(l, contaDe(l))}</div></div>
-      <div class="sec"><h4>${l.ct ? "Conta do terreno" : "Conta da JV (investidor de capital)"}</h4>${contaTab(l)}</div>` : "");
+      <div class="sec"><h4>${l.ct ? "Conta do terreno" : "Conta da JV (investidor de capital)"}</h4>${contaTab(l)}</div>
+      ${l.ct ? "" : `<div class="sec"><h4>TIR do investidor</h4>${tirTab(l)}</div>`}` : "");
 }
 function barrasHTML(l){
   const tv = ASSIN || !l.pr ? (l.teto > 0 ? l.teto : null) : null;
@@ -2298,7 +2299,8 @@ function guiaSecoes(){   // também é a base do assistente de IA (iaContexto)
       ["Capital do investidor", "Todo o dinheiro do projeto: lance, obra, administração, título e custos de venda. Sem juros."],
       ["Margem do projeto", "O que precisa sobrar da venda: padrão " + CONTA0.m + "%, metade para cada parte. A régua muda."],
       ["Lance máximo (teto)", "O maior lance que ainda deixa a margem do projeto."],
-      ["Retorno do investidor", "A metade do resultado sobre o capital que ele aplica, e a TIR anual no prazo da modalidade (flip " + JVC.prazo.fs + " meses, Fix & Flip " + JVC.prazo.ff + ")."],
+      ["Retorno do investidor", "A metade do resultado sobre o capital que ele aplica."],
+      ["TIR do investidor", "O retorno levado a um ano, pelo prazo da régua (meses do lance até a venda): (1 + retorno) elevado a 12 ÷ meses, menos 1."],
       ["Terreno", "Conta própria: venda a " + pct(CVENDA_T) + " do valor do cadastro, margem 10 pontos abaixo da do projeto, sem obra."],
       ["N lotes fecham com a sua conta", "Quantos lotes analisados ficam com teto acima da abertura com os seus números; fora da Flórida, quantos fechariam na estimativa."]]],
     ["Leilão", "Termos que aparecem no calendário e no painel", [
@@ -2408,7 +2410,7 @@ function verLote(i){ abre(i); if(MAPA && !$("#v-mapa").hidden) MAPA.foca(i); }
    (reforma do nível; administração = 25% da obra). Comissão de venda 5% sai no fechamento; marketing 2,5%, gestão comercial
    1% e fechamento 1% são custos do projeto. Lance máximo = o que deixa a margem do projeto (régua, padrão 40% da venda,
    20% para cada parte); o teto é o maior lance máximo das duas. */
-const JVC = {fs: .60, ff: .75, com: .05, mkt: .025, gc: .01, fech: .01, adm: .25, admMin: 1000, admArv: .01, limpeza: 5, prazo: {fs: 3, ff: 6}};
+const JVC = {fs: .60, ff: .75, com: .05, mkt: .025, gc: .01, fech: .01, adm: .25, admMin: 1000, admArv: .01, limpeza: 5};
 const MOD_T = {fs: "Flip simples", ff: "Fix & Flip"};
 function modDe(l, mod, reno, qt){
   const area = l.a || l.ae, ff = mod === "ff", V = l.am * JVC[mod];
@@ -2441,14 +2443,37 @@ function contaRefaz(semRender){
   if(!semRender){ render();
     const l = ABERTO && L.find(x => x.i === ABERTO), el = $("#contaTab"), ec = $("#contaSvg");
     if(el && l) el.outerHTML = contaTab(l);
-    if(ec && l) ec.innerHTML = cascataSVG(l, contaDe(l)); }
+    if(ec && l) ec.innerHTML = cascataSVG(l, contaDe(l));
+    const et = $("#tirTab"); if(et && l) et.outerHTML = tirTab(l); }
 }
 const vaiJV = l => vaiConta(l) && !l.ct && !l.li && l.ab > 0 && (l.a || l.ae);
 // retorno do investidor num lance: metade do resultado sobre o capital dele, e a TIR anual no prazo da modalidade
-function retornoDe(x, L0){
-  const r = x.res(L0) / 2, cap = x.cap(L0), ret = cap > 0 ? r / cap : null, meses = JVC.prazo[x.mod];
-  return {r, cap, ret, tir: ret != null && ret > -1 ? Math.pow(1 + ret, 12 / meses) - 1 : null, meses};
+function retornoDe(x, L0, meses){
+  const r = x.res(L0) / 2, cap = x.cap(L0), ret = cap > 0 ? r / cap : null;
+  return {r, cap, ret, tir: meses && ret != null && ret > -1 ? Math.pow(1 + ret, 12 / meses) - 1 : null};
 }
+// prazo do lance até a venda, em meses, por modalidade (régua da seção TIR; fica guardado no navegador)
+let PRAZO = {fs: 3, ff: 6};
+try{ const v = JSON.parse(localStorage.getItem("vitrine_prazo") || "null"); if(v && v.fs && v.ff) PRAZO = v; }catch(e){}
+function tirTab(l){
+  const c = contaDe(l), cols = c.ff ? [c.fs, c.ff] : [c.fs], pc = x => x == null ? "—" : Math.round(x * 100).toLocaleString("pt-BR") + "%";
+  const L1 = x => Math.max(l.ab, x.bmax);
+  const lin = (t, fn, cl) => `<tr${cl ? ` class="${cl}"` : ""}><td>${t}</td>${cols.map(x => `<td>${fn(x)}</td>`).join("")}</tr>`;
+  return `<div id="tirTab"><div class="regua">${cols.map(x => `<label class="cl"><span class="lin1">${MOD_T[x.mod]}: <b class="num">${PRAZO[x.mod]} ${PRAZO[x.mod] === 1 ? "mês" : "meses"}</b> do lance à venda</span>
+      <input type="range" min="1" max="24" step="1" value="${PRAZO[x.mod]}" data-prazo="${x.mod}" aria-label="Prazo do ${MOD_T[x.mod]}, em meses"></label>`).join("")}</div>
+    <div class="tabx"><table class="tab2 tab3 jv">
+    <thead><tr><th></th>${cols.map(x => `<th>${MOD_T[x.mod]}</th>`).join("")}</tr></thead>
+    ${lin("Retorno no lance de abertura", x => pc(retornoDe(x, l.ab).ret))}
+    ${lin("TIR no lance de abertura", x => pc(retornoDe(x, l.ab, PRAZO[x.mod]).tir) + " a.a.", "sub")}
+    ${lin("Retorno no lance máximo", x => x.bmax <= 0 ? "—" : pc(retornoDe(x, L1(x)).ret))}
+    ${lin("TIR no lance máximo", x => x.bmax <= 0 ? "—" : pc(retornoDe(x, L1(x), PRAZO[x.mod]).tir) + " a.a.", "sub")}
+    </table></div>
+    <div class="nota">TIR = o retorno do investidor levado a um ano pelo prazo da régua, com o capital aplicado no lance e devolvido na venda. Muda só a sua tela.</div></div>`;
+}
+document.addEventListener("input", e => { const t = e.target.closest && e.target.closest("[data-prazo]"); if(!t) return;
+  PRAZO[t.dataset.prazo] = +t.value; try{ localStorage.setItem("vitrine_prazo", JSON.stringify(PRAZO)); }catch(er){}
+  const l = ABERTO && L.find(x => x.i === ABERTO), el = $("#tirTab"); if(!l || !el) return;
+  const foco = t.dataset.prazo; el.outerHTML = tirTab(l); const n = document.querySelector(`[data-prazo="${foco}"]`); if(n) n.focus(); });
 function contaTab(l){
   const c = contaDe(l);
   if(l.ct) return `<div id="contaTab"><table class="tab2">
@@ -2483,9 +2508,8 @@ function contaTab(l){
     ${lin(`Margem do projeto (${CONTA.m}% da venda)`, x => menos(x.mg), "", `${CONTA.m / 2}% para cada parte`)}
     ${lin("Lance máximo", lm, "cta2")}
     ${grp("Retorno do investidor")}
-    ${lin("No lance de abertura", x => { const r = retornoDe(x, l.ab); return `${pc(r.ret)}<small>TIR ${pc(r.tir)} a.a.</small>`; })}
-    ${lin("No lance máximo", x => { if(x.bmax <= 0) return "—"; const r = retornoDe(x, L1(x)); return `${pc(r.ret)}<small>TIR ${pc(r.tir)} a.a.</small>`; })}
-    ${lin("Prazo considerado", x => JVC.prazo[x.mod] + " meses")}
+    ${lin("No lance de abertura", x => pc(retornoDe(x, l.ab).ret), "", "sobre o capital aplicado")}
+    ${lin("No lance máximo", x => x.bmax <= 0 ? "—" : pc(retornoDe(x, L1(x)).ret))}
     </table></div>
     <div class="nota">Retorno = metade do resultado (o resultado divide 50% investidor e 50% BLR) sobre o capital que o investidor aplica. Impostos, seguro e utilidades até a venda e o imposto de transmissão ainda não somados. <button type="button" class="lnk" data-conta>Mudar margem, reforma ou título</button></div></div>`;
 }
