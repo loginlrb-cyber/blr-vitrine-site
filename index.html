@@ -775,6 +775,8 @@ const usd = v => v == null ? "—" : sim() + NB + Math.round(v * tx()).toLocaleS
 const fx = a => a ? k(a[0]) + NB + "–" + NB + semS(k(a[1])) : "—";   // faixa de ARV, sem quebra
 const k = v => { if(v == null) return "—"; const x = v * tx(), s = sim() + NB;
   return x >= 1e9 ? s + (x/1e9).toFixed(1).replace(".", ",") + " bi" : x >= 1e6 ? s + (x/1e6).toFixed(1).replace(".", ",") + "M" : x < 1000 ? s + Math.round(x) : s + Math.round(x/1000) + "k"; };
+// mil com 2 casas depois da vírgula (Recebe na venda, 31/10): US$ 98,47k
+const k2 = v => { if(v == null) return "—"; const x = v * tx(); return sim() + NB + (x / 1000).toLocaleString("pt-BR", {minimumFractionDigits: 2, maximumFractionDigits: 2}) + "k"; };
 const dolar = v => v == null ? "—" : "US$" + NB + Math.round(v).toLocaleString("pt-BR");
 const orig = v => MOEDA === "USD" || v == null ? "" : `<small class="orig">${dolar(v)}</small>`;
 /* dias (28/10): contava a partir do dia da montagem (DADOS.meta.gerado); montada ontem, o leilão de hoje dizia "1d".
@@ -2503,7 +2505,7 @@ function tirTabela(l){
   return `<div class="tabx"><table class="tab2 tab3 jv">
     <thead><tr><th>Lance ${k(L0)}</th>${cols.map(x => `<th>${MOD_T[x.mod]}</th>`).join("")}</tr></thead>
     ${lin("Capital do investidor", x => k(x.cap(L0)) + "<small>lance + custos da Conta da JV</small>")}
-    ${lin("Recebe na venda", x => { const r = x.res(L0) / 2; return k(x.cap(L0) + r) + `<small>capital + ${r >= 0 ? "50% do resultado" : "parte do prejuízo"}</small>`; })}
+    ${lin("Recebe na venda", x => { const r = x.res(L0) / 2; return k2(x.cap(L0) + r) + `<small>capital + ${r >= 0 ? "50% do resultado" : "parte do prejuízo"}</small>`; })}
     ${lin("Retorno do investidor", x => pc(retornoDe(x, L0).ret))}
     ${lin("TIR do investidor", x => pc(retornoDe(x, L0, PRAZO).tir) + " a.a.", "sub")}
     ${lin("Obra e administração pagas em", x => { const o = tirFluxo(x, L0, PRAZO).obra; return x.mod === "ff" ? o + (o === 1 ? " mês" : " meses") : "no 1º mês"; })}
