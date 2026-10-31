@@ -2305,7 +2305,7 @@ function guiaSecoes(){   // também é a base do assistente de IA (iaContexto)
       ["Lance máximo (teto)", "O maior lance que ainda deixa a margem do projeto."],
       ["Régua de lance", "Na Conta da JV: vai do lance mínimo (abertura) ao lance máximo; a conta, a margem e a TIR recalculam no lance escolhido. Dá para digitar o valor exato."],
       ["Retorno do investidor", "A metade do resultado sobre o capital que ele aplica."],
-      ["TIR do investidor", "O retorno levado a um ano, pelo prazo da régua (meses do lance até a venda): (1 + retorno) elevado a 12 ÷ meses, menos 1."],
+      ["TIR do investidor", "O retorno levado a um ano pelo prazo da régua (meses do lance até a venda), sobre todo o capital do investidor (lance e custos do projeto): (1 + retorno) elevado a 12 ÷ meses, menos 1."],
       ["Terreno", "Conta própria: venda a " + pct(CVENDA_T) + " do valor do cadastro, margem 10 pontos abaixo da do projeto, sem obra."],
       ["N lotes fecham com a sua conta", "Quantos lotes analisados ficam com teto acima da abertura com os seus números; fora da Flórida, quantos fechariam na estimativa."]]],
     ["Leilão", "Termos que aparecem no calendário e no painel", [
@@ -2479,13 +2479,15 @@ function tirTab(l){
       <label class="cl"><span class="lin1">Prazo do lance à venda <b class="num" id="prazoRot">${PRAZO} ${PRAZO === 1 ? "mês" : "meses"}</b></span>
       <input type="range" min="1" max="24" step="1" value="${PRAZO}" data-prazo aria-label="Prazo do lance à venda, em meses"></label></div>
     <div id="tirTabela">${tirTabela(l)}</div>
-    <div class="nota">A régua de lance é a mesma da Conta da JV e não desce da abertura. TIR = o retorno do investidor levado a um ano pelo prazo, com o capital aplicado no lance e devolvido na venda. Muda só a sua tela.</div></div>`;
+    <div class="nota">A régua de lance é a mesma da Conta da JV e não desce da abertura. TIR = o retorno do investidor levado a um ano pelo prazo, considerando todo o capital dele (lance e todos os custos do projeto) aplicado no início e devolvido na venda, com 50% do resultado. Muda só a sua tela.</div></div>`;
 }
 function tirTabela(l){
   const c = contaDe(l), cols = c.ff ? [c.fs, c.ff] : [c.fs], L0 = lanceDe(l), pc = x => x == null ? "—" : Math.round(x * 100).toLocaleString("pt-BR") + "%";
   const lin = (t, fn, cl) => `<tr${cl ? ` class="${cl}"` : ""}><td>${t}</td>${cols.map(x => `<td>${fn(x)}</td>`).join("")}</tr>`;
   return `<div class="tabx"><table class="tab2 tab3 jv">
     <thead><tr><th>Lance ${k(L0)}</th>${cols.map(x => `<th>${MOD_T[x.mod]}</th>`).join("")}</tr></thead>
+    ${lin("Capital do investidor", x => k(x.cap(L0)) + "<small>lance + custos da Conta da JV</small>")}
+    ${lin("Recebe na venda", x => { const r = x.res(L0) / 2; return k(x.cap(L0) + r) + `<small>capital + ${r >= 0 ? "50% do resultado" : "parte do prejuízo"}</small>`; })}
     ${lin("Retorno do investidor", x => pc(retornoDe(x, L0).ret))}
     ${lin("TIR do investidor", x => pc(retornoDe(x, L0, PRAZO).tir) + " a.a.", "sub")}
     </table></div>`;
