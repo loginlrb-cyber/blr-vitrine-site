@@ -2455,21 +2455,26 @@ function retornoDe(x, L0, meses){
   const r = x.res(L0) / 2, cap = x.cap(L0), ret = cap > 0 ? r / cap : null;
   return {r, cap, ret, tir: meses && ret != null && ret > -1 ? Math.pow(1 + ret, 12 / meses) - 1 : null};
 }
-// prazo do lance até a venda, em meses, por modalidade (régua da seção TIR; fica guardado no navegador)
-let PRAZO = {fs: 3, ff: 6};
-try{ const v = JSON.parse(localStorage.getItem("vitrine_prazo") || "null"); if(v && v.fs && v.ff) PRAZO = v; }catch(e){}
+// prazo do lance até a venda, em meses (régua da seção TIR, vale para as duas modalidades; fica guardado no navegador)
+let PRAZO = 6;
+try{ const v = JSON.parse(localStorage.getItem("vitrine_prazo2") || "null"); if(v >= 1 && v <= 24) PRAZO = v; }catch(e){}
 // régua de lance (31/10, Rodrigo): do lance mínimo (abertura) ao maior lance máximo; a conta e a TIR recalculam no lance
 // escolhido. Mudar a reforma, o título ou a margem na 🧮 Conta muda os custos e a ponta da régua.
 let LANCE_SIM = null;   // {i: lote, v: lance}
 function faixaLance(l){ const c = contaDe(l), hi = Math.max(l.ab, c.fs.bmax, c.ff ? c.ff.bmax : 0); return [l.ab, hi]; }
 function lanceDe(l){ const [lo, hi] = faixaLance(l); return LANCE_SIM && LANCE_SIM.i === l.i ? Math.min(hi, Math.max(lo, LANCE_SIM.v)) : lo; }
+function reguaLance(l, id){
+  const [lo, hi] = faixaLance(l), L0 = lanceDe(l), fecha = hi > lo;
+  return `<label class="cl"><span class="lin1">Lance <b class="num" data-lrot>${usd(L0)} · ${Math.round(L0 / l.am * 100)}% do ARV</b></span>
+      <input type="range" data-lance id="${id}" min="${Math.round(lo)}" max="${Math.round(hi)}" step="1" value="${Math.round(L0)}" ${fecha ? "" : "disabled"} aria-label="Lance, em dólares"></label>
+    <div class="rl"><span>Mínimo ${k(lo)} (abertura)</span><label>US$ <input type="number" data-lance min="${Math.round(lo)}" max="${Math.round(hi)}" step="100" inputmode="numeric" value="${Math.round(L0)}" ${fecha ? "" : "disabled"} aria-label="Lance exato, em dólares"></label><span>Máximo ${fecha ? k(hi) : "não fecha"}</span></div>`;
+}
 function tirTab(l){
-  const c = contaDe(l), cols = c.ff ? [c.fs, c.ff] : [c.fs], L0 = lanceDe(l), pc = x => x == null ? "—" : Math.round(x * 100).toLocaleString("pt-BR") + "%";
-  const lin = (t, fn, cl) => `<tr${cl ? ` class="${cl}"` : ""}><td>${t}</td>${cols.map(x => `<td>${fn(x)}</td>`).join("")}</tr>`;
-  return `<div id="tirTab"><div class="regua">${cols.map(x => `<label class="cl"><span class="lin1">${MOD_T[x.mod]}: <b class="num">${PRAZO[x.mod]} ${PRAZO[x.mod] === 1 ? "mês" : "meses"}</b> do lance à venda</span>
-      <input type="range" min="1" max="24" step="1" value="${PRAZO[x.mod]}" data-prazo="${x.mod}" aria-label="Prazo do ${MOD_T[x.mod]}, em meses"></label>`).join("")}</div>
+  return `<div id="tirTab"><div class="regua">${reguaLance(l, "rLance2")}
+      <label class="cl"><span class="lin1">Prazo do lance à venda <b class="num" id="prazoRot">${PRAZO} ${PRAZO === 1 ? "mês" : "meses"}</b></span>
+      <input type="range" min="1" max="24" step="1" value="${PRAZO}" data-prazo aria-label="Prazo do lance à venda, em meses"></label></div>
     <div id="tirTabela">${tirTabela(l)}</div>
-    <div class="nota">No lance escolhido na Conta da JV. TIR = o retorno do investidor levado a um ano pelo prazo da régua, com o capital aplicado no lance e devolvido na venda. Muda só a sua tela.</div></div>`;
+    <div class="nota">A régua de lance é a mesma da Conta da JV e não desce da abertura. TIR = o retorno do investidor levado a um ano pelo prazo, com o capital aplicado no lance e devolvido na venda. Muda só a sua tela.</div></div>`;
 }
 function tirTabela(l){
   const c = contaDe(l), cols = c.ff ? [c.fs, c.ff] : [c.fs], L0 = lanceDe(l), pc = x => x == null ? "—" : Math.round(x * 100).toLocaleString("pt-BR") + "%";
@@ -2477,23 +2482,23 @@ function tirTabela(l){
   return `<div class="tabx"><table class="tab2 tab3 jv">
     <thead><tr><th>Lance ${k(L0)}</th>${cols.map(x => `<th>${MOD_T[x.mod]}</th>`).join("")}</tr></thead>
     ${lin("Retorno do investidor", x => pc(retornoDe(x, L0).ret))}
-    ${lin("TIR do investidor", x => pc(retornoDe(x, L0, PRAZO[x.mod]).tir) + " a.a.", "sub")}
+    ${lin("TIR do investidor", x => pc(retornoDe(x, L0, PRAZO).tir) + " a.a.", "sub")}
     </table></div>`;
 }
 document.addEventListener("input", e => { const t = e.target.closest && e.target.closest("[data-prazo]"); if(!t) return;
-  PRAZO[t.dataset.prazo] = +t.value; try{ localStorage.setItem("vitrine_prazo", JSON.stringify(PRAZO)); }catch(er){}
+  PRAZO = +t.value; try{ localStorage.setItem("vitrine_prazo2", JSON.stringify(PRAZO)); }catch(er){}
   const l = ABERTO && L.find(x => x.i === ABERTO); if(!l) return;
-  t.closest("label").querySelector("b").textContent = `${t.value} ${+t.value === 1 ? "mês" : "meses"}`;
+  $("#prazoRot").textContent = `${PRAZO} ${PRAZO === 1 ? "mês" : "meses"}`;
   const el = $("#tirTabela"); if(el) el.innerHTML = tirTabela(l); });
 // a régua fica fora do pedaço redesenhado: arrastar não perde o controle
 function lanceMudou(l, v){
-  LANCE_SIM = {i: l.i, v}; const L0 = lanceDe(l), r = $("#rLance"), n = $("#nLance");
-  if(r && +r.value !== L0) r.value = L0; if(n && document.activeElement !== n) n.value = Math.round(L0);
-  const b = $("#lanceRot"); if(b) b.textContent = `${usd(L0)} · ${Math.round(L0 / l.am * 100)}% do ARV`;
+  LANCE_SIM = {i: l.i, v}; const L0 = lanceDe(l);
+  document.querySelectorAll("input[data-lance]").forEach(x => { if(x !== document.activeElement && +x.value !== Math.round(L0)) x.value = Math.round(L0); });
+  document.querySelectorAll("[data-lrot]").forEach(b => b.textContent = `${usd(L0)} · ${Math.round(L0 / l.am * 100)}% do ARV`);
   const t = $("#contaTabela"); if(t) t.innerHTML = contaTabela(l);
   const ti = $("#tirTabela"); if(ti) ti.innerHTML = tirTabela(l);
 }
-document.addEventListener("input", e => { const t = e.target; if(t.id !== "rLance" && t.id !== "nLance") return;
+document.addEventListener("input", e => { const t = e.target; if(!t.matches || !t.matches("input[data-lance]")) return;
   const l = ABERTO && L.find(x => x.i === ABERTO); if(l && t.value !== "") lanceMudou(l, +t.value); });
 function contaTab(l){
   const c = contaDe(l);
@@ -2505,9 +2510,7 @@ function contaTab(l){
     <tr class="cta2"><td>Teto${EST(l) ? " estimado" : ""} (com 6 meses de juros)</td><td>${c.teto > 0 ? k(c.teto) : "não fecha"}</td></tr></table>
     <div class="nota"><button type="button" class="lnk" data-conta>Mudar margem ou título</button></div></div>`;
   const [lo, hi] = faixaLance(l), L0 = lanceDe(l), fecha = hi > lo;
-  return `<div id="contaTab"><div class="regua"><label class="cl"><span class="lin1">Lance <b class="num" id="lanceRot">${usd(L0)} · ${Math.round(L0 / l.am * 100)}% do ARV</b></span>
-      <input type="range" id="rLance" min="${Math.round(lo)}" max="${Math.round(hi)}" step="1" value="${Math.round(L0)}" ${fecha ? "" : "disabled"} aria-label="Lance, em dólares"></label>
-      <div class="rl"><span>Mínimo ${k(lo)} (abertura)</span><label>US$ <input type="number" id="nLance" min="${Math.round(lo)}" max="${Math.round(hi)}" step="100" inputmode="numeric" value="${Math.round(L0)}" ${fecha ? "" : "disabled"} aria-label="Lance exato, em dólares"></label><span>Máximo ${fecha ? k(hi) : "não fecha"}</span></div></div>
+  return `<div id="contaTab"><div class="regua">${reguaLance(l, "rLance")}</div>
     <div id="contaTabela">${contaTabela(l)}</div>
     <div class="nota">Margem = (preço de venda − lance − custos − despesas) ÷ preço de venda; o resultado divide 50% investidor e 50% BLR. Retorno = metade do resultado sobre o capital do investidor. Impostos, seguro e utilidades até a venda e o imposto de transmissão ainda não somados. <button type="button" class="lnk" data-conta>Mudar margem, reforma ou título</button></div></div>`;
 }
