@@ -1305,8 +1305,8 @@ function iaContexto(canal){
   for(const c of ["uf", "co", "ci", "zip", "d", "ab", "jv", "desc", "teto", "arv", "am", "ac", "u", "a", "ae", "y", "et", "ft", "nv", "on", "rz", "rb", "vb", "mc",
                   "li", "lx", "ct", "arv_alto_txt", "lote_m2", "fo", "nt"]) if(l[c] != null && l[c] !== "") lote[c] = l[c];
   lote.etapa = ETAPA[l.et] || l.et; lote.forca = forcaDe(l); if(HIST(l)) lote.resultado = resTxt(l);
-  const c = vaiConta(l) ? contaDe(l) : null, md = x => x && {modalidade: MOD_T[x.mod], venda: x.V, comissao: x.com, obra: x.obra, administracao: x.adm,
-    titulo_fixos: CFIXOS + x.qt, marketing_gestao_fechamento: x.cv, margem: x.mg, lance_maximo: x.bmax, resultado_na_abertura: x.res(l.ab)};
+  const c = vaiConta(l) ? contaDe(l) : null, md = x => x && {modalidade: MOD_T[x.mod], venda: x.V, comissao: x.com, obra: x.obra, administracao: x.adm, projeto: x.proj, licencas_obra: x.lic,
+    titulo_fixos: x.fixos, marketing_gestao_fechamento: x.cv, margem: x.mg, lance_maximo: x.bmax, resultado_na_abertura: x.res(l.ab)};
   const conta = c ? (l.ct ? {venda: c.venda, teto: c.teto} : {teto: c.teto, modalidade_do_teto: MOD_T[c.m.mod], flip_simples: md(c.fs), fix_flip: md(c.ff)}) : null;
   return {...base, lote, conta, regras: {margem_do_projeto: CONTA.m, reforma: CONTA.n, titulo: CONTA.t, venda: {flip_simples: JVC.fs, fix_flip: JVC.ff}, fixos: CFIXOS}};
 }
@@ -1521,7 +1521,6 @@ async function abre(i){
     ${resultado}
     ${acoes}
     ${fts[1] ? `<div class="gal">${fig(fts[1], "")}</div>` : ""}
-    ${numeros}
     ${LIST(l) ? `<div class="sec"><h4>Imóvel</h4><table class="tab2"><tr><td>Tipo (pela descrição do condado)</td><td style="font-family:var(--f-b)">${esc(tipoL(l))}</td></tr>
       <tr><td>Estado</td><td style="font-family:var(--f-b)">${esc(UFN[l.uf] || l.uf)}</td></tr></table></div>`
     : `<div class="sec"><h4>Imóvel e bairro</h4><table class="tab2">
@@ -1531,9 +1530,10 @@ async function abre(i){
       <tr><td>Ônus (processo RealTDM)</td><td style="font-family:var(--f-b)">${onusTxt(l)}</td></tr>
       <tr><td>Resultado do funil BLR</td><td style="font-family:var(--f-b)">${esc(ETAPA[l.et] || l.et)}</td></tr>
       <tr><td>Força BLR${gl("forca")}</td><td style="font-family:var(--f-b)">${forcaHTML(l)} ${FORCA_T[forcaDe(l)]}</td></tr></table></div>`}
+    ${entornoHTML(l)}
     ${bairroHTML(l)}
     ${LIST(l) ? mercadoHTML(l) : ""}
-    ${entornoHTML(l)}
+    ${numeros}
     <div class="sec"><h4>Conferir na fonte</h4><div class="online" id="online">${linksPublicos(l)}</div>
       <div class="nota">Abre o site oficial em outra aba. Zillow, Realtor e a parcela aparecem para assinantes.</div></div>
     <div class="sec" id="secPriv"><h4>Endereço e links</h4><div class="trava">Carregando…</div></div>
@@ -1624,8 +1624,8 @@ function cascataSVG(l, c){
   const m = c.m, st = l.ct ? [["Valor do terreno", l.am, "t"], ["Venda (80%)", c.venda - l.am], [`Margem ${CONTA.m + CMARG_T}% e saída 5%`, c.bruto - c.venda],
       ["Custos fixos e título", -(CFIXOS + c.qt)], ["Juros (6 meses)", c.teto - (c.bruto - CFIXOS - c.qt)], ["Teto", c.teto, "f"]]
     : [["ARV", l.am, "t"], [`Venda (${Math.round(JVC[m.mod] * 100)}% do ARV)`, m.V - l.am], ["Comissão de venda 5%", -m.com], ["Marketing, gestão e fechamento", -m.cv],
-      [`Margem do projeto ${CONTA.m}%`, -m.mg], [m.mod === "ff" ? "Reforma" : "Limpeza e pintura", -m.obra], ["Administração do ativo", -m.adm],
-      ["Título e custos fixos", -(CFIXOS + m.qt)], ["Lance máximo", c.teto, "f"]];
+      [`Margem do projeto ${CONTA.m}%`, -m.mg], ["Projeto (PLEI)", -m.proj], [m.mod === "ff" ? "Reforma" : "Limpeza e pintura", -m.obra], ["Administração do ativo", -m.adm],
+      ["Título, licenças e fixos", -m.fixos], ["Lance máximo", c.teto, "f"]];
   const it = st.filter(x => x[2] || Math.round(x[1]));
   const W = 440, x0 = 150, xv = W - 74, h = 22, lo = Math.min(0, c.teto), sx = v => x0 + (xv - 8 - x0) * (v - lo) / (l.am - lo);
   let cur = l.am, out = "";
@@ -2295,7 +2295,9 @@ function guiaSecoes(){   // também é a base do assistente de IA (iaContexto)
       ["Duas modalidades", "Flip simples (sem reforma, venda a " + pct(JVC.fs) + " do ARV) e Fix & Flip (reforma, venda a " + pct(JVC.ff) + " do ARV). O teto é o maior lance máximo entre as duas."],
       ["Comissão de venda 5%", "Paga no fechamento, com o dinheiro da venda."],
       ["Obra", "Flip simples: limpeza, paisagismo e pintura (US$ " + JVC.limpeza + "/pé²). Fix & Flip: área × custo por pé² " + `(leve US$ ${P.leve}, média US$ ${P.media}, geral US$ ${P.geral}; “pelo ano” escolhe pela idade da casa).`],
+      ["Projeto (PLEI)", "Só com obra (Fix & Flip): 1% do ARV, mínimo US$ 6 mil. O flip simples não tem."],
       ["Administração do ativo", "Fix & Flip: 25% do custo da obra. Flip simples: o maior entre US$ 1.000 e 1% do ARV."],
+      ["Licenças de obra", "Só com obra: estimativa de 1,5% do custo da obra, mínimo US$ 500. Entram nos custos fixos."],
       ["Título e custos fixos", "Busca de título, registro, inspeção e seguro (" + k(CFIXOS) + ") e o quiet title, que varia por estado (padrão " + k(QT0) + "; dá para tirar)."],
       ["Marketing, gestão e fechamento", "2,5% + 1% + 1% da venda."],
       ["Capital do investidor", "Todo o dinheiro do projeto: lance, obra, administração, título e custos de venda. Sem juros."],
@@ -2413,15 +2415,18 @@ function verLote(i){ abre(i); if(MAPA && !$("#v-mapa").hidden) MAPA.foca(i); }
    (reforma do nível; administração = 25% da obra). Comissão de venda 5% sai no fechamento; marketing 2,5%, gestão comercial
    1% e fechamento 1% são custos do projeto. Lance máximo = o que deixa a margem do projeto (régua, padrão 40% da venda,
    20% para cada parte); o teto é o maior lance máximo das duas. */
-const JVC = {fs: .60, ff: .75, com: .05, mkt: .025, gc: .01, fech: .01, adm: .25, admMin: 1000, admArv: .01, limpeza: 5};
+const JVC = {proj: .01, projMin: 6000, lic: .015, licMin: 500, fs: .60, ff: .75, com: .05, mkt: .025, gc: .01, fech: .01, adm: .25, admMin: 1000, admArv: .01, limpeza: 5};
 const MOD_T = {fs: "Flip simples", ff: "Fix & Flip"};
 function modDe(l, mod, reno, qt){
   const area = l.a || l.ae, ff = mod === "ff", V = l.am * JVC[mod];
   const obra = ff ? reno : area * JVC.limpeza, adm = ff ? JVC.adm * obra : Math.max(JVC.admMin, JVC.admArv * l.am);
-  const cv = V * (JVC.mkt + JVC.gc + JVC.fech), com = V * JVC.com, custos = obra + adm + CFIXOS + qt + cv;
+  // obra com material e mão de obra (Fix & Flip) precisa de projeto (PLEI: 1% do ARV, mínimo US$ 6 mil) e de licenças
+  // (estimativa: 1,5% da obra, mínimo US$ 500); o flip simples não tem nenhum dos dois
+  const proj = ff && obra > 0 ? Math.max(JVC.projMin, JVC.proj * l.am) : 0, lic = ff && obra > 0 ? Math.max(JVC.licMin, JVC.lic * obra) : 0;
+  const fixos = CFIXOS + qt + lic, cv = V * (JVC.mkt + JVC.gc + JVC.fech), com = V * JVC.com, custos = proj + obra + adm + fixos + cv;
   const mg = CONTA.m / 100 * V, bmax = V - com - custos - mg;
   const res = L0 => V - com - custos - L0, cap = L0 => L0 + custos;
-  return {mod, V, com, obra, adm, qt, cv, custos, mg, bmax, res, cap};
+  return {mod, V, com, proj, obra, adm, qt, lic, fixos, cv, custos, mg, bmax, res, cap};
 }
 function contaDe(l){
   const qt = CONTA.t ? (CONTA.qt != null && CONTA.qt !== "" ? +CONTA.qt : QT[l.uf] ?? QT0) : 0;
@@ -2530,9 +2535,10 @@ function contaTabela(l){
     ${lin("Receita líquida", x => v(x.V - x.com), "sub")}
     ${grp("Custos do projeto")}
     ${lin("Lance", () => v(L0), "", L0 === l.ab ? "abertura" : "escolhido na régua")}
+    ${f ? lin("Projeto (PLEI)", x => x.proj ? v(x.proj) : "—", "", "obra com material e mão de obra: 1% do ARV, mínimo US$ 6 mil") : ""}
     ${lin("Obra", x => v(x.obra), "", (f ? `flip: limpeza e pintura US$ ${JVC.limpeza}/pé² · F&amp;F: reforma ${esc(nvTxt)} US$ ${c.pp}/pé²` : `limpeza e pintura US$ ${JVC.limpeza}/pé²`) + ` · ${area.toLocaleString("pt-BR")} pé²${l.a ? "" : " (estimada)"}`)}
     ${lin("Administração do ativo", x => v(x.adm), "", f ? "flip: maior de US$ 1.000 e 1% do ARV · F&amp;F: 25% da obra" : "maior de US$ 1.000 e 1% do ARV")}
-    ${lin("Título e custos fixos", x => v(CFIXOS + x.qt), "", c.qt ? "busca, registro, inspeção, seguro e quiet title" : "busca, registro, inspeção e seguro (quiet title fora)")}
+    ${lin("Título, licenças e custos fixos", x => v(x.fixos), "", (c.qt ? "busca, registro, inspeção, seguro e quiet title" : "busca, registro, inspeção e seguro (quiet title fora)") + (f ? " · F&amp;F: licenças de obra, estimativa de 1,5% da obra (mín. US$ 500)" : ""))}
     ${lin("Marketing, gestão e fechamento", x => v(x.cv), "", "2,5% + 1% + 1% da venda")}
     ${lin("Capital do investidor", x => v(x.cap(L0)), "sub")}
     ${grp("Resultado no lance")}
