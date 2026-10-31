@@ -2305,7 +2305,7 @@ function guiaSecoes(){   // também é a base do assistente de IA (iaContexto)
       ["Lance máximo (teto)", "O maior lance que ainda deixa a margem do projeto."],
       ["Régua de lance", "Na Conta da JV: vai do lance mínimo (abertura) ao lance máximo; a conta, a margem e a TIR recalculam no lance escolhido. Dá para digitar o valor exato."],
       ["Retorno do investidor", "A metade do resultado sobre o capital que ele aplica."],
-      ["TIR do investidor", "O retorno levado a um ano pelo prazo da régua (meses do lance até a venda), sobre todo o capital do investidor (lance e custos do projeto): (1 + retorno) elevado a 12 ÷ meses, menos 1."],
+      ["TIR do investidor", "O retorno levado a um ano pelo prazo da régua (meses do lance até a venda), pelo fluxo mês a mês: lance, projeto e custos fixos no início; obra e administração em parcelas até o fim da obra (no máximo " + OBRA_MAX + " meses); capital e 50% do resultado de volta na venda."],
       ["Terreno", "Conta própria: venda a " + pct(CVENDA_T) + " do valor do cadastro, margem 10 pontos abaixo da do projeto, sem obra."],
       ["N lotes fecham com a sua conta", "Quantos lotes analisados ficam com teto acima da abertura com os seus números; fora da Flórida, quantos fechariam na estimativa."]]],
     ["Leilão", "Termos que aparecem no calendário e no painel", [
@@ -2458,7 +2458,23 @@ const vaiJV = l => vaiConta(l) && !l.ct && !l.li && l.ab > 0 && (l.a || l.ae);
 // retorno do investidor num lance: metade do resultado sobre o capital dele, e a TIR anual no prazo da modalidade
 function retornoDe(x, L0, meses){
   const r = x.res(L0) / 2, cap = x.cap(L0), ret = cap > 0 ? r / cap : null;
-  return {r, cap, ret, tir: meses && ret != null && ret > -1 ? Math.pow(1 + ret, 12 / meses) - 1 : null};
+  return {r, cap, ret, tir: meses ? tirFluxo(x, L0, meses).tir : null};
+}
+/* TIR pelo fluxo mês a mês (31/10, Rodrigo): no mês 0 o lance, o projeto e título/licenças/fixos; a obra e a administração
+   do ativo em parcelas iguais do mês 1 até o fim da obra (no máximo OBRA_MAX meses, e terminando antes do mês da venda);
+   no mês da venda saem marketing/gestão/fechamento e entra o capital de volta com 50% do resultado. */
+const OBRA_MAX = 8;
+function tirFluxo(x, L0, meses){
+  const n = Math.max(1, Math.round(meses)), ob = x.mod === "ff" && x.obra > 0 ? Math.max(1, Math.min(OBRA_MAX, n - 1)) : 1;
+  const f = new Array(n + 1).fill(0);
+  f[0] -= L0 + x.proj + x.fixos;
+  for(let m = 1; m <= ob; m++) f[Math.min(m, n)] -= (x.obra + x.adm) / ob;
+  f[n] += x.cap(L0) + x.res(L0) / 2 - x.cv;   // recebe capital e 50% do resultado; o marketing/gestão/fechamento ele paga ali mesmo
+  const vpl = r => f.reduce((a, v, t) => a + v / Math.pow(1 + r, t), 0);
+  let lo = -0.99, hi = 10;
+  if(vpl(lo) * vpl(hi) > 0) return {tir: null, obra: ob};
+  for(let k = 0; k < 100; k++){ const mid = (lo + hi) / 2; vpl(lo) * vpl(mid) <= 0 ? hi = mid : lo = mid; }
+  return {tir: Math.pow(1 + (lo + hi) / 2, 12) - 1, obra: ob};
 }
 // prazo do lance até a venda, em meses (régua da seção TIR, vale para as duas modalidades; fica guardado no navegador)
 let PRAZO = 6;
@@ -2479,7 +2495,7 @@ function tirTab(l){
       <label class="cl"><span class="lin1">Prazo do lance à venda <b class="num" id="prazoRot">${PRAZO} ${PRAZO === 1 ? "mês" : "meses"}</b></span>
       <input type="range" min="1" max="24" step="1" value="${PRAZO}" data-prazo aria-label="Prazo do lance à venda, em meses"></label></div>
     <div id="tirTabela">${tirTabela(l)}</div>
-    <div class="nota">A régua de lance é a mesma da Conta da JV e não desce da abertura. TIR = o retorno do investidor levado a um ano pelo prazo, considerando todo o capital dele (lance e todos os custos do projeto) aplicado no início e devolvido na venda, com 50% do resultado. Muda só a sua tela.</div></div>`;
+    <div class="nota">A régua de lance é a mesma da Conta da JV e não desce da abertura. TIR pelo fluxo mês a mês: lance, projeto e título/licenças/fixos no início; obra e administração em parcelas mensais até o fim da obra (no máximo ${OBRA_MAX} meses, terminando antes da venda); na venda o investidor recebe o capital de volta e 50% do resultado. Muda só a sua tela.</div></div>`;
 }
 function tirTabela(l){
   const c = contaDe(l), cols = c.ff ? [c.fs, c.ff] : [c.fs], L0 = lanceDe(l), pc = x => x == null ? "—" : Math.round(x * 100).toLocaleString("pt-BR") + "%";
@@ -2490,6 +2506,7 @@ function tirTabela(l){
     ${lin("Recebe na venda", x => { const r = x.res(L0) / 2; return k(x.cap(L0) + r) + `<small>capital + ${r >= 0 ? "50% do resultado" : "parte do prejuízo"}</small>`; })}
     ${lin("Retorno do investidor", x => pc(retornoDe(x, L0).ret))}
     ${lin("TIR do investidor", x => pc(retornoDe(x, L0, PRAZO).tir) + " a.a.", "sub")}
+    ${lin("Obra e administração pagas em", x => { const o = tirFluxo(x, L0, PRAZO).obra; return x.mod === "ff" ? o + (o === 1 ? " mês" : " meses") : "no 1º mês"; })}
     </table></div>`;
 }
 document.addEventListener("input", e => { const t = e.target.closest && e.target.closest("[data-prazo]"); if(!t) return;
