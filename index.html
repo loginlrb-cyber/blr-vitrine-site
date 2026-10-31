@@ -1138,7 +1138,8 @@ function render(){
   const fm0 = LSEL && fm ? filtrados(true, true) : fm;   // o painel conta sem o leilão escolhido (os outros leilões seguem com número)
   MF = fm0 && new Set(fm0);
   $("#cont").textContent = noMapa && fm ? `${fm.filter(l => !HIST(l)).length.toLocaleString("pt-BR")} lotes no mapa`
-    : `${r.length.toLocaleString("pt-BR")} de ${L.length.toLocaleString("pt-BR")} lotes`;
+    : (nh => `${(r.length - nh).toLocaleString("pt-BR")} de ${L.filter(l => !HIST(l)).length.toLocaleString("pt-BR")} lotes à venda`   // 31/10 (Clauds): mesmo total do topo; histórico à parte
+      + (nh ? ` + ${nh.toLocaleString("pt-BR")} do histórico` : ""))(r.filter(HIST).length);
   $("#fLimpa").hidden = !nf;
   $("#tgFil").textContent = nf ? `Filtros · ${nf}` : "Filtros";
   $("#grid").innerHTML = (r.slice(0, mostrar).map(cartao).join("") || `<p style="color:var(--mute)">Nenhum lote com esses filtros.</p>`)
