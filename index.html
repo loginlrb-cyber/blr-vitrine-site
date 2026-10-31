@@ -581,7 +581,9 @@ body{transition:padding-right .5s var(--mola)}
 .jv td+td small{font-family:var(--f-m)}
 .jv tr.grp td{padding:14px 0 4px;border-bottom:1px solid var(--line2);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--acc);font-weight:600;text-align:left;font-family:var(--f-b)}
 .jv tr.sub td{font-weight:600;color:var(--tx)}
-.jv th.esc{color:var(--acc)}.regua{display:grid;gap:10px;margin-bottom:6px}.regua input{width:100%}.jv th span{display:block;font-size:9.5px;letter-spacing:.08em;color:var(--acc);font-weight:600}
+.jv th.esc{color:var(--acc)}.regua{display:grid;gap:10px;margin-bottom:6px}.regua input[type=range]{width:100%}
+.rl{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:11.5px;color:var(--mute);flex-wrap:wrap}
+.rl input{width:96px;font:inherit;font-family:var(--f-m);color:var(--tx);background:var(--surf2);border:1px solid var(--line2);border-radius:6px;padding:3px 6px;text-align:right}.jv th span{display:block;font-size:9.5px;letter-spacing:.08em;color:var(--acc);font-weight:600}
 #fBody .sec>h4{cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:8px;user-select:none}
 #fBody .sec>h4::after{content:"";width:7px;height:7px;border-right:1.5px solid currentColor;border-bottom:1.5px solid currentColor;transform:rotate(45deg);transition:transform .15s;margin-right:3px}
 #fBody .sec.fech>h4{margin-bottom:0}#fBody .sec.fech>h4::after{transform:rotate(-45deg)}#fBody .sec.fech>:not(h4){display:none}
@@ -1605,7 +1607,7 @@ function secoesConta(l){
   return (b ? `<div class="sec"><h4>Lance, teto e casa típica do bairro</h4>${b}</div>` : "")
     + (conta ? `<div class="sec"><h4>Do ARV ao lance máximo, degrau a degrau</h4><div id="contaSvg">${cascataSVG(l, contaDe(l))}</div></div>
       <div class="sec"><h4>${l.ct ? "Conta do terreno" : "Conta da JV (investidor de capital)"}</h4>${contaTab(l)}</div>
-      ${l.ct ? "" : `<div class="sec"><h4>Simular o lance</h4>${lanceTab(l)}</div><div class="sec"><h4>TIR do investidor</h4>${tirTab(l)}</div>`}` : "");
+      ${l.ct ? "" : `<div class="sec"><h4>TIR do investidor</h4>${tirTab(l)}</div>`}` : "");
 }
 function barrasHTML(l){
   const tv = ASSIN || !l.pr ? (l.teto > 0 ? l.teto : null) : null;
@@ -2297,9 +2299,9 @@ function guiaSecoes(){   // também é a base do assistente de IA (iaContexto)
       ["Título e custos fixos", "Busca de título, registro, inspeção e seguro (" + k(CFIXOS) + ") e o quiet title, que varia por estado (padrão " + k(QT0) + "; dá para tirar)."],
       ["Marketing, gestão e fechamento", "2,5% + 1% + 1% da venda."],
       ["Capital do investidor", "Todo o dinheiro do projeto: lance, obra, administração, título e custos de venda. Sem juros."],
-      ["Margem do projeto", "(Preço de venda − lance − custos − despesas) ÷ preço de venda. O lance máximo deixa " + CONTA0.m + "% (metade para cada parte; a régua da 🧮 Conta muda). Na ficha aparece também no lance de abertura e com o lance limitado a " + Math.round(JVC.lim * 100) + "% do ARV."],
+      ["Margem do projeto", "(Preço de venda − lance − custos − despesas) ÷ preço de venda. O lance máximo deixa " + CONTA0.m + "% (metade para cada parte; a régua da 🧮 Conta muda). Na ficha, a régua de lance mostra a margem em qualquer lance."],
       ["Lance máximo (teto)", "O maior lance que ainda deixa a margem do projeto."],
-      ["Simular o lance", "Régua na ficha: arraste o lance e veja a margem, o resultado e o retorno do investidor mudarem."],
+      ["Régua de lance", "Na Conta da JV: vai do lance mínimo (abertura) ao lance máximo; a conta, a margem e a TIR recalculam no lance escolhido. Dá para digitar o valor exato."],
       ["Retorno do investidor", "A metade do resultado sobre o capital que ele aplica."],
       ["TIR do investidor", "O retorno levado a um ano, pelo prazo da régua (meses do lance até a venda): (1 + retorno) elevado a 12 ÷ meses, menos 1."],
       ["Terreno", "Conta própria: venda a " + pct(CVENDA_T) + " do valor do cadastro, margem 10 pontos abaixo da do projeto, sem obra."],
@@ -2411,7 +2413,7 @@ function verLote(i){ abre(i); if(MAPA && !$("#v-mapa").hidden) MAPA.foca(i); }
    (reforma do nível; administração = 25% da obra). Comissão de venda 5% sai no fechamento; marketing 2,5%, gestão comercial
    1% e fechamento 1% são custos do projeto. Lance máximo = o que deixa a margem do projeto (régua, padrão 40% da venda,
    20% para cada parte); o teto é o maior lance máximo das duas. */
-const JVC = {lim: .20, fs: .60, ff: .75, com: .05, mkt: .025, gc: .01, fech: .01, adm: .25, admMin: 1000, admArv: .01, limpeza: 5};
+const JVC = {fs: .60, ff: .75, com: .05, mkt: .025, gc: .01, fech: .01, adm: .25, admMin: 1000, admArv: .01, limpeza: 5};
 const MOD_T = {fs: "Flip simples", ff: "Fix & Flip"};
 function modDe(l, mod, reno, qt){
   const area = l.a || l.ae, ff = mod === "ff", V = l.am * JVC[mod];
@@ -2445,8 +2447,7 @@ function contaRefaz(semRender){
     const l = ABERTO && L.find(x => x.i === ABERTO), el = $("#contaTab"), ec = $("#contaSvg");
     if(el && l) el.outerHTML = contaTab(l);
     if(ec && l) ec.innerHTML = cascataSVG(l, contaDe(l));
-    const et = $("#tirTab"); if(et && l) et.outerHTML = tirTab(l);
-    const es = $("#lanceTab"); if(es && l) es.outerHTML = lanceTab(l); }
+    const et = $("#tirTab"); if(et && l) et.outerHTML = tirTab(l); }
 }
 const vaiJV = l => vaiConta(l) && !l.ct && !l.li && l.ab > 0 && (l.a || l.ae);
 // retorno do investidor num lance: metade do resultado sobre o capital dele, e a TIR anual no prazo da modalidade
@@ -2457,51 +2458,43 @@ function retornoDe(x, L0, meses){
 // prazo do lance até a venda, em meses, por modalidade (régua da seção TIR; fica guardado no navegador)
 let PRAZO = {fs: 3, ff: 6};
 try{ const v = JSON.parse(localStorage.getItem("vitrine_prazo") || "null"); if(v && v.fs && v.ff) PRAZO = v; }catch(e){}
-// régua de lance (31/10, Rodrigo): arrasta o lance e a margem do projeto, o resultado e o retorno recalculam
+// régua de lance (31/10, Rodrigo): do lance mínimo (abertura) ao maior lance máximo; a conta e a TIR recalculam no lance
+// escolhido. Mudar a reforma, o título ou a margem na 🧮 Conta muda os custos e a ponta da régua.
 let LANCE_SIM = null;   // {i: lote, v: lance}
-function lanceTab(l){
-  const c = contaDe(l), cols = c.ff ? [c.fs, c.ff] : [c.fs], pc = x => x == null ? "—" : Math.round(x * 100) + "%";
-  const mx = Math.max(l.ab * 2, ...cols.map(x => x.bmax), JVC.lim * l.am) * 1.25, passo = mx > 200000 ? 1000 : 500;
-  const L0 = LANCE_SIM && LANCE_SIM.i === l.i ? LANCE_SIM.v : l.ab;
-  const lin = (t, fn, cl) => `<tr${cl ? ` class="${cl}"` : ""}><td>${t}</td>${cols.map(x => `<td>${fn(x)}</td>`).join("")}</tr>`;
-  const cor = x => { const m = x.res(L0) / x.V; return m >= CONTA.m / 100 ? "var(--ok)" : m >= 0 ? "var(--warn, #E2AC48)" : "var(--bad)"; };
-  return `<div id="lanceTab"><label class="cl"><span class="lin1">Lance <b class="num">${usd(L0)}</b> · ${pc(L0 / l.am)} do ARV</span>
-      <input type="range" min="0" max="${Math.round(mx / passo) * passo}" step="${passo}" value="${Math.round(L0 / passo) * passo}" data-lance aria-label="Lance simulado, em dólares"></label>
-    <div class="nota" style="margin:2px 0 6px">Marcas: abertura ${k(l.ab)} · ${Math.round(JVC.lim * 100)}% do ARV ${k(JVC.lim * l.am)}${cols.map(x => ` · máximo ${MOD_T[x.mod].toLowerCase()} ${x.bmax > 0 ? k(x.bmax) : "não fecha"}`).join("")}</div>
-    <div class="tabx"><table class="tab2 tab3 jv">
-    <thead><tr><th></th>${cols.map(x => `<th>${MOD_T[x.mod]}</th>`).join("")}</tr></thead>
-    ${lin("Margem do projeto", x => `<b style="color:${cor(x)}">${pc(x.res(L0) / x.V)}</b>`, "sub")}
-    ${lin("Para cada parte", x => pc(x.res(L0) / x.V / 2))}
-    ${lin("Resultado do projeto", x => { const r = x.res(L0); return r >= 0 ? k(r) : "prejuízo " + k(-r); })}
-    ${lin("Capital do investidor", x => k(x.cap(L0)))}
-    ${lin("Retorno do investidor", x => pc(retornoDe(x, L0).ret))}
-    </table></div>
-    <div class="nota">Verde: margem de ${CONTA.m}% ou mais · amarelo: positiva, abaixo de ${CONTA.m}% · vermelho: prejuízo. <button type="button" class="lnk" data-lance0>Voltar à abertura</button></div></div>`;
-}
-document.addEventListener("input", e => { const t = e.target.closest && e.target.closest("[data-lance]"); if(!t) return;
-  const l = ABERTO && L.find(x => x.i === ABERTO), el = $("#lanceTab"); if(!l || !el) return;
-  LANCE_SIM = {i: l.i, v: +t.value}; el.outerHTML = lanceTab(l); const n = document.querySelector("[data-lance]"); if(n) n.focus(); });
-document.addEventListener("click", e => { if(!e.target.closest("[data-lance0]")) return;
-  const l = ABERTO && L.find(x => x.i === ABERTO), el = $("#lanceTab"); LANCE_SIM = null; if(l && el) el.outerHTML = lanceTab(l); });
+function faixaLance(l){ const c = contaDe(l), hi = Math.max(l.ab, c.fs.bmax, c.ff ? c.ff.bmax : 0); return [l.ab, hi]; }
+function lanceDe(l){ const [lo, hi] = faixaLance(l); return LANCE_SIM && LANCE_SIM.i === l.i ? Math.min(hi, Math.max(lo, LANCE_SIM.v)) : lo; }
 function tirTab(l){
-  const c = contaDe(l), cols = c.ff ? [c.fs, c.ff] : [c.fs], pc = x => x == null ? "—" : Math.round(x * 100).toLocaleString("pt-BR") + "%";
-  const L1 = x => Math.max(l.ab, x.bmax);
+  const c = contaDe(l), cols = c.ff ? [c.fs, c.ff] : [c.fs], L0 = lanceDe(l), pc = x => x == null ? "—" : Math.round(x * 100).toLocaleString("pt-BR") + "%";
   const lin = (t, fn, cl) => `<tr${cl ? ` class="${cl}"` : ""}><td>${t}</td>${cols.map(x => `<td>${fn(x)}</td>`).join("")}</tr>`;
   return `<div id="tirTab"><div class="regua">${cols.map(x => `<label class="cl"><span class="lin1">${MOD_T[x.mod]}: <b class="num">${PRAZO[x.mod]} ${PRAZO[x.mod] === 1 ? "mês" : "meses"}</b> do lance à venda</span>
       <input type="range" min="1" max="24" step="1" value="${PRAZO[x.mod]}" data-prazo="${x.mod}" aria-label="Prazo do ${MOD_T[x.mod]}, em meses"></label>`).join("")}</div>
-    <div class="tabx"><table class="tab2 tab3 jv">
-    <thead><tr><th></th>${cols.map(x => `<th>${MOD_T[x.mod]}</th>`).join("")}</tr></thead>
-    ${lin("Retorno no lance de abertura", x => pc(retornoDe(x, l.ab).ret))}
-    ${lin("TIR no lance de abertura", x => pc(retornoDe(x, l.ab, PRAZO[x.mod]).tir) + " a.a.", "sub")}
-    ${lin("Retorno no lance máximo", x => x.bmax <= 0 ? "—" : pc(retornoDe(x, L1(x)).ret))}
-    ${lin("TIR no lance máximo", x => x.bmax <= 0 ? "—" : pc(retornoDe(x, L1(x), PRAZO[x.mod]).tir) + " a.a.", "sub")}
-    </table></div>
-    <div class="nota">TIR = o retorno do investidor levado a um ano pelo prazo da régua, com o capital aplicado no lance e devolvido na venda. Muda só a sua tela.</div></div>`;
+    <div id="tirTabela">${tirTabela(l)}</div>
+    <div class="nota">No lance escolhido na Conta da JV. TIR = o retorno do investidor levado a um ano pelo prazo da régua, com o capital aplicado no lance e devolvido na venda. Muda só a sua tela.</div></div>`;
+}
+function tirTabela(l){
+  const c = contaDe(l), cols = c.ff ? [c.fs, c.ff] : [c.fs], L0 = lanceDe(l), pc = x => x == null ? "—" : Math.round(x * 100).toLocaleString("pt-BR") + "%";
+  const lin = (t, fn, cl) => `<tr${cl ? ` class="${cl}"` : ""}><td>${t}</td>${cols.map(x => `<td>${fn(x)}</td>`).join("")}</tr>`;
+  return `<div class="tabx"><table class="tab2 tab3 jv">
+    <thead><tr><th>Lance ${k(L0)}</th>${cols.map(x => `<th>${MOD_T[x.mod]}</th>`).join("")}</tr></thead>
+    ${lin("Retorno do investidor", x => pc(retornoDe(x, L0).ret))}
+    ${lin("TIR do investidor", x => pc(retornoDe(x, L0, PRAZO[x.mod]).tir) + " a.a.", "sub")}
+    </table></div>`;
 }
 document.addEventListener("input", e => { const t = e.target.closest && e.target.closest("[data-prazo]"); if(!t) return;
   PRAZO[t.dataset.prazo] = +t.value; try{ localStorage.setItem("vitrine_prazo", JSON.stringify(PRAZO)); }catch(er){}
-  const l = ABERTO && L.find(x => x.i === ABERTO), el = $("#tirTab"); if(!l || !el) return;
-  const foco = t.dataset.prazo; el.outerHTML = tirTab(l); const n = document.querySelector(`[data-prazo="${foco}"]`); if(n) n.focus(); });
+  const l = ABERTO && L.find(x => x.i === ABERTO); if(!l) return;
+  t.closest("label").querySelector("b").textContent = `${t.value} ${+t.value === 1 ? "mês" : "meses"}`;
+  const el = $("#tirTabela"); if(el) el.innerHTML = tirTabela(l); });
+// a régua fica fora do pedaço redesenhado: arrastar não perde o controle
+function lanceMudou(l, v){
+  LANCE_SIM = {i: l.i, v}; const L0 = lanceDe(l), r = $("#rLance"), n = $("#nLance");
+  if(r && +r.value !== L0) r.value = L0; if(n && document.activeElement !== n) n.value = Math.round(L0);
+  const b = $("#lanceRot"); if(b) b.textContent = `${usd(L0)} · ${Math.round(L0 / l.am * 100)}% do ARV`;
+  const t = $("#contaTabela"); if(t) t.innerHTML = contaTabela(l);
+  const ti = $("#tirTabela"); if(ti) ti.innerHTML = tirTabela(l);
+}
+document.addEventListener("input", e => { const t = e.target; if(t.id !== "rLance" && t.id !== "nLance") return;
+  const l = ABERTO && L.find(x => x.i === ABERTO); if(l && t.value !== "") lanceMudou(l, +t.value); });
 function contaTab(l){
   const c = contaDe(l);
   if(l.ct) return `<div id="contaTab"><table class="tab2">
@@ -2511,15 +2504,21 @@ function contaTab(l){
     <tr><td>− custos fixos e título</td><td>−${NB}${k(CFIXOS + c.qt)}</td></tr>
     <tr class="cta2"><td>Teto${EST(l) ? " estimado" : ""} (com 6 meses de juros)</td><td>${c.teto > 0 ? k(c.teto) : "não fecha"}</td></tr></table>
     <div class="nota"><button type="button" class="lnk" data-conta>Mudar margem ou título</button></div></div>`;
-  const s = c.fs, f = c.ff, cols = f ? [s, f] : [s], area = l.a || l.ae, nvTxt = (NIVEL_T[c.nv] || c.nv).toLowerCase();
+  const [lo, hi] = faixaLance(l), L0 = lanceDe(l), fecha = hi > lo;
+  return `<div id="contaTab"><div class="regua"><label class="cl"><span class="lin1">Lance <b class="num" id="lanceRot">${usd(L0)} · ${Math.round(L0 / l.am * 100)}% do ARV</b></span>
+      <input type="range" id="rLance" min="${Math.round(lo)}" max="${Math.round(hi)}" step="1" value="${Math.round(L0)}" ${fecha ? "" : "disabled"} aria-label="Lance, em dólares"></label>
+      <div class="rl"><span>Mínimo ${k(lo)} (abertura)</span><label>US$ <input type="number" id="nLance" min="${Math.round(lo)}" max="${Math.round(hi)}" step="100" inputmode="numeric" value="${Math.round(L0)}" ${fecha ? "" : "disabled"} aria-label="Lance exato, em dólares"></label><span>Máximo ${fecha ? k(hi) : "não fecha"}</span></div></div>
+    <div id="contaTabela">${contaTabela(l)}</div>
+    <div class="nota">Margem = (preço de venda − lance − custos − despesas) ÷ preço de venda; o resultado divide 50% investidor e 50% BLR. Retorno = metade do resultado sobre o capital do investidor. Impostos, seguro e utilidades até a venda e o imposto de transmissão ainda não somados. <button type="button" class="lnk" data-conta>Mudar margem, reforma ou título</button></div></div>`;
+}
+function contaTabela(l){
+  const c = contaDe(l), s = c.fs, f = c.ff, cols = f ? [s, f] : [s], area = l.a || l.ae, nvTxt = (NIVEL_T[c.nv] || c.nv).toLowerCase(), L0 = lanceDe(l);
   const v = x => k(x), menos = x => x ? "−" + NB + k(x) : "—", pc = x => x == null ? "—" : Math.round(x * 100) + "%";
   const lin = (t, fn, cl, sub) => `<tr${cl ? ` class="${cl}"` : ""}><td>${t}${sub ? `<small>${sub}</small>` : ""}</td>${cols.map(x => `<td>${fn(x)}</td>`).join("")}</tr>`;
   const grp = t => `<tr class="grp"><td colspan="${cols.length + 1}">${t}</td></tr>`;
   const lm = x => x.bmax <= 0 ? "não fecha" : k(Math.round(x.bmax / 500) * 500);
-  const L1 = x => Math.max(l.ab, x.bmax);   // retorno no lance máximo (ou na abertura, se o máximo não chega nela)
-  const Lim = x => Math.max(0, Math.min(x.bmax, JVC.lim * l.am));
-  const mgTxt = (x, L0) => { const r = x.res(L0); return `${pc(r / x.V)}<small>${r >= 0 ? k(r) : "prejuízo " + k(-r)}</small>`; };
-  return `<div id="contaTab"><div class="tabx"><table class="tab2 tab3 jv">
+  const cor = x => { const m = x.res(L0) / x.V; return m >= CONTA.m / 100 - 1e-9 ? "var(--ok)" : m >= 0 ? "var(--acc)" : "var(--bad)"; };
+  return `<div class="tabx"><table class="tab2 tab3 jv">
     <thead><tr><th></th>${cols.map(x => `<th${x === c.m ? ' class="esc"' : ""}>${MOD_T[x.mod]}${x === c.m ? "<span>teto</span>" : ""}</th>`).join("")}</tr></thead>
     ${grp("Venda")}
     ${lin("ARV", () => v(l.am), "", EST(l) ? "estimado, " + AQ_T[l.aq] : "")}
@@ -2527,21 +2526,19 @@ function contaTab(l){
     ${lin("Comissão de venda (5%)", x => menos(x.com), "", "paga no fechamento")}
     ${lin("Receita líquida", x => v(x.V - x.com), "sub")}
     ${grp("Custos do projeto")}
-    ${lin("Lance (abertura)", () => v(l.ab))}
+    ${lin("Lance", () => v(L0), "", L0 === l.ab ? "abertura" : "escolhido na régua")}
     ${lin("Obra", x => v(x.obra), "", (f ? `flip: limpeza e pintura US$ ${JVC.limpeza}/pé² · F&amp;F: reforma ${esc(nvTxt)} US$ ${c.pp}/pé²` : `limpeza e pintura US$ ${JVC.limpeza}/pé²`) + ` · ${area.toLocaleString("pt-BR")} pé²${l.a ? "" : " (estimada)"}`)}
     ${lin("Administração do ativo", x => v(x.adm), "", f ? "flip: maior de US$ 1.000 e 1% do ARV · F&amp;F: 25% da obra" : "maior de US$ 1.000 e 1% do ARV")}
     ${lin("Título e custos fixos", x => v(CFIXOS + x.qt), "", c.qt ? "busca, registro, inspeção, seguro e quiet title" : "busca, registro, inspeção e seguro (quiet title fora)")}
     ${lin("Marketing, gestão e fechamento", x => v(x.cv), "", "2,5% + 1% + 1% da venda")}
-    ${lin("Capital do investidor", x => v(x.cap(l.ab)), "sub", "no lance de abertura")}
-    ${grp("Margem do projeto")}
-    ${lin("No lance de abertura", x => mgTxt(x, l.ab), "", "resultado ÷ preço de venda")}
+    ${lin("Capital do investidor", x => v(x.cap(L0)), "sub")}
+    ${grp("Resultado no lance")}
+    ${lin("Resultado do projeto", x => { const r = x.res(L0); return r >= 0 ? v(r) : "prejuízo " + k(-r); })}
+    ${lin("Margem do projeto", x => `<b style="color:${cor(x)}">${pc(x.res(L0) / x.V)}</b>`, "sub", `meta ${CONTA.m}%`)}
+    ${lin("Para cada parte", x => pc(x.res(L0) / x.V / 2))}
+    ${lin("Retorno do investidor", x => pc(retornoDe(x, L0).ret), "", "metade do resultado ÷ capital")}
     ${lin(`Lance máximo (margem ${CONTA.m}%)`, lm, "cta2", `${CONTA.m / 2}% para cada parte`)}
-    ${lin(`Lance limitado a ${Math.round(JVC.lim * 100)}% do ARV`, x => `${k(Lim(x))}<small>margem ${pc(x.res(Lim(x)) / x.V)}</small>`, "", "o menor entre o lance máximo e " + Math.round(JVC.lim * 100) + "% do ARV")}
-    ${grp("Retorno do investidor")}
-    ${lin("No lance de abertura", x => pc(retornoDe(x, l.ab).ret), "", "sobre o capital aplicado")}
-    ${lin("No lance máximo", x => x.bmax <= 0 ? "—" : pc(retornoDe(x, L1(x)).ret))}
-    </table></div>
-    <div class="nota">Retorno = metade do resultado (o resultado divide 50% investidor e 50% BLR) sobre o capital que o investidor aplica. Impostos, seguro e utilidades até a venda e o imposto de transmissão ainda não somados. <button type="button" class="lnk" data-conta>Mudar margem, reforma ou título</button></div></div>`;
+    </table></div>`;
 }
 function contaResumo(){
   if($("#contaBox").hidden || !$("#cmV")) return;
