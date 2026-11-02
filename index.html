@@ -356,7 +356,17 @@ body{transition:padding-right .25s ease}
 .mapa-box .leaflet-control-attribution a{color:var(--tx2)}
 .mapa-box .leaflet-bar a{background:var(--surf2);color:var(--tx);border-color:var(--line2)}
 .mapa-box .leaflet-bar a:hover{background:var(--line2)}
-.zdica{position:absolute;left:50%;top:12px;transform:translateX(-50%);z-index:500;font-size:12px;color:var(--tx2);background:rgba(12,14,18,.85);border:1px solid var(--line);border-radius:999px;padding:5px 12px;pointer-events:none;white-space:nowrap}
+/* 02/11 (Cris): nomes de estados e cidades no mapa + "ir para", para navegar sem conhecer a geografia dos EUA */
+.irpara{position:absolute;left:50%;top:12px;transform:translateX(-50%);z-index:510;width:min(300px,calc(100% - 120px))}
+.irpara input{width:100%;box-sizing:border-box;font:13px var(--f);color:var(--tx);background:rgba(12,14,18,.92);border:1px solid var(--line2);border-radius:999px;padding:7px 14px;outline:none}
+.irpara input:focus{border-color:var(--acc)}
+.rgeo{pointer-events:none;white-space:nowrap;transform:translate(-50%,-50%);font:600 11px/1 var(--f);letter-spacing:.06em;text-transform:uppercase;color:rgba(238,240,243,.62);text-shadow:0 0 3px #0C0E12,0 0 3px #0C0E12,0 0 6px #0C0E12}
+.rgeo.uf{font-size:10px}
+.rgeo.ci{transform:translate(-4px,-50%);text-transform:none;letter-spacing:0;font-weight:500;color:rgba(238,240,243,.88);font-size:11.5px;display:flex;align-items:center;gap:5px}
+.rgeo.ci i{width:5px;height:5px;border-radius:50%;background:#EEF0F3;box-shadow:0 0 0 1.5px #0C0E12;flex:none}
+.rgeo.ci.t1{font-weight:700;font-size:12.5px}
+.rgeo.co{font-size:10.5px;font-weight:500;letter-spacing:.03em;text-transform:none;font-style:italic;color:rgba(200,210,225,.55)}
+.zdica{position:absolute;left:50%;top:52px;transform:translateX(-50%);z-index:500;font-size:12px;color:var(--tx2);background:rgba(12,14,18,.85);border:1px solid var(--line);border-radius:999px;padding:5px 12px;pointer-events:none;white-space:nowrap}
 .camadas button[disabled]{opacity:.45;cursor:default}
 .camadas .cad{font-size:10.5px;color:var(--acc);margin-left:4px}
 .hbt{all:unset;cursor:pointer;font-size:13px;font-weight:600;padding:8px 12px;border-radius:9px;white-space:nowrap}
@@ -429,7 +439,7 @@ body{transition:padding-right .25s ease}
   .top .acoes-top{gap:5px;margin-left:auto}
   .facoes{grid-template-columns:1fr}
   .fcad .chks{grid-template-columns:1fr}
-  .zdica{font-size:11px;top:8px}
+  .zdica{font-size:11px;top:46px}
 }
 @media (max-width:480px){   /* site: Entrar/Sair e a Conta não cabiam em 400 px (cabeçalho tem altura fixa) */
   .hbt{padding:7px 5px}
@@ -520,6 +530,8 @@ body.vmapa{overflow:hidden}
   #v-mapa .trilha{left:8px;top:8px;max-width:calc(100% - 16px);font-size:12px;padding:4px 10px}
   #v-mapa .mapa-box .leg{right:8px;bottom:auto;top:48px;max-width:62%}
   .zdica{display:none}
+  .irpara{left:8px;top:48px;transform:none;width:calc(100% - 200px);min-width:150px}
+  .irpara input{font-size:16px;padding:6px 12px}
   .camadas{top:92px!important;bottom:auto;right:8px}
   .camadas:not(.aberta)>button,.camadas:not(.aberta)>small{display:none}
   .camadas>b{cursor:pointer}.camadas>b::after{content:" ▾"}.camadas.aberta>b::after{content:" ▴"}
@@ -721,6 +733,7 @@ body{transition:padding-right .5s var(--mola)}
     <div class="mapa-wrap">
       <div class="mapa-box" id="mapaBox">
         <div id="mapa"></div>
+        <div class="irpara"><input id="irPara" list="irLista" type="search" placeholder="Estado ou cidade…" aria-label="Ir para estado ou cidade" autocomplete="off"><datalist id="irLista"></datalist></div>
         <div class="zdica" id="zdica">Aproxime para entrar · afaste para sair</div>
         <div class="leg" id="leg"></div>
       </div>
@@ -2209,6 +2222,107 @@ function criaMapa(){
     if(!e && nivel.f) return {uf: nivel.uf, f: nivel.f};   // no mar, perto da costa: fica no condado
     return {uf, f: null};
   }
+  /* 02/11 (Cris: "navegar sem ser conhecedor da geografia americana"): nome dos estados (por extenso quando cabe, senão a sigla)
+     e das grandes cidades; quanto mais perto, mais cidades (nível 1 no país, 2 a partir do zoom 5, 3 a partir de 6,5). Rótulo que
+     encostaria noutro não aparece (estado primeiro, depois cidade pela ordem de tamanho). Só desenho: não clica, não tampa bola. */
+  const CIDADES = [
+    // nível 1: as que aparecem no país inteiro
+    ["Nova York","NY",40.71,-74.01,1],["Los Angeles","CA",34.05,-118.24,1],["Chicago","IL",41.88,-87.63,1],["Houston","TX",29.76,-95.37,1],
+    ["Dallas","TX",32.78,-96.80,1],["Miami","FL",25.76,-80.19,1],["Atlanta","GA",33.75,-84.39,1],["Washington","DC",38.91,-77.04,1],
+    ["Filadélfia","PA",39.95,-75.17,1],["Boston","MA",42.36,-71.06,1],["Phoenix","AZ",33.45,-112.07,1],["São Francisco","CA",37.77,-122.42,1],
+    ["Seattle","WA",47.61,-122.33,1],["Denver","CO",39.74,-104.99,1],["Detroit","MI",42.33,-83.05,1],["Minneapolis","MN",44.98,-93.27,1],
+    ["Orlando","FL",28.54,-81.38,1],["Tampa","FL",27.95,-82.46,1],["St. Louis","MO",38.63,-90.20,1],["Nova Orleans","LA",29.95,-90.07,1],
+    ["Pittsburgh","PA",40.44,-80.00,1],["Las Vegas","NV",36.17,-115.14,1],
+    // nível 2
+    ["San Antonio","TX",29.42,-98.49,2],["San Diego","CA",32.72,-117.16,2],["Austin","TX",30.27,-97.74,2],["Jacksonville","FL",30.33,-81.66,2],
+    ["Charlotte","NC",35.23,-80.84,2],["Indianápolis","IN",39.77,-86.16,2],["Columbus","OH",39.96,-83.00,2],["Nashville","TN",36.16,-86.78,2],
+    ["Memphis","TN",35.15,-90.05,2],["Louisville","KY",38.25,-85.76,2],["Baltimore","MD",39.29,-76.61,2],["Milwaukee","WI",43.04,-87.91,2],
+    ["Kansas City","MO",39.10,-94.58,2],["Oklahoma City","OK",35.47,-97.52,2],["Portland","OR",45.52,-122.68,2],["Salt Lake City","UT",40.76,-111.89,2],
+    ["Albuquerque","NM",35.08,-106.65,2],["Cleveland","OH",41.50,-81.69,2],["Cincinnati","OH",39.10,-84.51,2],["Birmingham","AL",33.52,-86.80,2],
+    ["Little Rock","AR",34.75,-92.29,2],["Jackson","MS",32.30,-90.18,2],["Baton Rouge","LA",30.45,-91.19,2],["Raleigh","NC",35.78,-78.64,2],
+    ["Richmond","VA",37.54,-77.44,2],["Buffalo","NY",42.89,-78.88,2],["Omaha","NE",41.26,-95.93,2],["Des Moines","IA",41.59,-93.62,2],
+    ["Tucson","AZ",32.22,-110.97,2],["El Paso","TX",31.76,-106.49,2],["Sacramento","CA",38.58,-121.49,2],["Boise","ID",43.62,-116.20,2],
+    ["Albany","NY",42.65,-73.75,2],["Harrisburg","PA",40.27,-76.88,2],["Columbia","SC",34.00,-81.03,2],["Charleston","SC",32.78,-79.93,2],
+    ["Savannah","GA",32.08,-81.09,2],["West Palm Beach","FL",26.72,-80.05,2],["Fort Myers","FL",26.64,-81.87,2],["Tallahassee","FL",30.44,-84.28,2],
+    ["Mobile","AL",30.69,-88.04,2],["Knoxville","TN",35.96,-83.92,2],["Shreveport","LA",32.53,-93.75,2],["Wichita","KS",37.69,-97.34,2],
+    ["Tulsa","OK",36.15,-95.99,2],["Spokane","WA",47.66,-117.43,2],["Billings","MT",45.78,-108.50,2],["Fargo","ND",46.88,-96.79,2],
+    ["Sioux Falls","SD",43.55,-96.73,2],["Grand Rapids","MI",42.96,-85.67,2],["Madison","WI",43.07,-89.40,2],["Green Bay","WI",44.51,-88.01,2],
+    ["Toledo","OH",41.65,-83.54,2],["Erie","PA",42.13,-80.09,2],["Scranton","PA",41.41,-75.66,2],["Syracuse","NY",43.05,-76.15,2],
+    ["Rochester","NY",43.16,-77.61,2],["Hartford","CT",41.76,-72.68,2],["Providence","RI",41.82,-71.41,2],["Newark","NJ",40.74,-74.17,2],
+    ["Corpus Christi","TX",27.80,-97.40,2],["Fort Worth","TX",32.76,-97.33,2],["Lubbock","TX",33.58,-101.86,2],["Amarillo","TX",35.22,-101.83,2],
+    // nível 3
+    ["Allentown","PA",40.60,-75.47,3],["Reading","PA",40.34,-75.93,3],["Altoona","PA",40.52,-78.39,3],["State College","PA",40.79,-77.86,3],
+    ["Johnstown","PA",40.33,-78.92,3],["Williamsport","PA",41.24,-77.00,3],["Lancaster","PA",40.04,-76.31,3],["Uniontown","PA",39.90,-79.72,3],
+    ["Gainesville","FL",29.65,-82.32,3],["Ocala","FL",29.19,-82.14,3],["Lakeland","FL",28.04,-81.95,3],["Sarasota","FL",27.34,-82.53,3],
+    ["Daytona Beach","FL",29.21,-81.02,3],["Pensacola","FL",30.42,-87.22,3],["Naples","FL",26.14,-81.79,3],["Port St. Lucie","FL",27.27,-80.35,3],
+    ["Melbourne","FL",28.08,-80.61,3],["Fort Lauderdale","FL",26.12,-80.14,3],["Cape Coral","FL",26.56,-81.95,3],["Panama City","FL",30.16,-85.66,3],
+    ["Lafayette","LA",30.22,-92.02,3],["Lake Charles","LA",30.23,-93.22,3],["Monroe","LA",32.51,-92.12,3],["Huntsville","AL",34.73,-86.59,3],
+    ["Montgomery","AL",32.38,-86.30,3],["Tuscaloosa","AL",33.21,-87.57,3],["Gulfport","MS",30.37,-89.09,3],["Hattiesburg","MS",31.33,-89.29,3],
+    ["Tupelo","MS",34.26,-88.70,3],["Fayetteville","AR",36.06,-94.16,3],["Fort Smith","AR",35.39,-94.40,3],["Jonesboro","AR",35.84,-90.70,3],
+    ["Springfield","MO",37.21,-93.29,3],["Columbia","MO",38.95,-92.33,3],["Chattanooga","TN",35.05,-85.31,3],["Lexington","KY",38.04,-84.50,3],
+    ["Dayton","OH",39.76,-84.19,3],["Akron","OH",41.08,-81.52,3],["Youngstown","OH",41.10,-80.65,3],["Flint","MI",43.01,-83.69,3],
+    ["Lansing","MI",42.73,-84.56,3],["Saginaw","MI",43.42,-83.95,3],["Kalamazoo","MI",42.29,-85.59,3],["Duluth","MN",46.79,-92.10,3],
+    ["Waco","TX",31.55,-97.15,3],["Beaumont","TX",30.08,-94.10,3],["Laredo","TX",27.51,-99.51,3],["McAllen","TX",26.20,-98.23,3],
+    ["Trenton","NJ",40.22,-74.76,3],["Atlantic City","NJ",39.36,-74.42,3],["Wilmington","DE",39.74,-75.55,3],["Binghamton","NY",42.10,-75.91,3],
+    ["Utica","NY",43.10,-75.23,3],["Charleston","WV",38.35,-81.63,3],["Wilmington","NC",34.23,-77.94,3],["Greensboro","NC",36.07,-79.79,3],
+    ["Augusta","GA",33.47,-81.97,3],["Macon","GA",32.84,-83.63,3],["Norfolk","VA",36.85,-76.29,3],["Roanoke","VA",37.27,-79.94,3]];
+  // onde o centro geométrico cai mal (água, península ou estado em L), posição escolhida à mão
+  const POS_UF = {MI: [43.6, -84.6], FL: [28.4, -81.7], LA: [31.0, -92.3], MD: [39.4, -77.2], ID: [44.2, -114.6], CA: [37.0, -119.6], NY: [42.9, -75.3], VA: [37.6, -78.6], MA: [42.3, -72.0], KY: [37.6, -85.0], OK: [35.6, -97.4], TX: [31.3, -99.2]};
+  M.createPane("rot").style.zIndex = 625; M.getPane("rot").style.pointerEvents = "none";
+  const ROT = [];
+  for(const d of est){ const uf = ufDe(d); if(!uf || uf === "AK" || uf === "HI") continue;
+    const c = POS_UF[uf] || (([ln, la]) => [la, ln])(d3.geoCentroid(d)), b = boundsDe(d), nome = UFN[uf] || d.properties.name;
+    const el = Lf.marker(c, {pane: "rot", interactive: false, keyboard: false, icon: Lf.divIcon({className: "", html: `<div class="rgeo"></div>`, iconSize: [0, 0]})}).addTo(M);
+    ROT.push({tipo: "uf", uf, nome, b, m: el}); }
+  for(const [nome, uf, la, ln, t] of CIDADES){
+    const el = Lf.marker([la, ln], {pane: "rot", interactive: false, keyboard: false, icon: Lf.divIcon({className: "", html: `<div class="rgeo ci t${t}"><i></i><span>${esc(nome)}</span></div>`, iconSize: [0, 0]})}).addTo(M);
+    ROT.push({tipo: "ci", nome, uf, t, la, ln, m: el}); }
+  // condados com lote ou leilão: nome a partir do zoom 7 (ajuda a achar o condado que a lista do estado cita)
+  for(const c of ctys){ if(!(porCo0.has(c.id) || FCOM.has(c.id))) continue;
+    const [ln, la] = d3.geoCentroid(c), el = Lf.marker([la, ln], {pane: "rot", interactive: false, keyboard: false, icon: Lf.divIcon({className: "", html: `<div class="rgeo co">${esc(c.properties.name)}</div>`, iconSize: [0, 0]})}).addTo(M);
+    ROT.push({tipo: "co", nome: c.properties.name, t: 4, la, ln, m: el}); }
+  const ZCI = {1: 0, 2: 5.4, 3: 6.8};
+  ROT.sort((a, b) => (a.tipo === "uf" ? 1.5 : a.t) - (b.tipo === "uf" ? 1.5 : b.t));   // grande cidade > estado > cidade menor
+  const ROT_LONGE = [...ROT].sort((a, b) => (a.tipo === "uf" ? 0 : a.t) - (b.tipo === "uf" ? 0 : b.t));   // país inteiro no celular: estado primeiro
+  function rotulosGeo(){
+    const zz = z(), tela = M.getBounds().pad(.1), ocup = [];
+    const bate = r => ocup.some(o => r[0] < o[2] && r[2] > o[0] && r[1] < o[3] && r[3] > o[1]);
+    for(const r of zz < 4.5 ? ROT_LONGE : ROT){
+      const div = r.m.getElement() && r.m.getElement().firstChild; if(!div) continue;
+      let mostra = false;
+      if(r.tipo === "uf"){
+        if(zz < Z_CO && tela.intersects(r.b)){
+          const p1 = M.latLngToContainerPoint(r.b.getNorthWest()), p2 = M.latLngToContainerPoint(r.b.getSouthEast()), larg = (p2.x - p1.x) * .8;
+          const txt = larg > r.nome.length * 7.4 + 6 ? r.nome : larg > 20 ? r.uf : null;
+          if(txt){ const p = M.latLngToContainerPoint(r.m.getLatLng()), w = txt.length * (txt === r.uf ? 7.5 : 7.4), q = [p.x - w / 2, p.y - 8, p.x + w / 2, p.y + 8];
+            if(!bate(q)){ ocup.push(q); mostra = true; if(div.textContent !== txt){ div.textContent = txt; div.classList.toggle("uf", txt === r.uf); } } }
+        }
+      } else if(r.tipo === "co"){
+        if(zz >= 7 && tela.contains([r.la, r.ln])){ const p = M.latLngToContainerPoint([r.la, r.ln]), w = r.nome.length * 6.2 + 4, q = [p.x - w / 2, p.y - 7, p.x + w / 2, p.y + 7];
+          if(!bate(q)){ ocup.push(q); mostra = true; } }
+      } else if(zz >= ZCI[r.t] && tela.contains([r.la, r.ln])){
+        const p = M.latLngToContainerPoint([r.la, r.ln]), q = [p.x - 6, p.y - 8, p.x + 12 + r.nome.length * 6.6, p.y + 8];
+        if(!bate(q)){ ocup.push(q); mostra = true; }
+      }
+      div.style.display = mostra ? "" : "none";
+    }
+  }
+  // "ir para": estado (nome em português ou sigla) ou cidade da lista
+  $("#irLista").innerHTML = [...ROT.filter(r => r.tipo === "uf").map(r => r.nome).sort((a, b) => a.localeCompare(b, "pt")),
+    ...ROT.filter(r => r.tipo === "ci").map(r => `${r.nome} (${r.uf})`).sort((a, b) => a.localeCompare(b, "pt"))].map(x => `<option value="${esc(x)}">`).join("");
+  const semAc = s => s.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().trim();
+  function irPara(){
+    const v = semAc($("#irPara").value); if(!v) return false;
+    const e = ROT.find(r => r.tipo === "uf" && (semAc(r.nome) === v || r.uf.toLowerCase() === v))
+      || est.map(d => ({uf: ufDe(d), n: semAc(d.properties.name)})).find(x => x.n === v);
+    if(e){ abreUF(e.uf); return true; }
+    const c = ROT.find(r => r.tipo === "ci" && semAc(`${r.nome} (${r.uf})`) === v) || ROT.find(r => r.tipo === "ci" && semAc(r.nome) === v);
+    if(c){ M.flyTo([c.la, c.ln], Math.max(z(), 9), {duration: VOO}); return true; }
+    return false;
+  }
+  $("#irPara").addEventListener("change", () => { if(irPara()){ $("#irPara").value = ""; $("#irPara").blur(); } });
+  $("#irPara").addEventListener("keydown", e => { if(e.key === "Enter" && !irPara()){ $("#irPara").setCustomValidity("Não achei: escolha um estado ou cidade da lista"); $("#irPara").reportValidity(); } });
+  $("#irPara").addEventListener("input", () => $("#irPara").setCustomValidity(""));
   let zAnt = null;
   function aoMover(){
     const zz = z();
@@ -2229,7 +2343,7 @@ function criaMapa(){
     }
     $("#zdica").hidden = zz >= Z_CO;
     $("#zdica").textContent = zz < Z_EST ? "Aproxime (ou clique) para entrar num estado" : "Aproxime para entrar no condado · afaste para sair";
-    ruas(); rotulosARV(); if(zz < Z_CO) legenda();
+    ruas(); rotulosARV(); rotulosGeo(); if(zz < Z_CO) legenda();
   }
   M.on("moveend", aoMover);
   let chaveP = null;
