@@ -709,7 +709,7 @@ body{transition:padding-right .5s var(--mola)}
       <button type="button" class="btFiltros" id="btFiltros" aria-expanded="false">Mais filtros ▾</button>
       <label class="f-sempre f-lista">Estado<select id="fUf"><option value="">Todos</option></select></label>
       <label>Tipo<select id="fTipo"><option value="">Todos</option></select></label>
-      <label class="f-lista">Situação<select id="fSit"><option value="prox">Leilão pela frente</option><option value="hist">Já leiloados (histórico)</option><option value="todos">Todos</option></select></label>
+      <label class="f-lista">Situação<select id="fSit"><option value="prox">Leilão pela frente</option><option value="hist">Já leiloados (histórico)</option><option value="vend">Só os vendidos</option><option value="todos">Todos</option></select></label>
       <label>Leilão de<input type="date" id="fDe"></label>
       <label>Leilão até<input type="date" id="fAte"></label>
       <label><span id="fMinRot">Lance de (US$)</span><input type="number" id="fMin" min="0" step="1000" placeholder="sem mínimo"></label>
@@ -1130,9 +1130,9 @@ function opcoes(){
 function filtrados(paraMapa, semSel){
   const q = $("#fBusca").value.trim().toLowerCase(), uf = $("#fUf").value, tp = $("#fTipo").value, mx = +$("#fMax").value || 0, tip = $("#fTip").checked, on = $("#fOn").checked,
         mn = +$("#fMin").value || 0, fz = +$("#fFz").value || 0, dsc = +$("#fDesc").value || 0, cta = ASSIN && $("#fFecha").checked;
-  const sit = paraMapa ? (HISTON ? "todos" : "prox") : $("#fSit").value, sg = paraMapa ? FSEG : $("#fSeg").checked;
+  const sit = paraMapa ? (HISTON === "vend" ? "vend" : HISTON ? "todos" : "prox") : $("#fSit").value, sg = paraMapa ? FSEG : $("#fSeg").checked;
   const cr = paraMapa ? CRITM : CRIT;
-  let r = L.filter(l => (!cr || noCrit(l)) && (sit === "todos" || (sit === "hist") === HIST(l)) && (!sg || segue(l.i)) &&
+  let r = L.filter(l => (!cr || noCrit(l)) && (sit === "todos" || (sit === "vend" ? HIST(l) && l.rs && l.rs.s === "vendido" : (sit === "hist") === HIST(l))) && (!sg || segue(l.i)) &&
     (!q || [l.ci, l.co, l.zip].some(x => (x||"").toLowerCase().includes(q))) && (!uf || l.uf === uf) &&
     (!tp || l.u === tp) && naData(l.d) && (!paraMapa || semSel || !LSEL || (l.f === LSEL.f && l.d === LSEL.d)) &&
     (!mx || (l.ab || 0) * tx() <= mx) && (!tip || (l.et === "final" && l.ft === "tipico")) && (!on || (l.on && l.on !== "nao_consultado")) &&
@@ -2293,7 +2293,7 @@ function criaMapa(){
       if(r.tipo === "uf"){
         if(zz < Z_CO && tela.intersects(r.b)){
           const p1 = M.latLngToContainerPoint(r.b.getNorthWest()), p2 = M.latLngToContainerPoint(r.b.getSouthEast()), larg = (p2.x - p1.x) * .8;
-          const txt = larg > r.nome.length * 7.4 + 6 ? r.nome : larg > 20 ? r.uf : null;
+          const txt = larg > 16 ? r.uf : null;   // 02/11 (Cris): só a sigla
           if(txt){ const p = M.latLngToContainerPoint(r.m.getLatLng()), w = txt.length * (txt === r.uf ? 7.5 : 7.4), q = [p.x - w / 2, p.y - 8, p.x + w / 2, p.y + 8];
             if(!bate(q)){ ocup.push(q); mostra = true; if(div.textContent !== txt){ div.textContent = txt; div.classList.toggle("uf", txt === r.uf); } } }
         }
@@ -2495,7 +2495,7 @@ $("#fFecha").addEventListener("input", e => { if(!ASSIN){ e.target.checked = fal
 $("#tgReset").onclick = () => { F_VAL.forEach(s => $(s).value = ""); F_CHK.forEach(s => $(s).checked = false); $("#fUf").value = "";
   LSEL = null; CRITM = false; FSEG = false; HISTON = true;
   $("#segCritM").querySelectorAll("button").forEach(x => x.setAttribute("aria-pressed", x.dataset.crit === "0"));
-  $("#tgSeg").setAttribute("aria-pressed", false); $("#tgHist").setAttribute("aria-pressed", true);
+  $("#tgSeg").setAttribute("aria-pressed", false); tgHistPinta();
   mostrar = PAG; render(); if(MAPA) MAPA.us(); };
 $("#fLimpa").onclick = () => { F_VAL.forEach(s => $(s).value = ""); F_CHK.forEach(s => $(s).checked = false); mostrar = PAG; render(); };
 // 30/10 (Rodrigo): um conjunto só de filtros; no mapa ele mora no painel (botão Filtros), em Negócios no topo da lista
@@ -2516,7 +2516,11 @@ document.querySelectorAll(".segCrit button").forEach(b => b.onclick = () => { co
 $("#btSeg").onclick = abreSeg;   // faltava: o ★ do topo não abria a lista (Cris 24/10)
 $("#btFiltros").onclick = () => { const a = $(".filtros").classList.toggle("aberta"); $("#btFiltros").setAttribute("aria-expanded", a); $("#btFiltros").textContent = a ? "Menos filtros ▴" : "Mais filtros ▾"; };
 $("#tgSeg").onclick = () => { FSEG = !FSEG; $("#tgSeg").setAttribute("aria-pressed", FSEG); render(); };
-$("#tgHist").onclick = () => { HISTON = !HISTON; $("#tgHist").setAttribute("aria-pressed", HISTON); render(); };
+/* 02/11 (Cris): o botão alterna Histórico junto → Só vendidos → sem histórico */
+const tgHistPinta = () => { const b = $("#tgHist"); b.textContent = HISTON === "vend" ? "Só vendidos" : "Histórico"; b.setAttribute("aria-pressed", !!HISTON);
+  b.title = HISTON === "vend" ? "Mostrando só os lotes já vendidos em leilão (toque para esconder o histórico)" : HISTON ? "Histórico junto (toque para ver só os vendidos)" : "Histórico escondido (toque para mostrar)"; };
+$("#tgHist").onclick = () => { HISTON = HISTON === true ? "vend" : HISTON === "vend" ? false : true; tgHistPinta(); render(); };
+tgHistPinta();
 function minPainel(m){ $("#painel").classList.toggle("min", m); $("#v-mapa").classList.toggle("pmin", m); $("#pMin").textContent = m ? "▴" : "▾";
   $("#pMin").setAttribute("aria-expanded", !m); $("#pMin").setAttribute("aria-label", m ? "Abrir a lista" : "Recolher a lista"); }
 $("#pMin").onclick = () => minPainel(!$("#painel").classList.contains("min"));
