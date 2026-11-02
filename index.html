@@ -270,6 +270,27 @@ body.aguarda #whoTxt,body.aguarda #btAssina{visibility:hidden}   /* 2.2: até o 
 .ftit .loc{color:var(--tx2);font-size:14px}
 body{transition:padding-right .25s ease}
 @media (min-width:1000px){body.fon{padding-right:520px}body.fon .vel{display:none}}
+/* 02/11 (Cris): o topo da ficha fica fixo com o endereço (membro) ou cidade/condado, para saber de que lote é o que se lê lá embaixo */
+.fhT{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}
+.fhT #fBadge{line-height:1}
+#fhTit{font:600 15px/1.25 var(--f-d);color:var(--tx);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#fhSub{font-size:12px;color:var(--tx2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fpdf{all:unset;cursor:pointer;flex:none;height:34px;padding:0 11px;border-radius:9px;border:1px solid var(--line2);color:var(--tx2);font:600 12px var(--f-b);display:grid;place-items:center}
+.fpdf:hover,.fpdf:focus-visible{color:var(--acc);border-color:var(--acc)}
+@media print{
+  body.pfic>*:not(#ficha){display:none!important}
+  body.pfic{padding:0!important;background:#fff!important}
+  body.pfic #ficha{position:static!important;transform:none!important;width:100%!important;box-shadow:none!important;border:0!important;border-radius:0!important;display:block!important;
+    --tx:#111;--tx2:#333;--mute:#555;--nota:#444;--bg2:#fff;--bg:#fff;--surf:#f5f5f5;--surf2:#eee;--line:#ccc;--line2:#bbb;background:#fff!important;color:#111}
+  body.pfic #ficha .fb{overflow:visible!important;height:auto!important;max-height:none!important}
+  body.pfic #fX,body.pfic #fPdf,body.pfic .pega,body.pfic .facoes,body.pfic .iaL,body.pfic .fhero.sv,body.pfic [data-calc],body.pfic [data-info]{display:none!important}
+  body.pfic #fBody .sec.fech>:not(h4){display:revert!important}
+  body.pfic #fBody .sec>h4::after{display:none}
+  body.pfic .sec,body.pfic table,body.pfic figure{break-inside:avoid}
+  body.pfic a{color:#111}
+  body.pfic #fBody::after{content:"Vitrine BLR · www.blrdevelopment.com · teto e ARV são estimativas da BLR; confira antes de dar lance. Não é oferta nem recomendação de investimento.";display:block;margin-top:18px;padding-top:8px;border-top:1px solid #ccc;font-size:10.5px;color:#555}
+  @page{margin:12mm}
+}
 .fh .x{all:unset;cursor:pointer;margin-left:auto;width:34px;height:34px;border-radius:9px;display:grid;place-items:center;color:var(--tx2);border:1px solid var(--line2);flex:none}
 .fb{overflow:auto;padding:18px 20px 30px;display:flex;flex-direction:column;gap:18px}
 .sec h4{margin:0 0 8px;font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:var(--mute);font-weight:600}
@@ -358,9 +379,9 @@ body{transition:padding-right .25s ease}
 .mapa-box .leaflet-bar a:hover{background:var(--line2)}
 /* 02/11 (Cris): nomes de estados e cidades no mapa + "ir para", para navegar sem conhecer a geografia dos EUA */
 .irpara{position:absolute;left:50%;top:12px;transform:translateX(-50%);z-index:510;width:min(300px,calc(100% - 120px))}
-.irpara input{width:100%;box-sizing:border-box;font:13px var(--f);color:var(--tx);background:rgba(12,14,18,.92);border:1px solid var(--line2);border-radius:999px;padding:7px 14px;outline:none}
+.irpara input{width:100%;box-sizing:border-box;font:13px var(--f-b);color:var(--tx);background:rgba(12,14,18,.92);border:1px solid var(--line2);border-radius:999px;padding:7px 14px;outline:none}
 .irpara input:focus{border-color:var(--acc)}
-.rgeo{pointer-events:none;white-space:nowrap;transform:translate(-50%,-50%);font:600 11px/1 var(--f);letter-spacing:.06em;text-transform:uppercase;color:rgba(238,240,243,.62);text-shadow:0 0 3px #0C0E12,0 0 3px #0C0E12,0 0 6px #0C0E12}
+.rgeo{pointer-events:none;white-space:nowrap;transform:translate(-50%,-50%);font:600 11px/1 var(--f-b);letter-spacing:.06em;text-transform:uppercase;color:rgba(238,240,243,.62);text-shadow:0 0 3px #0C0E12,0 0 3px #0C0E12,0 0 6px #0C0E12}
 .rgeo.uf{font-size:10px}
 .rgeo.ci{transform:translate(-4px,-50%);text-transform:none;letter-spacing:0;font-weight:500;color:rgba(238,240,243,.88);font-size:11.5px;display:flex;align-items:center;gap:5px}
 .rgeo.ci i{width:5px;height:5px;border-radius:50%;background:#EEF0F3;box-shadow:0 0 0 1.5px #0C0E12;flex:none}
@@ -764,7 +785,8 @@ body{transition:padding-right .5s var(--mola)}
 <aside class="ficha" id="ficha" aria-hidden="true">
   <div class="pega" aria-hidden="true"></div>
   <div class="fh">
-    <div id="fBadge"></div>
+    <div class="fhT"><div id="fBadge"></div><b id="fhTit"></b><small id="fhSub"></small></div>
+    <button class="fpdf" id="fPdf" type="button" title="Salvar esta ficha em PDF (ou imprimir)">⤓ PDF</button>
     <button class="x" id="fX" aria-label="Fechar">✕</button>
   </div>
   <div class="fb" id="fBody"></div>
@@ -1033,7 +1055,8 @@ function abreSeg(){
     <div class="carr-lista">${SEG.map(x => { const [t, c] = situacao(x), l = L.find(y => y.i === x.i);
       return `<div class="seg-it"><div><b>${esc(l ? (l.ci && l.ci !== l.co ? l.ci + ", " : "") + l.co + " County · " + l.uf : x.nm || x.i)}</b><span class="st ${c}">${esc(t)}</span></div>
         <div class="bts">${l ? `<button type="button" data-ver="${x.i}">Ver</button>` : ""}<button type="button" data-tseg="${x.i}">Parar</button></div></div>`; }).join("")}</div>
-    <button class="cta" type="button" onclick="fechaModal()">Fechar</button>`);
+    <div class="facoes" style="margin-top:12px"><button class="cta" type="button" id="segXls">⤓ Baixar em Excel (.xlsx)</button><button class="bfi" type="button" onclick="fechaModal()">Fechar</button></div>`);
+  $("#segXls").onclick = () => exportaSeg().catch(e => alert("Não foi possível gerar a planilha: " + e.message));
   $("#mBody").querySelectorAll("[data-tseg]").forEach(b => b.onclick = () => { alternaSeg(b.dataset.tseg); abreSeg(); });
   $("#mBody").querySelectorAll("[data-ver]").forEach(b => b.onclick = () => { fechaModal(); verLote(b.dataset.ver); });
 }
@@ -1496,6 +1519,7 @@ async function abre(i){
   const dd = dias(l.d), on = ONUS[l.on] || ONUS.nao_consultado;
   $("#fBadge").innerHTML = selo1(l, true).replace('class="badge', 'style="position:static" class="badge');
   const lugar = l.ci && l.ci !== l.co ? `${l.ci}, ${l.co} County` : `${l.co} County`;
+  $("#fhTit").textContent = `${lugar} · ${l.uf}`; $("#fhSub").textContent = `${l.d ? "Leilão " + dm(l.d) + "/" + l.d.slice(0, 4) : VD}${l.ab ? " · abertura " + usd(l.ab) : ""}`;
   const quando = `${LIST(l) ? (UFN[l.uf] || l.uf) : tipo(l.u)} · ${qd(l)}${!l.d ? "" : HIST(l) ? (dd > 0 ? " (saiu da lista antes)" : " (já aconteceu)") : dd > 0 ? " (em " + plural(dd, "dia", "dias") + ")" : dd === 0 ? " (hoje)" : " (já foi)"}`;
   const fts = l.img ? [l.img.f && {src: l.img.f, alt: "Fachada", cap: `Fachada · ${esc(l.img.ff || "cadastro do condado")}`},
     l.img.s && {src: l.img.s, alt: "Vista aérea do bairro com as ruas e o contorno do lote",
@@ -1570,7 +1594,8 @@ async function abre(i){
   const p = await privado(l);
   if(tok !== ABRE) return;  // já clicou em outro lote
   if(p){
-    if(p.e){ $("#fTit").textContent = tc(p.e); $("#fSub").textContent = `${lugar} · ${quando}`; }
+    if(p.e){ $("#fTit").textContent = tc(p.e); $("#fSub").textContent = `${lugar} · ${quando}`;
+      $("#fhTit").textContent = tc(p.e); $("#fhSub").textContent = `${lugar} · ${l.uf}${p.parcela ? " · parcela " + p.parcela : ""}`; }
     const pv = p.sv;   // panorama de rua mais perto, virado para o lote (vitrine_sv.py)
     const sv = pv ? `https://www.google.com/maps/@?api=1&map_action=pano&pano=${encodeURIComponent(pv.p)}&heading=${pv.h}` : `https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=${p.la},${p.ln}`;
     const gm = `https://www.google.com/maps/search/?api=1&query=${p.la},${p.ln}`;
@@ -1728,6 +1753,70 @@ function fecha(){ ABRE++; ABERTO = null; iaSobre(); $("#ficha").classList.remove
   if(document.body.classList.contains("fon")){ document.body.classList.remove("fon"); setTimeout(() => window.dispatchEvent(new Event("resize")), 300); }
   document.dispatchEvent(new CustomEvent("sel", {detail: null})); }
 $("#fX").onclick = fecha; $("#vel").onclick = fecha;
+/* 02/11 (Cris): ficha em PDF pelo "Salvar como PDF" do navegador (sem biblioteca): imprime só a ficha, com as seções abertas e
+   fundo branco; o nome sugerido do arquivo vem do título da página */
+$("#fPdf").onclick = () => {
+  const t0 = document.title;
+  document.title = "Ficha BLR - " + $("#fhTit").textContent.replace(/[\\/:*?"<>|]/g, "-");
+  document.body.classList.add("pfic");
+  const volta = () => { document.body.classList.remove("pfic"); document.title = t0; window.removeEventListener("afterprint", volta); };
+  window.addEventListener("afterprint", volta);
+  setTimeout(() => { window.print(); setTimeout(volta, 1500); }, 60);
+};
+
+/* 02/11 (Cris): lista dos lotes acompanhados em Excel (.xlsx de verdade, montado aqui: zip sem compressão + planilha XML).
+   Leva só o que quem baixa pode ver: visitante = dado público; assinante = teto, ARV e valor de venda; membro = endereço e parcela. */
+const CRC = (() => { const t = new Uint32Array(256); for(let n = 0; n < 256; n++){ let c = n; for(let j = 0; j < 8; j++) c = c & 1 ? 0xEDB88320 ^ (c >>> 1) : c >>> 1; t[n] = c >>> 0; }
+  return b => { let c = 0xFFFFFFFF; for(let i = 0; i < b.length; i++) c = t[(c ^ b[i]) & 255] ^ (c >>> 8); return (c ^ 0xFFFFFFFF) >>> 0; }; })();
+function zipStore(arqs){   // [{n: nome, t: texto}] → Blob .zip (método 0, sem compressão)
+  const enc = new TextEncoder(), partes = [], central = []; let pos = 0;
+  const u16 = v => [v & 255, (v >>> 8) & 255], u32 = v => [v & 255, (v >>> 8) & 255, (v >>> 16) & 255, (v >>> 24) & 255];
+  for(const a of arqs){
+    const nome = enc.encode(a.n), dado = enc.encode(a.t), crc = CRC(dado);
+    const cab = [...u32(0x04034b50), ...u16(20), ...u16(0x0800), ...u16(0), ...u16(0), ...u16(0x21), ...u32(crc), ...u32(dado.length), ...u32(dado.length), ...u16(nome.length), ...u16(0)];
+    partes.push(new Uint8Array(cab), nome, dado);
+    central.push(new Uint8Array([...u32(0x02014b50), ...u16(20), ...u16(20), ...u16(0x0800), ...u16(0), ...u16(0), ...u16(0x21), ...u32(crc), ...u32(dado.length), ...u32(dado.length),
+      ...u16(nome.length), ...u16(0), ...u16(0), ...u16(0), ...u16(0), ...u32(0), ...u32(pos)]), nome);
+    pos += cab.length + nome.length + dado.length;
+  }
+  const tamC = central.reduce((s, x) => s + x.length, 0);
+  return new Blob([...partes, ...central, new Uint8Array([...u32(0x06054b50), ...u16(0), ...u16(0), ...u16(arqs.length), ...u16(arqs.length), ...u32(tamC), ...u32(pos), ...u16(0)])],
+    {type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"});
+}
+function xlsx(cab, linhas, larg){   // cab: títulos; linhas: valores (número vira número no Excel); larg: largura das colunas
+  const x = v => String(v).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F]/g, "");
+  const col = i => { let s = ""; i++; while(i){ const m = (i - 1) % 26; s = String.fromCharCode(65 + m) + s; i = Math.floor((i - 1) / 26); } return s; };
+  const cel = (v, r, c, st) => v == null || v === "" ? "" : typeof v === "number" && isFinite(v) ? `<c r="${col(c)}${r}"${st ? ` s="${st}"` : ""}><v>${v}</v></c>`
+    : `<c r="${col(c)}${r}" t="inlineStr"${st ? ` s="${st}"` : ""}><is><t xml:space="preserve">${x(v)}</t></is></c>`;
+  const rows = [cab, ...linhas].map((ln, ri) => `<row r="${ri + 1}">${ln.map((v, ci) => cel(v, ri + 1, ci, ri === 0 ? 1 : typeof v === "number" && v >= 1000 ? 2 : 0)).join("")}</row>`).join("");
+  const sheet = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><sheetViews><sheetView workbookViewId="0"><pane ySplit="1" topLeftCell="A2" activePane="bottomLeft" state="frozen"/></sheetView></sheetViews>`
+    + `<cols>${cab.map((_, i) => `<col min="${i + 1}" max="${i + 1}" width="${(larg && larg[i]) || 14}" customWidth="1"/>`).join("")}</cols><sheetData>${rows}</sheetData><autoFilter ref="A1:${col(cab.length - 1)}${linhas.length + 1}"/></worksheet>`;
+  return zipStore([
+    {n: "[Content_Types].xml", t: `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/><Override PartName="/xl/worksheets/sheet1.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/><Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/></Types>`},
+    {n: "_rels/.rels", t: `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/></Relationships>`},
+    {n: "xl/workbook.xml", t: `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><sheets><sheet name="Acompanhados" sheetId="1" r:id="rId1"/></sheets><definedNames><definedName name="_xlnm._FilterDatabase" localSheetId="0" hidden="1">Acompanhados!$A$1:$${col(cab.length - 1)}$${linhas.length + 1}</definedName></definedNames></workbook>`},
+    {n: "xl/_rels/workbook.xml.rels", t: `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet1.xml"/><Relationship Id="rId2" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/></Relationships>`},
+    {n: "xl/styles.xml", t: `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><fonts count="2"><font><sz val="11"/><name val="Calibri"/></font><font><b/><sz val="11"/><name val="Calibri"/></font></fonts><fills count="3"><fill><patternFill patternType="none"/></fill><fill><patternFill patternType="gray125"/></fill><fill><patternFill patternType="solid"><fgColor rgb="FFF0C064"/></patternFill></fill></fills><borders count="1"><border/></borders><cellStyleXfs count="1"><xf/></cellStyleXfs><cellXfs count="3"><xf/><xf fontId="1" fillId="2" applyFont="1" applyFill="1"/><xf numFmtId="3" applyNumberFormat="1"/></cellXfs></styleSheet>`},
+    {n: "xl/worksheets/sheet1.xml", t: sheet}]);
+}
+async function exportaSeg(){
+  const lin = [];
+  for(const x of SEG){
+    const l = L.find(y => y.i === x.i), p = l && (MEMBRO || DB) ? await privado(l) : null, r = (l && l.rs) || {};
+    lin.push([l ? l.uf : "", l ? l.co : "", l ? l.ci || "" : "", (l && l.zip) || "", p && p.e ? tc(p.e) : "", (p && p.parcela) || "",
+      l ? tipoL(l) : "", l && l.d ? l.d.split("-").reverse().join("/") : (l ? "venda direta" : ""), situacao(x)[0],
+      l && l.ab != null ? Math.round(l.ab) : "", x.ab != null ? Math.round(x.ab) : "", l && l.jv ? Math.round(l.jv) : "", l && l.desc != null ? l.desc : "",
+      l ? forcaDe(l) : "", l && noCrit(l) ? "sim" : "não",
+      ASSIN && l && l.teto != null ? Math.round(l.teto) : "", ASSIN && l && l.arv ? Math.round(l.arv[0]) : "", ASSIN && l && l.arv ? Math.round(l.arv[1]) : "",
+      HIST(l || {}) ? (RES_T[r.s] || "já leiloado") : "", ASSIN && r.v ? Math.round(r.v) : "", (x.em || "").split("-").reverse().join("/"), x.i]);
+  }
+  const cab = ["Estado", "Condado", "Cidade", "CEP", "Endereço (membro)", "Parcela (membro)", "Tipo", "Data do leilão", "Situação hoje", "Lance de abertura (US$)",
+    "Lance quando marcou (US$)", ASSIN ? "Valor no cadastro (US$)" : "Valor no cadastro (faixa, US$)", "Desconto do lance (%)", "Força BLR (0–5)", "Nos critérios BLR",
+    "Teto BLR (US$, assinante)", "ARV mín. (US$, assinante)", "ARV máx. (US$, assinante)", "Resultado do leilão", "Vendido por (US$, assinante)", "Marcado em", "Código do lote"];
+  const b = xlsx(cab, lin, [7, 16, 18, 8, 34, 20, 18, 13, 46, 12, 12, 14, 10, 9, 10, 13, 13, 13, 18, 13, 11, 14]);
+  const a = document.createElement("a"); a.href = URL.createObjectURL(b); a.download = `BLR acompanhados ${HOJE_L.split("-").reverse().join("-")}.xlsx`;
+  document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 2000);
+}
 document.addEventListener("keydown", e => { if(e.key === "Escape"){ if(!$("#modal").hidden) fechaModal(); else fecha(); } });
 
 /* ---------- janelas: assinatura, pedido de informação, carrinho, cálculo ---------- */
@@ -1910,6 +1999,9 @@ function criaMapa(){
   const camEst = Lf.geoJSON({type: "FeatureCollection", features: est}, {renderer: rBase, style: estilEst,
     onEachFeature: (d, ly) => { ly.bindTooltip(() => ttEst(d), {sticky: true, className: "tt-l"});
       ly.on("click", () => { const uf = ufDe(d); if(uf && (porUF.get(uf) || lotesUF.get(uf)) && z() < Z_EST) abreUF(uf); }); }}).addTo(M);
+  // 02/11 (Cris): divisa dos condados de todos os estados já no mapa do país (uma linha só, fina: não pesa nem tampa a cor do estado)
+  const camMesh = Lf.geoJSON(topojson.mesh(EUA, EUA.objects.counties, (a, b) => a !== b && String(a.id).slice(0, 2) === String(b.id).slice(0, 2)),
+    {renderer: rBase, interactive: false, style: {color: "#0C0E12", weight: .45, opacity: .45, fill: false}}).addTo(M);
   // condados dos estados com leilão
   const ufsCom = new Set(POR_UF.keys());
   const FCOM = new Set(L.filter(l => !HIST(l)).map(l => l.f));   // condados com lote à venda
