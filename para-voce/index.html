@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<title>Para você — BLR</title>
+<meta name="description" content="Imóveis em leilão nos EUA escolhidos pelo seu perfil, com a análise da BLR Developments.">
+<link rel="icon" type="image/svg+xml" href="/blr-icon-small.svg">
+<style>
+/* 04/11 (Cris): modo cliente. Página leve e separada da vitrine dos sócios (index.html), que continua igual.
+   Lê os mesmos dados públicos (atual.json -> d_dados -> d_uf_<UF>), só dos estados que o perfil pede. */
+:root{--bg:#f6f7f9;--card:#fff;--ink:#14171c;--mute:#5d6673;--line:#e4e7ec;--acc:#0d2a4d;--acc2:#b8892b;--ok:#1f7a4a;--warn:#a5531d;--chip:#eef1f5}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f1216;--card:#171b21;--ink:#eef0f3;--mute:#9aa3ae;--line:#262c34;--acc:#d9b25a;--acc2:#d9b25a;--ok:#5fc48f;--warn:#e59a62;--chip:#20262e}}
+*{box-sizing:border-box}html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font:16px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif}
+.wrap{max-width:760px;margin:0 auto;padding:0 16px}
+header{padding:18px 0 6px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.marca{font-weight:700;letter-spacing:.3px}.marca b{color:var(--acc2)}
+button{font:inherit;cursor:pointer}
+.lnk{background:none;border:0;color:var(--acc);text-decoration:underline;padding:4px}
+h1{font-size:26px;line-height:1.25;margin:18px 0 6px}h2{font-size:19px;margin:22px 0 8px}
+.sub{color:var(--mute);margin:0 0 18px}
+.barra{height:6px;background:var(--line);border-radius:6px;overflow:hidden;margin:14px 0 4px}.barra i{display:block;height:100%;background:var(--acc2);transition:width .25s}
+.passo{color:var(--mute);font-size:14px}
+.ops{display:grid;gap:10px;margin:16px 0}
+.op{text-align:left;background:var(--card);border:1.5px solid var(--line);border-radius:14px;padding:14px 16px;color:var(--ink)}
+.op small{display:block;color:var(--mute);font-size:14px;margin-top:2px}
+.op[aria-pressed="true"]{border-color:var(--acc2);box-shadow:0 0 0 3px color-mix(in srgb,var(--acc2) 22%,transparent)}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}
+.chip{border:1.5px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;padding:7px 13px;font-size:14px}
+.chip[aria-pressed="true"]{border-color:var(--acc2);background:color-mix(in srgb,var(--acc2) 14%,var(--card))}
+.nav{display:flex;justify-content:space-between;gap:10px;margin:20px 0 40px}
+.btn{display:inline-block;background:var(--acc);color:#fff;border:0;border-radius:12px;padding:12px 20px;font-weight:600}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .btn{color:#14171c}}
+.btn:disabled{opacity:.4;cursor:default}.btn.sec{background:transparent;color:var(--ink);border:1.5px solid var(--line)}
+.perfil{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin:6px 0 16px;font-size:15px}
+.cards{display:grid;gap:12px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;text-align:left;color:var(--ink);width:100%}
+.card .top{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+.card .tit{font-weight:650}.card .onde{color:var(--mute);font-size:14px}
+.nota{font-weight:700;color:var(--ok);white-space:nowrap;font-size:15px}
+.preco{font-size:24px;font-weight:700;margin:8px 0 2px}.preco small{font-size:14px;color:var(--mute);font-weight:400}
+.motivo{color:var(--mute);font-size:14px;margin-top:6px}
+.vazio{background:var(--card);border:1px dashed var(--line);border-radius:14px;padding:18px;color:var(--mute)}
+.ficha{position:fixed;inset:0;background:var(--bg);overflow:auto;z-index:5}
+.ficha .wrap{padding-bottom:40px}
+.bloco{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin:12px 0}
+.bloco ul{margin:6px 0 0;padding-left:20px}.bloco li{margin:4px 0}
+.alerta{color:var(--warn)}
+dl{display:grid;grid-template-columns:auto 1fr;gap:6px 14px;margin:8px 0 0;font-size:15px}dt{color:var(--mute)}dd{margin:0}
+details summary{cursor:pointer;font-weight:600}
+.rodape{color:var(--mute);font-size:13px;margin:30px 0 40px}
+.carrega{color:var(--mute);padding:30px 0}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header><div class="marca">BLR <b>Para você</b></div><div id="topo"></div></header>
+  <main id="app"><p class="carrega">Carregando…</p></main>
+</div>
+<div class="ficha" id="ficha" hidden></div>
+<script>
+"use strict";
+const CHAVE = "blr_perfil_v1";
+const WHATS = "https://wa.me/5551991357544";
+const fmt = n => n == null ? "—" : "US$ " + Math.round(n).toLocaleString("pt-BR");
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const ler = () => { try { return JSON.parse(localStorage.getItem(CHAVE) || "null"); } catch (e) { return null; } };
+const grava = p => { try { localStorage.setItem(CHAVE, JSON.stringify(p)); } catch (e) {} };
+const app = document.getElementById("app"), fichaEl = document.getElementById("ficha");
+
+const REGIOES = {
+  "Flórida": ["FL"], "Nordeste": ["NY","NJ","PA","CT","MA","RI","NH","VT","ME","DE","MD","DC"],
+  "Meio-Oeste": ["OH","MI","IN","IL","WI","MN","IA","MO","KS","NE","SD","ND"],
+  "Sul": ["GA","SC","NC","TN","AL","MS","LA","AR","KY","VA","WV","TX","OK"],
+  "Oeste": ["WA","OR","CA","NV","AZ","UT","CO","NM","ID","MT","WY"]
+};
+
+// perguntas da anamnese (rascunho de 04/11, para o Cris e o Rodrigo ajustarem)
+const PERG = [
+  {k:"obj", t:"O que você busca?", s:"Escolha o principal. Dá para mudar depois.", ops:[
+    ["renda","Renda de aluguel","Comprar para alugar e receber todo mês"],
+    ["flip","Comprar, reformar e vender","Lucro na revenda"],
+    ["morar","Morar","Uma casa para mim ou para a família"],
+    ["dolar","Proteger o dinheiro em dólar","Patrimônio nos EUA, com pouco risco"],
+    ["terreno","Terreno para construir","Comprar a terra e construir depois"]]},
+  {k:"valor", t:"Quanto pretende pagar no imóvel?", s:"Por imóvel, no arremate. A reforma e as taxas vêm à parte.", ops:[
+    ["25000","Até US$ 25 mil"],["75000","Até US$ 75 mil"],["150000","Até US$ 150 mil"],["999999999","Mais de US$ 150 mil"]]},
+  {k:"grupo", t:"Sozinho ou junto com outros?", ops:[
+    ["so","Sozinho"],["grupo","Em grupo, com cota de outros investidores"],["blr","Com a BLR fazendo a gestão"]]},
+  {k:"prazo", t:"Em quanto tempo quer o retorno?", ops:[
+    ["curto","Menos de 1 ano"],["medio","De 1 a 3 anos"],["longo","Longo prazo"]]},
+  {k:"risco", t:"Quanto trabalho ou risco você aceita?", ops:[
+    ["pronto","Pronto para usar","Sem reforma e sem pendência"],
+    ["leve","Reforma leve","Pintura, piso, pequenos reparos"],
+    ["pesada","Reforma pesada","Obra grande, se o preço compensar"],
+    ["juridico","Aceito risco jurídico","Dívida ou pendência no processo, se o desconto compensar"]]},
+  {k:"tipo", t:"Que tipo de imóvel?", s:"Pode marcar mais de um.", multi:true, ops:[
+    ["casa","Casa"],["terreno","Terreno"],["apto","Apartamento"],["varias","Várias unidades"],["movel","Casa móvel"]]},
+  {k:"uf", t:"Onde?", s:"Marque regiões ou estados. Sem nada marcado, buscamos no país todo.", regioes:true},
+  {k:"envolve", t:"Quanto você quer se envolver?", ops:[
+    ["blr","A BLR cuida de tudo","Análise, lance, compra e obra"],
+    ["so","Quero a análise e faço sozinho"]]}
+];
+
+let IDX = null, HOJE = "", POR = {}, PERFIL = ler(), passo = 0, rasc = {};
+
+async function busca(u) { const r = await fetch(u); if (!r.ok) throw new Error(u + " " + r.status); return r.json(); }
+
+async function inicio() {
+  try {
+    const a = await busca("../atual.json");
+    IDX = await busca("../" + a.DADOS);
+    HOJE = (IDX.meta && IDX.meta.gerado || "").slice(0, 10) || new Date().toISOString().slice(0, 10);
+  } catch (e) { app.innerHTML = `<p class="vazio">Não foi possível carregar os dados (${esc(e.message)}). Recarregue a página.</p>`; return; }
+  PERFIL ? resultado() : boasVindas();
+}
+
+function topo(html) { document.getElementById("topo").innerHTML = html || ""; }
+
+function boasVindas() {
+  topo("");
+  app.innerHTML = `<h1>Imóveis nos EUA escolhidos para o seu objetivo</h1>
+    <p class="sub">Responda 8 perguntas rápidas (uns 2 minutos). A BLR cruza as suas respostas com milhares de imóveis que vão a leilão e mostra só os que combinam com você.</p>
+    <div class="nav"><span></span><button class="btn" id="ir">Começar</button></div>`;
+  document.getElementById("ir").onclick = () => { rasc = PERFIL ? JSON.parse(JSON.stringify(PERFIL)) : {}; passo = 0; pergunta(); };
+}
+
+function pergunta() {
+  const q = PERG[passo];
+  topo(`<button class="lnk" id="sair">${PERFIL ? "Cancelar" : ""}</button>`);
+  const s = document.getElementById("sair"); if (PERFIL) s.onclick = resultado;
+  let corpo = "";
+  if (q.regioes) {
+    const tem = IDX.idx.uf, sel = new Set(rasc.uf || []);
+    const nomes = IDX.estados_nome || {};
+    corpo = `<div class="chips">${Object.keys(REGIOES).map(r => `<button class="chip" data-r="${r}" aria-pressed="${REGIOES[r].every(u => !tem[u] || sel.has(u)) && REGIOES[r].some(u => tem[u] && sel.has(u))}">${r}</button>`).join("")}</div>
+      <details><summary>Escolher estado por estado</summary><div class="chips">${Object.keys(tem).filter(u => tem[u] > 0).sort().map(u =>
+        `<button class="chip" data-u="${u}" aria-pressed="${sel.has(u)}">${esc(nomes[u] || u)} <small>(${tem[u].toLocaleString("pt-BR")})</small></button>`).join("")}</div></details>`;
+  } else {
+    const v = rasc[q.k], sel = q.multi ? new Set(v || []) : null;
+    corpo = `<div class="ops">${q.ops.map(([val, t, sub]) => `<button class="op" data-v="${val}" aria-pressed="${q.multi ? sel.has(val) : v === val}">${esc(t)}${sub ? `<small>${esc(sub)}</small>` : ""}</button>`).join("")}</div>`;
+  }
+  app.innerHTML = `<div class="barra"><i style="width:${(passo + 1) / PERG.length * 100}%"></i></div><div class="passo">${passo + 1} de ${PERG.length}</div>
+    <h1>${esc(q.t)}</h1>${q.s ? `<p class="sub">${esc(q.s)}</p>` : ""}${corpo}
+    <div class="nav"><button class="btn sec" id="volta" ${passo ? "" : "hidden"}>Voltar</button><button class="btn" id="seg">${passo === PERG.length - 1 ? "Ver meus imóveis" : "Continuar"}</button></div>`;
+  const pode = () => q.regioes || (q.multi ? (rasc[q.k] || []).length > 0 : !!rasc[q.k]);
+  const seg = document.getElementById("seg"); seg.disabled = !pode();
+  app.querySelectorAll(".op").forEach(b => b.onclick = () => {
+    if (q.multi) { const s = new Set(rasc[q.k] || []); s.has(b.dataset.v) ? s.delete(b.dataset.v) : s.add(b.dataset.v); rasc[q.k] = [...s]; b.setAttribute("aria-pressed", s.has(b.dataset.v)); seg.disabled = !pode(); }
+    else { rasc[q.k] = b.dataset.v; avanca(); }
+  });
+  app.querySelectorAll(".chip").forEach(b => b.onclick = () => {
+    const s = new Set(rasc.uf || []);
+    if (b.dataset.r) { const us = REGIOES[b.dataset.r].filter(u => IDX.idx.uf[u]); const todos = us.every(u => s.has(u)); us.forEach(u => todos ? s.delete(u) : s.add(u)); }
+    else s.has(b.dataset.u) ? s.delete(b.dataset.u) : s.add(b.dataset.u);
+    rasc.uf = [...s]; const ab = app.querySelector("details")?.open; pergunta(); if (ab) app.querySelector("details").open = true;
+  });
+  document.getElementById("volta").onclick = () => { passo--; pergunta(); };
+  seg.onclick = avanca;
+}
+
+function avanca() {
+  if (passo < PERG.length - 1) { passo++; pergunta(); window.scrollTo(0, 0); return; }
+  PERFIL = rasc; grava(PERFIL); resultado();
+}
+
+// ---- dados ----
+async function estados(ufs) {
+  const partes = IDX.partes.filter(p => !ufs.length || ufs.includes(p.uf));
+  await Promise.all(partes.filter(p => !POR[p.uf]).map(async p => {
+    const x = await busca("../" + p.a);
+    const T = k => typeof k === "number" ? x.txt[k] : k;
+    POR[p.uf] = x.lotes.filter(l => !l.h).map(l => ({...l, u: T(l.u), tp: T(l.tp), nt: T(l.nt), fo: T(l.fo), jvq: T(l.jvq), mc: T(l.mc)}));
+  }));
+  return partes.flatMap(p => POR[p.uf] || []);
+}
+
+function tipoDe(l) {
+  const u = String(l.u || "");
+  if (l.movel || /mobile|manufactured|m[óo]vel/i.test(u)) return "movel";
+  if (/condo|cooperativ/i.test(u)) return "apto";
+  if (/multi|duplex|triplex|plex|apartment/i.test(u)) return "varias";
+  if (/vacant|terreno|land|unimproved/i.test(u)) return "terreno";
+  if (/single|constru|resid|family|house|dwelling/i.test(u)) return "casa";
+  return null;
+}
+const TIPO_N = {casa:"Casa", terreno:"Terreno", apto:"Apartamento", varias:"Várias unidades", movel:"Casa móvel"};
+const cl = x => Math.max(0, Math.min(1, x));
+const dias = d => d ? Math.round((new Date(d + "T12:00") - new Date(HOJE + "T12:00")) / 864e5) : null;
+const enchente = l => /^[AV]/i.test((l.ent && l.ent.fz) || "");
+const onusRuim = l => ["publico", "federal", "hipoteca"].includes(l.on) || l.onr === "alto";
+// preço provável de arremate: o lance inicial costuma ser só a dívida. Razão típica (preço de arremate / valor oficial)
+// dos leilões já acontecidos, medida pela BLR (resultados de 03-05/11: FL 0,57; NJ 0,60; PA 0,47-0,53; IN 0,50).
+const RAZAO = {FL: .57, NJ: .60, PA: .50, IN: .50}, RAZAO_PAD = .55;
+const provavel = l => l.jv ? Math.max(l.ab, l.jv * (RAZAO[l.uf] || RAZAO_PAD)) : l.ab;
+const descDe = l => l.jv && l.ab ? Math.round((1 - provavel(l) / l.jv) * 100) : null;
+
+const PESOS = {
+  renda:   {preco:.35, bairro:.25, desc:.2, entorno:.2},
+  flip:    {desc:.35, blr:.35, bairro:.15, preco:.15},
+  morar:   {entorno:.35, bairro:.3, seguro:.2, desc:.15},
+  dolar:   {seguro:.35, bairro:.3, blr:.2, desc:.15},
+  terreno: {desc:.4, preco:.2, lote:.2, bairro:.2}
+};
+
+function avalia(l, P) {
+  const t = tipoDe(l), dd = dias(l.d);
+  if (!l.ab || !t || !(P.tipo || []).includes(t) || provavel(l) > +P.valor || dd == null || dd < 0) return null;
+  const ruim = onusRuim(l), agua = enchente(l);
+  if (ruim && P.risco !== "juridico") return null;
+  if (agua && (P.risco === "pronto" || P.obj === "morar")) return null;
+  const desc = descDe(l), e = l.ent || {};
+  const c = {
+    desc: desc == null ? .3 : cl(desc / 80),
+    preco: l.vb ? cl((l.vb / provavel(l) - 1) / 4) : .3,
+    bairro: l.rb ? cl((l.rb - 30000) / 70000) * .6 + (l.vb ? cl((l.vb - 80000) / 320000) * .4 : .2) : .3,
+    entorno: ["es", "mk", "hs"].map(k => e[k] == null ? .4 : cl(1 - e[k] / 10)).reduce((a, b) => a + b) / 3,
+    seguro: (agua ? 0 : .5) + (ruim ? 0 : l.on === "limpo" || l.on === "estado" ? .5 : .3),
+    blr: (l.nv != null ? l.nv / 5 : .2) * .7 + (l.et === "final" ? .3 : 0),
+    lote: l.lote_m2 ? cl(l.lote_m2 / 2000) : .3
+  };
+  const W = {...PESOS[P.obj]};
+  if (P.prazo === "curto") W.blr = (W.blr || 0) + .1;
+  if (P.prazo === "longo") W.bairro = (W.bairro || 0) + .1;
+  const tot = Object.values(W).reduce((a, b) => a + b);
+  const nota = Object.entries(W).reduce((s, [k, w]) => s + c[k] * w, 0) / tot;
+  return {l, t, nota: Math.round(nota * 100), c, W, desc, dd, ruim, agua};
+}
+
+function motivos(r) {
+  const {l, c, W, desc, dd} = r, e = l.ent || {}, out = [];
+  const peso = k => (W[k] || 0) * c[k];
+  const frases = {
+    desc: desc != null && desc > 0 ? `Preço provável ${desc}% abaixo do valor oficial do condado` : null,
+    preco: l.vb ? `Casas do bairro valem em média ${fmt(l.vb)}, ${(l.vb / provavel(l)).toFixed(1).replace(".", ",")}× o preço provável` : null,
+    bairro: l.rb ? `Renda média do bairro de ${fmt(l.rb)} por ano` : null,
+    entorno: [e.es != null && `escola a ${String(e.es).replace(".", ",")} km`, e.mk != null && `mercado a ${String(e.mk).replace(".", ",")} km`, e.hs != null && `hospital a ${String(e.hs).replace(".", ",")} km`].filter(Boolean).join(", ").replace(/^./, s => s.toUpperCase()) || null,
+    seguro: !r.agua && !r.ruim ? "Fora de zona de enchente e sem ônus grave conhecido" : null,
+    blr: l.et === "final" ? `Passa nos critérios da BLR (força ${l.nv ?? "—"} de 5)` : null,
+    lote: l.lote_m2 ? `Lote de ${Math.round(l.lote_m2).toLocaleString("pt-BR")} m²` : null
+  };
+  Object.keys(W).sort((a, b) => peso(b) - peso(a)).forEach(k => frases[k] && out.push(frases[k]));
+  out.push(dd === 0 ? "Leilão hoje" : `Leilão em ${dd} ${dd === 1 ? "dia" : "dias"}`);
+  return out;
+}
+
+const RESUMO = {obj:{renda:"renda de aluguel",flip:"comprar, reformar e vender",morar:"um imóvel para morar",dolar:"proteger o dinheiro em dólar",terreno:"terreno para construir"}};
+
+async function resultado() {
+  topo(`<button class="lnk" id="edita">Editar perfil</button>`);
+  document.getElementById("edita").onclick = () => { rasc = JSON.parse(JSON.stringify(PERFIL)); passo = 0; pergunta(); };
+  app.innerHTML = `<p class="carrega">Procurando os imóveis que combinam com você…</p>`;
+  const P = PERFIL, ufs = P.uf || [];
+  let L;
+  try { L = await estados(ufs); } catch (e) { app.innerHTML = `<p class="vazio">Não foi possível carregar os imóveis (${esc(e.message)}).</p>`; return; }
+  const R = L.map(l => avalia(l, P)).filter(Boolean).sort((a, b) => b.nota - a.nota || a.dd - b.dd);
+  const nomes = IDX.estados_nome || {};
+  const onde = ufs.length ? (ufs.length > 4 ? ufs.length + " estados" : ufs.map(u => nomes[u] || u).join(", ")) : "todo o país";
+  const lim = +P.valor > 1e8 ? "sem limite de preço" : "até " + fmt(+P.valor);
+  let n = 12;
+  const pinta = () => {
+    app.innerHTML = `<h1>${R.length ? R.length.toLocaleString("pt-BR") + (R.length === 1 ? " imóvel combina" : " imóveis combinam") + " com você" : "Nenhum imóvel combina agora"}</h1>
+      <div class="perfil">Você busca <b>${RESUMO.obj[P.obj]}</b>, ${lim}, ${(P.tipo || []).map(t => TIPO_N[t].toLowerCase()).join(" ou ")}, em ${esc(onde)}.</div>
+      ${R.length ? "" : `<p class="vazio">Tente aumentar o valor, marcar mais tipos de imóvel ou mais estados. A lista muda todo dia, com os leilões novos.</p>`}
+      <div class="cards">${R.slice(0, n).map((r, i) => `<button class="card" data-i="${i}">
+        <div class="top"><div><div class="tit">${TIPO_N[r.t]} em ${esc(r.l.ci || r.l.co)}</div><div class="onde">${esc(r.l.co)}, ${esc(nomes[r.l.uf] || r.l.uf)}</div></div><div class="nota">${r.nota}% combina</div></div>
+        <div class="preco">~${fmt(provavel(r.l))} <small>preço provável</small></div>
+        <div class="motivo">${esc(motivos(r).slice(0, 2).join(" · "))}</div></button>`).join("")}</div>
+      ${R.length > n ? `<div class="nav"><span></span><button class="btn sec" id="mais">Ver mais ${Math.min(12, R.length - n)}</button></div>` : ""}
+      <p class="rodape">Análise informativa da BLR com dados públicos dos condados e do Censo dos EUA. Não é recomendação de investimento. Antes de dar lance, confira o edital do leilão e fale com a BLR.</p>`;
+    app.querySelectorAll(".card").forEach(b => b.onclick = () => ficha(R[+b.dataset.i]));
+    const m = document.getElementById("mais"); if (m) m.onclick = () => { n += 12; pinta(); };
+  };
+  pinta();
+}
+
+function ficha(r) {
+  const l = r.l, e = l.ent || {}, nomes = IDX.estados_nome || {}, m = motivos(r);
+  const avisos = [];
+  if (r.ruim) avisos.push("Há dívida ou pendência no processo que pode passar para quem compra. Só com análise do título antes do lance.");
+  if (r.agua) avisos.push(`Fica em zona de enchente (FEMA ${esc(e.fz)}): o seguro é obrigatório se houver financiamento.`);
+  if (l.on === "nao_consultado") avisos.push("A BLR ainda confere as dívidas do processo antes de dar o lance.");
+  const linha = (k, v) => v == null || v === "" ? "" : `<dt>${k}</dt><dd>${v}</dd>`;
+  const km = v => v == null ? null : String(v).replace(".", ",") + " km";
+  fichaEl.innerHTML = `<div class="wrap">
+    <header><div class="marca">BLR <b>Para você</b></div><button class="lnk" id="fecha">Voltar</button></header>
+    <h1>${TIPO_N[r.t]} em ${esc(l.ci || l.co)}</h1>
+    <p class="sub">${esc(l.co)}, ${esc(nomes[l.uf] || l.uf)}${l.zip ? " · CEP " + esc(l.zip) : ""} · leilão em ${new Date(l.d + "T12:00").toLocaleDateString("pt-BR")}</p>
+    <div class="bloco"><div class="top" style="display:flex;justify-content:space-between;align-items:baseline"><div class="preco">~${fmt(provavel(l))} <small>preço provável</small></div><div class="nota">${r.nota}% combina</div></div>
+      <div class="motivo">Lance inicial: ${fmt(l.ab)}${l.jv ? ` · valor oficial do condado: ${fmt(l.jv)}` : ""}</div><div class="motivo">O preço provável vem dos leilões que já aconteceram no estado. O valor final depende da disputa.</div></div>
+    <div class="bloco"><b>Por que combina com você</b><ul>${m.map(x => `<li>${esc(x)}</li>`).join("")}</ul></div>
+    ${avisos.length ? `<div class="bloco alerta"><b>Atenção</b><ul>${avisos.map(x => `<li>${x}</li>`).join("")}</ul></div>` : ""}
+    <div class="bloco"><details><summary>Ver todos os detalhes</summary><dl>
+      ${linha("Tipo no cadastro", esc(l.u))}${linha("Tipo de leilão", esc(l.tp))}
+      ${linha("Área construída", l.a ? `${Math.round(l.a).toLocaleString("pt-BR")} pés² (${Math.round(l.a * .0929).toLocaleString("pt-BR")} m²)` : null)}
+      ${linha("Ano da construção", esc(l.y))}${linha("Lote", l.lote_m2 ? Math.round(l.lote_m2).toLocaleString("pt-BR") + " m²" : null)}
+      ${linha("Valor oficial", l.jv ? fmt(l.jv) + (l.jvq ? ` <small>(${esc(l.jvq)})</small>` : "") : null)}
+      ${linha("Lance inicial", fmt(l.ab))}${linha("Desconto do preço provável", r.desc != null ? r.desc + "%" : null)}
+      ${linha("Valor típico no bairro", l.vb ? fmt(l.vb) : null)}${linha("Renda média do bairro", l.rb ? fmt(l.rb) + " por ano" : null)}
+      ${linha("Zona de enchente (FEMA)", esc(e.fz))}${linha("Escola", km(e.es))}${linha("Mercado", km(e.mk))}${linha("Hospital", km(e.hs))}
+      ${linha("Força na análise BLR", l.nv != null ? l.nv + " de 5" : null)}${linha("Fonte da lista", esc(l.fo))}
+    </dl>${l.nt ? `<p class="motivo">${esc(l.nt)}</p>` : ""}</details></div>
+    <div class="nav"><a class="btn" href="${WHATS}?text=${encodeURIComponent("Olá, BLR! Vi no Para você o imóvel " + l.i + " (" + (l.ci || l.co) + ", " + l.uf + ") e quero saber mais.")}" target="_blank" rel="noopener" style="text-decoration:none">${PERFIL.envolve === "blr" ? "Quero que a BLR cuide deste" : "Falar com a BLR"}</a>
+      <a class="btn sec" href="../" style="text-decoration:none">Mapa completo</a></div>
+  </div>`;
+  fichaEl.hidden = false; fichaEl.scrollTop = 0;
+  document.getElementById("fecha").onclick = () => { fichaEl.hidden = true; };
+}
+
+inicio();
+</script>
+</body>
+</html>
