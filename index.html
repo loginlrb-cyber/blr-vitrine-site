@@ -8,7 +8,7 @@
 <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="manifest" href="/site.webmanifest">
 <style>*,*::before,*::after{box-sizing:border-box}html,body{margin:0}img{max-width:100%}[hidden]{display:none!important}
 :root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}</style>
-</head><body><link rel="preload" href="d_dados_5fdc733f54.json" as="fetch" crossorigin="anonymous"><link rel="preload" href="d_eua_145aaf5d14.json" as="fetch" crossorigin="anonymous"><title>Vitrine BLR</title>
+</head><body><link rel="preload" href="d_dados_8efaf790c8.json" as="fetch" crossorigin="anonymous"><link rel="preload" href="d_eua_145aaf5d14.json" as="fetch" crossorigin="anonymous"><title>Vitrine BLR</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -795,7 +795,7 @@ body{transition:padding-right .5s var(--mola)}
 <div class="modal" id="modal" hidden><div class="mbox" role="dialog" aria-modal="true" aria-labelledby="mTit">
   <button class="x" id="mX" type="button" aria-label="Fechar">✕</button><div id="mBody"></div></div></div>
 
-<script>(function(){var q=function(u){return fetch(u).then(function(r){if(!r.ok)throw new Error(u+' '+r.status);return r.json()})};Promise.all([q('d_dados_5fdc733f54.json'),q('d_eua_145aaf5d14.json')]).then(function(x){window.__DADOS=x[0];window.__EUA=x[1];var s=document.createElement('script');s.textContent=document.getElementById('app').textContent;document.body.appendChild(s)}).catch(function(e){var d=document.createElement('p');d.style.cssText='padding:24px;font:16px sans-serif';d.textContent='Não foi possível carregar os dados ('+e.message+'). Recarregue a página.';document.body.prepend(d)})})();</script>
+<script>(function(){var q=function(u){return fetch(u).then(function(r){if(!r.ok)throw new Error(u+' '+r.status);return r.json()})};Promise.all([q('d_dados_8efaf790c8.json'),q('d_eua_145aaf5d14.json')]).then(function(x){window.__DADOS=x[0];window.__EUA=x[1];var s=document.createElement('script');s.textContent=document.getElementById('app').textContent;document.body.appendChild(s)}).catch(function(e){var d=document.createElement('p');d.style.cssText='padding:24px;font:16px sans-serif';d.textContent='Não foi possível carregar os dados ('+e.message+'). Recarregue a página.';document.body.prepend(d)})})();</script>
 <script type="text/plain" id="app">
 const DADOS = window.__DADOS;
 const EUA = window.__EUA;
@@ -812,7 +812,15 @@ const CONTATO = {"email": "loginlrb@gmail.com", "whats": "+55 51 99135-7544"};
 const CAMBIO = {"data": "2026-11-03", "fonte": "ExchangeRate-API (open.er-api.com)", "r": {"BRL": 5.43751, "EUR": 0.893269, "GBP": 0.745737, "CAD": 1.39809, "MXN": 18.614044, "ARS": 1544.6507, "CLP": 993.985301, "COP": 3197.305165, "PEN": 3.46461, "UYU": 40.278347, "PYG": 5842.877529, "CHF": 0.819466, "JPY": 157.896122, "CNY": 6.665393, "AUD": 1.427896, "INR": 94.928524, "AED": 3.6725, "ILS": 3.140446, "ZAR": 16.613417}};
 const HOJE = DADOS.meta.gerado;
 const L = DADOS.lotes;
-for(const l of L) for(const k of ["nt", "fo", "jvq", "tp", "u", "mc"]) if(typeof l[k] === "number") l[k] = DADOS.txt[l[k]];   // vitrine_monta: textos repetidos em índice
+/* 04/11 (site leve): no site os lotes vêm por estado (vitrine_site.separa_dados). DADOS.partes = [{uf, a: arquivo, n}] e DADOS.idx =
+   contas do país para a 1ª pintura; cada parte chega com o próprio txt e entra em L por maisLotes() (fim do script). No artifact
+   DADOS.lotes já vem inteiro e não há partes. */
+const prepLote = (l, txt) => { for(const k of ["nt", "fo", "jvq", "tp", "u", "mc"]) if(typeof l[k] === "number") l[k] = txt[l[k]];   // vitrine_monta: textos repetidos em índice
+  if(l.li == null && l.lien) l.li = l.lien; if(l.ct == null && l.conta_terreno) l.ct = l.conta_terreno; };
+for(const l of L) prepLote(l, DADOS.txt || []);
+const PARTES = DADOS.partes || [], UF_OK = new Set(), IDX = DADOS.idx || null;
+const faltam = () => PARTES.length - UF_OK.size;   // estados ainda carregando (0 no artifact)
+let pedeUF = () => {};   // o mapa pede primeiro o estado que a pessoa abriu (fim do script)
 const $ = s => document.querySelector(s);
 const MOEDAS = {USD:["US$","Dólar americano"], BRL:["R$","Real"], EUR:["€","Euro"], GBP:["£","Libra esterlina"], CAD:["C$","Dólar canadense"],
   MXN:["MX$","Peso mexicano"], ARS:["AR$","Peso argentino"], CLP:["CLP$","Peso chileno"], COP:["COL$","Peso colombiano"], PEN:["S/","Sol peruano"],
@@ -940,7 +948,7 @@ const forcaHTML = l => { const n = forcaDe(l), r = LIST(l) ? RAMPA_L : RAMPA_B;
 const VALE_T = n => n >= 4 ? "vale a pena: fecha no típico" : n >= 2 ? "só se a disputa for fraca" : "não fecha a conta";
 const HIST = l => !!l.h;
 const COMPRA = q => /3rd/i.test(q || "") ? "um licitante (terceiro)" : /certif/i.test(q || "") ? "o dono do certificado (ninguém cobriu)" : /county|plaintiff/i.test(q || "") ? "o próprio condado" : (q || "—");
-const RES_T = {vendido: "Vendido", resgatado: "Resgatado pelo dono", cancelado: "Cancelado", adiado: "Adiado", outro: "Sem venda", saiu: "Saiu da lista antes do leilão", sem: "Resultado ainda não lido"};
+const RES_T = {vendido: "Vendido", credor: "Arrematado pelo credor", resgatado: "Resgatado pelo dono", cancelado: "Cancelado", adiado: "Adiado", outro: "Sem venda", saiu: "Saiu da lista antes do leilão", sem: "Resultado ainda não lido"};
 const resTxt = l => { const r = l.rs || {}; return r.s === "vendido" ? (r.v ? `Vendido por ${k(r.v)}` : "Vendido em leilão") : RES_T[r.s] || "Já leiloado"; };
 const ETAPA = {final: "Nos critérios BLR", terreno: "Terreno vazio", dados: "Sem dados para precificar", preco: "Preço não fecha",
   suspeito: "Abertura suspeita (<5% do cadastro)", divida: "Dívida passa ao comprador", listado: "Listado (sem análise BLR ainda)"};
@@ -986,7 +994,7 @@ const nivelAno = y => { const a = parseFloat(y); return isNaN(a) ? "geral" : a >
 const vaiConta = l => !!(l.am && (l.a || l.ae || l.ct) && !l.li && !HIST(l) && (l.et === "listado" ? l.aq : ["final", "preco"].includes(l.et0 || l.et)));
 // ARV estimado (vitrine_outros.arv_estimado, Cris 26/10): lote listado fora da FL, sem comps; entra na régua mas não nos critérios BLR
 const EST = l => l.et === "listado" && !!l.aq && !!l.am;
-const AQ_T = {b: "valor de mercado oficial do condado", m: "preço/pé² do CEP × área da construção", z: "casas mais baratas do CEP"};
+const AQ_T = {b: "valor de mercado oficial do condado", m: "preço/pé² do CEP × área da construção", z: "casas mais baratas do CEP", v: "vendas reais do entorno"};
 const AF_T = {altura: "projeção da casa no mapa da FEMA × andares pela altura", cadastro: "projeção da casa no mapa da FEMA × andares do cadastro",
   "sem altura": "projeção da casa no mapa da FEMA (térrea)", cep: "valor ÷ preço/pé² do CEP"};
 const fechaEst = l => EST(l) && !HIST(l) && l.ab > 0 && l.teto >= l.ab;
@@ -1036,6 +1044,7 @@ async function carregaSeg(){
 }
 function situacao(x){
   const l = L.find(y => y.i === x.i);
+  if(!l && faltam()) return ["Carregando os lotes…", ""];   // 04/11: o estado do lote ainda não chegou
   if(!l) return ["Saiu da vitrine (o leilão passou há mais de 120 dias ou o lote foi retirado)", ""];
   if(HIST(l)){ const r = l.rs || {};
     if(r.s === "vendido" && !r.v) return [`Vendido no leilão de ${dm(l.d)} · valor e comprador para membros`, "ok"];
@@ -1136,19 +1145,23 @@ const leiTxt = uf => { const x = POR_UF.get(uf); if(!x) return "nada no calendá
 function kpis(){
   const A = L.filter(l => !HIST(l)), vend = L.filter(l => HIST(l) && l.rs && l.rs.s === "vendido").length;
   const ch = DADOS.chance || {}, chT = ch.n >= 10 ? `<span title="dos ${ch.n} lotes já vendidos em que o teto BLR passava da abertura, ${ch.g} saíram pelo teto ou menos">${Math.round(100 * ch.g / ch.n)}%</span>` : "—";
-  const cos = new Set(A.map(l => l.uf + l.co)).size;
-  const prox = A.map(l => l.d).filter(d => d && d >= HOJE_L).sort()[0];
+  const K = faltam() && IDX ? IDX.k : null;   // 04/11: estados ainda carregando: os números do país vêm do índice
+  const cos = K ? K.cos : new Set(A.map(l => l.uf + l.co)).size;
+  const prox = [...(K ? [K.prox] : []), ...A.map(l => l.d)].filter(d => d && d >= HOJE_L).sort()[0];
   $("#kpis").innerHTML = [
-    [A.length.toLocaleString("pt-BR"), "lotes à venda"], [A.filter(noCrit).length, "nos critérios BLR (Flórida)"], [chT, "chance histórica de arremate no teto"],
-    [vend, "vendidos no histórico"], ...(COMP.length ? [[COMP.filter(c => c.st !== "vendido").length, "imóveis comprados pela BLR"]] : []),
+    [(K ? K.a : A.length).toLocaleString("pt-BR"), "lotes à venda"], [K ? K.cr : A.filter(noCrit).length, "nos critérios BLR"], [chT, "chance histórica de arremate no teto"],
+    [K ? K.vend : vend, "vendidos no histórico"], ...(COMP.length ? [[COMP.filter(c => c.st !== "vendido").length, "imóveis comprados pela BLR"]] : []),
     [POR_UF.size, "estados"], [cos, "condados"], [dm(prox), "próximo leilão"]
   ].map(([v,t]) => `<div class="kpi"><b class="num">${v}</b><span>${t}</span></div>`).join("");
 }
-function opcoes(){
-  const ufs = [...new Set(L.map(l => l.uf))].sort();
-  $("#fUf").insertAdjacentHTML("beforeend", ufs.map(u => `<option value="${u}">${esc(UFN[u] || u)}</option>`).join(""));
+function opcoes(){   // 04/11: refeita a cada estado que chega, mantendo a escolha
+  const v0 = [$("#fUf").value, $("#fTipo").value];
+  document.querySelectorAll("#fUf option[data-o], #fTipo option[data-o]").forEach(o => o.remove());
+  const ufs = [...new Set([...L.map(l => l.uf), ...PARTES.map(p => p.uf)])].sort();
+  $("#fUf").insertAdjacentHTML("beforeend", ufs.map(u => `<option data-o value="${u}">${esc(UFN[u] || u)}</option>`).join(""));
   const ts = [...new Set(L.map(l => l.u).filter(Boolean))].sort();
-  $("#fTipo").insertAdjacentHTML("beforeend", ts.map(t => `<option value="${esc(t)}">${esc(tipo(t))}</option>`).join(""));
+  $("#fTipo").insertAdjacentHTML("beforeend", ts.map(t => `<option data-o value="${esc(t)}">${esc(tipo(t))}</option>`).join(""));
+  $("#fUf").value = v0[0]; $("#fTipo").value = v0[1];
 }
 function filtrados(paraMapa, semSel){
   const q = $("#fBusca").value.trim().toLowerCase(), uf = $("#fUf").value, tp = $("#fTipo").value, mx = +$("#fMax").value || 0, tip = $("#fTip").checked, on = $("#fOn").checked,
@@ -1206,9 +1219,10 @@ function render(){
   const r = filtrados(), fm = MAPA ? filtrados(true) : null, nf = nFiltros(), noMapa = !$("#v-mapa").hidden;
   const fm0 = LSEL && fm ? filtrados(true, true) : fm;   // o painel conta sem o leilão escolhido (os outros leilões seguem com número)
   MF = fm0 && new Set(fm0);
-  $("#cont").textContent = noMapa && fm ? `${fm.filter(l => !HIST(l)).length.toLocaleString("pt-BR")} lotes no mapa`
+  $("#cont").textContent = (noMapa && fm ? `${fm.filter(l => !HIST(l)).length.toLocaleString("pt-BR")} lotes no mapa`
     : (nh => `${(r.length - nh).toLocaleString("pt-BR")} de ${L.filter(l => !HIST(l)).length.toLocaleString("pt-BR")} lotes à venda`   // 31/10 (Clauds): mesmo total do topo; histórico à parte
-      + (nh ? ` + ${nh.toLocaleString("pt-BR")} do histórico` : ""))(r.filter(HIST).length);
+      + (nh ? ` + ${nh.toLocaleString("pt-BR")} do histórico` : ""))(r.filter(HIST).length))
+    + (faltam() ? ` · carregando ${plural(faltam(), "estado", "estados")}…` : "");   // 04/11: lotes chegam por estado
   $("#fLimpa").hidden = !nf;
   $("#tgFil").textContent = nf ? `Filtros · ${nf}` : "Filtros";
   $("#grid").innerHTML = (r.slice(0, mostrar).map(cartao).join("") || `<p style="color:var(--mute)">Nenhum lote com esses filtros.</p>`)
@@ -1476,16 +1490,17 @@ let DB = null, USER = null, UID = null, PODE = false, DONO = false;
     $("#whoTxt").textContent = ASSIN ? (DONO ? "Acesso total (dono)" : "Assinante") : "Visitante";
   }catch(e){ /* sem acesso: vitrine pública */ }
 })();
+function poePremium(l, p){ l.teto = p.t; l.arv = p.a; l.am = p.am;   // 04/11: também no lote que chega depois (maisLotes)
+  for(const c of ["arv_alto", "arv_alto_txt", "a0", "arv_nota", "ac", "jv", "shp", "img"]) if(p[c] != null) l[c] = p[c];   // jv exato, contorno e foto: só membro (01/11)   // trava do ARV (vitrine_arv.py, 28/10)
+  if(l.rs && (p.rv || p.rf)) Object.assign(l.rs, {v: p.rv, q: p.rq, src: p.rf}); }   // leilão passado: valor, comprador e fonte só para membro
 async function carregaPremium(){
   if(!DB && !MEMBRO) return;
   let n = 0;
   for(const uf of new Set(L.filter(l => l.pr).map(l => l.uf))){
     try{ const d = MEMBRO ? MEMBRO.premium[uf] || {} : (await DB.doc("premium/" + uf).get()).data() || {};
-      for(const l of L){ const p = d[l.i]; if(p){ l.teto = p.t; l.arv = p.a; l.am = p.am; n++;
-        for(const c of ["arv_alto", "arv_alto_txt", "a0", "arv_nota", "ac", "jv", "shp", "img"]) if(p[c] != null) l[c] = p[c];   // jv exato, contorno e foto: só membro (01/11)   // trava do ARV (vitrine_arv.py, 28/10)
-        if(l.rs && (p.rv || p.rf)) Object.assign(l.rs, {v: p.rv, q: p.rq, src: p.rf}); } } }catch(e){}   // leilão passado: valor, comprador e fonte só para membro
+      for(const l of L){ const p = d[l.i]; if(p){ poePremium(l, p); n++; } } }catch(e){}
   }
-  ASSIN = n > 0;
+  ASSIN = n > 0 || !!(MEMBRO && faltam());   // 04/11: membro que entra antes de os estados chegarem
   if(ASSIN){
     try{ COMPRIV = (MEMBRO ? MEMBRO.premium.COMPRADOS : (await DB.doc("premium/COMPRADOS").get()).data()) || {}; }catch(e){}
     contaRefaz(true); if(MAPA) MAPA.comprados();
@@ -1539,7 +1554,7 @@ async function abre(i){
     : r.s === "vendido" ? `<div class="resultado vend"><span>Leilão de ${dm(l.d)}/${l.d.slice(0,4)}</span><b class="v">Vendido em leilão</b>
       <span>Valor de venda, tipo de comprador, comparação com o teto BLR e o link da página oficial do leilão: ${LOCK}</span></div>`
     : `<div class="resultado"><span>Leilão de ${dm(l.d)}/${l.d.slice(0,4)}</span><b class="v">${esc(RES_T[r.s] || "Já leiloado")}</b>
-      <span>${r.s === "saiu" ? "O lote saiu da lista antes da data: em geral o dono pagou a dívida (resgate) ou o condado cancelou." : r.s === "sem" ? "O resultado entra quando a BLR ler a página do leilão, na próxima atualização." : r.s === "resgatado" ? "O dono pagou a dívida antes do leilão; não houve venda." : "Não houve venda neste leilão."}</span></div>`;
+      <span>${r.s === "saiu" ? "O lote saiu da lista antes da data: em geral o dono pagou a dívida (resgate) ou o condado cancelou." : r.s === "sem" ? "O resultado entra quando a BLR ler a página do leilão, na próxima atualização." : r.s === "resgatado" ? "O dono pagou a dívida antes do leilão; não houve venda." : r.s === "credor" ? "O próprio credor que pediu a execução ficou com o imóvel (escritura do xerife ou status oficial do leilão); não houve comprador de fora." : "Não houve venda neste leilão."}</span></div>`;
   const numeros = LIST(l) ? `<div class="sec"><h4>Números do edital</h4><table class="tab2">
       <tr><td>Lance mínimo</td><td>${usd(l.ab)}${orig(l.ab)}</td></tr>
       <tr><td>Valor no cadastro${l.uf === "MI" ? " (2× SEV, que por lei é metade do valor de mercado)" : ""}</td><td>${k(l.jv)}</td></tr>
@@ -1547,7 +1562,7 @@ async function abre(i){
       ${l.aq ? `<tr><td>ARV estimado (${AQ_T[l.aq]})${gl("arv")}</td><td>${sel(l, fx(l.arv))}</td></tr>
       <tr class="dest"><td>Teto de lance estimado</td><td>${sel(l, l.teto > 0 ? k(l.teto) + (l.ab ? (l.teto >= l.ab ? " · fecharia" : " · não fecha") : "") : "não fecha")}</td></tr>`
         : `<tr class="dest"><td>Teto de lance BLR</td><td style="font-family:var(--f-b)">ainda não analisado</td></tr>`}</table>
-      ${l.aq ? `<div class="nota">Estimativa sem comparáveis, ${l.aq === "b" ? "pelo valor de mercado que o condado publica" : l.aq === "m" ? "pelo preço/pé² vendido no CEP (Redfin) × a área da construção, com 10% de desconto" : "pelo valor das casas mais baratas do CEP (Zillow)"}${l.ae ? `; área estimada ~${l.ae.toLocaleString("pt-BR")} pé² (${AF_T[l.af] || "estimada"})` : ""}${l.un > 1 ? `; o cadastro registra ${l.un} unidades` : ""}${l.y ? `; construída em ${l.y}` : ""}. Serve para priorizar; não entra nos critérios BLR até a análise.</div>` : ""}
+      ${l.aq ? `<div class="nota">${l.aq === "v" ? `Pelas vendas reais do entorno${l.cp ? ` (${l.cp.n} comparáveis, até ${l.cp.r || 1} milha, confiança ${l.cp.c})` : ""}` : "Estimativa sem comparáveis, " + (l.aq === "b" ? "pelo valor de mercado que o condado publica" : l.aq === "m" ? "pelo preço/pé² vendido no CEP (Redfin) × a área da construção, com 10% de desconto" : "pelo valor das casas mais baratas do CEP (Zillow)")}${l.ae ? `; área estimada ~${l.ae.toLocaleString("pt-BR")} pé² (${AF_T[l.af] || "estimada"})` : ""}${l.un > 1 ? `; o cadastro registra ${l.un} unidades` : ""}${l.y ? `; construída em ${l.y}` : ""}. Serve para priorizar; não entra nos critérios BLR até a análise.</div>` : ""}
       <div class="nota">Fonte: ${esc(l.fo || "edital do condado")}. ${esc(l.nt || "")}</div>
       <div class="aviso" style="margin-top:10px">Quer que a BLR passe este lote pelo funil (comparáveis, reforma, teto de lance e ônus)? <button type="button" class="lnk" data-info="${l.i}">Peça a análise</button>.</div></div>
       ${secoesConta(l)}`
@@ -1574,7 +1589,7 @@ async function abre(i){
       <tr><td>Tipo</td><td>${esc(tipoL(l))}</td></tr>
       <tr><td>Área construída</td><td>${l.a ? l.a.toLocaleString("pt-BR") + " sqft" : "—"}</td></tr>
       <tr><td>Ano</td><td>${esc(l.y || "—")}</td></tr>
-      <tr><td>Ônus (processo RealTDM)</td><td style="font-family:var(--f-b)">${onusTxt(l)}</td></tr>
+      <tr><td>Ônus${l.uf === "FL" ? " (processo RealTDM)" : ""}</td><td style="font-family:var(--f-b)">${onusTxt(l)}</td></tr>
       <tr><td>Resultado do funil BLR</td><td style="font-family:var(--f-b)">${esc(ETAPA[l.et] || l.et)}</td></tr>
       <tr><td>Força BLR${gl("forca")}</td><td style="font-family:var(--f-b)">${forcaHTML(l)} ${FORCA_T[forcaDe(l)]}</td></tr></table></div>`}
     ${entornoHTML(l)}
@@ -2004,7 +2019,7 @@ function criaMapa(){
     {renderer: rBase, interactive: false, style: {color: "#0C0E12", weight: .45, opacity: .45, fill: false}}).addTo(M);
   // condados dos estados com leilão
   const ufsCom = new Set(POR_UF.keys());
-  const FCOM = new Set(L.filter(l => !HIST(l)).map(l => l.f));   // condados com lote à venda
+  const FCOM = new Set([...L.filter(l => !HIST(l)).map(l => l.f), ...(IDX ? IDX.fcom : [])]);   // condados com lote à venda (04/11: + índice do site)
   const ctys = cty.filter(c => ufsCom.has(Object.keys(PRE).find(u => PRE[u] === c.id.slice(0, 2))));
   const ttCo = d => { const v = porCo.get(d.id) || [], n = lotesCo(d.id).length;
     return `<b>${esc(d.properties.name)} County</b><br>${v.length ? v.slice(0, 4).map(a => `${dm(a.d)} · ${esc(a.t)}`).join("<br>") : `<span style="color:var(--mute)">sem leilão no calendário</span>`}${n ? `<br><span style="color:var(--ok)">${plural(n, "lote", "lotes")}</span>` : ""}`; };
@@ -2243,7 +2258,8 @@ function criaMapa(){
     return `<button class="lin ${LSEL && LSEL.f === a.f && LSEL.d === a.d ? "sel" : ""}" data-f="${a.f}" data-d="${a.d}" title="Mostrar no mapa só os lotes deste leilão">${chipData(a.d)}
       <div><div class="nm">${esc(a.co)} County</div><div class="sb">${esc(a.t)}${a.pi && a.pi >= HOJE_L ? " · inscrição até " + dm(a.pi) : ""} ${selo(a.g)}${a.fr ? ` <span class="selo">fora do raio</span>` : ""}</div></div>
       ${n ? `<span class="qt">${plural(n, "lote", "lotes")}</span>` : `<span class="qt z">sem lotes</span>`}</button>`; };
-  const contaUF = () => { lotesUF = d3.rollup(L.filter(l => !HIST(l) && (MF ? MF.has(l) : !CRITM || noCrit(l))), v => v.length, l => l.uf); };
+  const contaUF = () => { lotesUF = d3.rollup(L.filter(l => !HIST(l) && (MF ? MF.has(l) : !CRITM || noCrit(l))), v => v.length, l => l.uf);
+    if(IDX && faltam()) for(const [uf, n] of Object.entries(IDX.uf)) if(!UF_OK.has(uf)) lotesUF.set(uf, n); };   // 04/11: estado que ainda não chegou
   function painelUS(){ contaUF();
     const ufs = [...ufsCom].sort((a, b) => (lotesUF.get(b) || 0) - (lotesUF.get(a) || 0) || ((porUF.get(a) || [{d: "9"}])[0].d).localeCompare((porUF.get(b) || [{d: "9"}])[0].d));
     $("#painelC").innerHTML = `<div class="ph"><h3>Onde tem leilão</h3><p>${POR_UF.size} estados: ${LEI.length} leilões no calendário (120 dias) e ${L.filter(l => !HIST(l)).length.toLocaleString("pt-BR")} lotes à venda${nFiltros() ? ` (${[...lotesUF.values()].reduce((a, b) => a + b, 0).toLocaleString("pt-BR")} com os seus filtros)` : ""}. Escolha o estado ou aproxime o mapa.</p></div>
@@ -2273,7 +2289,7 @@ function criaMapa(){
         <div class="sb">${esc(l.ci || l.co)} · ${esc(tipoL(l))}${l.a ? " · " + l.a.toLocaleString("pt-BR") + " sqft" : ""} · ${l.d ? "leilão " + dm(l.d) : "land bank"}</div>
         <div class="tp" ${l.et === "final" ? "" : 'style="color:var(--mute)"'}>${forcaHTML(l)} ${l.et === "final" ? (ASSIN ? `Teto BLR ${kT(l.teto)}` : "Nos critérios BLR · teto 🔒") + (l.desc != null ? ` · −${l.desc}% do cadastro` : "")
           : LIST(l) ? `Listado · cadastro ${k(l.jv)}${l.desc != null ? ` · −${l.desc}%` : ""}` : "Fora: " + esc(ETAPA[l.et] || l.et)}</div></div></button>`).join("")
-        || `<div class="vazio">A BLR ainda não publicou lotes deste leilão. Quando a lista sair, eles aparecem aqui.</div>`}${histHTML(f)}</div>`;
+        || `<div class="vazio">${PARTES.length && !UF_OK.has(nivel.uf) ? "Carregando os lotes deste estado…" : "A BLR ainda não publicou lotes deste leilão. Quando a lista sair, eles aparecem aqui."}</div>`}${histHTML(f)}</div>`;
   }
   const histHTML = f => { const hs = HISTON ? histCo(f).sort((a, b) => b.d.localeCompare(a.d)) : []; if(!hs.length) return "";
     return `<div class="hist-tit">Já leiloados · ${hs.length}</div>` + hs.slice(0, 150).map(l => `<button class="mini h" data-i="${l.i}">${fotoDe(l) ? `<img loading="lazy" src="${fotoDe(l).src}" alt="">` : `<span></span>`}
@@ -2294,7 +2310,7 @@ function criaMapa(){
   function abreUS(){ M.flyToBounds(EUA48, {padding: [6, 6], duration: VOO}); }
   let ALVO_UF = null;
   const BUF = {};
-  function abreUF(uf){ const fe = est.find(d => ufDe(d) === uf); if(fe){ ALVO_UF = uf; vai(boundsDe(fe), Z_EST + .25); } }
+  function abreUF(uf){ pedeUF(uf); const fe = est.find(d => ufDe(d) === uf); if(fe){ ALVO_UF = uf; vai(boundsDe(fe), Z_EST + .25); } }
   let ALVO = null;
   function abreCo(f){ const c = cty.find(c => c.id === f); if(c){ ALVO = f; ALVO_UF = Object.keys(PRE).find(u => PRE[u] === f.slice(0, 2)); vai(boundsDe(c), Z_CO + .25); } }
   function nivelDaTela(){
@@ -2427,7 +2443,7 @@ function criaMapa(){
     zAnt = zz;
     const n = nivelDaTela();
     if(n.uf !== nivel.uf || n.f !== nivel.f){
-      nivel = n; camCo.setStyle(estilCo);
+      nivel = n; camCo.setStyle(estilCo); if(n.uf) pedeUF(n.uf);
       if(LSEL && n.f !== LSEL.f){ LSEL = null; setTimeout(render, 0); }   // saiu do condado do leilão escolhido: volta a mostrar todos
       if(n.f){ painelCo(n.f); bairrosDe(n.f); satDe(n.f); exatoDe(n.f); }
       else { if(camSet){ M.removeLayer(camSet); camSet = null; setF = null; } satDe(null); n.uf ? painelUF(n.uf) : painelUS(); }
@@ -2600,7 +2616,7 @@ $("#fOrd").addEventListener("input", () => { if($("#fOrd").value === "gap" && !A
 
 function critTexto(){ $("#critTxt").textContent = CRIT
   ? `A análise completa da BLR hoje cobre só a Flórida: ${L.filter(l => noCrit(l) && !HIST(l)).length} lotes passaram em todo o funil (casa construída, preço que fecha, abertura sem sinal estranho e sem dívida que passe ao comprador). Os outros estados estão em "Todos os lotes".`
-  : `Mostrando os ${L.filter(l => !HIST(l)).length.toLocaleString("pt-BR")} lotes à venda. Os da Flórida que não passaram aparecem com o motivo ("Fora: ..."); os dos outros estados aparecem como "Listado" (a análise completa da BLR hoje cobre só a Flórida).`; }
+  : `Mostrando os ${L.filter(l => !HIST(l)).length.toLocaleString("pt-BR")} lotes à venda. Os da Flórida que não passaram aparecem com o motivo ("Fora: ..."); os dos outros estados com vendas reais já têm teto; o resto aparece como "Listado".`; }
 // 28/10: o seletor de Negócios (CRIT) e o do mapa (CRITM) são separados; Negócios abre nos critérios, o mapa em todos
 document.querySelectorAll(".segCrit button").forEach(b => b.onclick = () => { const m = !!b.closest("#segCritM"), v = b.dataset.crit === "1";
   if(m) CRITM = v; else CRIT = v;
@@ -2878,5 +2894,27 @@ if(window.L && window.d3 && window.topojson) MAPA = criaMapa();
 render();
 function rodape(){ $("#rodape").innerHTML = `${MOEDA !== "USD" ? `Valores em ${MOEDAS[MOEDA][1].toLowerCase()} pela cotação de ${CAMBIO.data.split("-").reverse().join("/")} (${esc(CAMBIO.fonte)}): US$ 1 = ${sim()} ${CAMBIO.r[MOEDA].toLocaleString("pt-BR", {maximumFractionDigits: 4})}. O leilão é sempre em dólar. ` : ""}Atualizado em ${HOJE.split("-").reverse().join("/")}. Fontes: ${esc(DADOS.meta.fonte)} Texas e Filadélfia: Linebarger (vendas do xerife); Michigan: tax-sale.info (Tesouro dos condados). Contornos, setores e ruas: Censo dos EUA. Fotos aéreas: USGS NAIP (domínio público). Não é oferta nem recomendação de investimento.`; }
 rodape();
+/* 04/11 (site leve): os lotes de cada estado chegam depois da primeira pintura, 3 de cada vez; o estado que a pessoa abre (mapa ou
+   filtro) passa na frente. A cada leva o topo, as opções, a conta do membro, a lista e o mapa se refazem (no máximo ~1 vez por s). */
+if(PARTES.length){
+  window.__PARTES_OK = false;
+  const fila = [...PARTES], tent = {}; let ativos = 0, tRef = 0, custo = 0;
+  pedeUF = uf => { const i = fila.findIndex(p => p.uf === uf); if(i > 0) fila.unshift(fila.splice(i, 1)[0]); };
+  $("#fUf").addEventListener("input", e => pedeUF(e.target.value));
+  const maisLotes = (uf, x) => { if(UF_OK.has(uf)) return;
+    const pm = MEMBRO && MEMBRO.premium ? MEMBRO.premium[uf] || {} : null;
+    for(const l of x.lotes || []){ prepLote(l, x.txt || []); if(pm && pm[l.i]) poePremium(l, pm[l.i]); L.push(l); }
+    UF_OK.add(uf); };
+  const refaz = () => { const t = performance.now(); kpis(); opcoes(); critTexto(); if(ASSIN) contaRefaz(true); render();
+    custo = performance.now() - t; if(!faltam()) window.__PARTES_OK = true; };
+  // celular lento: redesenhar o mapa a cada leva custa caro; o intervalo cresce com o custo do último redesenho
+  const agenda = () => { if(!faltam()){ clearTimeout(tRef); tRef = 0; refaz(); } else if(!tRef) tRef = setTimeout(() => { tRef = 0; refaz(); }, Math.max(900, 4 * custo)); };
+  const proxima = () => { while(ativos < 3 && fila.length){ const p = fila.shift(); ativos++;
+    fetch(p.a).then(r => { if(!r.ok) throw new Error(p.a + " " + r.status); return r.json(); }).then(x => maisLotes(p.uf, x))
+      .catch(e => { tent[p.uf] = (tent[p.uf] || 0) + 1; if(tent[p.uf] < 3) fila.push(p);
+        else { UF_OK.add(p.uf); console.error("lotes de " + p.uf + " não carregaram: " + e.message); } })
+      .finally(() => { ativos--; agenda(); proxima(); }); } };
+  requestAnimationFrame(() => setTimeout(proxima, 0));
+}
 </script>
 </body></html>
