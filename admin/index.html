@@ -109,7 +109,8 @@ async function api(m, rota, corpo){
   let r; try{ r = await fetch(API + rota, o); }catch(e){ return {st: 0, j: {}}; }
   const j = await r.json().catch(() => ({})); return {st: r.status, j};
 }
-const msgErro = r => (r.j && (r.j.mensagem || r.j.erro)) || (r.st ? "Erro " + r.st : "O servidor não respondeu. Tente de novo.");
+const msgErro = r => (r.j && r.j.erro === "origem_nao_permitida") ? "O servidor ainda não aceita esta ação a partir do site (pedido de liberação feito à Clauds). Por enquanto, faça pelo painel do servidor: " + API + "/admin"
+  : (r.j && (r.j.mensagem || r.j.erro)) ||(r.st ? "Erro " + r.st : "O servidor não respondeu. Tente de novo.");
 function toast(t){ const d = document.createElement("div"); d.className = "toast"; d.textContent = t; document.body.appendChild(d); setTimeout(() => d.remove(), 2600); }
 const dia = s => { if(!s) return "sem prazo"; const d = new Date(s); return isNaN(d) ? s : d.toLocaleDateString("pt-BR"); };
 const quando = s => { if(!s) return "nunca"; const d = new Date(s); if(isNaN(d)) return s; const h = (Date.now() - d) / 36e5;
