@@ -116,6 +116,9 @@ input[type=range]::-moz-range-thumb{width:24px;height:24px;border-radius:50%;bac
 .mos{position:absolute;display:grid;transition:transform 6s ease-out;transform-origin:var(--ox) var(--oy)}.mos img{width:256px;height:256px;display:block;opacity:0;transition:opacity .5s}.mos img.ok{opacity:1}
 .card:hover .mos{transform:scale(var(--z,1.12))}.foto img.pr{width:100%;height:100%;object-fit:cover;display:block}
 .foto .alvo{position:absolute;left:50%;top:50%;width:26px;height:26px;margin:-13px 0 0 -13px;border-radius:50%;border:2.5px solid var(--gold2);box-shadow:0 0 0 6px rgba(244,213,141,.25),0 0 22px var(--gold);animation:pulsa 2.2s ease-in-out infinite}
+.mos svg.pol{position:absolute;left:0;top:0;pointer-events:none;overflow:visible}
+.mos svg.pol polygon{fill:rgba(244,213,141,.18);stroke:#f4d58d;stroke-width:2.5;stroke-linejoin:round;filter:drop-shadow(0 0 6px rgba(0,0,0,.6));stroke-dasharray:2000;stroke-dashoffset:2000;animation:traca 1.6s .3s ease-out forwards}
+@keyframes traca{to{stroke-dashoffset:0}}
 .foto .alvo.larga{width:120px;height:120px;margin:-60px 0 0 -60px;border-style:dashed;border-width:2px;box-shadow:none}
 .foto .tag{position:absolute;left:10px;bottom:10px;font-size:11.5px;background:rgba(0,0,0,.55);color:#fff;padding:3px 8px;border-radius:999px;backdrop-filter:blur(6px)}
 @keyframes brilho{to{background-position:-200% 0}}
@@ -482,23 +485,33 @@ function motivos(r) {
 // foto: satélite do USGS (domínio público); membro vê a posição exata, visitante a região (posição arredondada)
 // blocos 256 px já prontos do USGS (rápidos); o ponto fica no centro do quadro
 const TILE = "https://basemap.nationalmap.gov/arcgis/rest/services/USGSImageryOnly/MapServer/tile/";
-function mosaico(la, ln, z, k, zoomCss) {
-  const n = 2 ** z, xt = (ln + 180) / 360 * n, r = la * Math.PI / 180, yt = (1 - Math.log(Math.tan(r) + 1 / Math.cos(r)) / Math.PI) / 2 * n;
+// 06/11: com o contorno real do lote (pol, só membro: vitrine_contornos.py) o desenho vai no mesmo quadro dos blocos
+const tileXY = (la, ln, n) => { const r = la * Math.PI / 180; return [(ln + 180) / 360 * n, (1 - Math.log(Math.tan(r) + 1 / Math.cos(r)) / Math.PI) / 2 * n]; };
+function mosaico(la, ln, z, k, zoomCss, pol) {
+  const n = 2 ** z, [xt, yt] = tileXY(la, ln, n);
   const x0 = Math.floor(xt) - k, y0 = Math.floor(yt) - k, px = (xt - x0) * 256, py = (yt - y0) * 256, m = 2 * k + 1;
   let imgs = "";
+  if (pol && pol.length > 2) imgs += `<svg class="pol" width="${m * 256}" height="${m * 256}"><polygon points="${pol.map(([a, b]) => { const [x, y] = tileXY(a, b, n); return ((x - x0) * 256).toFixed(1) + "," + ((y - y0) * 256).toFixed(1); }).join(" ")}"/></svg>`;
   for (let j = 0; j < m; j++) for (let i = 0; i < m; i++) imgs += `<img alt="" loading="lazy" src="${TILE}${z}/${y0 + j}/${x0 + i}" onload="this.classList.add('ok')" onerror="this.style.visibility='hidden'">`;
-  return `<div class="mos" style="grid-template-columns:repeat(${m},256px);left:calc(50% - ${px.toFixed(0)}px);top:calc(50% - ${py.toFixed(0)}px);--ox:${px.toFixed(0)}px;--oy:${py.toFixed(0)}px;transform:scale(${zoomCss});--z:${(zoomCss * 1.1).toFixed(2)}">${imgs}</div>`;
+  return `<div class="mos" style="grid-template-columns:repeat(${m},256px);grid-template-rows:repeat(${m},256px);left:calc(50% - ${px.toFixed(0)}px);top:calc(50% - ${py.toFixed(0)}px);--ox:${px.toFixed(0)}px;--oy:${py.toFixed(0)}px;transform:scale(${zoomCss});--z:${(zoomCss * 1.1).toFixed(2)}">${imgs}</div>`;
 }
 function fotoDe(l) {
   const p = priv(l), pm = prem(l);
   if (pm && pm.img && pm.img.s) return {src: "../" + pm.img.s, tag: "Satélite com o contorno do lote", exato: true, pronto: true};
+  if (p && p.pol && p.pol.length > 2) {
+    // centro e zoom pelo contorno: o lote inteiro cabe no quadro (o bloco do USGS vai até o nível 16; o resto é ampliação)
+    const la = p.pol.reduce((s, q) => s + q[0], 0) / p.pol.length, ln = p.pol.reduce((s, q) => s + q[1], 0) / p.pol.length;
+    const n = 2 ** 16, xy = p.pol.map(([a, b]) => tileXY(a, b, n)), xs = xy.map(q => q[0]), ys = xy.map(q => q[1]);
+    const lado = Math.max(Math.max(...xs) - Math.min(...xs), Math.max(...ys) - Math.min(...ys)) * 256;
+    return {la, ln, z: 16, s: Math.max(1, Math.min(3, 170 / (lado || 1))), pol: p.pol, tag: "Satélite com o contorno do lote", exato: true};
+  }
   if (p && p.la) return {la: p.la, ln: p.ln, z: 16, s: 1.7, tag: "Satélite · posição exata", exato: true};
   return {la: l.la, ln: l.ln, z: 15, s: 1, tag: "Satélite da região", exato: false};
 }
 function figura(l, k) {
   if (l.la == null) return `<div class="foto"><span class="tag">Sem posição no mapa</span></div>`;
   const f = fotoDe(l);
-  return `<div class="foto">${f.pronto ? `<img class="pr" alt="${esc(f.tag)}" src="${f.src}">` : mosaico(f.la, f.ln, f.z, k || 1, f.s) + `<span class="alvo ${f.exato ? "" : "larga"}"></span>`}<span class="tag">${esc(f.tag)}</span></div>`;
+  return `<div class="foto">${f.pronto ? `<img class="pr" alt="${esc(f.tag)}" src="${f.src}">` : mosaico(f.la, f.ln, f.z, k || 1, f.pol && k === 2 ? Math.min(3, f.s * 1.5) : f.s, f.pol) + (f.pol ? "" : `<span class="alvo ${f.exato ? "" : "larga"}"></span>`)}<span class="tag">${esc(f.tag)}</span></div>`;
 }
 function anel(n) {
   const r = 22, c = 2 * Math.PI * r;
@@ -569,7 +582,7 @@ function abreMapa() {
   if (MAPA) { MAPA.remove(); MAPA = null; }
   MAPA = L.map("mm", {zoomControl: false, attributionControl: true, preferCanvas: false});
   L.control.zoom({position: "bottomright"}).addTo(MAPA);
-  L.tileLayer("https://basemap.nationalmap.gov/arcgis/rest/services/USGSImageryTopo/MapServer/tile/{z}/{y}/{x}", {maxZoom: 16, attribution: "USGS The National Map"}).addTo(MAPA);
+  L.tileLayer("https://basemap.nationalmap.gov/arcgis/rest/services/USGSImageryTopo/MapServer/tile/{z}/{y}/{x}", {maxNativeZoom: 16, maxZoom: MEMBRO ? 19 : 13, attribution: "USGS The National Map"}).addTo(MAPA);
   const pts = [];
   R.slice(0, 1500).forEach((r, i) => {
     const p = priv(r.l), la = p && p.la || r.l.la, ln = p && p.ln || r.l.ln; if (la == null) return;
@@ -594,7 +607,7 @@ function ficha(r) {
   const linha = (k, v) => v == null || v === "" ? "" : `<dt>${k}</dt><dd>${v}</dd>`;
   const km = v => v == null ? null : String(v).replace(".", ",") + " km";
   const sv = p && p.sv ? `https://www.google.com/maps/embed?pb=!4v1!6m8!1m7!1s${encodeURIComponent(p.sv.p)}!2m2!1d${p.sv.la}!2d${p.sv.ln}!3f${p.sv.h}!4f0!5f0.78` : null;
-  const shp = pm && pm.shp ? `<svg class="shp" viewBox="-6 -6 112 112"><polygon points="${pm.shp.map(x => x.join(",")).join(" ")}" fill="rgba(244,213,141,.2)" stroke="#f4d58d" stroke-width="3" vector-effect="non-scaling-stroke"/></svg>` : "";
+  const shp = pm && pm.shp && !(p && p.pol) ? `<svg class="shp" viewBox="-6 -6 112 112"><polygon points="${pm.shp.map(x => x.join(",")).join(" ")}" fill="rgba(244,213,141,.2)" stroke="#f4d58d" stroke-width="3" vector-effect="non-scaling-stroke"/></svg>` : "";
   const hero = (modo) => modo === "sv" && sv ? `<iframe src="${sv}" loading="lazy" allowfullscreen referrerpolicy="no-referrer-when-downgrade" title="Street View"></iframe><span class="tag">Street View ao vivo (Google) · arraste para girar</span>`
     : figura(l, 2).replace('<div class="foto">', '<div class="foto" style="position:absolute;inset:0;aspect-ratio:auto;animation:none">').slice(0, -6) + shp + '</div>';
   const sl = p && p.la ? `https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=${p.la},${p.ln}` : null;
@@ -625,7 +638,8 @@ function ficha(r) {
   </div>`;
   fichaEl.hidden = false; fichaEl.scrollTop = 0; animaAneis(fichaEl);
   $("#fecha").onclick = () => { fichaEl.hidden = true; };
-  $("#fMapa").onclick = () => { fichaEl.hidden = true; abreMapa(); const pp = p && p.la ? [p.la, p.ln] : [l.la, l.ln]; if (MAPA && pp[0] != null) MAPA.setView(pp, 15); };
+  $("#fMapa").onclick = () => { fichaEl.hidden = true; abreMapa(); const pp = p && p.la ? [p.la, p.ln] : [l.la, l.ln]; if (MAPA && pp[0] != null) MAPA.setView(pp, 15);
+    if (MAPA && p && p.pol && p.pol.length > 2) { const g = L.polygon(p.pol, {color: "#f4d58d", weight: 2.5, fillOpacity: .15}).addTo(MAPA); MAPA.fitBounds(g.getBounds(), {maxZoom: 18, padding: [80, 80]}); } };
   fichaEl.querySelectorAll("[data-h]").forEach(b => b.onclick = () => { $("#hero").innerHTML = hero(b.dataset.h); fichaEl.querySelectorAll("[data-h]").forEach(x => x.setAttribute("aria-pressed", x === b)); });
 }
 
