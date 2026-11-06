@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<meta name="referrer" content="no-referrer">
+<title>Usuários — BLR</title>
+<link rel="icon" type="image/svg+xml" href="/blr-icon-small.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Sora:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* 06/11 (Cris): "aba de administração de usuários no login dos sócios". Só abre para quem o servidor da Clauds diz que é admin
+   (papel "admin" no /api/me). Tudo vai para a API dela (api.blrdevelopment.com/api/admin/...), com o cookie da sessão e o
+   X-CSRF que o /api/me devolve. Nada de dado de usuário fica nesta página ou no git. */
+:root{--bg:#0b0d11;--bg2:#12151b;--card:rgba(255,255,255,.05);--card2:rgba(255,255,255,.085);--ink:#f3f1ec;--mute:#a7abb3;--line:rgba(255,255,255,.12);
+  --gold:#e2b75e;--gold2:#f4d58d;--ok:#7fd6a4;--okbg:rgba(127,214,164,.12);--bad:#f28b82;--badbg:rgba(242,139,130,.12);--warn:#f0b36b;--warnbg:rgba(240,179,107,.12);
+  --sh:0 18px 50px rgba(0,0,0,.45);--r:18px;--ease:cubic-bezier(.2,.9,.25,1.15)}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]){--bg:#f4f1ea;--bg2:#ebe6da;--card:rgba(255,255,255,.8);--card2:#fff;--ink:#16181d;--mute:#5c6169;--line:rgba(20,20,30,.12);
+  --gold:#9a6f1c;--gold2:#b8892c;--ok:#1d7a4a;--okbg:#e5f4ec;--bad:#b3261e;--badbg:#fbe9e7;--warn:#9a5413;--warnbg:#fbefe1;--sh:0 14px 34px rgba(60,50,20,.12)}}
+:root[data-theme="light"]{--bg:#f4f1ea;--bg2:#ebe6da;--card:rgba(255,255,255,.8);--card2:#fff;--ink:#16181d;--mute:#5c6169;--line:rgba(20,20,30,.12);
+  --gold:#9a6f1c;--gold2:#b8892c;--ok:#1d7a4a;--okbg:#e5f4ec;--bad:#b3261e;--badbg:#fbe9e7;--warn:#9a5413;--warnbg:#fbefe1;--sh:0 14px 34px rgba(60,50,20,.12)}
+*{box-sizing:border-box}html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font:15px/1.5 Sora,system-ui,sans-serif;-webkit-font-smoothing:antialiased;min-height:100vh}
+button,input,select,textarea{font:inherit;color:inherit}button{cursor:pointer}a{color:var(--gold)}
+.serif{font-family:Fraunces,Georgia,serif;font-weight:500;letter-spacing:-.01em}
+.fundo{position:fixed;inset:0;pointer-events:none;z-index:0;background:radial-gradient(60vmax 50vmax at -10% -20%,rgba(122,90,29,.35),transparent 60%),radial-gradient(50vmax 40vmax at 110% 40%,rgba(29,61,94,.3),transparent 60%)}
+.top{position:sticky;top:0;z-index:5;display:flex;align-items:center;gap:12px;padding:12px 16px;background:color-mix(in srgb,var(--bg) 82%,transparent);backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+.top .marca{font-weight:700;letter-spacing:.14em;font-size:13px}.top .marca b{color:var(--gold)}
+.top .esp{flex:1}.top .marca{white-space:nowrap}@media (max-width:560px){.top .quem{display:none}.top{gap:8px}}.top .quem{color:var(--mute);font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:40vw}
+.b{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:var(--card);border-radius:999px;padding:8px 14px;font-size:14px;white-space:nowrap;transition:transform .2s var(--ease),background .2s}
+a.b{text-decoration:none;color:inherit}.b:hover{background:var(--card2);transform:translateY(-1px)}.b:disabled{opacity:.5;cursor:default;transform:none}
+.b.pri{background:var(--gold);color:#16120a;border-color:transparent;font-weight:600}.b.pri:hover{background:var(--gold2)}
+.b.mini{padding:5px 11px;font-size:13px}.b.perigo{color:var(--bad)}
+main{position:relative;z-index:1;max-width:1080px;margin:0 auto;padding:22px 16px 60px}
+h1{font-size:clamp(26px,4vw,36px);margin:4px 0 4px}h2{font-size:19px;margin:0 0 12px}
+.sub{color:var(--mute);margin:0 0 18px}
+.c{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:18px;box-shadow:var(--sh);margin-bottom:16px;animation:cai .5s var(--ease) both}
+@keyframes cai{from{opacity:0;transform:translateY(-14px)}to{opacity:1;transform:none}}
+.abas{display:flex;gap:6px;margin:0 0 16px;overflow-x:auto;scrollbar-width:none}
+.aba{border:1px solid var(--line);background:transparent;border-radius:999px;padding:8px 14px;color:var(--mute);white-space:nowrap}
+.aba[aria-selected="true"]{background:var(--ink);color:var(--bg);border-color:transparent}
+.aba .n{display:inline-block;min-width:20px;padding:0 6px;margin-left:6px;border-radius:999px;background:var(--warnbg);color:var(--warn);font-size:12px}
+.nums{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-bottom:16px}
+.num{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 14px;text-align:left;cursor:pointer;transition:transform .2s var(--ease)}
+.num:hover{transform:translateY(-2px)}.num[aria-pressed="true"]{outline:2px solid var(--gold)}
+.num b{display:block;font-size:24px;font-family:Fraunces,serif;font-weight:600}.num span{color:var(--mute);font-size:13px}
+.filtros{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.filtros input{flex:1 1 220px;min-width:0}
+input[type=text],input[type=email],input[type=date],select,textarea{background:var(--card2);border:1px solid var(--line);border-radius:12px;padding:9px 12px;width:100%}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--gold);outline-offset:1px}
+label{display:block;font-size:13px;font-weight:600;color:var(--mute)}label>input,label>select,label>textarea{margin-top:5px;color:var(--ink);font-weight:400}
+.grade{display:grid;grid-template-columns:1.4fr 1fr;gap:12px}.grade .todo{grid-column:1/-1}
+@media (max-width:640px){.grade{grid-template-columns:1fr}}
+.lista{display:flex;flex-direction:column;gap:8px}
+.m{display:grid;grid-template-columns:minmax(0,1.6fr) auto minmax(0,1fr) auto;gap:12px;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 14px;animation:cai .45s var(--ease) both}
+.m .nome{font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.m .em{color:var(--mute);font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.m .nt{color:var(--mute);font-size:12px;font-style:italic;margin-top:2px}
+.m .info{font-size:13px;color:var(--mute)}.m .info b{color:var(--ink);font-weight:500}
+.m .ac{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+@media (max-width:760px){.m{grid-template-columns:minmax(0,1fr) auto}.m .info{grid-column:1/-1}.m .ac{grid-column:1/-1;justify-content:flex-start}}
+.tag{display:inline-block;padding:2px 9px;border-radius:999px;font-size:12px;font-weight:600;white-space:nowrap}
+.tag.ativo{background:var(--okbg);color:var(--ok)}.tag.bloqueado{background:var(--badbg);color:var(--bad)}.tag.vencido,.tag.pendente,.tag.convidado{background:var(--warnbg);color:var(--warn)}
+.tag.papel{background:transparent;border:1px solid var(--line);color:var(--mute)}.tag.papel.admin{border-color:var(--gold);color:var(--gold)}
+.vazio{color:var(--mute);text-align:center;padding:24px}
+.ev{display:grid;grid-template-columns:120px minmax(0,1fr) minmax(0,1.2fr);gap:10px;padding:9px 2px;border-bottom:1px solid var(--line);font-size:13px}
+.ev .q{color:var(--mute)}.ev .a{font-weight:600}.ev .d{color:var(--mute);overflow-wrap:anywhere}
+@media (max-width:640px){.ev{grid-template-columns:1fr}}
+.link{background:var(--card2);border:1px dashed var(--gold);border-radius:12px;padding:12px;overflow-wrap:anywhere;font-size:13px;margin:10px 0}
+.ok{color:var(--ok)}.erro{color:var(--bad);font-size:14px;min-height:1em}
+.modal{position:fixed;inset:0;z-index:20;display:grid;place-items:center;padding:16px;background:rgba(0,0,0,.55);backdrop-filter:blur(4px)}
+.modal .c{width:min(560px,100%);max-height:90vh;overflow:auto;margin:0;background:var(--bg2);animation-duration:.3s}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);z-index:30;background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:999px;font-size:14px;box-shadow:var(--sh);animation:cai .35s var(--ease)}
+.login{max-width:400px;margin:8vh auto}
+.login form{display:flex;flex-direction:column;gap:12px}
+.nota{color:var(--mute);font-size:13px}
+[hidden]{display:none!important}
+</style>
+</head>
+<body>
+<div class="fundo"></div>
+<header class="top">
+  <a class="marca" href="/" style="text-decoration:none;color:inherit">BLR <b>·</b> USUÁRIOS</a>
+  <span class="esp"></span>
+  <span class="quem" id="quem"></span>
+  <button class="b mini" id="btTema" type="button" aria-label="Trocar claro/escuro">◐</button>
+  <a class="b mini" href="/">Vitrine</a>
+  <button class="b mini" id="btSair" type="button" hidden>Sair</button>
+</header>
+<main id="raiz"><p class="vazio">Conferindo o seu acesso…</p></main>
+
+<script>
+"use strict";
+const API = "https://api.blrdevelopment.com";
+const $ = s => document.querySelector(s);
+const esc = s => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+let EU = null, CSRF = "", MEMBROS = [], PEDIDOS = [], FILTRO = "todos", BUSCA = "", ABA = "membros";
+
+/* tema: o mesmo botão claro/escuro da página Para você (blr_tema) */
+try{ const t = localStorage.getItem("blr_tema"); if(t) document.documentElement.dataset.theme = t; }catch(e){}
+$("#btTema").onclick = () => { const r = document.documentElement, escuro = r.dataset.theme ? r.dataset.theme === "dark" : !matchMedia("(prefers-color-scheme: light)").matches;
+  r.dataset.theme = escuro ? "light" : "dark"; try{ localStorage.setItem("blr_tema", r.dataset.theme); }catch(e){} };
+
+/* API da Clauds: GET com cookie; POST com cookie + X-CSRF (o /api/me devolve). Erro vem como {st, j}. */
+async function api(m, rota, corpo){
+  const o = {method: m, credentials: "include", headers: {}};
+  if(corpo !== undefined){ o.headers["Content-Type"] = "application/json"; o.body = JSON.stringify(corpo); }
+  if(m !== "GET" && CSRF) o.headers["X-CSRF"] = CSRF;
+  let r; try{ r = await fetch(API + rota, o); }catch(e){ return {st: 0, j: {}}; }
+  const j = await r.json().catch(() => ({})); return {st: r.status, j};
+}
+const msgErro = r => (r.j && (r.j.mensagem || r.j.erro)) || (r.st ? "Erro " + r.st : "O servidor não respondeu. Tente de novo.");
+function toast(t){ const d = document.createElement("div"); d.className = "toast"; d.textContent = t; document.body.appendChild(d); setTimeout(() => d.remove(), 2600); }
+const dia = s => { if(!s) return "sem prazo"; const d = new Date(s); return isNaN(d) ? s : d.toLocaleDateString("pt-BR"); };
+const quando = s => { if(!s) return "nunca"; const d = new Date(s); if(isNaN(d)) return s; const h = (Date.now() - d) / 36e5;
+  return h < 1 ? "agora há pouco" : h < 24 ? `há ${Math.round(h)} h` : h < 24 * 30 ? `há ${Math.round(h / 24)} dias` : d.toLocaleDateString("pt-BR"); };
+const situacao = m => m.status === "ativo" && m.acesso_valido === false ? "vencido" : (m.status || "—");
+
+async function inicio(){
+  const r = await api("GET", "/api/me");
+  if(r.st === 200 && r.j && r.j.papel === "admin"){ EU = r.j; CSRF = r.j.csrf || ""; montaApp(); return; }
+  if(r.st === 200){ $("#raiz").innerHTML = `<div class="c login"><h1 class="serif">Só para administradores</h1>
+    <p class="sub">Você está conectado como ${esc(r.j.email)}, que não é administrador. Peça a um sócio para mudar o seu papel.</p>
+    <a class="b" href="/">Voltar para a vitrine</a></div>`; mostraSair(r.j); return; }
+  telaLogin(r.st === 0 ? "O servidor de login não respondeu. Tente de novo em instantes." : "");
+}
+function mostraSair(eu){ $("#quem").textContent = eu.email || ""; const b = $("#btSair"); b.hidden = false;
+  b.onclick = async () => { await api("POST", "/api/logout", {}); location.reload(); }; }
+
+function telaLogin(aviso){
+  $("#raiz").innerHTML = `<div class="c login"><h1 class="serif">Entrar</h1><p class="sub">Área de administração dos usuários da vitrine. Use o seu acesso BLR de administrador.</p>
+    <form id="fL"><label>E-mail<input type="email" name="email" autocomplete="username" required></label>
+    <label>Senha<input type="password" name="senha" autocomplete="current-password" required></label>
+    <button class="b pri" type="submit" style="justify-content:center">Entrar</button><div class="erro" id="lErro">${esc(aviso)}</div></form></div>`;
+  $("#fL").onsubmit = async e => { e.preventDefault(); const f = new FormData(e.target), bt = e.target.querySelector("button");
+    bt.disabled = true; bt.textContent = "Entrando…";
+    const r = await api("POST", "/api/login", {email: String(f.get("email")).trim().toLowerCase(), senha: f.get("senha")});
+    if(r.st >= 200 && r.st < 300){ inicio(); return; }
+    bt.disabled = false; bt.textContent = "Entrar";
+    $("#lErro").textContent = r.st === 401 ? "E-mail ou senha não conferem." : r.st === 429 ? "Muitas tentativas. Espere 15 minutos." : msgErro(r); };
+}
+
+function montaApp(){
+  mostraSair(EU);
+  $("#raiz").innerHTML = `<h1 class="serif">Usuários da vitrine</h1>
+    <p class="sub">Crie acessos, mande o convite, corte ou renove o prazo. O servidor não manda e-mail sozinho: o link do convite sai aqui para você enviar.</p>
+    <div class="abas" role="tablist">
+      <button class="aba" role="tab" data-aba="membros">Membros</button>
+      <button class="aba" role="tab" data-aba="novo">＋ Novo acesso</button>
+      <button class="aba" role="tab" data-aba="pedidos">Pedidos de senha<span class="n" id="nPed" hidden></span></button>
+      <button class="aba" role="tab" data-aba="auditoria">Histórico</button>
+    </div>
+    <section id="corpo"></section>
+    <p class="nota" style="margin-top:28px">Configuração do assistente de IA e as conversas continuam no <a href="${API}/admin" target="_blank" rel="noopener">painel completo do servidor</a>.</p>`;
+  document.querySelectorAll(".aba").forEach(b => b.onclick = () => vai(b.dataset.aba));
+  carregaPedidos(); vai("membros");
+}
+function vai(a){ ABA = a; document.querySelectorAll(".aba").forEach(b => b.setAttribute("aria-selected", b.dataset.aba === a));
+  ({membros: telaMembros, novo: telaNovo, pedidos: telaPedidos, auditoria: telaAuditoria})[a](); }
+
+/* ---------- membros ---------- */
+async function carregaMembros(){
+  const r = await api("GET", "/api/admin/membros");
+  if(r.st !== 200){ if(r.st === 401 || r.st === 403){ inicio(); return false; } $("#corpo").innerHTML = `<div class="c erro">${esc(msgErro(r))}</div>`; return false; }
+  MEMBROS = r.j.membros || []; return true;
+}
+async function telaMembros(){
+  $("#corpo").innerHTML = `<p class="vazio">Carregando…</p>`;
+  if(!await carregaMembros()) return;
+  desenhaMembros();
+}
+function desenhaMembros(){
+  const cont = {todos: MEMBROS.length, ativo: 0, vencido: 0, bloqueado: 0, admin: 0};
+  MEMBROS.forEach(m => { const s = situacao(m); if(s in cont) cont[s]++; if(m.papel === "admin") cont.admin++; });
+  const caixa = (k, rot) => `<button class="num" type="button" data-f="${k}" aria-pressed="${FILTRO === k}"><b>${cont[k]}</b><span>${rot}</span></button>`;
+  const q = BUSCA.toLowerCase();
+  const l = MEMBROS.filter(m => (FILTRO === "todos" || (FILTRO === "admin" ? m.papel === "admin" : situacao(m) === FILTRO))
+    && (!q || `${m.nome} ${m.email} ${m.notas || ""}`.toLowerCase().includes(q)))
+    .sort((a, b) => String(b.ultimo_login_em || "").localeCompare(String(a.ultimo_login_em || "")) || String(a.nome || a.email).localeCompare(String(b.nome || b.email)));
+  $("#corpo").innerHTML = `<div class="nums">${caixa("todos", "no total")}${caixa("ativo", "ativos")}${caixa("vencido", "com prazo vencido")}${caixa("bloqueado", "bloqueados")}${caixa("admin", "administradores")}</div>
+    <div class="filtros"><input type="text" id="busca" placeholder="Buscar por nome, e-mail ou nota" value="${esc(BUSCA)}" aria-label="Buscar">
+      <button class="b" type="button" id="btRec">↻ Atualizar</button><button class="b pri" type="button" id="btNovo">＋ Novo acesso</button></div>
+    <div class="lista">${l.length ? l.map((m, k) => linha(m, k)).join("") : `<div class="vazio">Nenhum membro ${FILTRO === "todos" && !q ? "ainda" : "com esse filtro"}.</div>`}</div>`;
+  document.querySelectorAll(".num").forEach(b => b.onclick = () => { FILTRO = FILTRO === b.dataset.f ? "todos" : b.dataset.f; desenhaMembros(); });
+  const bi = $("#busca"); bi.oninput = () => { BUSCA = bi.value; const p = bi.selectionStart; desenhaMembros(); const n = $("#busca"); n.focus(); n.setSelectionRange(p, p); };
+  $("#btRec").onclick = telaMembros; $("#btNovo").onclick = () => vai("novo");
+  document.querySelectorAll("[data-ac]").forEach(b => b.onclick = () => acao(b.dataset.ac, MEMBROS.find(m => String(m.id) === b.dataset.id)));
+}
+function linha(m, k){
+  const s = situacao(m), eu = EU && m.email === EU.email;
+  const ia = m.perguntas ? ` · ${m.perguntas} pergunta${m.perguntas > 1 ? "s" : ""} ao assistente` : "";
+  return `<div class="m" style="animation-delay:${Math.min(k, 14) * 35}ms">
+    <div><div class="nome">${esc(m.nome || m.email)}${eu ? ` <span class="nota">(você)</span>` : ""}</div><div class="em">${esc(m.email)}</div>${m.notas ? `<div class="nt">${esc(m.notas)}</div>` : ""}</div>
+    <div><span class="tag ${esc(s)}">${esc(s)}</span> <span class="tag papel ${m.papel === "admin" ? "admin" : ""}">${m.papel === "admin" ? "admin" : esc(m.papel || "membro")}</span></div>
+    <div class="info">Acesso até <b>${esc(dia(m.expira_em))}</b><br>Último login: ${esc(quando(m.ultimo_login_em))}${esc(ia)}</div>
+    <div class="ac">
+      <button class="b mini" type="button" data-ac="prazo" data-id="${esc(m.id)}">Prazo</button>
+      <button class="b mini" type="button" data-ac="link" data-id="${esc(m.id)}">Novo link</button>
+      ${eu ? "" : `<button class="b mini ${m.status === "bloqueado" ? "" : "perigo"}" type="button" data-ac="bloq" data-id="${esc(m.id)}">${m.status === "bloqueado" ? "Desbloquear" : "Bloquear"}</button>`}
+    </div></div>`;
+}
+function modal(html){ fechaModal(); const d = document.createElement("div"); d.className = "modal"; d.id = "modal"; d.innerHTML = `<div class="c">${html}</div>`;
+  d.onclick = e => { if(e.target === d) fechaModal(); }; document.body.appendChild(d); const f = d.querySelector("input,button"); f && f.focus(); return d; }
+function fechaModal(){ const m = $("#modal"); m && m.remove(); }
+addEventListener("keydown", e => { if(e.key === "Escape") fechaModal(); });
+
+async function acao(tipo, m){
+  if(!m) return;
+  if(tipo === "bloq"){
+    const bloquear = m.status !== "bloqueado";
+    const d = modal(`<h2>${bloquear ? "Bloquear" : "Desbloquear"} ${esc(m.nome || m.email)}?</h2>
+      <p class="sub">${bloquear ? "A sessão cai na hora e a pessoa não entra mais até ser desbloqueada." : "A pessoa volta a entrar com a senha dela."}</p>
+      <div class="filtros"><button class="b ${bloquear ? "perigo" : "pri"}" id="mOk" type="button">${bloquear ? "Bloquear" : "Desbloquear"}</button><button class="b" id="mNao" type="button">Cancelar</button></div><div class="erro" id="mErro"></div>`);
+    d.querySelector("#mNao").onclick = fechaModal;
+    d.querySelector("#mOk").onclick = async () => { const r = await api("POST", "/api/admin/membros/" + m.id, {status: bloquear ? "bloqueado" : "ativo"});
+      if(r.st >= 400 || r.st === 0){ d.querySelector("#mErro").textContent = msgErro(r); return; }
+      fechaModal(); toast(bloquear ? "Bloqueado." : "Desbloqueado."); telaMembros(); };
+  }
+  if(tipo === "prazo"){
+    const atual = m.expira_em ? String(m.expira_em).slice(0, 10) : "";
+    const mais = n => { const d = new Date(); d.setMonth(d.getMonth() + n); return d.toISOString().slice(0, 10); };
+    const d = modal(`<h2>Prazo de acesso de ${esc(m.nome || m.email)}</h2><p class="sub">Depois dessa data a pessoa não entra mais. Vazio = sem prazo.</p>
+      <label>Acesso até<input type="date" id="mData" value="${esc(atual)}"></label>
+      <div class="filtros" style="margin-top:10px"><button class="b mini" type="button" data-m="1">+1 mês</button><button class="b mini" type="button" data-m="3">+3 meses</button><button class="b mini" type="button" data-m="12">+1 ano</button><button class="b mini" type="button" data-m="0">Sem prazo</button></div>
+      <div class="filtros"><button class="b pri" id="mOk" type="button">Salvar</button><button class="b" id="mNao" type="button">Cancelar</button></div><div class="erro" id="mErro"></div>`);
+    d.querySelectorAll("[data-m]").forEach(b => b.onclick = () => { d.querySelector("#mData").value = b.dataset.m === "0" ? "" : mais(+b.dataset.m); });
+    d.querySelector("#mNao").onclick = fechaModal;
+    d.querySelector("#mOk").onclick = async () => { const v = d.querySelector("#mData").value.trim() || null;
+      const r = await api("POST", "/api/admin/membros/" + m.id, {expira_em: v});
+      if(r.st >= 400 || r.st === 0){ d.querySelector("#mErro").textContent = msgErro(r); return; }
+      fechaModal(); toast("Prazo salvo."); telaMembros(); };
+  }
+  if(tipo === "link"){
+    const d = modal(`<h2>Novo link para ${esc(m.nome || m.email)}</h2><p class="sub">Gera um link para a pessoa criar uma senha nova (vale 48 h e uma vez só). O link anterior deixa de valer.</p>
+      <div class="filtros"><button class="b pri" id="mOk" type="button">Gerar link</button><button class="b" id="mNao" type="button">Cancelar</button></div><div class="erro" id="mErro"></div>`);
+    d.querySelector("#mNao").onclick = fechaModal;
+    d.querySelector("#mOk").onclick = async () => { const r = await api("POST", "/api/admin/membros/" + m.id + "/link");
+      if(r.st !== 200 && r.st !== 201){ d.querySelector("#mErro").textContent = msgErro(r); return; }
+      mostraConvite(m, r.j.link, false); };
+  }
+}
+/* o servidor não manda e-mail: o link sai aqui, pronto para copiar, mandar por e-mail ou WhatsApp */
+function mostraConvite(m, link, novo){
+  const nome = String(m.nome || "").split(" ")[0];
+  const texto = `Olá${nome ? " " + nome : ""}! ${novo ? "O seu acesso à vitrine da BLR Developments está pronto." : "Aqui está o link para criar uma senha nova na vitrine da BLR Developments."} Abra o link abaixo e escolha a sua senha (vale por 48 horas e uma vez só):\n\n${link}\n\nDepois é só entrar em https://www.blrdevelopment.com/ com este e-mail (${m.email}).`;
+  const d = modal(`<h2>${novo ? "Acesso criado" : "Link novo"} para ${esc(m.nome || m.email)}</h2>
+    <p class="sub">Mande este link para a pessoa. Vale 48 h e uma vez só.</p><div class="link" id="mLink">${esc(link)}</div>
+    <div class="filtros"><button class="b pri" type="button" id="mCop">Copiar mensagem</button>
+      <a class="b" href="mailto:${encodeURIComponent(m.email)}?subject=${encodeURIComponent("Seu acesso à vitrine BLR")}&body=${encodeURIComponent(texto)}">E-mail</a>
+      <a class="b" target="_blank" rel="noopener" href="https://wa.me/?text=${encodeURIComponent(texto)}">WhatsApp</a>
+      <button class="b" type="button" id="mFim">Fechar</button></div>`);
+  d.querySelector("#mCop").onclick = () => navigator.clipboard.writeText(texto).then(() => toast("Mensagem copiada."), () => toast("Não consegui copiar; selecione o link."));
+  d.querySelector("#mFim").onclick = () => { fechaModal(); if(ABA === "membros") telaMembros(); else vai("membros"); };
+}
+
+/* ---------- novo acesso ---------- */
+function telaNovo(){
+  $("#corpo").innerHTML = `<form class="c" id="fN"><h2>Novo acesso</h2>
+    <div class="grade"><label>E-mail<input type="email" name="email" required autocomplete="off"></label><label>Nome<input type="text" name="nome" required autocomplete="off"></label>
+      <label>Papel<select name="papel"><option value="membro">Membro (assinante)</option><option value="admin">Administrador (sócio)</option></select></label>
+      <label>Acesso até <span class="nota">(vazio = sem prazo)</span><input type="date" name="expira_em"></label>
+      <label class="todo">Notas internas <span class="nota">(só os administradores veem)</span><textarea name="notas" rows="2" placeholder="Ex.: indicado pelo Kelvin, plano anual"></textarea></label></div>
+    <div class="filtros" style="margin-top:14px"><button class="b pri" type="submit">Criar e gerar o convite</button></div><div class="erro" id="nErro"></div>
+    <p class="nota">Administrador vê esta página e tudo de membro. Membro vê a vitrine completa (endereço, ARV, teto) enquanto o acesso valer.</p></form>`;
+  $("#fN").onsubmit = async e => { e.preventDefault(); const f = new FormData(e.target), bt = e.target.querySelector("button[type=submit]");
+    const corpo = {email: String(f.get("email")).trim().toLowerCase(), nome: String(f.get("nome")).trim(), papel: f.get("papel"), expira_em: f.get("expira_em") || null, notas: String(f.get("notas")).trim() || null};
+    if(MEMBROS.some(m => m.email === corpo.email)){ $("#nErro").textContent = "Esse e-mail já tem acesso. Use “Novo link” na lista de membros."; return; }
+    if(corpo.papel === "admin" && !confirm(`Dar papel de ADMINISTRADOR para ${corpo.email}? Essa pessoa poderá criar e bloquear usuários.`)) return;
+    bt.disabled = true; bt.textContent = "Criando…";
+    const r = await api("POST", "/api/admin/membros", corpo);
+    bt.disabled = false; bt.textContent = "Criar e gerar o convite";
+    if(r.st !== 201 && r.st !== 200){ $("#nErro").textContent = msgErro(r); return; }
+    e.target.reset(); mostraConvite(r.j.membro || corpo, r.j.link, true); carregaMembros(); };
+}
+
+/* ---------- pedidos de "esqueci a senha" ---------- */
+async function carregaPedidos(){
+  const r = await api("GET", "/api/admin/pedidos"); if(r.st !== 200) return false;
+  PEDIDOS = (r.j.pedidos || []).filter(x => x.status === "pendente" || x.status === "falhou");
+  const n = $("#nPed"); if(n){ n.hidden = !PEDIDOS.length; n.textContent = PEDIDOS.length; } return r.j;
+}
+async function telaPedidos(){
+  $("#corpo").innerHTML = `<p class="vazio">Carregando…</p>`;
+  const j = await carregaPedidos(); if(!j){ $("#corpo").innerHTML = `<div class="c erro">Não consegui ler os pedidos.</div>`; return; }
+  $("#corpo").innerHTML = `<div class="c"><h2>Pedidos de senha nova</h2><p class="sub">${j.envio_automatico ? "Estes não saíram por e-mail. Gere um link e mande você." : "O envio automático de e-mail não está ligado: gere o link e mande você."}</p>
+    <div class="lista">${PEDIDOS.length ? PEDIDOS.map((x, k) => `<div class="m" style="animation-delay:${k * 35}ms"><div><div class="nome">${esc(x.nome || x.email || "—")}</div><div class="em">${esc(x.email || "")}</div></div>
+      <div><span class="tag ${esc(x.status)}">${esc(x.status)}</span></div><div class="info">${esc(quando(x.ts))}${x.detalhe ? "<br>" + esc(x.detalhe) : ""}</div>
+      <div class="ac"><button class="b mini pri" type="button" data-ped="${esc(x.membro_id)}">Gerar link</button></div></div>`).join("") : `<div class="vazio">Nenhum pedido esperando. ✓</div>`}</div></div>`;
+  document.querySelectorAll("[data-ped]").forEach(b => b.onclick = async () => { b.disabled = true;
+    const x = PEDIDOS.find(p => String(p.membro_id) === b.dataset.ped);
+    const r = await api("POST", "/api/admin/membros/" + b.dataset.ped + "/link"); b.disabled = false;
+    if(r.st !== 200 && r.st !== 201){ toast(msgErro(r)); return; }
+    mostraConvite({nome: x && x.nome, email: x && x.email}, r.j.link, false); carregaPedidos(); });
+}
+
+/* ---------- histórico (auditoria do servidor) ---------- */
+async function telaAuditoria(){
+  $("#corpo").innerHTML = `<p class="vazio">Carregando…</p>`;
+  const r = await api("GET", "/api/admin/eventos?limite=100");
+  if(r.st !== 200){ $("#corpo").innerHTML = `<div class="c erro">${esc(msgErro(r))}</div>`; return; }
+  const l = r.j.eventos || [];
+  $("#corpo").innerHTML = `<div class="c"><h2>Últimos 100 eventos</h2><p class="sub">Logins, convites, bloqueios e mudanças de prazo, como o servidor registrou.</p>
+    ${l.length ? l.map(e => `<div class="ev"><div class="q">${esc(new Date(e.ts).toLocaleString("pt-BR", {dateStyle: "short", timeStyle: "short"}))}</div>
+      <div><div class="a">${esc(e.acao)}</div><div class="q">${esc(e.email || "—")}</div></div><div class="d">${esc(e.detalhe || "")}${e.ip ? ` · ${esc(e.ip)}` : ""}</div></div>`).join("") : `<div class="vazio">Sem eventos.</div>`}</div>`;
+}
+
+inicio();
+</script>
+</body>
+</html>
