@@ -451,7 +451,7 @@ function avalia(l, P, parcial) {
     preco: l.vb && l.jv ? cl((l.vb / provavel(l) - 1) / 4) : .3,
     bairro: l.rb ? cl((l.rb - 30000) / 70000) * .6 + (l.vb ? cl((l.vb - 80000) / 320000) * .4 : .2) : .3,
     entorno: ["es", "mk", "hs"].map(k => e[k] == null ? .4 : cl(1 - e[k] / 10)).reduce((a, b) => a + b) / 3,
-    seguro: (agua ? 0 : .5) + (ruim ? 0 : l.on === "limpo" || l.on === "estado" ? .5 : .3),
+    seguro: (agua ? 0 : .5) + (ruim ? 0 : l.on === "limpo" || l.on === "estado" ? .5 : l.on === "provavel_limpo" ? .4 : .3),
     blr: (l.nv != null ? l.nv / 5 : .2) * .7 + (l.et === "final" ? .3 : 0),
     lote: l.lote_m2 ? cl(l.lote_m2 / 2000) : .3,
     logo: cl(1 - dd / 60)

@@ -8,7 +8,7 @@
 <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="manifest" href="/site.webmanifest">
 <style>*,*::before,*::after{box-sizing:border-box}html,body{margin:0}img{max-width:100%}[hidden]{display:none!important}
 :root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}</style>
-</head><body><link rel="preload" href="d_dados_541e37d063.json" as="fetch" crossorigin="anonymous"><link rel="preload" href="d_eua_145aaf5d14.json" as="fetch" crossorigin="anonymous"><title>Vitrine BLR</title>
+</head><body><link rel="preload" href="d_dados_81129b6850.json" as="fetch" crossorigin="anonymous"><link rel="preload" href="d_eua_145aaf5d14.json" as="fetch" crossorigin="anonymous"><title>Vitrine BLR</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -795,7 +795,7 @@ body{transition:padding-right .5s var(--mola)}
 <div class="modal" id="modal" hidden><div class="mbox" role="dialog" aria-modal="true" aria-labelledby="mTit">
   <button class="x" id="mX" type="button" aria-label="Fechar">✕</button><div id="mBody"></div></div></div>
 
-<script>(function(){var q=function(u){return fetch(u).then(function(r){if(!r.ok)throw new Error(u+' '+r.status);return r.json()})};Promise.all([q('d_dados_541e37d063.json'),q('d_eua_145aaf5d14.json')]).then(function(x){window.__DADOS=x[0];window.__EUA=x[1];var s=document.createElement('script');s.textContent=document.getElementById('app').textContent;document.body.appendChild(s)}).catch(function(e){var d=document.createElement('p');d.style.cssText='padding:24px;font:16px sans-serif';d.textContent='Não foi possível carregar os dados ('+e.message+'). Recarregue a página.';document.body.prepend(d)})})();</script>
+<script>(function(){var q=function(u){return fetch(u).then(function(r){if(!r.ok)throw new Error(u+' '+r.status);return r.json()})};Promise.all([q('d_dados_81129b6850.json'),q('d_eua_145aaf5d14.json')]).then(function(x){window.__DADOS=x[0];window.__EUA=x[1];var s=document.createElement('script');s.textContent=document.getElementById('app').textContent;document.body.appendChild(s)}).catch(function(e){var d=document.createElement('p');d.style.cssText='padding:24px;font:16px sans-serif';d.textContent='Não foi possível carregar os dados ('+e.message+'). Recarregue a página.';document.body.prepend(d)})})();</script>
 <script type="text/plain" id="app">
 const DADOS = window.__DADOS;
 const EUA = window.__EUA;
@@ -857,7 +857,9 @@ const tipoL = l => l.movel ? "Casa móvel" : tipo(l.u);   // 28/10: l.movel (vit
 const ONUS = {limpo:["Sem ônus público no processo","ok"], estado:["Só créditos do estado (caem no leilão)","ok"], nao_consultado:["Ônus: a BLR confere antes de dar o lance por você","info"],   // 28/10: era "Ônus ainda não conferido" (assustava)
   // 05/11: códigos que já vinham da FL (gev_kmz.ONUS) e caíam no texto padrão, + "hipoteca" dos coletores de NJ/IN/PA (nacional/onus/)
   publico:["Lien de governo SOBREVIVE ao leilão","al"], federal:["Governo federal (IRS/EUA) citado: resgate de 120 dias a 1 ano após o leilão","al"],
-  hipoteca:["Hipoteca ou gravame anterior SOBREVIVE ao leilão","al"]};
+  hipoteca:["Hipoteca ou gravame anterior SOBREVIVE ao leilão","al"],
+  // 06/11: IN com só o dono como réu (OK do Cris: "provável", não "limpo")
+  provavel_limpo:["Provável limpo: só o dono citado no processo (a BLR confere antes do lance)","ok"]};
 const ONUS_R = {baixo: "risco baixo", medio: "risco médio", alto: "risco alto", desconhecido: "risco a conferir"};
 // 05/11: fora da FL a linha diz também o risco (nacional/onus/<uf>.py); o resumo do processo vem do privado (membro, ficha)
 const onusTxt = l => (ONUS[l.on] || ONUS.nao_consultado)[0].replace(/^Ônus: a/, "A") + (l.uf !== "FL" && l.onr && ONUS_R[l.onr] ? " · " + ONUS_R[l.onr] : "");   // na linha que já diz "Ônus"
