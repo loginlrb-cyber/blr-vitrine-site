@@ -247,7 +247,7 @@ function mostraConvite(m, link, novo){
   const d = modal(`<h2>${novo ? "Acesso criado" : "Link novo"} para ${esc(m.nome || m.email)}</h2>
     <p class="sub">Mande este link para a pessoa. Vale 48 h e uma vez só.</p><div class="link" id="mLink">${esc(link)}</div>
     <div class="filtros"><button class="b pri" type="button" id="mCop">Copiar mensagem</button>
-      <a class="b" href="mailto:${encodeURIComponent(m.email)}?subject=${encodeURIComponent("Seu acesso à vitrine BLR")}&body=${encodeURIComponent(texto)}">E-mail</a>
+      <a class="b" href="mailto:${encodeURIComponent(m.email)}?subject=${encodeURIComponent("Seu acesso à BLR Developments")}&body=${encodeURIComponent(texto)}">E-mail</a>
       <a class="b" target="_blank" rel="noopener" href="https://wa.me/?text=${encodeURIComponent(texto)}">WhatsApp</a>
       <button class="b" type="button" id="mFim">Fechar</button></div>`);
   d.querySelector("#mCop").onclick = () => navigator.clipboard.writeText(texto).then(() => toast("Mensagem copiada."), () => toast("Não consegui copiar; selecione o link."));

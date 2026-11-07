@@ -1,14 +1,14 @@
 <!doctype html><html lang="pt-BR"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex,nofollow"><meta name="theme-color" content="#0C0E12">
-<meta name="description" content="Vitrine BLR: imóveis indo a leilão nos EUA, analisados pela BLR Developments.">
+<meta name="description" content="BLR Developments: imóveis indo a leilão nos EUA, analisados e precificados pela BLR.">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob: https:; connect-src 'self' https://api.blrdevelopment.com; frame-src https://www.google.com; object-src 'none'; base-uri 'self'; form-action 'self'">
 <link rel="icon" href="/favicon.ico" sizes="any"><link rel="icon" type="image/svg+xml" href="/blr-icon-small.svg">
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png"><link rel="icon" type="image/png" sizes="16x16" href="/favicon-16.png">
 <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="manifest" href="/site.webmanifest">
 <style>*,*::before,*::after{box-sizing:border-box}html,body{margin:0}img{max-width:100%}[hidden]{display:none!important}
 :root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}</style>
-</head><body><link rel="preload" href="d_dados_8d1b4134dd.json" as="fetch" crossorigin="anonymous"><link rel="preload" href="d_eua_145aaf5d14.json" as="fetch" crossorigin="anonymous"><title>Vitrine BLR</title>
+</head><body><link rel="preload" href="d_dados_8d1b4134dd.json" as="fetch" crossorigin="anonymous"><link rel="preload" href="d_eua_145aaf5d14.json" as="fetch" crossorigin="anonymous"><title>BLR Developments</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -121,6 +121,43 @@ body:has(#cmpbar:not([hidden])) .iafab{bottom:calc(84px + env(safe-area-inset-bo
 @media (max-width:640px){.iabox{left:8px;right:8px;bottom:calc(86px + env(safe-area-inset-bottom,0px));width:auto;max-height:62vh}}
 /* guia (assinante) */
 .vguia .hero,.vguia .crit{display:none}
+/* 07/11 (Rodrigo): barra nova, Pacotes e Meu portfólio */
+.vpriv .hero,.vpriv .crit{display:none}
+.vlt{position:absolute;transform:translate(-50%,calc(-100% - var(--r) - 3px));white-space:nowrap;pointer-events:none;font:700 11px/1.2 var(--f-m);color:#EEF0F3;background:rgba(12,14,18,.85);border:1px solid rgba(255,255,255,.14);padding:1px 5px;border-radius:6px}
+.tbi{display:none;font-style:normal}
+.tbn{font-family:var(--f-m);font-weight:500;font-size:11px;margin-left:5px;padding:1px 6px;border-radius:9px;background:var(--surf2);color:var(--tx2)}
+#btSeg.tem .tbn{background:var(--acc);color:var(--ink)}
+.plSelo{font-size:12px;font-weight:700;padding:6px 10px;border-radius:9px;border:1px solid var(--acc);color:var(--acc);white-space:nowrap}
+.pacbar{display:flex;justify-content:flex-end;padding-top:14px}
+.pacv,.port{padding-block:8px 32px}
+.pactopo h2{margin:6px 0 4px;font-family:var(--f-d)}
+.pactopo .nota{margin:0 0 14px;max-width:70ch}
+.portK{display:flex;flex-wrap:wrap;gap:12px 28px;margin:6px 0 18px}
+.portG{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px}
+.portB{border:1px solid var(--line);border-radius:12px;padding:14px 16px;background:var(--surf)}
+.portB h3{margin:0 0 6px;font-size:15px}.portB p{margin:0 0 6px;color:var(--tx2);font-size:13px;line-height:1.5}
+.portB .vazio{color:var(--mute);font-style:italic;margin:0}
+.portAv{display:flex;flex-wrap:wrap;align-items:center;gap:10px;padding:12px 14px;border-radius:12px;border:1px solid var(--acc);margin-bottom:16px}
+.cobvolta{padding-top:14px}
+.tabs button{white-space:nowrap}
+@media (max-width:1400px){.tabs button .lg-full{display:none}.tabs button .tb-curto{display:inline}}
+@media (max-width:1150px){.hbt.ass .lg-full{display:none}.top .who{display:none}}
+@media (max-width:760px){
+  .top{backdrop-filter:none;background:rgba(12,14,18,.97)}   /* com blur, o fixed das abas ficaria preso no topo */
+  .top .tabs{position:fixed;left:0;right:0;bottom:0;z-index:1100;margin:0;gap:0;display:grid;grid-template-columns:repeat(5,1fr);
+    background:rgba(12,14,18,.97);border-top:1px solid var(--line);padding:4px 2px calc(4px + env(safe-area-inset-bottom,0px))}
+  .top .tabs button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:5px 2px!important;font-size:11px!important;border-radius:8px;position:relative;text-align:center}
+  .top .tabs .tbi{display:block;font-size:17px;line-height:1}
+  .top .tabs .tbn{position:absolute;top:1px;left:calc(50% + 6px);margin:0;padding:0 5px;font-size:10px}
+  .top #guiaC{display:none}
+  .plSelo{padding:5px 6px;font-size:11px}
+  body{padding-bottom:calc(56px + env(safe-area-inset-bottom,0px))}
+  body #v-mapa{height:calc(100dvh - 117px - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px))}   /* o mapa termina em cima da barra de abas */
+  .iafab{bottom:calc(76px + env(safe-area-inset-bottom,0px))}
+  .cmpbar{bottom:calc(70px + env(safe-area-inset-bottom,0px))!important}
+  .contaBox{bottom:calc(72px + env(safe-area-inset-bottom,0px))}
+  body:has(#ficha.on) .top .tabs{display:none}
+}
 .guia{max-width:860px;padding-block:22px 70px}
 .gtopo h2{font-family:var(--f-d);font-size:26px;margin:0 0 4px;text-wrap:balance}
 .gtopo p{color:var(--tx2);margin:0 0 14px}
@@ -137,7 +174,7 @@ body:has(#cmpbar:not([hidden])) .iafab{bottom:calc(84px + env(safe-area-inset-bo
 .git i.lgcomp{background:#16E0B0;border:2px solid #fff}
 @media (max-width:640px){.git{grid-template-columns:1fr}}
 /* 01/11 (Clauds, 4ª rodada 2.1): celular — sem rolagem para o lado, ★ só no mapa, botões de no mínimo 32 px, assistente acima da barra do mapa */
-@media (max-width:430px){.top #btSeg{display:none}}
+
 @media (max-width:760px){
   #v-mapa .painel button{min-height:34px}
   .mapa-box .leg .lt{min-height:30px;padding-block:6px}
@@ -288,7 +325,7 @@ body{transition:padding-right .25s ease}
   body.pfic #fBody .sec>h4::after{display:none}
   body.pfic .sec,body.pfic table,body.pfic figure{break-inside:avoid}
   body.pfic a{color:#111}
-  body.pfic #fBody::after{content:"Vitrine BLR · www.blrdevelopment.com · teto e ARV são estimativas da BLR; confira antes de dar lance. Não é oferta nem recomendação de investimento.";display:block;margin-top:18px;padding-top:8px;border-top:1px solid #ccc;font-size:10.5px;color:#555}
+  body.pfic #fBody::after{content:"BLR Developments · www.blrdevelopment.com · teto e ARV são estimativas da BLR; confira antes de dar lance. Não é oferta nem recomendação de investimento.";display:block;margin-top:18px;padding-top:8px;border-top:1px solid #ccc;font-size:10.5px;color:#555}
   @page{margin:12mm}
 }
 .fh .x{all:unset;cursor:pointer;margin-left:auto;width:34px;height:34px;border-radius:9px;display:grid;place-items:center;color:var(--tx2);border:1px solid var(--line2);flex:none}
@@ -769,20 +806,20 @@ body{transition:padding-right .5s var(--mola)}
 </style>
 
 <header class="top"><div class="wrap">
-  <div class="logo" title="Vitrine BLR"><i class="ico" aria-hidden="true"><svg viewBox="0 0 64 64" width="26" height="26"><rect width="64" height="64" rx="14" fill="#0C0E12"/><path d="M32 59C25 50 11 39 11 26A21 21 0 1 1 53 26C53 39 39 50 32 59Z" fill="#E8B04B"/><path d="M32 13L45 24H41V36H23V24H19Z" fill="#0C0E12"/><rect x="29" y="27" width="6" height="9" rx="1" fill="#E8B04B"/></svg></i><span class="lg-full">Vitrine BLR</span><span class="lg-curto">BLR</span></div>
+  <div class="logo" title="BLR Developments"><i class="ico" aria-hidden="true"><svg viewBox="0 0 64 64" width="26" height="26"><rect width="64" height="64" rx="14" fill="#0C0E12"/><path d="M32 59C25 50 11 39 11 26A21 21 0 1 1 53 26C53 39 39 50 32 59Z" fill="#E8B04B"/><path d="M32 13L45 24H41V36H23V24H19Z" fill="#0C0E12"/><rect x="29" y="27" width="6" height="9" rx="1" fill="#E8B04B"/></svg></i><span class="lg-full">BLR Developments</span><span class="lg-curto">BLR</span></div>
   <nav class="tabs" role="tablist">
-    <button role="tab" data-v="mapa" aria-selected="true">Mapa</button>
-    <button role="tab" data-v="negocios" aria-selected="false">Lotes</button>
-    <button role="tab" data-v="cobertura" aria-selected="false">EUA</button>
-    <button role="tab" data-v="guia" aria-selected="false" title="Explicação de cada item (assinantes)">Guia<span class="cad" id="guiaC"> 🔒</span></button>
+    <button role="tab" data-v="mapa" aria-selected="true" title="Mapa dos leilões"><i class="tbi" aria-hidden="true">◎</i><span>BIDMAP</span></button>
+    <button role="tab" data-v="negocios" aria-selected="false" title="Lista dos lotes"><i class="tbi" aria-hidden="true">☰</i><span>BIDLIST</span></button>
+    <button role="tab" data-v="pacotes" aria-selected="false" id="btSeg" title="Seus pacotes de parcels (listas ★)"><i class="tbi" aria-hidden="true">★</i><span>Pacotes</span><b class="tbn" id="nSeg">0</b></button>
+    <button role="tab" data-v="portfolio" aria-selected="false" title="Seus parcels arrematados"><i class="tbi" aria-hidden="true">◈</i><span class="lg-full">Meu portfólio</span><span class="tb-curto">Portfólio</span></button>
+    <button role="tab" data-v="guia" aria-selected="false" title="Explicação de cada item (assinantes)"><i class="tbi" aria-hidden="true">?</i><span>Guia</span><span class="cad" id="guiaC"> 🔒</span></button>
   </nav>
   <div class="who"><span class="dot" id="dot"></span><span id="whoTxt">Visitante</span></div>
   <div class="acoes-top">
-    <button class="hbt conta" id="btConta" type="button" hidden aria-pressed="false" title="Conta BLR: margem, reforma e título">🧮<span class="lg-full"> Conta</span></button>
     <select class="moeda" id="moeda" aria-label="Moeda dos valores"></select>
-    <button class="hbt seg" id="btSeg" type="button" aria-label="Lotes que você acompanha">★ <b id="nSeg">0</b></button>
+    <span class="plSelo" id="plSelo" hidden></span>
     <button class="hbt ass" id="btAssina" type="button">Assinar<span class="lg-full"> · a partir de US$ 9,90/mês</span></button>
-    <button class="hbt carr" id="btCarr" type="button" aria-label="Carrinho">🛒 <b id="nCarr">0</b></button>
+    <button class="hbt carr" id="btCarr" type="button" aria-label="Carrinho de encomenda" title="Carrinho de encomenda">🛒 <b id="nCarr">0</b></button>
     <!-- 28/10: Entrar fica no fim; logado vira menu do usuário (o "Sair" ao lado da Conta deslogou o testador num clique errado) -->
     <button class="hbt ent" id="btEntrar" type="button" hidden aria-haspopup="true" aria-expanded="false">Entrar</button>
   </div>
@@ -841,6 +878,7 @@ body{transition:padding-right .5s var(--mola)}
           <button class="tg" id="tgSeg" type="button" aria-pressed="false" title="Só os lotes que acompanho" aria-label="Só os lotes que acompanho">★</button>
           <button class="tg" id="tgHist" type="button" aria-pressed="true">Histórico</button>
           <button class="tg" id="tgFil" type="button" aria-pressed="false" aria-controls="mFil">Filtros</button>
+          <button class="tg" id="tgEUA" type="button" title="Cobertura por estado">EUA</button>
           <button class="tg" id="tgReset" type="button" title="Limpar tudo e voltar ao mapa inteiro" aria-label="Limpar filtros e voltar ao mapa inteiro">↺</button>
           <button class="pmin" id="pMin" type="button" aria-label="Recolher a lista" aria-expanded="true">▾</button></div>
         <div class="mFil" id="mFil" hidden></div>
@@ -851,7 +889,15 @@ body{transition:padding-right .5s var(--mola)}
 
   <section id="v-guia" hidden><div class="guia" id="guia"></div></section>
 
+  <section id="v-pacotes" hidden>
+    <div class="pacbar"><button class="hbt conta" id="btConta" type="button" hidden aria-pressed="false" title="Conta BLR: margem, reforma e título">🧮 Parâmetros da conta</button></div>
+    <div class="pacv" id="pac"></div>
+  </section>
+
+  <section id="v-portfolio" hidden><div class="port" id="port"></div></section>
+
   <section id="v-cobertura" hidden>
+    <div class="cobvolta"><button type="button" class="lnk" id="cobVolta">← Voltar ao BIDMAP</button></div>
     <div class="cob" id="cob"></div>
   </section>
 
@@ -975,6 +1021,9 @@ const plural = (n, s, p) => n + " " + (n === 1 ? s : p);
 const UFN = DADOS.estados_nome;
 const LIST = l => l.et === "listado";
 const rotLance = l => LIST(l) ? "Lance mínimo" : "Abertura";
+// valor curto para o rótulo do mapa (07/11): 850 · 6,3k · 48k · 1,2M, na moeda escolhida
+const usdC = v => { const x = v * tx(), a = Math.abs(x);
+  return sim() + (a >= 1e6 ? (x / 1e6).toFixed(1).replace(".", ",") + "M" : a >= 1e4 ? Math.round(x / 1e3) + "k" : a >= 1e3 ? (x / 1e3).toFixed(1).replace(".", ",") + "k" : Math.round(x)); };
 
 /* ---------- forma do lote ---------- */
 function formaSVG(l, cor){
@@ -1169,7 +1218,7 @@ async function carregaSeg(){
 function situacao(x){
   const l = L.find(y => y.i === x.i);
   if(!l && faltam()) return ["Carregando os lotes…", ""];   // 04/11: o estado do lote ainda não chegou
-  if(!l) return ["Saiu da vitrine (o leilão passou há mais de 120 dias ou o lote foi retirado)", ""];
+  if(!l) return ["Saiu da plataforma (o leilão passou há mais de 120 dias ou o lote foi retirado)", ""];
   if(HIST(l)){ const r = l.rs || {};
     if(r.s === "vendido" && !r.v) return [`Vendido no leilão de ${dm(l.d)} · valor e comprador para membros`, "ok"];
     if(r.s === "vendido") return [`Vendido em ${dm(l.d)} por ${usd(r.v)}${l.ab ? ` (${(r.v / l.ab).toFixed(1).replace(".", ",")}× a abertura)` : ""} para ${COMPRA(r.q)}`, "ok"];
@@ -1183,6 +1232,8 @@ function situacao(x){
 }
 let LATIVA = null;
 function abreSeg(id){
+  if(typeof id !== "string") id = null;
+  if($("#v-pacotes").hidden){ if(id) LATIVA = id; fechaModal(); mostraVista("pacotes"); return; }   // 07/11: as listas moram na aba Pacotes
   const li = LISTAS.find(x => x.id === (id || LATIVA)) || LISTAS[0]; LATIVA = li.id;
   const abas = `<div class="labas" role="tablist">${LISTAS.map(x => `<button type="button" role="tab" data-la="${x.id}" aria-selected="${x.id === li.id}"><i style="background:${x.cor}"></i>${esc(x.nome)} <b>${x.itens.length}</b></button>`).join("")}
     ${ASSIN ? `<button type="button" class="lnk" data-lnova>＋ Nova lista</button>` : `<button type="button" class="lnk" data-assina>＋ Nova lista 🔒</button>`}</div>`;
@@ -1191,14 +1242,14 @@ function abreSeg(id){
     : `<div class="carr-lista">${li.itens.map(x => { const [t, c] = situacao(x), l = L.find(y => y.i === x.i);
       return `<div class="seg-it"><div><b>${esc(l ? (l.ci && l.ci !== l.co ? l.ci + ", " : "") + l.co + " County · " + l.uf : x.nm || x.i)}</b><span class="st ${c}">${esc(t)}</span></div>
         <div class="bts">${l ? `<button type="button" data-ver="${x.i}">Ver</button>` : ""}<button type="button" data-tseg="${x.i}">Tirar</button></div></div>`; }).join("")}</div>`;
-  abreModal(`<h3 id="mTit">Suas listas de acompanhamento</h3>${abas}
+  $("#pac").innerHTML = (`<div class="pactopo"><h2>Pacotes</h2><p class="nota">Cada lista ★ é um pacote de parcels. Marque ☆ Acompanhar num lote do BIDMAP ou da BIDLIST para guardar aqui.</p></div>${abas}
     <div class="lcab">${ASSIN ? `<input id="lNome" maxlength="40" value="${esc(li.nome)}" aria-label="Nome da lista"><span class="lcores">${LCORES.map(c => `<button type="button" data-lc="${c}" style="background:${c}" aria-label="Cor" aria-pressed="${c === li.cor}"></button>`).join("")}</span>` : `<b>${esc(li.nome)}</b>`}</div>
     ${crit}${corpo}
-    <p class="nota">${PODE || SESSAO ? "Guardado neste navegador e na sua conta assim que o servidor permitir." : "Fica guardado neste navegador."} A vitrine é atualizada duas vezes por semana.</p>
+    <p class="nota">${PODE || SESSAO ? "Guardado neste navegador e na sua conta assim que o servidor permitir." : "Fica guardado neste navegador."} Os lotes são atualizados duas vezes por semana.</p>
     <div class="facoes" style="margin-top:12px">${li.itens.length ? `<button class="cta" type="button" id="segMapa">Ver esta lista no mapa</button><button class="bfi" type="button" id="segXls">⤓ Excel</button>` : ""}
       <a class="bfi" href="para-voce/">✦ Novo questionário → nova lista</a>
-      ${LISTAS.length > 1 && ASSIN ? `<button class="bfi" type="button" id="segDel">Apagar lista</button>` : ""}<button class="bfi" type="button" onclick="fechaModal()">Fechar</button></div>`, true);
-  const m = $("#mBody");
+      ${LISTAS.length > 1 && ASSIN ? `<button class="bfi" type="button" id="segDel">Apagar lista</button>` : ""}</div>`);
+  const m = $("#pac");
   m.querySelectorAll("[data-la]").forEach(b => b.onclick = () => abreSeg(b.dataset.la));
   const bn = m.querySelector("[data-lnova]"); if(bn) bn.onclick = () => { const n = novaLista("Lista " + (LISTAS.length + 1)); salvaSeg(); abreSeg(n.id); setTimeout(() => { const i = $("#lNome"); i && i.select(); }, 50); };
   const inp = $("#lNome"); if(inp) inp.onchange = () => { li.nome = inp.value.trim().slice(0, 40) || li.nome; salvaSeg(); abreSeg(li.id); };
@@ -1435,11 +1486,15 @@ function menuUsuario(e){
   m = document.createElement("div"); m.id = "uMenu"; m.className = "umenu"; m.setAttribute("role", "menu");
   m.innerHTML = `<div>Conectado como <b>${esc($("#whoTxt").textContent)}</b>${b.dataset.email ? `<br><span class="nota">${esc(b.dataset.email)}</span>` : ""}</div>
     ${SESSAO && SESSAO.teste && SESSAO.teste_ate ? `<div class="nota">Teste grátis: ${(d => d > 0 ? plural(d, "dia", "dias") + " restantes" : "termina hoje")(Math.ceil((new Date(SESSAO.teste_ate) - new Date()) / 864e5))} · <button type="button" class="lnk" data-assina>Assinar</button></div>` : ""}
-    <button type="button" class="lnk" role="menuitem" data-listas>★ Minhas listas</button>
+    <button type="button" class="lnk" role="menuitem" data-listas>★ Meus pacotes</button>
+    <button type="button" class="lnk" role="menuitem" data-port>◈ Meu portfólio</button>
+    ${ASSIN ? `<button type="button" class="lnk" role="menuitem" data-mconta>🧮 Parâmetros da conta</button>` : ""}
+    <button type="button" class="lnk" role="menuitem" data-cob>🗺 Cobertura por estado</button>
+    <button type="button" class="lnk" role="menuitem" data-partner>◆ Tornar-se partner</button>
     <a class="lnk" role="menuitem" href="para-voce/">✦ Questionário Para você</a>
     <a class="lnk" role="menuitem" href="conta/">👤 Minha conta</a>
     <a class="lnk" role="menuitem" href="planos/">◆ Planos</a>
-    <button type="button" class="lnk" role="menuitem" data-tour>? Como usar a vitrine</button>
+    <button type="button" class="lnk" role="menuitem" data-tour>? Como usar a plataforma</button>
     ${SITE ? `<button type="button" class="lnk" role="menuitem" data-ia>✦ Assistente BLR</button>` : ""}
     ${SITE && SESSAO && SESSAO.papel === "admin" ? `<a class="lnk" role="menuitem" href="admin/">⚙ Administrar usuários</a>` : ""}
     <button type="button" class="sair" role="menuitem">Sair da conta</button>`;
@@ -1448,6 +1503,10 @@ function menuUsuario(e){
   b.setAttribute("aria-expanded", "true");
   m.querySelector(".sair").onclick = sair;
   const bl = m.querySelector("[data-listas]"); if(bl) bl.onclick = () => { m.remove(); abreSeg(); };
+  const bp = m.querySelector("[data-port]"); if(bp) bp.onclick = () => { m.remove(); mostraVista("portfolio"); };
+  const bc = m.querySelector("[data-mconta]"); if(bc) bc.onclick = () => { m.remove(); mostraVista("pacotes"); abreConta(); };
+  const bo = m.querySelector("[data-cob]"); if(bo) bo.onclick = () => { m.remove(); mostraVista("cobertura"); };
+  const bt = m.querySelector("[data-partner]"); if(bt) bt.onclick = () => { m.remove(); abrePartner(); };
   setTimeout(() => document.addEventListener("click", function fora(ev){ if(ev.target.closest("#uMenu")) return;
     document.removeEventListener("click", fora); const x = $("#uMenu"); if(x){ x.remove(); b.setAttribute("aria-expanded", "false"); } }), 0);
 }
@@ -1458,7 +1517,7 @@ function abreEntrar(){
       <label>Senha<input name="senha" type="password" autocomplete="current-password" required></label>
       <button class="cta" type="submit">Entrar</button><div class="nota" id="entErro"></div></form>
     <div class="nota">Esqueceu a senha? <button type="button" class="lnk" id="btEsq">Receber um link para criar uma senha nova</button></div>
-    <div class="nota">Ainda não tem acesso? <button type="button" class="lnk" data-teste>Teste grátis por 7 dias</button> (só e-mail e telefone) ou <button type="button" class="lnk" data-assina>assine a partir de US$ 9,90/mês</button>. <a class="lnk" href="planos/">Ver todos os planos</a> · <button type="button" class="lnk" data-tour>Como usar a vitrine</button></div>`);
+    <div class="nota">Ainda não tem acesso? <button type="button" class="lnk" data-teste>Teste grátis por 7 dias</button> (só e-mail e telefone) ou <button type="button" class="lnk" data-assina>assine a partir de US$ 9,90/mês</button>. <a class="lnk" href="planos/">Ver todos os planos</a> · <button type="button" class="lnk" data-tour>Como usar a plataforma</button></div>`);
   $("#fConta").onsubmit = async e => { e.preventDefault(); const f = new FormData(e.target), bt = e.target.querySelector("button[type=submit]");
     bt.disabled = true; bt.textContent = "Entrando…";
     // o autopreenchimento do Chrome guardou o e-mail em MAIÚSCULAS e o servidor compara exato (28/10): sempre minúsculo e sem espaço
@@ -1618,7 +1677,7 @@ function abreIA(abrir){
   let p = $("#iaBox");
   if(p){ p.hidden = abrir ? false : !p.hidden; if(!p.hidden){ iaSobre(); $("#iaTxt").focus(); } return; }
   p = document.createElement("aside"); p.id = "iaBox"; p.className = "iabox"; p.setAttribute("aria-label", "Assistente BLR");
-  const ola = SESSAO ? "Pergunte sobre qualquer item do mapa, um termo do leilão ou o lote aberto na ficha (o teto, a conta, a conta da JV, o bairro…). Eu explico com os números que a vitrine tem; não é recomendação de compra."
+  const ola = SESSAO ? "Pergunte sobre qualquer item do mapa, um termo do leilão ou o lote aberto na ficha (o teto, a conta, a conta da JV, o bairro…). Eu explico com os números que a plataforma tem; não é recomendação de compra."
     : "Olá! Sou o assistente da BLR. Você pode fazer uma pergunta por dia como visitante; a resposta completa e as perguntas sem limite são dos assinantes.";
   p.innerHTML = `<div class="iah">${IA_ESTRELA}<b>Assistente BLR</b><span id="iaSobre"></span><button type="button" class="iax" aria-label="Fechar">✕</button></div>
     <div class="iam" id="iaMsgs" aria-live="polite"><div class="iab ia-r">${esc(ola)}</div></div>
@@ -1634,7 +1693,7 @@ function abreIA(abrir){
   iaSobre(); $("#iaTxt").focus();
 }
 function iaSobre(){ const s = $("#iaSobre"); if(!s) return; const l = ABERTO && L.find(x => x.i === ABERTO), o = MAPA && MAPA.onde ? MAPA.onde() : {};
-  s.textContent = l ? `sobre ${l.ci || l.co}, ${l.uf}` : o.condado ? `vendo ${o.condado}, ${o.uf}` : o.uf ? `vendo ${UFN[o.uf] || o.uf}` : "sobre a vitrine"; }
+  s.textContent = l ? `sobre ${l.ci || l.co}, ${l.uf}` : o.condado ? `vendo ${o.condado}, ${o.uf}` : o.uf ? `vendo ${UFN[o.uf] || o.uf}` : "sobre a plataforma"; }
 function mdBasico(t){
   const linhas = esc(t).split("\n"), out = []; let lista = false;
   for(const x of linhas){ const m = x.match(/^\s*(?:[-*•]|\d+[.)])\s+(.*)$/);
@@ -1740,7 +1799,8 @@ async function carregaPremium(){
   }
   if(ASSIN && PODE && UID){ try{ const c = (await DB.doc(`interesses/${UID}/prefs/cores`).get()).data(); if(c && c.p) CORES = c; }catch(e){} }
   aplicaCores();
-  $("#btAssina").hidden = ASSIN; $("#btConta").hidden = !ASSIN; $("#fFechaC").hidden = ASSIN; $("#guiaC").hidden = ASSIN; guia();   // a conta ao vivo é do assinante (precisa do ARV exato)
+  $("#btAssina").hidden = ASSIN; $("#btConta").hidden = !ASSIN;
+  { const pl = SESSAO && SESSAO.plano && PLANO_NOME[SESSAO.plano]; $("#plSelo").hidden = !ASSIN; $("#plSelo").textContent = "◆ " + (pl || (SESSAO && SESSAO.teste ? "Teste grátis" : "Assinante")); } $("#fFechaC").hidden = ASSIN; $("#guiaC").hidden = ASSIN; guia();   // a conta ao vivo é do assinante (precisa do ARV exato)
   if(ASSIN){ render(); }
 }
 const chavePriv = l => (l.uf + "_" + l.co).replace(/ /g,"_").replace(/\./g,"").replace(/'/g,"");
@@ -2096,7 +2156,7 @@ const campos = (extra) => `
   ${extra || ""}`;
 const refLote = l => `${l.ci && l.ci !== l.co ? l.ci + ", " : ""}${l.co} County (${l.uf}) · ${qd(l)} · ${rotLance(l).toLowerCase()} ${usd(l.ab)} · código ${l.i}`;
 function textoPedido(p){
-  const linhas = [`Pedido pela Vitrine BLR (${p.tipo})`, `Nome: ${p.nome}`, `E-mail: ${p.email}`, p.whats ? `WhatsApp: ${p.whats}` : "", p.perfil ? `Perfil: ${p.perfil}` : ""];
+  const linhas = [`Pedido pela BLR Developments (${p.tipo})`, `Nome: ${p.nome}`, `E-mail: ${p.email}`, p.whats ? `WhatsApp: ${p.whats}` : "", p.perfil ? `Perfil: ${p.perfil}` : ""];
   if(p.lotes && p.lotes.length) linhas.push("", "Lotes:", ...p.lotes.map(i => { const l = L.find(x => x.i === i); return "- " + (l ? refLote(l) : i); }));
   if(p.quer && p.quer.length) linhas.push("", "Quero saber: " + p.quer.join(", "));
   if(p.msg) linhas.push("", p.msg);
@@ -2301,6 +2361,9 @@ function criaMapa(){
   function solto(l, ll){
     const m = Lf.circleMarker(ll, {renderer: rLotes, radius: raioL(l), ...estBase(l), fillColor: corL(l), fillOpacity: HIST(l) ? .3 : SEMDADO(l) ? 0 : .95, dashArray: HIST(l) ? "2 2" : null});
     m.bindTooltip(() => ttL(l), {className: "tt-l", direction: "top", offset: [0, -4]}); m.on("click", () => abre(l.i)); m.lote = l; m.addTo(camL); MARK.set(l.i, m);
+    // 07/11 (Rodrigo): o valor da dívida (abertura) fica sempre escrito em cima da bolinha, sem precisar passar o mouse
+    if(!HIST(l) && l.ab != null) Lf.marker(ll, {pane: M.getPane("rot") ? "rot" : "lotes", interactive: false, keyboard: false,
+      icon: Lf.divIcon({className: "", iconSize: [0, 0], html: `<div class="vlt" style="--r:${raioL(l)}px">${usdC(l.ab)}</div>`})}).addTo(camL);
     m.on("mouseover", () => mola(m, raioL(l) * 1.6, 220)); m.on("mouseout", () => mola(m, raioL(l), 260));
   }
   function grupo(c, zz){
@@ -2914,7 +2977,7 @@ function guiaSecoes(){   // também é a base do assistente de IA (iaContexto)
 function guia(){
   if(!ASSIN){ $("#guia").innerHTML = ""; return; }
   const S = guiaSecoes();
-  $("#guia").innerHTML = `<div class="gtopo"><h2>Guia da vitrine</h2><p>Cada item do mapa, do cartão e da ficha, em linguagem simples.${SITE ? ` Ficou dúvida? <button type="button" class="lnk" data-ia>✦ Pergunte ao assistente</button>` : ""}</p>
+  $("#guia").innerHTML = `<div class="gtopo"><h2>Guia da plataforma</h2><p>Cada item do mapa, do cartão e da ficha, em linguagem simples.${SITE ? ` Ficou dúvida? <button type="button" class="lnk" data-ia>✦ Pergunte ao assistente</button>` : ""}</p>
     <input type="search" id="gBusca" placeholder="Procurar um termo (ex.: teto, lien, ARV)" aria-label="Procurar no guia"></div>
     ${S.map(([t, sub, it]) => `<section class="gsec"><h3>${t}</h3><p class="gsub">${sub}</p><dl>${it.map(([a, b]) => `<div class="git"><dt>${a}</dt><dd>${b}</dd></div>`).join("")}</dl></section>`).join("")}
     <p class="gvazio" id="gVazio" hidden>Nada com esse termo.</p>`;
@@ -2936,17 +2999,61 @@ function cobertura(){
     <p>${x.n ? `${x.n.toLocaleString("pt-BR")} lotes em ${plural(x.co, "condado", "condados")}` : "Lotes entram quando a lista for coletada"} · ${leiTxt(uf)}${x.n && x.nd && (x.lei.length || x.nd < x.n) ? ` (${x.nd === x.n ? "todos" : x.nd.toLocaleString("pt-BR")} sem data de leilão)` : ""}.${tp.length ? " " + esc(tp.join(", ")) + "." : ""}${NOTA[uf] ? " " + NOTA[uf] : ""}</p></div>`; }).join("");
 }
 
+/* ---------- Meu portfólio (07/11, Rodrigo: story map v3, etapa 10) ----------
+   Ambiente do assinante. Ainda sem arremates registrados: mostra o painel vazio e o que cada parte vai ter. */
+const ARREMATES = [];   // entra quando o servidor da Clauds tiver /api/portfolio
+function portfolio(){
+  const a = ARREMATES, soma = k => a.reduce((t, x) => t + (x[k] || 0), 0);
+  const arv = soma("arv"), des = soma("desembolso"), lucro = soma("lucro");
+  const kp = [[a.length || "0", "parcels na carteira"], [arv ? usd(arv) : "—", "soma dos ARVs"], [des ? usd(des) : "—", "desembolso total"],
+    [des ? Math.round(lucro / des * 100) + "%" : "—", "ROI da carteira"], ["—", "TIR da carteira (a.a.)"]];
+  const blocos = [
+    ["Meus parcels", "Todos os parcels ganhos, self e partner, com a etapa de cada um: título, obra, venda.", "Nenhum arremate ainda."],
+    ["Ficha do parcel", "Números do projeto, fotos antes e depois, scanner 3D com tour virtual e câmera 24/7.", "Abre a partir de Meus parcels."],
+    ["Documentos", "Operating Agreement, LLCs e SPVs, títulos e escrituras, apólices de seguro, termos e contratos assinados.", "Nenhum documento ainda."],
+    ["Obra e projeto", "Projeto (PLEI) e licenças, cronograma físico-financeiro e relatórios de obra.", "Sem obra em andamento."],
+    ["Financeiro", "Balancetes por projeto e consolidado, conta de capital, chamadas, distribuições e K-1.", "Sem movimento."],
+    ["Aprovações", "Pedidos que dependem de você: lance acima do limite, compra pela gestora, dívida. Com prazo e histórico.", "Nada pendente."],
+    ["Comparativo", "Sua carteira contra investimentos tradicionais (Treasury, S&P 500, CDI) no mesmo período.", "Aparece com o primeiro resultado."]];
+  $("#port").innerHTML = `<div class="pactopo"><h2>Meu portfólio</h2><p class="nota">Tudo o que você arrematar, sozinho (self) ou com a BLR (partner), fica aqui. Valores são estimativas, não garantia de resultado.</p></div>
+    ${ASSIN ? "" : `<div class="portAv"><b>Área do assinante.</b> Assine para acompanhar seus arremates aqui. <button type="button" class="cta" data-assina>Ver planos</button></div>`}
+    <div class="portK">${kp.map(([v, t]) => `<div class="kpi"><b class="num">${v}</b><span>${t}</span></div>`).join("")}</div>
+    <div class="portG">${blocos.map(([t, d, v]) => `<section class="portB"><h3>${t}</h3><p>${d}</p><p class="vazio">${v}</p></section>`).join("")}</div>`;
+  const b = $("#port").querySelector("[data-assina]"); if(b) b.onclick = () => abreAssina();
+}
+function abrePartner(){
+  abreModal(`<h3 id="mTit">Tornar-se partner</h3>
+    <p>No modelo partner a BLR opera o lance e a obra com você, numa LLC própria da JV. Por isso a entrada passa por homologação:</p>
+    <ol class="nota" style="line-height:1.6"><li>Plano UltraPro ativo e pedido de adesão.</li><li>Conversa com a BLR e convite formal.</li>
+      <li>Due diligence (KYC) com os documentos do seu país de residência.</li><li>Disclosures e termos: não é fundo, não garante resultado, não é recomendação de investimento.</li>
+      <li>Acordo de JV, LLC e conta bancária da JV.</li></ol>
+    <p class="nota">A oferta é feita só por convite, a quem já tem relação com a BLR. Para conversar, use Pedir informações num lote ou o Assistente BLR.</p>
+    <div class="facoes" style="margin-top:12px"><button class="cta" type="button" onclick="fechaModal()">Entendi</button></div>`);
+}
+
 /* ---------- abas ---------- */
 document.body.classList.add("vmapa");
+/* 07/11 (Rodrigo): barra BIDMAP · BIDLIST · Pacotes · Meu portfólio · Guia. "EUA" (cobertura) virou parte do BIDMAP
+   (botão EUA no painel e no menu); no celular as abas descem para uma barra fixa embaixo */
+const VISTAS = ["negocios", "mapa", "cobertura", "guia", "pacotes", "portfolio"];
+function mostraVista(v){
+  const aba = v === "cobertura" ? "mapa" : v;
+  document.querySelectorAll(".tabs button").forEach(x => x.setAttribute("aria-selected", x.dataset.v === aba));
+  document.body.classList.toggle("vmapa", v === "mapa"); document.body.classList.toggle("vguia", v === "guia");
+  document.body.classList.toggle("vpriv", v === "pacotes" || v === "portfolio");
+  VISTAS.forEach(x => $("#v-" + x).hidden = x !== v);
+  poeFiltros(); render();
+  if(v === "mapa" && MAPA) setTimeout(() => MAPA.invalida(), 50);
+  if(v === "pacotes") abreSeg();
+  if(v === "portfolio") portfolio();
+  try{ localStorage.setItem("vitrine_aba", v); }catch(e){}
+}
 document.querySelectorAll(".tabs button").forEach(b => b.onclick = () => {
   if(b.dataset.v === "guia" && !ASSIN){ abreAssina(); return; }   // guia é só do assinante
-  document.querySelectorAll(".tabs button").forEach(x => x.setAttribute("aria-selected", x === b));
-  document.body.classList.toggle("vmapa", b.dataset.v === "mapa"); document.body.classList.toggle("vguia", b.dataset.v === "guia");
-  ["negocios","mapa","cobertura","guia"].forEach(v => $("#v-" + v).hidden = v !== b.dataset.v);
-  poeFiltros(); render();
-  if(b.dataset.v === "mapa" && MAPA) setTimeout(() => MAPA.invalida(), 50);
-  try{ localStorage.setItem("vitrine_aba", b.dataset.v); }catch(e){}
+  mostraVista(b.dataset.v);
 });
+$("#tgEUA").onclick = () => mostraVista("cobertura");
+$("#cobVolta").onclick = () => mostraVista("mapa");
 // digitar na busca ou num valor redesenha uma vez quando a pessoa para (antes: grade e ~2.700 pontos do mapa a cada tecla)
 let tRender = 0;
 const renderLogo = e => { clearTimeout(tRender); tRender = setTimeout(() => { mostrar = PAG; render(); }, /^(search|number|text)$/.test(e.target.type) ? 220 : 0); };
@@ -2975,7 +3082,6 @@ function critTexto(){ $("#critTxt").textContent = CRIT
 document.querySelectorAll(".segCrit button").forEach(b => b.onclick = () => { const m = !!b.closest("#segCritM"), v = b.dataset.crit === "1";
   if(m) CRITM = v; else CRIT = v;
   b.parentElement.querySelectorAll("button").forEach(x => x.setAttribute("aria-pressed", (x.dataset.crit === "1") === v)); critTexto(); mostrar = PAG; render(); });
-$("#btSeg").onclick = abreSeg;   // faltava: o ★ do topo não abria a lista (Cris 24/10)
 $("#btFiltros").onclick = () => { const a = $(".filtros").classList.toggle("aberta"); $("#btFiltros").setAttribute("aria-expanded", a); $("#btFiltros").textContent = a ? "Menos filtros ▴" : "Mais filtros ▾"; };
 { const q = new URLSearchParams(location.search).get("lista"); if(q && LISTAS.some(x => x.id === q)){ FSEG = q; $("#tgSeg").setAttribute("aria-pressed", true); } }
 /* 07/11: atalhos de outras páginas (planos/, conta/): ?teste=1 cadastro de 7 dias · ?plano=basico|pro|ultra pedido do plano ·
