@@ -101,6 +101,9 @@ input[type=range]::-moz-range-thumb{width:24px;height:24px;border-radius:50%;bac
 .marcas{display:flex;justify-content:space-between;color:var(--mute);font-size:13px}
 /* resultado */
 .res-top{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;margin:10px 0 6px}
+.salva{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:12px 0 4px;padding:12px 14px;border:1px solid var(--line,rgba(255,255,255,.12));border-radius:14px}
+.salva span{flex:1 1 100%;font-size:13px;opacity:.85}.salva input{flex:1 1 200px;padding:9px 12px;border-radius:10px;border:1px solid var(--line,rgba(255,255,255,.18));background:transparent;color:inherit;font:inherit}
+.salva .ok{color:#4CC38A;opacity:1}
 .res-top h1{font-size:clamp(28px,5.6vw,44px);line-height:1.1;margin:0}
 .perfil{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0 18px}
 .perfil button{border:1px solid var(--line);background:var(--card);border-radius:999px;padding:6px 12px;font-size:13.5px;animation:cai .6s var(--ease) both;animation-delay:calc(var(--i) * 40ms)}
@@ -265,6 +268,8 @@ async function inicio() {
     busca("../" + a.EUA).then(e => { EUA = e; }).catch(() => {});
   } catch (e) { app.innerHTML = `<p class="vazio">Não foi possível carregar os dados (${esc(e.message)}). Recarregue a página.</p>`; return; }
   membro();
+  { const q = new URLSearchParams(location.search).get("lista");   // 07/11: refazer o questionário de uma lista da vitrine
+    if (q) try { const li = (JSON.parse(localStorage.getItem("blr_listas_v1") || "[]") || []).find(x => x.id === q); if (li && li.perfil) PERFIL = li.perfil; } catch (e) {} }
   PERFIL ? resultado() : boasVindas();
 }
 
@@ -530,6 +535,24 @@ const RESUMO = {obj:{renda:"Renda de aluguel",flip:"Reformar e vender",morar:"Mo
   risco:{pronto:"Pronto para usar",leve:"Reforma leve",pesada:"Reforma pesada",juridico:"Aceita risco jurídico"},
   prio:{preco:"Preço baixo",bairro:"Bairro bom",seguro:"Pouco risco",rapido:"Rapidez"}};
 let R = [], VISTA = "lista", MAPA = null;
+/* 07/11 (Cris): cada questionário vira uma lista de acompanhamento da vitrine (mesma chave blr_listas_v1, mesmo site).
+   ?lista=<id> (vindo do "Refazer o questionário" da vitrine) atualiza aquela lista em vez de criar outra. */
+let LISTA_ID = new URLSearchParams(location.search).get("lista") || null;
+const LCOR = ["#E8B941", "#4CC38A", "#8FB2DE", "#E5634D", "#C08FE0", "#6FD3B0"];
+const nomeLista = chips => chips.filter(([k]) => k === "obj" || k === "uf" || k === "valor").map(x => x[1]).reduce((t, x) => (t ? t + " · " + x : x).length <= 40 ? (t ? t + " · " + x : x) : t, "");
+function salvaLista(nome, chips) {
+  let ls = []; try { ls = JSON.parse(localStorage.getItem("blr_listas_v1") || "[]"); } catch (e) { ls = []; }
+  if (!Array.isArray(ls)) ls = [];
+  if (!ls.length) { let velho = []; try { velho = JSON.parse(localStorage.getItem("vitrine_seguindo") || "[]"); } catch (e) {}
+    ls.push({id: "acomp", nome: "Acompanhando", cor: LCOR[0], itens: Array.isArray(velho) ? velho : [], em: HOJE}); }
+  const itens = R.slice(0, 300).map(r => ({i: r.l.i, ab: r.l.ab, d: r.l.d, em: HOJE, nm: `${r.l.ci || r.l.co}, ${r.l.co} County · ${r.l.uf}`}));
+  const crit = chips.map(x => x[1]).join(" · ");
+  let li = LISTA_ID && ls.find(x => x.id === LISTA_ID);
+  if (li) Object.assign(li, {nome: nome || li.nome, itens, crit, perfil: PERFIL, em: HOJE});
+  else { li = {id: "q" + Date.now().toString(36), nome: nome || "Meu questionário", cor: LCOR[ls.length % LCOR.length], itens, crit, perfil: PERFIL, em: HOJE}; ls.push(li); }
+  try { localStorage.setItem("blr_listas_v1", JSON.stringify(ls)); } catch (e) {}
+  return li.id;
+}
 
 async function resultado() {
   topo(tema()); ligaTema();
@@ -549,6 +572,9 @@ async function resultado() {
     app.innerHTML = `<div class="res-top"><h1 class="serif">${R.length ? `<span style="color:var(--gold2)">${R.length.toLocaleString("pt-BR")}</span> ${R.length === 1 ? "imóvel combina" : "imóveis combinam"} com você` : "Nada combina agora"}</h1>
       <div class="alterna"><button data-v="lista" aria-pressed="true">Lista</button><button data-v="mapa" aria-pressed="false">Mapa</button></div></div>
       <div class="perfil">${chips.map(([k, t], i) => `<button style="--i:${i}" data-k="${k}" title="Mudar">${esc(t)} ✎</button>`).join("")}<button style="--i:${chips.length}" data-k="_refaz">Refazer tudo ↺</button></div>
+      ${R.length ? `<div class="salva"><span>${LISTA_ID ? "Atualizar a lista com este resultado" : "Guardar este resultado como uma lista de acompanhamento na vitrine"}</span>
+        <input id="lsNome" maxlength="40" value="${esc(nomeLista(chips))}" aria-label="Nome da lista"><button class="btn" id="lsOk">${LISTA_ID ? "Atualizar lista" : "Salvar lista"}</button>
+        <a class="btn sec" href="../${LISTA_ID ? "?lista=" + encodeURIComponent(LISTA_ID) : ""}">Ver na vitrine →</a></div>` : ""}
       ${P.exp === "primeira" ? `<div class="trava">Primeira vez? A BLR acompanha cada passo: edital, lance, pagamento e escritura. Deixamos de fora os imóveis com pendência jurídica.</div>` : ""}
       ${P.grupo === "grupo" || P.grupo === "blr" ? `<div class="trava">Compra em grupo: a BLR está preparando as regras de cotas. Marque os imóveis que interessam e fale com a gente.</div>` : ""}
       ${MEMBRO === false ? `<div class="trava">Entre na sua conta da vitrine para ver a foto exata, o Street View e o endereço de cada imóvel. <a href="../">Entrar</a></div>` : ""}
@@ -559,6 +585,8 @@ async function resultado() {
     animaAneis(app);
     app.querySelectorAll(".card").forEach(b => b.onclick = () => ficha(R[+b.dataset.i]));
     const m = $("#mais"); if (m) m.onclick = () => { n += 12; pinta(); };
+    const ok = $("#lsOk"); if (ok) ok.onclick = () => { const id = salvaLista($("#lsNome").value.trim(), chips); LISTA_ID = id; pinta();
+      const a = app.querySelector(".salva"); if (a) a.insertAdjacentHTML("beforeend", `<span class="ok">Lista salva ✓ (${Math.min(R.length, 300)} imóveis). Ela aparece no ★ da vitrine.</span>`); };
     app.querySelectorAll(".perfil button").forEach(b => b.onclick = () => edita(b.dataset.k));
     app.querySelectorAll(".alterna button").forEach(b => b.onclick = () => b.dataset.v === "mapa" && abreMapa());
   };

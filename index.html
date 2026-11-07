@@ -690,6 +690,71 @@ body{transition:padding-right .5s var(--mola)}
 .leg .tgsd{all:unset;cursor:pointer;display:flex;align-items:center;color:var(--tx2)}
 .leg .tgsd[aria-pressed=true]{color:var(--tx)}
 .leg .lsm{color:var(--nota);font-size:11px}
+/* 07/11 (Cris): mapa agrupado (número grande que se divide no zoom), painel de 9 oportunidades à direita, listas */
+.clu{position:absolute;transform:translate(-50%,-50%);width:var(--t);height:var(--t);border-radius:50%;display:grid;place-items:center;cursor:pointer;
+  background:rgba(14,17,22,.86);border:3px solid var(--c);box-shadow:0 0 0 5px color-mix(in srgb,var(--c) 28%,transparent),0 6px 18px rgba(0,0,0,.45);
+  color:#fff;font:700 14px/1 var(--f-b);letter-spacing:-.2px;transition:transform .18s ease;animation:cluIn .35s ease both}
+.clu b{font-weight:800;white-space:nowrap}
+.clu.cr{box-shadow:0 0 0 5px color-mix(in srgb,var(--c) 28%,transparent),0 0 18px color-mix(in srgb,#F2C14E 55%,transparent),0 6px 18px rgba(0,0,0,.45)}
+.leaflet-marker-icon:hover .clu{transform:translate(-50%,-50%) scale(1.1)}
+@keyframes cluIn{from{opacity:0;transform:translate(-50%,-50%) scale(.6)}to{opacity:1;transform:translate(-50%,-50%) scale(1)}}
+@media (prefers-reduced-motion:reduce){.clu{animation:none;transition:none}}
+.regiao{position:absolute;z-index:900;right:12px;top:12px;bottom:12px;width:372px;display:flex;flex-direction:column;border-radius:20px;overflow:hidden;
+  background:var(--vidro,rgba(22,26,33,.95));-webkit-backdrop-filter:blur(22px) saturate(170%);backdrop-filter:blur(22px) saturate(170%);border:1px solid var(--fio,var(--line));box-shadow:var(--sombra,0 18px 50px rgba(0,0,0,.45))}
+.regiao .grh{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:12px 14px;border-bottom:1px solid var(--fio,var(--line))}
+.regiao .grh .pv{color:var(--acc);text-decoration:none}.regiao .grh .pv:hover{text-decoration:underline}
+.regiao .grh b{display:block;font-family:var(--f-d);font-size:17px}.regiao .grh small{color:var(--tx2);font-size:12px}
+.regiao .rmin{all:unset;cursor:pointer;width:34px;height:34px;display:grid;place-items:center;border-radius:10px;color:var(--tx2)}.regiao .rmin:hover{background:rgba(255,255,255,.06)}
+.regiao .grl{overflow:auto;padding:10px;display:flex;flex-direction:column;gap:10px;flex:1 1 auto;min-height:0}.regiao .grc,.regiao .pro{flex:0 0 auto}
+.regiao.min{bottom:auto}.regiao.min .grl{display:none}
+.grc{border:1px solid var(--fio,var(--line));border-radius:14px;overflow:hidden;background:rgba(255,255,255,.02);cursor:pointer;transition:border-color .15s,transform .15s}
+.grc:hover{border-color:var(--acc);transform:translateY(-1px)}.grc.ab{border-color:var(--acc);cursor:default}
+.grc .grf{position:relative;height:148px;overflow:hidden;background:#161b22}
+.grc.ab .grf{height:210px}
+.grf .mos{position:absolute;display:grid;grid-template-columns:repeat(3,256px);grid-template-rows:repeat(3,256px);width:768px;height:768px}
+.grf .mos img{width:256px;height:256px;display:block}
+.grf svg.pol{position:absolute;left:0;top:0;overflow:visible}
+.grf svg.pol polygon{fill:rgba(242,193,78,.16);stroke:#F2C14E;stroke-width:2.5;vector-effect:non-scaling-stroke;stroke-linejoin:round}
+.grf .fpr{width:100%;height:100%;object-fit:cover;display:block}
+.grf .alvo{position:absolute;left:50%;top:50%;width:18px;height:18px;margin:-9px 0 0 -9px;border-radius:50%;border:2.5px solid #F2C14E;box-shadow:0 0 0 3px rgba(0,0,0,.35)}
+.grf .alvo.larga{width:84px;height:84px;margin:-42px 0 0 -42px;border-style:dashed;border-width:2px;box-shadow:none}
+.grf .ftag{position:absolute;left:8px;bottom:8px;font-size:11px;padding:3px 8px;border-radius:999px;background:rgba(12,14,18,.78);color:#E6E9EE}
+.grc .grt{padding:10px 12px 11px}.grc .grp{font-size:17px;font-weight:700}.grc .grp small{font-size:11.5px;font-weight:500;color:var(--tx2)}
+.grc .grs{font-size:12.5px;color:var(--tx2);margin-top:2px}.grc .grv{font-size:12px;margin-top:5px}
+.grc .grx{padding:0 12px 12px;font-size:12.5px}.grc .grx table{width:100%;border-collapse:collapse;margin-bottom:10px}
+.grc .grx td{padding:5px 0;border-top:1px solid var(--fio,var(--line))}.grc .grx td:first-child{color:var(--tx2);width:38%}
+.grc .grb{display:flex;flex-wrap:wrap;gap:6px}.grc .grb button{font-size:12.5px}
+.regiao .pro{border:1px solid color-mix(in srgb,var(--acc) 45%,transparent);border-radius:14px;padding:12px 14px;background:linear-gradient(160deg,color-mix(in srgb,var(--acc) 12%,transparent),transparent)}
+.regiao .pro ul{list-style:none;padding:0;margin:8px 0 10px;display:grid;gap:5px;font-size:12.5px}.regiao .pro li::before{content:"✓ ";color:var(--acc);font-weight:700}
+.regiao .pro .cta{width:100%;justify-content:center}.regiao .pro .lnk{display:block;margin:6px auto 0}
+@media (min-width:761px){
+  #v-mapa .leaflet-right{right:388px}
+  #v-mapa .camadas{right:396px}
+  #v-mapa .mapa-box .leg{right:auto;left:12px;bottom:26px}
+  #v-mapa:not(.pmin) .mapa-box .leg{left:384px}
+  body.vmapa .iafab{right:404px}
+  body.vmapa .iabox{right:400px}
+}
+@media (max-width:760px){
+  .regiao{left:0;right:0;top:auto;bottom:calc(52px + env(safe-area-inset-bottom,0px));width:auto;max-height:44%;border-radius:20px 20px 0 0}
+  .regiao .grl{display:flex;flex-direction:row;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;padding:10px 10px 12px}
+  .regiao .grc,.regiao .pro{flex:0 0 78%;scroll-snap-align:start}.grc .grf{height:120px}.grc.ab{flex-basis:88%;overflow:auto}
+  #v-mapa .painel:not(.min) ~ * .regiao,#v-mapa:not(.pmin) .regiao{display:none}
+}
+.labas{display:flex;flex-wrap:wrap;gap:6px;margin:4px 0 12px}
+.labas button[role=tab]{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:999px;padding:6px 12px;background:transparent;color:var(--tx);cursor:pointer;font-size:13px}
+.labas button[aria-selected=true]{border-color:var(--acc);background:var(--ok-bg)}
+.labas i,.lpick i{display:inline-block;width:10px;height:10px;border-radius:50%}
+.labas b{font-size:11.5px;color:var(--tx2)}
+.lcab{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:10px}.lcab input{flex:1 1 200px;padding:7px 10px}
+.lcores{display:flex;gap:6px}.lcores button{width:22px;height:22px;border-radius:50%;border:2px solid transparent;cursor:pointer}.lcores button[aria-pressed=true]{border-color:#fff}
+.lcrit{font-size:12.5px;color:var(--tx2);margin-bottom:10px}
+.lpick{display:grid;gap:8px;margin:10px 0}.lpick label{display:flex;align-items:center;gap:8px;font-size:14px;cursor:pointer}
+.lnova{display:flex;gap:8px;flex-wrap:wrap}.lnova input{flex:1 1 200px;padding:7px 10px}
+.pbar .pmin.cal{width:auto;padding:0 10px;font-size:12.5px;color:var(--tx);border-color:var(--acc)}
+#v-mapa .painel.min .pbar{flex-wrap:wrap;row-gap:6px}
+#v-mapa .painel.min .truf{display:none}
+@media (max-width:760px){#v-mapa .painel.min .pbar{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none}#v-mapa .painel.min .pbar>*{flex:0 0 auto}}
 </style>
 
 <header class="top"><div class="wrap">
@@ -1027,21 +1092,50 @@ function alternaCarr(i){ CARR = CARR.includes(i) ? CARR.filter(x => x !== i) : [
 const btCarr = l => `<button type="button" data-carr="${l.i}" class="${CARR.includes(l.i) ? "on" : ""}">${CARR.includes(l.i) ? "No carrinho ✓" : "+ Carrinho"}</button>`;
 
 /* ---------- acompanhar (watchlist, Cris 24/10): guarda o lance e a data do dia em que a pessoa marcou, para mostrar o que mudou ---------- */
+/* 07/11 (Cris): VÁRIAS listas de acompanhamento. A 1ª ("Acompanhando") é a antiga ★ (migrada de vitrine_seguindo); o assinante cria,
+   renomeia, pinta e apaga listas; o questionário Para você salva a lista dele aqui (mesma chave blr_listas_v1, mesmo site).
+   Fica no navegador até o servidor da Clauds ter /api/listas (pedido em 07/11); SEG = união de todas (compatível com o resto). */
+const LCORES = ["#E8B941", "#4CC38A", "#8FB2DE", "#E5634D", "#C08FE0", "#6FD3B0"];
+let LISTAS = [];
+try{ LISTAS = JSON.parse(localStorage.getItem("blr_listas_v1") || "[]").filter(x => x && x.id && Array.isArray(x.itens)); }catch(e){ LISTAS = []; }
+if(!LISTAS.length){ let velho = []; try{ velho = JSON.parse(localStorage.getItem("vitrine_seguindo") || "[]").filter(x => x && x.i); }catch(e){}
+  LISTAS = [{id: "acomp", nome: "Acompanhando", cor: LCORES[0], itens: velho, em: HOJE_L}]; }
 let SEG = [];
-try{ SEG = JSON.parse(localStorage.getItem("vitrine_seguindo") || "[]").filter(x => x && x.i); }catch(e){ SEG = []; }
+const refazSeg = () => { const m = new Map(); LISTAS.forEach(li => li.itens.forEach(x => { if(!m.has(x.i)) m.set(x.i, x); })); SEG = [...m.values()]; };
+refazSeg();
 const segue = i => SEG.some(x => x.i === i);
+const listasDe = i => LISTAS.filter(li => li.itens.some(x => x.i === i));
+const segTxt = i => { const n = listasDe(i); return !n.length ? "☆ Acompanhar" : n.length === 1 ? "★ " + n[0].nome : `★ Em ${n.length} listas`; };
 function salvaSeg(sync){
-  try{ localStorage.setItem("vitrine_seguindo", JSON.stringify(SEG)); }catch(e){}
+  refazSeg();
+  try{ localStorage.setItem("blr_listas_v1", JSON.stringify(LISTAS)); localStorage.setItem("vitrine_seguindo", JSON.stringify(SEG)); }catch(e){}
   $("#nSeg").textContent = SEG.length; $("#btSeg").classList.toggle("tem", SEG.length > 0);
-  document.querySelectorAll("[data-seg]").forEach(b => { const on = segue(b.dataset.seg); b.classList.toggle("on", on);
-    b.textContent = on ? "★ Acompanhando" : "☆ Acompanhar"; });
-  if(sync !== false && PODE && DB && UID) DB.doc(`interesses/${UID}/seguindo/lista`).set({itens: SEG, em: new Date().toISOString()}).catch(() => {});
+  document.querySelectorAll("[data-seg]").forEach(b => { const on = segue(b.dataset.seg); b.classList.toggle("on", on); b.textContent = segTxt(b.dataset.seg); });
+  if(sync !== false && PODE && DB && UID) DB.doc(`interesses/${UID}/seguindo/lista`).set({itens: SEG, listas: LISTAS, em: new Date().toISOString()}).catch(() => {});
+  if(SITE && SESSAO) api("/api/listas", {listas: LISTAS}).catch(() => {});   // 404 até a Clauds criar; o navegador continua valendo
 }
+const itemDe = l => ({i: l.i, ab: l.ab, d: l.d, em: HOJE_L, nm: refLote(l)});
+function poeNaLista(li, i, dentro){ const l = L.find(x => x.i === i); if(!l) return;
+  li.itens = li.itens.filter(x => x.i !== i); if(dentro) li.itens.push(itemDe(l)); }
+// com uma lista só (visitante, o comum): ☆ marca e desmarca direto; com mais de uma: escolhe em quais
 function alternaSeg(i){ const l = L.find(x => x.i === i); if(!l) return;
-  SEG = segue(i) ? SEG.filter(x => x.i !== i) : [...SEG, {i, ab: l.ab, d: l.d, em: HOJE_L, nm: refLote(l)}]; salvaSeg();
-  if(FSEG) render(); }
-const btSeg = l => `<button type="button" data-seg="${l.i}" class="${segue(l.i) ? "on" : ""}">${segue(l.i) ? "★ Acompanhando" : "☆ Acompanhar"}</button>`;
-let FSEG = false;   // filtro "só os que acompanho"
+  if(LISTAS.length === 1){ poeNaLista(LISTAS[0], i, !segue(i)); salvaSeg(); if(FSEG) render(); return; }
+  escolheListas(i); }
+function novaLista(nome, extra){ const li = {id: "l" + Date.now().toString(36), nome: (nome || "Nova lista").slice(0, 40), cor: LCORES[LISTAS.length % LCORES.length], itens: [], em: HOJE_L, ...(extra || {})};
+  LISTAS.push(li); return li; }
+function escolheListas(i){
+  const l = L.find(x => x.i === i); if(!l) return;
+  abreModal(`<h3 id="mTit">Guardar em quais listas?</h3><p class="nota">${esc(refLote(l))}</p>
+    <div class="lpick">${LISTAS.map(li => `<label><input type="checkbox" data-li="${li.id}" ${li.itens.some(x => x.i === i) ? "checked" : ""}><i style="background:${li.cor}"></i>${esc(li.nome)} <span class="nota">· ${li.itens.length}</span></label>`).join("")}</div>
+    <form class="lnova" id="fLnova">${ASSIN ? `<input name="n" maxlength="40" placeholder="Nome da nova lista (ex.: Flórida até 50 mil)"><button class="bfi" type="submit">＋ Criar e guardar</button>`
+      : `<button type="button" class="bfi" data-assina>＋ Nova lista 🔒 assinantes</button>`}</form>
+    <div class="facoes" style="margin-top:12px"><button class="cta" type="button" onclick="fechaModal()">Pronto</button></div>`);
+  $("#mBody").querySelectorAll("[data-li]").forEach(c => c.onchange = () => { const li = LISTAS.find(x => x.id === c.dataset.li); if(li){ poeNaLista(li, i, c.checked); salvaSeg(); if(FSEG) render(); } });
+  const f = $("#fLnova"); if(f && ASSIN) f.onsubmit = e => { e.preventDefault(); const n = f.n.value.trim(); if(!n) return; poeNaLista(novaLista(n), i, true); salvaSeg(); escolheListas(i); };
+}
+const btSeg = l => `<button type="button" data-seg="${l.i}" class="${segue(l.i) ? "on" : ""}">${segTxt(l.i)}</button>`;
+let FSEG = false;   // filtro "só os que acompanho": false, true (todas as listas) ou o id de uma lista
+const naSeg = i => FSEG === true ? segue(i) : (LISTAS.find(x => x.id === FSEG) || {itens: []}).itens.some(x => x.i === i);
 let MF = null;   // lotes que passam nos filtros do mapa (o painel conta só estes)
 let LSEL = null;   // 30/10 (Rodrigo): leilão escolhido no painel {f, d}: o mapa mostra só os lotes dele
 // filtro de data (30/10): vale para os lotes e para a lista de leilões do painel; com data escolhida, lote sem data sai
@@ -1049,7 +1143,8 @@ const naData = d => { const a = $("#fDe").value, b = $("#fAte").value; return (!
 async function carregaSeg(){
   if(!(PODE && DB && UID)) return;
   try{ const d = (await DB.doc(`interesses/${UID}/seguindo/lista`).get()).data();
-    if(d && Array.isArray(d.itens)){ const ja = new Set(SEG.map(x => x.i)); SEG = [...SEG, ...d.itens.filter(x => x && x.i && !ja.has(x.i))]; salvaSeg(false); } }catch(e){}
+    if(d && Array.isArray(d.listas) && d.listas.length){ for(const li of d.listas) if(li && li.id && !LISTAS.some(x => x.id === li.id)) LISTAS.push(li); salvaSeg(false); }
+    else if(d && Array.isArray(d.itens)){ const ja = new Set(SEG.map(x => x.i)); LISTAS[0].itens.push(...d.itens.filter(x => x && x.i && !ja.has(x.i))); salvaSeg(false); } }catch(e){}
 }
 function situacao(x){
   const l = L.find(y => y.i === x.i);
@@ -1066,17 +1161,33 @@ function situacao(x){
   if(x.d && x.d !== l.d) mudou.push(`data mudou de ${dm(x.d)} para ${dm(l.d)}`);
   return [`${!l.d ? "Land bank, venda direta" : dd < 0 ? `Leilão foi em ${dm(l.d)}; o resultado entra na próxima atualização` : dd === 0 ? "Leilão hoje" : `Leilão em ${plural(dd, "dia", "dias")} (${dm(l.d)})`} · ${rotLance(l).toLowerCase()} ${usd(l.ab)}${mudou.length ? " · " + mudou.join(", ") : " · sem mudança desde " + dm(x.em)}`, mudou.length ? "ok" : ""];
 }
-function abreSeg(){
-  if(!SEG.length){ abreModal(`<h3 id="mTit">Você ainda não acompanha nenhum lote</h3><p>Toque em <b>☆ Acompanhar</b> num lote. Aqui aparece o que mudou desde que você marcou: lance, data, se saiu da lista e, depois do leilão, por quanto foi vendido.</p><button class="cta" type="button" onclick="fechaModal()">Ver os lotes</button>`); return; }
-  abreModal(`<h3 id="mTit">Lotes que você acompanha · ${SEG.length}</h3>
-    <p>${PODE ? "Fica guardado na sua conta." : "Fica guardado neste navegador."} A vitrine é atualizada duas vezes por semana; o resultado do leilão entra na atualização seguinte.</p>
-    <div class="carr-lista">${SEG.map(x => { const [t, c] = situacao(x), l = L.find(y => y.i === x.i);
+let LATIVA = null;
+function abreSeg(id){
+  const li = LISTAS.find(x => x.id === (id || LATIVA)) || LISTAS[0]; LATIVA = li.id;
+  const abas = `<div class="labas" role="tablist">${LISTAS.map(x => `<button type="button" role="tab" data-la="${x.id}" aria-selected="${x.id === li.id}"><i style="background:${x.cor}"></i>${esc(x.nome)} <b>${x.itens.length}</b></button>`).join("")}
+    ${ASSIN ? `<button type="button" class="lnk" data-lnova>＋ Nova lista</button>` : `<button type="button" class="lnk" data-assina>＋ Nova lista 🔒</button>`}</div>`;
+  const crit = li.crit ? `<div class="lcrit"><b>Critérios do questionário:</b> ${esc(li.crit)} · <a href="para-voce/?lista=${encodeURIComponent(li.id)}">Refazer o questionário</a></div>` : "";
+  const corpo = !li.itens.length ? `<p class="vazio">Lista vazia. Toque em <b>☆ Acompanhar</b> num lote para guardar aqui. Aqui aparece o que mudou desde que você marcou: lance, data, se saiu da lista e, depois do leilão, por quanto foi vendido.</p>`
+    : `<div class="carr-lista">${li.itens.map(x => { const [t, c] = situacao(x), l = L.find(y => y.i === x.i);
       return `<div class="seg-it"><div><b>${esc(l ? (l.ci && l.ci !== l.co ? l.ci + ", " : "") + l.co + " County · " + l.uf : x.nm || x.i)}</b><span class="st ${c}">${esc(t)}</span></div>
-        <div class="bts">${l ? `<button type="button" data-ver="${x.i}">Ver</button>` : ""}<button type="button" data-tseg="${x.i}">Parar</button></div></div>`; }).join("")}</div>
-    <div class="facoes" style="margin-top:12px"><button class="cta" type="button" id="segXls">⤓ Baixar em Excel (.xlsx)</button><button class="bfi" type="button" onclick="fechaModal()">Fechar</button></div>`);
-  $("#segXls").onclick = () => exportaSeg().catch(e => alert("Não foi possível gerar a planilha: " + e.message));
-  $("#mBody").querySelectorAll("[data-tseg]").forEach(b => b.onclick = () => { alternaSeg(b.dataset.tseg); abreSeg(); });
-  $("#mBody").querySelectorAll("[data-ver]").forEach(b => b.onclick = () => { fechaModal(); verLote(b.dataset.ver); });
+        <div class="bts">${l ? `<button type="button" data-ver="${x.i}">Ver</button>` : ""}<button type="button" data-tseg="${x.i}">Tirar</button></div></div>`; }).join("")}</div>`;
+  abreModal(`<h3 id="mTit">Suas listas de acompanhamento</h3>${abas}
+    <div class="lcab">${ASSIN ? `<input id="lNome" maxlength="40" value="${esc(li.nome)}" aria-label="Nome da lista"><span class="lcores">${LCORES.map(c => `<button type="button" data-lc="${c}" style="background:${c}" aria-label="Cor" aria-pressed="${c === li.cor}"></button>`).join("")}</span>` : `<b>${esc(li.nome)}</b>`}</div>
+    ${crit}${corpo}
+    <p class="nota">${PODE || SESSAO ? "Guardado neste navegador e na sua conta assim que o servidor permitir." : "Fica guardado neste navegador."} A vitrine é atualizada duas vezes por semana.</p>
+    <div class="facoes" style="margin-top:12px">${li.itens.length ? `<button class="cta" type="button" id="segMapa">Ver esta lista no mapa</button><button class="bfi" type="button" id="segXls">⤓ Excel</button>` : ""}
+      <a class="bfi" href="para-voce/">✦ Novo questionário → nova lista</a>
+      ${LISTAS.length > 1 && ASSIN ? `<button class="bfi" type="button" id="segDel">Apagar lista</button>` : ""}<button class="bfi" type="button" onclick="fechaModal()">Fechar</button></div>`, true);
+  const m = $("#mBody");
+  m.querySelectorAll("[data-la]").forEach(b => b.onclick = () => abreSeg(b.dataset.la));
+  const bn = m.querySelector("[data-lnova]"); if(bn) bn.onclick = () => { const n = novaLista("Lista " + (LISTAS.length + 1)); salvaSeg(); abreSeg(n.id); setTimeout(() => { const i = $("#lNome"); i && i.select(); }, 50); };
+  const inp = $("#lNome"); if(inp) inp.onchange = () => { li.nome = inp.value.trim().slice(0, 40) || li.nome; salvaSeg(); abreSeg(li.id); };
+  m.querySelectorAll("[data-lc]").forEach(b => b.onclick = () => { li.cor = b.dataset.lc; salvaSeg(); abreSeg(li.id); });
+  const bx = $("#segXls"); if(bx) bx.onclick = () => exportaSeg(li).catch(e => alert("Não foi possível gerar a planilha: " + e.message));
+  const bm = $("#segMapa"); if(bm) bm.onclick = () => { FSEG = li.id; $("#tgSeg").setAttribute("aria-pressed", true); fechaModal(); document.querySelector('.tabs button[data-v="mapa"]').click(); render(); };
+  const bd = $("#segDel"); if(bd) bd.onclick = () => { if(bd.dataset.ok){ LISTAS = LISTAS.filter(x => x !== li); LATIVA = null; if(FSEG === li.id) FSEG = false; salvaSeg(); render(); abreSeg(); } else { bd.dataset.ok = 1; bd.textContent = "Toque de novo para apagar"; } };
+  m.querySelectorAll("[data-tseg]").forEach(b => b.onclick = () => { poeNaLista(li, b.dataset.tseg, false); salvaSeg(); if(FSEG) render(); abreSeg(li.id); });
+  m.querySelectorAll("[data-ver]").forEach(b => b.onclick = () => { fechaModal(); verLote(b.dataset.ver); });
 }
 
 /* ---------- comparar até 2 lotes ---------- */
@@ -1177,7 +1288,7 @@ function filtrados(paraMapa, semSel){
         mn = +$("#fMin").value || 0, fz = +$("#fFz").value || 0, dsc = +$("#fDesc").value || 0, cta = ASSIN && $("#fFecha").checked;
   const sit = paraMapa ? (HISTON === "vend" ? "vend" : HISTON ? "todos" : "prox") : $("#fSit").value, sg = paraMapa ? FSEG : $("#fSeg").checked;
   const cr = paraMapa ? CRITM : CRIT;
-  let r = L.filter(l => (!cr || noCrit(l)) && (sit === "todos" || (sit === "vend" ? HIST(l) && l.rs && l.rs.s === "vendido" : (sit === "hist") === HIST(l))) && (!sg || segue(l.i)) &&
+  let r = L.filter(l => (!cr || noCrit(l)) && (sit === "todos" || (sit === "vend" ? HIST(l) && l.rs && l.rs.s === "vendido" : (sit === "hist") === HIST(l))) && (!sg || (paraMapa ? naSeg(l.i) : segue(l.i))) &&
     (!q || [l.ci, l.co, l.zip].some(x => (x||"").toLowerCase().includes(q))) && (!uf || l.uf === uf) &&
     (!tp || l.u === tp) && naData(l.d) && (!paraMapa || semSel || !LSEL || (l.f === LSEL.f && l.d === LSEL.d)) &&
     (!mx || (l.ab || 0) * tx() <= mx) && (!tip || (l.et === "final" && l.ft === "tipico")) && (!on || (l.on && l.on !== "nao_consultado")) &&
@@ -1282,6 +1393,9 @@ function menuUsuario(e){
   if(m){ m.remove(); b.setAttribute("aria-expanded", "false"); return; }
   m = document.createElement("div"); m.id = "uMenu"; m.className = "umenu"; m.setAttribute("role", "menu");
   m.innerHTML = `<div>Conectado como <b>${esc($("#whoTxt").textContent)}</b>${b.dataset.email ? `<br><span class="nota">${esc(b.dataset.email)}</span>` : ""}</div>
+    ${SESSAO && SESSAO.teste && SESSAO.teste_ate ? `<div class="nota">Teste grátis: ${(d => d > 0 ? plural(d, "dia", "dias") + " restantes" : "termina hoje")(Math.ceil((new Date(SESSAO.teste_ate) - new Date()) / 864e5))} · <button type="button" class="lnk" data-assina>Assinar</button></div>` : ""}
+    <button type="button" class="lnk" role="menuitem" data-listas>★ Minhas listas</button>
+    <a class="lnk" role="menuitem" href="para-voce/">✦ Questionário Para você</a>
     ${SITE ? `<button type="button" class="lnk" role="menuitem" data-ia>✦ Assistente BLR</button>` : ""}
     ${SITE && SESSAO && SESSAO.papel === "admin" ? `<a class="lnk" role="menuitem" href="admin/">⚙ Administrar usuários</a>` : ""}
     <button type="button" class="sair" role="menuitem">Sair da conta</button>`;
@@ -1289,6 +1403,7 @@ function menuUsuario(e){
   const r = b.getBoundingClientRect(); m.style.top = (r.bottom + 8) + "px"; m.style.right = Math.max(8, innerWidth - r.right) + "px";
   b.setAttribute("aria-expanded", "true");
   m.querySelector(".sair").onclick = sair;
+  const bl = m.querySelector("[data-listas]"); if(bl) bl.onclick = () => { m.remove(); abreSeg(); };
   setTimeout(() => document.addEventListener("click", function fora(ev){ if(ev.target.closest("#uMenu")) return;
     document.removeEventListener("click", fora); const x = $("#uMenu"); if(x){ x.remove(); b.setAttribute("aria-expanded", "false"); } }), 0);
 }
@@ -1299,7 +1414,7 @@ function abreEntrar(){
       <label>Senha<input name="senha" type="password" autocomplete="current-password" required></label>
       <button class="cta" type="submit">Entrar</button><div class="nota" id="entErro"></div></form>
     <div class="nota">Esqueceu a senha? <button type="button" class="lnk" id="btEsq">Receber um link para criar uma senha nova</button></div>
-    <div class="nota">Ainda não é membro? <button type="button" class="lnk" data-assina>Assine por US$ 9,99/mês</button>.</div>`);
+    <div class="nota">Ainda não tem acesso? <button type="button" class="lnk" data-teste>Teste grátis por 7 dias</button> (só e-mail e telefone) ou <button type="button" class="lnk" data-assina>assine por US$ 9,99/mês</button>.</div>`);
   $("#fConta").onsubmit = async e => { e.preventDefault(); const f = new FormData(e.target), bt = e.target.querySelector("button[type=submit]");
     bt.disabled = true; bt.textContent = "Entrando…";
     // o autopreenchimento do Chrome guardou o e-mail em MAIÚSCULAS e o servidor compara exato (28/10): sempre minúsculo e sem espaço
@@ -1314,6 +1429,26 @@ function abreEntrar(){
         : "O login não respondeu agora. Tente de novo em instantes."; } };
   $("#btEsq").onclick = () => abreEsqueci($("#fConta").email.value);
 }
+/* 07/11 (Cris): cadastro só com e-mail e telefone → acesso de teste por 7 dias (POST /api/cadastro, pedido à Clauds em 07/11).
+   Enquanto o servidor não tiver a rota (404), o pedido vai pelo envia() (interesse / WhatsApp) e a BLR cria o acesso no /admin. */
+function abreCadastro(){
+  abreModal(`<h3 id="mTit">Teste grátis por 7 dias</h3>
+    <p>Só e-mail e telefone. Você recebe um link para criar a senha e, por 7 dias, vê tudo o que o assinante vê.</p>
+    <ul class="ben"><li>Posição exata, contorno do lote no satélite e Street View</li><li>Teto BLR, ARV e a conta ao vivo de cada lote</li>
+      <li>Várias listas de acompanhamento e o questionário <b>Para você</b></li><li>Assistente de IA da BLR</li></ul>
+    <form class="fcad" id="fTeste"><label>E-mail<input name="email" type="email" autocomplete="email" required></label>
+      <label>Telefone / WhatsApp (com o código do país)<input name="telefone" type="tel" autocomplete="tel" required minlength="8" placeholder="+1 617 000 0000"></label>
+      <button class="cta" type="submit">Começar o teste</button><div class="nota" id="tErro"></div>
+      <div class="nota">Sem cartão. Depois dos 7 dias você continua como visitante, se não assinar.</div></form>`);
+  $("#fTeste").onsubmit = async e => { e.preventDefault(); const f = new FormData(e.target), bt = e.target.querySelector("button[type=submit]");
+    const email = String(f.get("email")).trim().toLowerCase(), tel = String(f.get("telefone")).trim();
+    bt.disabled = true; bt.textContent = "Enviando…";
+    try{ await api("/api/cadastro", {email, telefone: tel});
+      abreModal(`<h3 id="mTit">Quase lá ✓</h3><p class="ok-msg">Mandamos para <b>${esc(email)}</b> o link para criar a sua senha. O teste de 7 dias começa quando você entrar.</p><button class="cta" type="button" onclick="fechaModal()">Fechar</button>`); }
+    catch(er){ if(er.st === 429){ bt.disabled = false; bt.textContent = "Começar o teste"; $("#tErro").textContent = "Muitas tentativas. Espere alguns minutos."; return; }
+      envia({tipo: "teste 7 dias", nome: email.split("@")[0], email, whats: tel}, "Pedido de teste recebido. A BLR libera o seu acesso e manda o link para criar a senha."); } };
+}
+document.addEventListener("click", e => { if(e.target.closest("[data-teste]")){ e.preventDefault(); abreCadastro(); } });
 /* esqueci a senha (28/10): o servidor da Clauds já cria a senha por link (/api/senha); enquanto ele não tiver /api/esqueci
    (404), o pedido vai para a BLR pelo envia() e o admin manda o "Novo link" no /admin. A resposta é a mesma exista ou não a conta. */
 function abreEsqueci(email0){
@@ -1827,9 +1962,9 @@ function xlsx(cab, linhas, larg){   // cab: títulos; linhas: valores (número v
     {n: "xl/styles.xml", t: `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><fonts count="2"><font><sz val="11"/><name val="Calibri"/></font><font><b/><sz val="11"/><name val="Calibri"/></font></fonts><fills count="3"><fill><patternFill patternType="none"/></fill><fill><patternFill patternType="gray125"/></fill><fill><patternFill patternType="solid"><fgColor rgb="FFF0C064"/></patternFill></fill></fills><borders count="1"><border/></borders><cellStyleXfs count="1"><xf/></cellStyleXfs><cellXfs count="3"><xf/><xf fontId="1" fillId="2" applyFont="1" applyFill="1"/><xf numFmtId="3" applyNumberFormat="1"/></cellXfs></styleSheet>`},
     {n: "xl/worksheets/sheet1.xml", t: sheet}]);
 }
-async function exportaSeg(){
+async function exportaSeg(li){
   const lin = [];
-  for(const x of SEG){
+  for(const x of (li ? li.itens : SEG)){
     const l = L.find(y => y.i === x.i), p = l && (MEMBRO || DB) ? await privado(l) : null, r = (l && l.rs) || {};
     lin.push([l ? l.uf : "", l ? l.co : "", l ? l.ci || "" : "", (l && l.zip) || "", p && p.e ? tc(p.e) : "", (p && p.parcela) || "",
       l ? tipoL(l) : "", l && l.d ? l.d.split("-").reverse().join("/") : (l ? "venda direta" : ""), situacao(x)[0],
@@ -1842,7 +1977,7 @@ async function exportaSeg(){
     "Lance quando marcou (US$)", ASSIN ? "Valor no cadastro (US$)" : "Valor no cadastro (faixa, US$)", "Desconto do lance (%)", "Força BLR (0–5)", "Nos critérios BLR",
     "Teto BLR (US$, assinante)", "ARV mín. (US$, assinante)", "ARV máx. (US$, assinante)", "Resultado do leilão", "Vendido por (US$, assinante)", "Marcado em", "Código do lote"];
   const b = xlsx(cab, lin, [7, 16, 18, 8, 34, 20, 18, 13, 46, 12, 12, 14, 10, 9, 10, 13, 13, 13, 18, 13, 11, 14]);
-  const a = document.createElement("a"); a.href = URL.createObjectURL(b); a.download = `BLR acompanhados ${HOJE_L.split("-").reverse().join("-")}.xlsx`;
+  const a = document.createElement("a"); a.href = URL.createObjectURL(b); a.download = `BLR ${li ? li.nome.replace(/[\/:*?"<>|]/g, "") : "acompanhados"} ${HOJE_L.split("-").reverse().join("-")}.xlsx`;
   document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 2000);
 }
 document.addEventListener("keydown", e => { if(e.key === "Escape"){ if(!$("#modal").hidden) fechaModal(); else fecha(); } });
@@ -2051,15 +2186,118 @@ function criaMapa(){
     : `${SEMDADO(l) ? `<span style="color:var(--mute)">Sem dado para a conta: ${faltaTxt(l)}</span>` : `${forcaHTML(l)} <span style="color:var(--mute)">${LIST(l) ? "desconto " + (l.desc ?? "—") + "%" : FORCA_T[forcaDe(l)]}</span>`}<br><b>${esc(l.ci || l.co)}</b> · ${usd(l.ab)}<br>${l.et === "final" ? (ASSIN ? `Teto ${k(l.teto)} · ARV ${l.arv ? k(l.arv[0]) + "–" + k(l.arv[1]).replace(sim() + " ", "") : "—"}` : `Nos critérios BLR · teto para assinantes`)
     : LIST(l) ? `<span style="color:var(--mute)">Listado · ${rotLance(l).toLowerCase()} · cadastro ${k(l.jv)}</span>` : `<span style="color:var(--mute)">Fora: ${esc(ETAPA[l.et] || l.et)}</span>`}<br><span style="color:var(--mute)">${l.d ? "Leilão " + dm(l.d) : VD}</span>`;
   let ULT = [];
-  function pontos(r){
-    ULT = r; camL.clearLayers(); MARK.clear();
-    const rr = [...r].sort((a, b) => HIST(b) - HIST(a) || forcaDe(a) - forcaDe(b));   // histórico embaixo, mais forte por cima
-    for(const l of rr){ if(!SEMON && SEMDADO(l)) continue; const p = EXATO[l.i], la = p ? p.la : l.la, ln = p ? p.ln : l.ln; if(la == null || ln == null) continue;
-      const m = Lf.circleMarker([la, ln], {renderer: rLotes, radius: raioL(l), ...estBase(l), fillColor: corL(l), fillOpacity: HIST(l) ? .3 : SEMDADO(l) ? 0 : .95, dashArray: HIST(l) ? "2 2" : null});
-      m.bindTooltip(() => ttL(l), {className: "tt-l", direction: "top", offset: [0, -4]}); m.on("click", () => abre(l.i)); m.lote = l; m.addTo(camL); MARK.set(l.i, m);
-      m.on("mouseover", () => mola(m, raioL(l) * 1.6, 220)); m.on("mouseout", () => mola(m, raioL(l), 260)); }
-    onda(); rotulosARV(); if(ON.sat && !SITE) satLotes();
+  /* 07/11 (Cris, no modelo de mapa agrupado): em vez de milhares de bolinhas, GRUPOS com o número grande; cada zoom divide os grupos
+     por proximidade até sobrar o lote (bola de sempre a partir de Z_SOLTO ou quando o grupo tem 1). Grade de CEL px na tela e depois
+     junta grupos cujos centros ficam a menos de JUNTA px (um passe). Só o que está na tela (com folga) é agrupado: rápido em 37 mil lotes. */
+  const Z_SOLTO = 14, CEL = 72, JUNTA = 58;
+  const camClu = Lf.layerGroup().addTo(M), camPol = Lf.layerGroup().addTo(M);
+  M.createPane("clu").style.zIndex = 630;
+  const posDe = l => { const p = EXATO[l.i]; return p && p.la != null ? [p.la, p.ln] : l.la != null && l.ln != null ? [l.la, l.ln] : null; };
+  const fmtN = n => n >= 1e4 ? Math.round(n / 1e3) + " mil" : n >= 1e3 ? (n / 1e3).toFixed(1).replace(".", ",") + " mil" : String(n);
+  function pontos(r){ ULT = r; desenha(); }
+  function solto(l, ll){
+    const m = Lf.circleMarker(ll, {renderer: rLotes, radius: raioL(l), ...estBase(l), fillColor: corL(l), fillOpacity: HIST(l) ? .3 : SEMDADO(l) ? 0 : .95, dashArray: HIST(l) ? "2 2" : null});
+    m.bindTooltip(() => ttL(l), {className: "tt-l", direction: "top", offset: [0, -4]}); m.on("click", () => abre(l.i)); m.lote = l; m.addTo(camL); MARK.set(l.i, m);
+    m.on("mouseover", () => mola(m, raioL(l) * 1.6, 220)); m.on("mouseout", () => mola(m, raioL(l), 260));
   }
+  function grupo(c, zz){
+    const n = c.ls.length, top = c.ls.reduce((a, b) => forcaDe(b[0]) > forcaDe(a[0]) ? b : a), nc = c.ls.filter(x => noCrit(x[0])).length;
+    const d = n >= 1000 ? 4 : n >= 100 ? 3 : n >= 10 ? 2 : 1, tam = [0, 34, 42, 52, 62][d];
+    const ll = M.unproject([c.x, c.y], zz);
+    const mk = Lf.marker(ll, {pane: "clu", keyboard: false, riseOnHover: true,
+      icon: Lf.divIcon({className: "", iconSize: [0, 0], html: `<div class="clu${nc ? " cr" : ""}" style="--c:${corL(top[0])};--t:${tam}px"><b>${fmtN(n)}</b></div>`})});
+    mk.bindTooltip(`<b>${plural(n, "oportunidade", "oportunidades")}</b>${nc ? `<br><span style="color:var(--ok)">${nc} nos critérios BLR</span>` : ""}<br><span style="color:var(--mute)">Toque para abrir o grupo</span>`, {className: "tt-l", direction: "top", offset: [0, -tam / 2]});
+    mk.on("click", () => { const b = Lf.latLngBounds(c.ls.map(x => x[1]));
+      if(b.getNorthEast().distanceTo(b.getSouthWest()) < 30) M.flyTo(b.getCenter(), Math.max(zz + 2, Z_SOLTO + .5), {duration: VOO});
+      else M.flyToBounds(b, {padding: [70, 70], maxZoom: Math.max(zz + 1.5, Math.min(Z_SOLTO + .5, zz + 4)), duration: VOO}); });
+    mk.addTo(camClu);
+  }
+  function desenha(){
+    camL.clearLayers(); camClu.clearLayers(); camPol.clearLayers(); MARK.clear();
+    const zz = z(), b = M.getBounds().pad(.25), vivos = [], hist = [];
+    for(const l of ULT){ if(!SEMON && SEMDADO(l)) continue; const ll = posDe(l); if(!ll || !b.contains(ll)) continue; (HIST(l) ? hist : vivos).push([l, ll]); }
+    if(zz >= 11) for(const [l, ll] of hist) solto(l, ll);   // histórico: só de perto, transparente, embaixo
+    if(zz >= Z_SOLTO){ vivos.sort((a, c) => forcaDe(a[0]) - forcaDe(c[0])).forEach(([l, ll]) => solto(l, ll)); }
+    else {
+      const g = new Map();
+      for(const x of vivos){ const p = M.project(x[1], zz), k = Math.floor(p.x / CEL) + ":" + Math.floor(p.y / CEL);
+        let c = g.get(k); if(!c) g.set(k, c = {x: 0, y: 0, ls: []}); c.x += p.x; c.y += p.y; c.ls.push(x); }
+      const cs = [...g.values()].map(c => ({x: c.x / c.ls.length, y: c.y / c.ls.length, ls: c.ls})).sort((a, c) => c.ls.length - a.ls.length), fim = [];
+      for(const c of cs){ const o = fim.find(o => Math.hypot(o.x - c.x, o.y - c.y) < JUNTA);
+        if(o){ const n1 = o.ls.length, n2 = c.ls.length; o.x = (o.x * n1 + c.x * n2) / (n1 + n2); o.y = (o.y * n1 + c.y * n2) / (n1 + n2); o.ls.push(...c.ls); } else fim.push(c); }
+      for(const c of fim) c.ls.length === 1 ? solto(c.ls[0][0], c.ls[0][1]) : grupo(c, zz);
+    }
+    // de perto, o contorno real do lote no mapa (membro: posição exata + "pol" do privado, vitrine_contornos.py)
+    if(zz >= 15) for(const [l] of vivos){ const p = EXATO[l.i]; if(!p || !p.pol || p.pol.length < 3) continue;
+      Lf.polygon(p.pol, {renderer: rLotes, color: "#F2C14E", weight: zz >= 17 ? 2.4 : 1.6, fillColor: "#F2C14E", fillOpacity: .12}).on("click", () => abre(l.i)).addTo(camPol); }
+    onda(); rotulosARV(); if(ON.sat && !SITE) satLotes();
+    regiao();
+  }
+  /* 07/11: à direita, até 9 oportunidades da área da tela, com foto (satélite USGS + contorno do lote para membro); toque expande o cartão */
+  const TILE = "https://basemap.nationalmap.gov/arcgis/rest/services/USGSImageryOnly/MapServer/tile/";
+  const tileXY = (la, ln, n) => { const r = la * Math.PI / 180; return [(ln + 180) / 360 * n, (1 - Math.log(Math.tan(r) + 1 / Math.cos(r)) / Math.PI) / 2 * n]; };
+  function mosaico(la, ln, zt, s, pol){
+    const n = 2 ** zt, [xt, yt] = tileXY(la, ln, n), x0 = Math.floor(xt) - 1, y0 = Math.floor(yt) - 1, px = (xt - x0) * 256, py = (yt - y0) * 256;
+    let h = "";
+    for(let j = 0; j < 3; j++) for(let i = 0; i < 3; i++) h += `<img alt="" loading="lazy" src="${TILE}${zt}/${y0 + j}/${x0 + i}" onerror="this.style.visibility='hidden'">`;
+    if(pol && pol.length > 2) h += `<svg class="pol" width="768" height="768"><polygon points="${pol.map(([a, b]) => { const [x, y] = tileXY(a, b, n); return ((x - x0) * 256).toFixed(1) + "," + ((y - y0) * 256).toFixed(1); }).join(" ")}"/></svg>`;
+    return `<div class="mos" style="left:calc(50% - ${px.toFixed(0)}px);top:calc(50% - ${py.toFixed(0)}px);transform-origin:${px.toFixed(0)}px ${py.toFixed(0)}px;transform:scale(${s.toFixed(2)})">${h}</div>`;
+  }
+  function fotoCard(l){
+    const p = EXATO[l.i];
+    if(p && p.pol && p.pol.length > 2){ const la = p.pol.reduce((s, q) => s + q[0], 0) / p.pol.length, ln = p.pol.reduce((s, q) => s + q[1], 0) / p.pol.length;
+      const n = 2 ** 16, xy = p.pol.map(([a, b]) => tileXY(a, b, n)), lado = Math.max(Math.max(...xy.map(q => q[0])) - Math.min(...xy.map(q => q[0])), Math.max(...xy.map(q => q[1])) - Math.min(...xy.map(q => q[1]))) * 256;
+      return mosaico(la, ln, 16, Math.max(1, Math.min(3, 150 / (lado || 1))), p.pol) + `<span class="ftag">Contorno do lote</span>`; }
+    const f = fotoDe(l); if(f && !f.sat) return `<img class="fpr" alt="" loading="lazy" src="${f.src}"><span class="ftag">Foto</span>`;
+    if(p && p.la != null) return mosaico(p.la, p.ln, 16, 1.6) + `<span class="alvo"></span><span class="ftag">Satélite</span>`;
+    const ll = posDe(l); if(!ll) return `<span class="ftag">Sem posição</span>`;
+    return mosaico(ll[0], ll[1], 14, 1) + `<span class="alvo larga"></span><span class="ftag">Região (~1 km)${ASSIN ? "" : " · exato no Pro"}</span>`;
+  }
+  const RG = document.createElement("aside"); RG.className = "regiao"; RG.id = "regiao"; RG.setAttribute("aria-label", "Oportunidades nesta área do mapa");
+  box.appendChild(RG); Lf.DomEvent.disableClickPropagation(RG); Lf.DomEvent.disableScrollPropagation(RG);
+  let RG_ABERTO = null, RG_MIN = false;
+  const BENEF = () => ASSIN ? "" : `<div class="pro"><b>O que o Pro libera</b><ul><li>Posição exata e o contorno de cada lote</li><li>Street View, endereço e parcela</li><li>Teto BLR, ARV e a conta ao vivo</li><li>Várias listas de acompanhamento</li><li>Assistente de IA da BLR</li></ul>
+    <button type="button" class="cta" data-teste>Testar 7 dias grátis</button><button type="button" class="lnk" data-assina>ou assinar · US$ 9,99/mês</button></div>`;
+  function cartaoRG(l){
+    const ab = RG_ABERTO === l.i, fz = forcaDe(l);
+    return `<article class="grc${ab ? " ab" : ""}" data-rc="${l.i}"><div class="grf">${fotoCard(l)}</div>
+      <div class="grt"><div class="grp num">${usd(l.ab)} <small>${esc(rotLance(l).toLowerCase())}</small></div>
+        <div class="grs">${esc(l.ci || l.co)}, ${esc(l.uf)} · ${esc(tipoL(l))}${l.d ? " · leilão " + dm(l.d) : ""}</div>
+        <div class="grv">${forcaHTML(l)} ${noCrit(l) ? "Nos critérios BLR" : LIST(l) ? (l.desc != null ? `−${l.desc}% do cadastro` : "Listado") : esc(ETAPA[l.et] || "")}</div></div>
+      ${ab ? `<div class="grx"><table>
+        ${l.jv ? `<tr><td>Cadastro</td><td>${k(l.jv)}${l.desc != null ? ` · lance −${l.desc}%` : ""}</td></tr>` : ""}
+        ${l.a ? `<tr><td>Área</td><td>${l.a.toLocaleString("pt-BR")} pé²${l.y ? " · " + l.y : ""}</td></tr>` : ""}
+        <tr><td>Força BLR</td><td>${FORCA_T[fz] || "—"}</td></tr>
+        <tr><td>Teto BLR</td><td>${l.et === "final" ? (ASSIN ? kT(l.teto) : "🔒 no Pro") : "—"}</td></tr>
+        <tr><td>Ônus</td><td>${esc(onusTxt(l))}</td></tr></table>
+        <div class="grb"><button type="button" class="cta" data-rficha="${l.i}">Ficha completa</button>${btSeg(l)}<button type="button" class="bfi" data-rmapa="${l.i}">No mapa</button></div></div>` : ""}
+    </article>`;
+  }
+  let tRG = 0;
+  function regiao(){ clearTimeout(tRG); tRG = setTimeout(regiao0, 120); }
+  function regiao0(){
+    const b = M.getBounds(), vis = [];
+    for(const l of ULT){ if(HIST(l) || (!SEMON && SEMDADO(l))) continue; const ll = posDe(l); if(ll && b.contains(ll)) vis.push(l); }
+    vis.sort((a, c) => noCrit(c) - noCrit(a) || forcaDe(c) - forcaDe(a) || !!fotoDe(c) - !!fotoDe(a) || (c.desc ?? -1) - (a.desc ?? -1));
+    const top = vis.slice(0, 9);
+    if(RG_ABERTO && !top.some(l => l.i === RG_ABERTO)){ const x = vis.find(l => l.i === RG_ABERTO); if(x) top[top.length ? top.length - 1 : 0] = x; }
+    RG.classList.toggle("min", RG_MIN);
+    RG.innerHTML = `<div class="grh"><div><b>${vis.length ? plural(vis.length, "oportunidade", "oportunidades").replace(/^\d+/, fmtN(vis.length)) : "Nenhuma oportunidade"}</b><small>${vis.length > 9 ? "nesta área · as 9 melhores" : "nesta área do mapa"} · <a href="para-voce/" class="pv">✦ achar as que combinam com você</a></small></div>
+      <button type="button" class="rmin" data-rmin aria-label="${RG_MIN ? "Abrir" : "Recolher"} as oportunidades">${RG_MIN ? "▴" : "▾"}</button></div>
+      <div class="grl">${top.map(cartaoRG).join("") || `<p class="vazio">Afaste o mapa ou mude os filtros.</p>`}${BENEF()}</div>`;
+  }
+  RG.addEventListener("click", e => {
+    const t = e.target;
+    if(t.closest("[data-rmin]")){ RG_MIN = !RG_MIN; regiao0(); return; }
+    const sg = t.closest("[data-seg]"); if(sg){ alternaSeg(sg.dataset.seg); return; }
+    const f = t.closest("[data-rficha]"); if(f){ abre(f.dataset.rficha); return; }
+    const mm = t.closest("[data-rmapa]"); if(mm){ const l = ULT.find(x => x.i === mm.dataset.rmapa), ll = l && posDe(l); if(ll) M.flyTo(ll, Math.max(z(), 16), {duration: VOO}); return; }
+    if(t.closest("button,a")) return;
+    const c = t.closest("[data-rc]"); if(c){ RG_ABERTO = RG_ABERTO === c.dataset.rc ? null : c.dataset.rc; regiao0();
+      document.dispatchEvent(new CustomEvent("sel", {detail: RG_ABERTO})); }
+  });
+  RG.addEventListener("mouseover", e => { const c = e.target.closest("[data-rc]"); const m = c && MARK.get(c.dataset.rc); if(m) mola(m, raioL(m.lote) * 1.8, 220); });
+  RG.addEventListener("mouseout", e => { const c = e.target.closest("[data-rc]"); const m = c && MARK.get(c.dataset.rc); if(m) mola(m, raioL(m.lote), 260); });
   // movimento: raio animado por quadro (o canvas redesenha uma vez por quadro, mesmo com centenas de pontos)
   const QUIETO = matchMedia("(prefers-reduced-motion: reduce)").matches, VOO = QUIETO ? 0 : 1.1;
   const volta = t => 1 + 2.2 * Math.pow(t - 1, 3) + 1.2 * Math.pow(t - 1, 2);   // passa um pouco do alvo e assenta
@@ -2452,8 +2690,8 @@ function criaMapa(){
       if(zz >= Z_EST){ if(!M.hasLayer(camCo)) camCo.addTo(M); } else if(M.hasLayer(camCo)) M.removeLayer(camCo);
       camCo.setStyle(estilCo);
     }
-    if(zAnt == null || Math.floor(zAnt) !== Math.floor(zz) || (zAnt < Z_CO) !== (zz < Z_CO)) camL.eachLayer(m => m.setRadius(raioL(m.lote)));
     zAnt = zz;
+    desenha();   // 07/11: grupos refeitos a cada parada do mapa (zoom divide, afastar junta)
     const n = nivelDaTela();
     if(n.uf !== nivel.uf || n.f !== nivel.f){
       nivel = n; camCo.setStyle(estilCo); if(n.uf) pedeUF(n.uf);
@@ -2478,7 +2716,7 @@ function criaMapa(){
     if(e.target.closest("[data-comp]")){ COMPON = !COMPON; comprados(); legenda(); }
     if(e.target.closest("[data-sd]")){ SEMON = !SEMON; pontos(ULT); legenda(); } });
   return {atualiza: r => { pontos(r); if(nivel.f) painelCo(nivel.f); else if(nivel.uf) painelUF(nivel.uf); else painelUS(); legenda(); },
-          legenda, comprados, foca: i => { const m = MARK.get(i); if(m) M.flyTo(m.getLatLng(), Math.max(z(), 13), {duration: VOO}); },
+          legenda, comprados, foca: i => { const l = ULT.find(x => x.i === i) || L.find(x => x.i === i), ll = l && posDe(l); if(ll) M.flyTo(ll, Math.max(z(), Z_SOLTO + .5), {duration: VOO}); },
           invalida: () => M.invalidateSize(), us: abreUS, onde: () => { const c = nivel.f && cty.find(x => x.id === nivel.f); return {uf: nivel.uf, condado: c ? c.properties.name : null}; }, voa: (la, ln, zz) => M.setView([la, ln], zz)};
 }
 
@@ -2636,16 +2874,17 @@ document.querySelectorAll(".segCrit button").forEach(b => b.onclick = () => { co
   b.parentElement.querySelectorAll("button").forEach(x => x.setAttribute("aria-pressed", (x.dataset.crit === "1") === v)); critTexto(); mostrar = PAG; render(); });
 $("#btSeg").onclick = abreSeg;   // faltava: o ★ do topo não abria a lista (Cris 24/10)
 $("#btFiltros").onclick = () => { const a = $(".filtros").classList.toggle("aberta"); $("#btFiltros").setAttribute("aria-expanded", a); $("#btFiltros").textContent = a ? "Menos filtros ▴" : "Mais filtros ▾"; };
-$("#tgSeg").onclick = () => { FSEG = !FSEG; $("#tgSeg").setAttribute("aria-pressed", FSEG); render(); };
+{ const q = new URLSearchParams(location.search).get("lista"); if(q && LISTAS.some(x => x.id === q)){ FSEG = q; $("#tgSeg").setAttribute("aria-pressed", true); } }
+$("#tgSeg").onclick = () => { FSEG = FSEG ? false : true; $("#tgSeg").setAttribute("aria-pressed", !!FSEG); render(); };
 /* 02/11 (Cris): o botão alterna Histórico junto → Só vendidos → sem histórico */
 const tgHistPinta = () => { const b = $("#tgHist"); b.textContent = HISTON === "vend" ? "Só vendidos" : "Histórico"; b.setAttribute("aria-pressed", !!HISTON);
   b.title = HISTON === "vend" ? "Mostrando só os lotes já vendidos em leilão (toque para esconder o histórico)" : HISTON ? "Histórico junto (toque para ver só os vendidos)" : "Histórico escondido (toque para mostrar)"; };
 $("#tgHist").onclick = () => { HISTON = HISTON === true ? "vend" : HISTON === "vend" ? false : true; tgHistPinta(); render(); };
 tgHistPinta();
-function minPainel(m){ $("#painel").classList.toggle("min", m); $("#v-mapa").classList.toggle("pmin", m); $("#pMin").textContent = m ? "▴" : "▾";
-  $("#pMin").setAttribute("aria-expanded", !m); $("#pMin").setAttribute("aria-label", m ? "Abrir a lista" : "Recolher a lista"); }
+function minPainel(m){ $("#painel").classList.toggle("min", m); $("#v-mapa").classList.toggle("pmin", m); $("#pMin").textContent = m ? "📅 Leilões" : "▾";
+  $("#pMin").setAttribute("aria-expanded", !m); $("#pMin").setAttribute("aria-label", m ? "Abrir o calendário de leilões" : "Recolher o calendário"); $("#pMin").classList.toggle("cal", m); if(MAPA) setTimeout(() => MAPA.invalida(), 0); }
 $("#pMin").onclick = () => minPainel(!$("#painel").classList.contains("min"));
-if(window.innerWidth < 760) minPainel(true);
+minPainel(true);   // 07/11 (Cris): o calendário de leilões começa escondido; a navegação é pelo mapa
 /* moeda: só a exibição muda; o leilão é em dólar */
 const CEL = window.innerWidth < 760;   // celular: só o código da moeda cabe no topo
 $("#moeda").innerHTML = Object.entries(MOEDAS).filter(([c]) => c === "USD" || CAMBIO.r[c]).map(([c, [sm, n]]) => `<option value="${c}" ${c === MOEDA ? "selected" : ""}>${CEL ? c : c + " · " + n}</option>`).join("");
