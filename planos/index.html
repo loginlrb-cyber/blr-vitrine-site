@@ -88,7 +88,7 @@ function monta(atual){
 monta(null);
 // com sessão, marca o plano atual (campo "plano" do /api/me quando a Clauds tiver; antes disso, assinante = Pro). Sem servidor: fica como está.
 fetch("https://api.blrdevelopment.com/api/me", {credentials: "include"}).then(r => r.ok ? r.json() : null).then(eu => {
-  if(!eu) return; const pl = eu.plano || (eu.papel === "admin" || eu.papel === "membro" || eu.teste ? "pro" : "gratuito");
+  if(!eu) return; const pl = eu.plano || "ultra";   // 07/11 (Rodrigo): todo cadastrado no UltraPro
   if(PLANOS.some(p => p.id === pl)) monta(pl); }).catch(() => {});
 </script>
 </body>

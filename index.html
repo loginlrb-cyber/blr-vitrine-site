@@ -139,6 +139,28 @@ body:has(#cmpbar:not([hidden])) .iafab{bottom:calc(84px + env(safe-area-inset-bo
 .portB .vazio{color:var(--mute);font-style:italic;margin:0}
 .portAv{display:flex;flex-wrap:wrap;align-items:center;gap:10px;padding:12px 14px;border-radius:12px;border:1px solid var(--acc);margin-bottom:16px}
 .cobvolta{padding-top:14px}
+.hbt.cfg{border:1px solid var(--line2);color:var(--tx2);font-size:15px;padding:6px 10px;text-decoration:none}.hbt.cfg:hover{color:var(--tx)}
+.pacA{margin-top:22px;padding-top:16px;border-top:1px solid var(--line)}
+.pacA h3{margin:0 0 4px;font-family:var(--f-d);font-size:19px}.pacA h4{margin:18px 0 6px;font-size:14px}
+.pacPrazo{display:block;max-width:420px;margin:4px 0 12px}.pacPrazo input{width:100%}
+.tbw{position:relative;overflow-x:auto;border:1px solid var(--line);border-radius:12px}
+.pacT{width:100%;border-collapse:collapse;font-size:13px;font-variant-numeric:tabular-nums}
+.pacT th,.pacT td{padding:8px 10px;border-bottom:1px solid var(--line);text-align:left;white-space:nowrap;vertical-align:middle}
+.pacT thead th{font-size:11.5px;letter-spacing:.04em;text-transform:uppercase;color:var(--mute);font-weight:600;background:var(--surf)}
+.pacT tfoot th,.pacT tfoot td{font-weight:700;border-bottom:0;background:var(--surf)}
+.pacT td.num{text-align:right}.pacT td.neg{color:var(--bad,#E5634D)}
+.pacT input[type=number]{width:96px;background:var(--surf2);color:var(--tx);border:1px solid var(--line2);border-radius:7px;padding:4px 6px;font:inherit}
+.pacT select{background:var(--surf2);color:var(--tx);border:1px solid var(--line2);border-radius:7px;padding:4px 6px;font:inherit}
+.pacT small{display:block;color:var(--mute);font-size:11px;margin-top:2px}
+.pcols{margin:4px 0 10px}.pcols summary{cursor:pointer;font-weight:600;font-size:13px;color:var(--acc);list-style:none;display:inline-block;padding:6px 12px;border:1px solid var(--line2);border-radius:9px}
+.pcols summary::after{content:" ▾"}.pcols[open] summary::after{content:" ▴"}
+.pcols>div{display:flex;flex-wrap:wrap;gap:6px 14px;margin-top:8px;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--surf);font-size:13px}
+.pcols label{display:inline-flex;gap:6px;align-items:center;cursor:pointer}
+.pacT td.pnome{white-space:normal;min-width:150px}.pacT td.pnome .lnk{text-align:left}
+.pacT td.pact{white-space:nowrap}.pacT td.pact button{all:unset;cursor:pointer;padding:3px 7px;border-radius:6px;border:1px solid var(--line2);margin-left:3px;font-size:12px}
+.pacT td.pact button:disabled{opacity:.3;cursor:default}.pacT tr.hist td{opacity:.55}
+.pacT .st{font-size:12px;white-space:normal;display:block;min-width:160px;max-width:240px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
 .tabs button{white-space:nowrap}
 @media (max-width:1400px){.tabs button .lg-full{display:none}.tabs button .tb-curto{display:inline}}
 @media (max-width:1150px){.hbt.ass .lg-full{display:none}.top .who{display:none}}
@@ -816,7 +838,8 @@ body{transition:padding-right .5s var(--mola)}
   </nav>
   <div class="who"><span class="dot" id="dot"></span><span id="whoTxt">Visitante</span></div>
   <div class="acoes-top">
-    <select class="moeda" id="moeda" aria-label="Moeda dos valores"></select>
+    <select class="moeda" id="moeda" aria-label="Moeda dos valores" hidden></select>
+    <a class="hbt cfg" id="btCfg" href="conta/#sPref" title="Configurações: moeda, idioma, tema" aria-label="Configurações">⚙</a>
     <span class="plSelo" id="plSelo" hidden></span>
     <button class="hbt ass" id="btAssina" type="button">Assinar<span class="lg-full"> · a partir de US$ 9,90/mês</span></button>
     <button class="hbt carr" id="btCarr" type="button" aria-label="Carrinho de encomenda" title="Carrinho de encomenda">🛒 <b id="nCarr">0</b></button>
@@ -1239,12 +1262,10 @@ function abreSeg(id){
     ${ASSIN ? `<button type="button" class="lnk" data-lnova>＋ Nova lista</button>` : `<button type="button" class="lnk" data-assina>＋ Nova lista 🔒</button>`}</div>`;
   const crit = li.crit ? `<div class="lcrit"><b>Critérios do questionário:</b> ${esc(li.crit)} · <a href="para-voce/?lista=${encodeURIComponent(li.id)}">Refazer o questionário</a></div>` : "";
   const corpo = !li.itens.length ? `<p class="vazio">Lista vazia. Toque em <b>☆ Acompanhar</b> num lote para guardar aqui. Aqui aparece o que mudou desde que você marcou: lance, data, se saiu da lista e, depois do leilão, por quanto foi vendido.</p>`
-    : `<div class="carr-lista">${li.itens.map(x => { const [t, c] = situacao(x), l = L.find(y => y.i === x.i);
-      return `<div class="seg-it"><div><b>${esc(l ? (l.ci && l.ci !== l.co ? l.ci + ", " : "") + l.co + " County · " + l.uf : x.nm || x.i)}</b><span class="st ${c}">${esc(t)}</span></div>
-        <div class="bts">${l ? `<button type="button" data-ver="${x.i}">Ver</button>` : ""}<button type="button" data-tseg="${x.i}">Tirar</button></div></div>`; }).join("")}</div>`;
+    : "";   // 07/11: os lotes aparecem na tabela do pacote (colunas escolhíveis)
   $("#pac").innerHTML = (`<div class="pactopo"><h2>Pacotes</h2><p class="nota">Cada lista ★ é um pacote de parcels. Marque ☆ Acompanhar num lote do BIDMAP ou da BIDLIST para guardar aqui.</p></div>${abas}
     <div class="lcab">${ASSIN ? `<input id="lNome" maxlength="40" value="${esc(li.nome)}" aria-label="Nome da lista"><span class="lcores">${LCORES.map(c => `<button type="button" data-lc="${c}" style="background:${c}" aria-label="Cor" aria-pressed="${c === li.cor}"></button>`).join("")}</span>` : `<b>${esc(li.nome)}</b>`}</div>
-    ${crit}${corpo}
+    ${crit}${corpo}${pacoteHTML(li)}
     <p class="nota">${PODE || SESSAO ? "Guardado neste navegador e na sua conta assim que o servidor permitir." : "Fica guardado neste navegador."} Os lotes são atualizados duas vezes por semana.</p>
     <div class="facoes" style="margin-top:12px">${li.itens.length ? `<button class="cta" type="button" id="segMapa">Ver esta lista no mapa</button><button class="bfi" type="button" id="segXls">⤓ Excel</button>` : ""}
       <a class="bfi" href="para-voce/">✦ Novo questionário → nova lista</a>
@@ -1259,6 +1280,102 @@ function abreSeg(id){
   const bd = $("#segDel"); if(bd) bd.onclick = () => { if(bd.dataset.ok){ LISTAS = LISTAS.filter(x => x !== li); LATIVA = null; if(FSEG === li.id) FSEG = false; salvaSeg(); render(); abreSeg(); } else { bd.dataset.ok = 1; bd.textContent = "Toque de novo para apagar"; } };
   m.querySelectorAll("[data-tseg]").forEach(b => b.onclick = () => { poeNaLista(li, b.dataset.tseg, false); salvaSeg(); if(FSEG) render(); abreSeg(li.id); });
   m.querySelectorAll("[data-ver]").forEach(b => b.onclick = () => { fechaModal(); verLote(b.dataset.ver); });
+  // subir e descer (07/11): a ordem do pacote é a ordem da lista
+  const move = (i, d) => { const a = li.itens, p = a.findIndex(x => x.i === i), q = p + d; if(p < 0 || q < 0 || q >= a.length) return; [a[p], a[q]] = [a[q], a[p]]; salvaSeg(); abreSeg(li.id); };
+  m.querySelectorAll("[data-sobe]").forEach(b => b.onclick = () => move(b.dataset.sobe, -1));
+  m.querySelectorAll("[data-desce]").forEach(b => b.onclick = () => move(b.dataset.desce, 1));
+  pacoteEventos(li);
+}
+
+/* ---------- análise do pacote (07/11, Rodrigo; story map v3, BIDLIST "Análise do pacote") ----------
+   A mesma conta da JV de cada ficha, lote a lote, somada: cada lote entra com a modalidade e o lance escolhidos aqui
+   (guardados no item da lista); a TIR do pacote sai da soma dos fluxos mensais no prazo da régua. Os comparativos usam
+   premissas fixas de referência (não são cotação do dia). */
+const PREMISSAS = [["Treasury de 1 ano", .04], ["Poupança remunerada nos EUA (HYSA)", .035], ["S&P 500 (média histórica)", .10]];
+const pctB = v => v == null || !isFinite(v) ? "—" : (v * 100).toFixed(1).replace(".", ",") + "%";
+function pacoteItens(li){
+  return li.itens.map(x => {
+    const l = L.find(y => y.i === x.i);
+    if(!l) return {x, mot: "saiu da plataforma"};
+    if(HIST(l)) return {x, l, mot: "já leiloado"};
+    if(!ASSIN || !vaiJV(l) || !l.am) return {x, l, mot: !ASSIN ? "assinante" : l.ct ? "terreno (conta própria, fora do pacote)" : "sem ARV para a conta da JV"};
+    const c = contaDe(l), mods = c.ff ? ["fs", "ff"] : ["fs"], mod = mods.includes(x.mod) ? x.mod : c.m.mod, j = mod === "ff" ? c.ff : c.fs;
+    const [lo, hi] = faixaLance(l), L0 = Math.min(hi, Math.max(lo, x.lance ?? lo));
+    return {x, l, j, mod, mods, L0, lo, hi, res: j.res(L0), cap: j.cap(L0), fl: fluxoJV(j, L0, PRAZO).f};
+  });
+}
+// colunas da tabela do pacote (07/11, Rodrigo: "escolher as colunas para acompanhar na tela"); "p" = só assinante
+const PCOLS = [
+  {id: "sit", t: "Situação", v: r => { const [t, c] = situacao(r.x); return `<span class="st ${c}">${esc(t)}</span>`; }},
+  {id: "leilao", t: "Leilão", v: r => r.l ? (r.l.d ? dm(r.l.d) : "venda direta") : "—"},
+  {id: "tipo", t: "Tipo", v: r => r.l ? esc(r.l.u || "—") : "—"},
+  {id: "area", t: "Área (pé²)", n: 1, v: r => r.l && (r.l.a || r.l.ae) ? Math.round(r.l.a || r.l.ae).toLocaleString("pt-BR") : "—"},
+  {id: "ab", t: "Abertura", n: 1, v: r => r.l ? k(r.l.ab) : "—", s: r => r.l && !HIST(r.l) ? r.l.ab || 0 : 0},
+  {id: "arv", t: "ARV", n: 1, p: 1, v: r => r.j ? k(r.l.am) : "—", s: r => r.j ? r.l.am : 0},
+  {id: "mod", t: "Modalidade", p: 1, v: r => !r.j ? "—" : r.mods.length > 1 ? `<select data-pmod="${r.l.i}" aria-label="Modalidade">${r.mods.map(m => `<option value="${m}" ${m === r.mod ? "selected" : ""}>${MOD_T[m]}</option>`).join("")}</select>` : MOD_T[r.mod]},
+  {id: "lance", t: "Lance", p: 1, v: r => !r.j ? "—" : `<input type="number" data-plance="${r.l.i}" min="${Math.round(r.lo)}" max="${Math.round(r.hi)}" step="100" inputmode="numeric" value="${Math.round(r.L0)}" aria-label="Lance, em dólares"${r.hi > r.lo ? "" : " disabled"}><small>${k(r.lo)} a ${r.hi > r.lo ? k(r.hi) : "não fecha"}</small>`, s: r => r.j ? r.L0 : 0, sn: 1},
+  {id: "custos", t: "Custos", n: 1, p: 1, v: r => r.j ? k(r.j.custos + r.j.com) : "—", s: r => r.j ? r.j.custos + r.j.com : 0},
+  {id: "cap", t: "Capital", n: 1, p: 1, v: r => r.j ? k(r.cap) : "—", s: r => r.j ? r.cap : 0},
+  {id: "rec", t: "Recebe na venda", n: 1, p: 1, v: r => r.j ? k(r.cap + r.res / 2) : "—", s: r => r.j ? r.cap + r.res / 2 : 0},
+  {id: "roi", t: "ROI", n: 1, p: 1, v: r => r.j ? `<span class="${r.res < 0 ? "neg" : ""}">${pctB(r.cap > 0 ? r.res / 2 / r.cap : null)}</span>` : "—"},
+  {id: "tir", t: "TIR (a.a.)", n: 1, p: 1, v: r => r.j ? pctB(tirMensal(r.fl)) : "—"},
+  {id: "mg", t: "Margem do projeto", n: 1, p: 1, v: r => r.j ? pctB(r.j.V > 0 ? r.res / r.j.V : null) : "—"}];
+const PCOLS0 = ["sit", "leilao", "ab", "arv", "mod", "lance", "cap", "rec", "roi"];
+let PCOLS_ON = PCOLS0;
+try{ const v = JSON.parse(localStorage.getItem("blr_pac_cols") || "null"); if(Array.isArray(v) && v.length) PCOLS_ON = v.filter(id => PCOLS.some(c => c.id === id)); }catch(e){}
+function pacoteHTML(li){
+  if(!li.itens.length) return "";
+  const it = pacoteItens(li), ok = ASSIN ? it.filter(r => r.j) : [], fora = ASSIN ? it.filter(r => !r.j && r.l && !HIST(r.l)) : [];
+  const S = k => ok.reduce((t, r) => t + r[k], 0), soma = f => ok.reduce((t, r) => t + f(r), 0);
+  const arv = soma(r => r.l.am), lance = S("L0"), V = soma(r => r.j.V), res = S("res"), cap = S("cap"), inv = res / 2;
+  const F = new Array(PRAZO + 1).fill(0); ok.forEach(r => r.fl.forEach((v, t) => F[t] += v));
+  const tir = ok.length ? tirMensal(F) : null, roi = cap > 0 ? inv / cap : null, mg = V > 0 ? res / V : null;
+  const vivos = it.filter(r => r.l && !HIST(r.l)), ab = vivos.reduce((t, r) => t + (r.l.ab || 0), 0);
+  const nome = r => r.l ? `<button type="button" class="lnk" data-ver="${r.l.i}">${esc((r.l.ci && r.l.ci !== r.l.co ? r.l.ci + ", " : "") + r.l.co + " · " + r.l.uf)}</button>` : esc(r.x.nm || r.x.i);
+  const cols = PCOLS.filter(c => PCOLS_ON.includes(c.id)), tranca = c => c.p && !ASSIN;
+  const kp = ASSIN ? [[`${ok.length}/${it.length}`, "lotes na conta"], [usd(arv), "soma dos ARVs"], [usd(lance), "soma dos lances"], [usd(cap), "capital do investidor"],
+    [usd(inv), "resultado do investidor"], [pctB(roi), "ROI no prazo"], [pctB(tir), "TIR (a.a.)"], [pctB(mg), "margem do projeto"]]
+    : [[String(vivos.length), "lotes com leilão pela frente"], [usd(ab), "soma das aberturas"]];
+  const escolha = `<details class="pcols"><summary>Colunas (${cols.length})</summary><div>${PCOLS.map(c => `<label><input type="checkbox" data-pcol="${c.id}" ${PCOLS_ON.includes(c.id) ? "checked" : ""}> ${c.t}${tranca(c) ? " 🔒" : ""}</label>`).join("")}
+      <button type="button" class="lnk" data-pcol0>Voltar ao padrão</button></div></details>`;
+  const linhas = it.map((r, n) => `<tr class="${r.l && HIST(r.l) ? "hist" : ""}"><td class="pnome">${nome(r)}</td>${cols.map(c => `<td class="${c.n ? "num" : ""}">${tranca(c) ? "🔒" : c.v(r)}</td>`).join("")}
+      <td class="pact"><button type="button" data-sobe="${r.x.i}" aria-label="Subir" ${n ? "" : "disabled"}>↑</button><button type="button" data-desce="${r.x.i}" aria-label="Descer" ${n < it.length - 1 ? "" : "disabled"}>↓</button><button type="button" data-tseg="${r.x.i}" aria-label="Tirar do pacote">✕</button></td></tr>`).join("");
+  const rodape = `<tr><th>Pacote</th>${cols.map(c => `<td class="${c.n || c.sn ? "num" : ""}">${c.s && !tranca(c) ? k(it.reduce((t, r) => t + c.s(r), 0)) : c.id === "roi" && ASSIN ? pctB(roi) : c.id === "tir" && ASSIN ? pctB(tir) : c.id === "mg" && ASSIN ? pctB(mg) : ""}</td>`).join("")}<td></td></tr>`;
+  const comp = PREMISSAS.map(([n, a]) => { const g = cap * (Math.pow(1 + a, PRAZO / 12) - 1);
+    return `<tr><td>${n} <small>(${pctB(a)} a.a.)</small></td><td class="num">${usd(g)}</td><td class="num">${inv > g ? "+" : ""}${usd(inv - g)}</td></tr>`; }).join("");
+  return `<section class="pacA"><h3>Análise do pacote</h3>
+    <p class="nota">${ASSIN ? "A conta da JV de cada lote somada: o investidor põe todo o caixa e recebe o capital mais 50% do resultado na venda. Escolha a modalidade e o lance de cada lote; a TIR sai do fluxo mensal somado." : "ARV, conta da JV, ROI e TIR do pacote inteiro são dos assinantes."}</p>
+    <div class="portK">${kp.map(([v, t]) => `<div class="kpi"><b class="num">${v}</b><span>${t}</span></div>`).join("")}</div>
+    ${ASSIN ? `<label class="cl pacPrazo"><span class="lin1">Prazo do lance à venda <b class="num" id="pPrazoRot">${PRAZO} ${PRAZO === 1 ? "mês" : "meses"}</b></span>
+      <input type="range" id="pPrazo" min="1" max="24" step="1" value="${PRAZO}" aria-label="Prazo em meses"></label>` : `<div class="portAv"><b>Assine para ver a conta do pacote.</b> <button type="button" class="cta" data-assina>Ver planos</button></div>`}
+    ${escolha}
+    <div class="tbw"><table class="pacT"><thead><tr><th>Lote</th>${cols.map(c => `<th>${c.t}</th>`).join("")}<th><span class="sr">Ordem</span></th></tr></thead>
+      <tbody>${linhas}</tbody><tfoot>${rodape}</tfoot></table></div>
+    ${fora.length ? `<p class="nota">Fora da conta: ${fora.map(r => `${esc(r.l.ci || r.l.co)} (${r.mot})`).join(" · ")}</p>` : ""}
+    ${ok.length ? `<h4>Comparativo no mesmo prazo, com o mesmo capital (${usd(cap)})</h4>
+    <div class="tbw"><table class="pacT pacC"><thead><tr><th>Alternativa</th><th>Ganho em ${PRAZO} ${PRAZO === 1 ? "mês" : "meses"}</th><th>Pacote menos a alternativa</th></tr></thead>
+      <tbody><tr><td><b>Este pacote</b></td><td class="num"><b>${usd(inv)}</b></td><td></td></tr>${comp}</tbody></table></div>
+    <p class="nota">Premissas fixas de referência, não cotação do dia. Os valores do pacote são estimativas: não garantem resultado e não são recomendação de investimento.</p>
+    <div class="facoes"><button class="cta" type="button" data-penc>Mandar o pacote para a encomenda à BLR</button></div>
+    <p class="nota">A BLR opera o lance para o partner homologado (plano UltraPro, por convite). O pedido leva cada lote com a modalidade e o lance escolhidos.</p>` : ""}
+  </section>`;
+}
+let PAC_ENC = null;   // pacote mandado para a encomenda: vai junto no pedido do carrinho
+function pacoteEventos(li){
+  const m = $("#pac"), item = i => li.itens.find(x => x.i === i);
+  m.querySelectorAll("[data-pmod]").forEach(s => s.onchange = () => { const x = item(s.dataset.pmod); if(x){ x.mod = s.value; delete x.lance; salvaSeg(); abreSeg(li.id); } });
+  m.querySelectorAll("[data-plance]").forEach(c => c.onchange = () => { const x = item(c.dataset.plance); if(x && c.value !== ""){ x.lance = Math.max(+c.min, Math.min(+c.max, +c.value)); salvaSeg(); abreSeg(li.id); } });
+  const p = $("#pPrazo"); if(p){ p.oninput = () => { $("#pPrazoRot").textContent = p.value + (p.value === "1" ? " mês" : " meses"); };
+    p.onchange = () => { PRAZO = +p.value; try{ localStorage.setItem("vitrine_prazo2", JSON.stringify(PRAZO)); }catch(e){} abreSeg(li.id); }; }
+  const be = m.querySelector("[data-penc]"); if(be) be.onclick = () => {
+    const ok = pacoteItens(li).filter(r => r.j);
+    PAC_ENC = {lista: li.nome, prazo: PRAZO, itens: ok.map(r => ({i: r.l.i, modalidade: MOD_T[r.mod], lance: Math.round(r.L0)}))};
+    ok.forEach(r => { if(!CARR.includes(r.l.i)) CARR.push(r.l.i); }); salvaCarr(); abreCarr(); };
+  const ba = m.querySelector(".pacA [data-assina]"); if(ba) ba.onclick = () => abreAssina();
+  const gc = () => { try{ localStorage.setItem("blr_pac_cols", JSON.stringify(PCOLS_ON)); }catch(e){} abreSeg(li.id); setTimeout(() => { const d = $("#pac .pcols"); if(d) d.open = true; }, 0); };
+  m.querySelectorAll("[data-pcol]").forEach(c => c.onchange = () => { const id = c.dataset.pcol;
+    PCOLS_ON = c.checked ? PCOLS.map(x => x.id).filter(x => x === id || PCOLS_ON.includes(x)) : PCOLS_ON.filter(x => x !== id); gc(); });
+  const c0 = m.querySelector("[data-pcol0]"); if(c0) c0.onclick = () => { PCOLS_ON = PCOLS0; gc(); };
 }
 
 /* ---------- comparar até 2 lotes ---------- */
@@ -1493,6 +1610,7 @@ function menuUsuario(e){
     <button type="button" class="lnk" role="menuitem" data-partner>◆ Tornar-se partner</button>
     <a class="lnk" role="menuitem" href="para-voce/">✦ Questionário Para você</a>
     <a class="lnk" role="menuitem" href="conta/">👤 Minha conta</a>
+    <a class="lnk" role="menuitem" href="conta/#sPref">⚙ Configurações (moeda, idioma)</a>
     <a class="lnk" role="menuitem" href="planos/">◆ Planos</a>
     <button type="button" class="lnk" role="menuitem" data-tour>? Como usar a plataforma</button>
     ${SITE ? `<button type="button" class="lnk" role="menuitem" data-ia>✦ Assistente BLR</button>` : ""}
@@ -1800,7 +1918,7 @@ async function carregaPremium(){
   if(ASSIN && PODE && UID){ try{ const c = (await DB.doc(`interesses/${UID}/prefs/cores`).get()).data(); if(c && c.p) CORES = c; }catch(e){} }
   aplicaCores();
   $("#btAssina").hidden = ASSIN; $("#btConta").hidden = !ASSIN;
-  { const pl = SESSAO && SESSAO.plano && PLANO_NOME[SESSAO.plano]; $("#plSelo").hidden = !ASSIN; $("#plSelo").textContent = "◆ " + (pl || (SESSAO && SESSAO.teste ? "Teste grátis" : "Assinante")); } $("#fFechaC").hidden = ASSIN; $("#guiaC").hidden = ASSIN; guia();   // a conta ao vivo é do assinante (precisa do ARV exato)
+  { const pl = SESSAO && PLANO_NOME[SESSAO.plano || "ultra"];   /* 07/11 (Rodrigo): todos os cadastrados no UltraPro */ $("#plSelo").hidden = !ASSIN; $("#plSelo").textContent = "◆ " + (pl || (SESSAO && SESSAO.teste ? "Teste grátis" : "Assinante")); } $("#fFechaC").hidden = ASSIN; $("#guiaC").hidden = ASSIN; guia();   // a conta ao vivo é do assinante (precisa do ARV exato)
   if(ASSIN){ render(); }
 }
 const chavePriv = l => (l.uf + "_" + l.co).replace(/ /g,"_").replace(/\./g,"").replace(/'/g,"");
@@ -2251,7 +2369,7 @@ function abreCarr(){
       <button class="cta" type="submit">Fechar pedido</button>
       <div class="nota">A BLR confere cada lote e responde antes do leilão. Fechar o pedido não é lance nem compromisso de compra.</div></form>`);
   $("#mBody").querySelectorAll("[data-tira]").forEach(b => b.onclick = () => { alternaCarr(b.dataset.tira); abreCarr(); });
-  formDe("fCarr", d => { envia({tipo: "carrinho", lotes: [...CARR], ...d}, `Pedido com ${plural(it.length, "lote", "lotes")} recebido.`); });
+  formDe("fCarr", d => { envia({tipo: PAC_ENC ? "encomenda" : "carrinho", lotes: [...CARR], ...(PAC_ENC ? {pacote: PAC_ENC} : {}), ...d}, `Pedido com ${plural(it.length, "lote", "lotes")} recebido.`); PAC_ENC = null; });
 }
 function abreCalc(){
   abreModal(`<div class="calc"><h3 id="mTit">Como a BLR calcula, em palavras simples</h3>
@@ -3173,18 +3291,23 @@ function retornoDe(x, L0, meses){
    do ativo em parcelas iguais do mês 1 até o fim da obra (no máximo OBRA_MAX meses, e terminando antes do mês da venda);
    no mês da venda saem marketing/gestão/fechamento e entra o capital de volta com 50% do resultado. */
 const OBRA_MAX = 8;
-function tirFluxo(x, L0, meses){
+function fluxoJV(x, L0, meses){
   const n = Math.max(1, Math.round(meses)), ob = x.mod === "ff" && x.obra > 0 ? Math.max(1, Math.min(OBRA_MAX, n - 1)) : 1;
   const f = new Array(n + 1).fill(0);
   f[0] -= L0 + x.proj + x.fixos;
   for(let m = 1; m <= ob; m++) f[Math.min(m, n)] -= (x.obra + x.adm) / ob;
   f[n] += x.cap(L0) + x.res(L0) / 2 - x.cv;   // recebe capital e 50% do resultado; o marketing/gestão/fechamento ele paga ali mesmo
+  return {f, obra: ob};
+}
+// TIR anual de um fluxo mensal (bisseção); null se o fluxo não troca de sinal
+function tirMensal(f){
   const vpl = r => f.reduce((a, v, t) => a + v / Math.pow(1 + r, t), 0);
   let lo = -0.99, hi = 10;
-  if(vpl(lo) * vpl(hi) > 0) return {tir: null, obra: ob};
+  if(vpl(lo) * vpl(hi) > 0) return null;
   for(let k = 0; k < 100; k++){ const mid = (lo + hi) / 2; vpl(lo) * vpl(mid) <= 0 ? hi = mid : lo = mid; }
-  return {tir: Math.pow(1 + (lo + hi) / 2, 12) - 1, obra: ob};
+  return Math.pow(1 + (lo + hi) / 2, 12) - 1;
 }
+function tirFluxo(x, L0, meses){ const {f, obra} = fluxoJV(x, L0, meses); return {tir: tirMensal(f), obra}; }
 // prazo do lance até a venda, em meses (régua da seção TIR, vale para as duas modalidades; fica guardado no navegador)
 let PRAZO = 6;
 try{ const v = JSON.parse(localStorage.getItem("vitrine_prazo2") || "null"); if(v >= 1 && v <= 24) PRAZO = v; }catch(e){}

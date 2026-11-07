@@ -70,11 +70,11 @@ input,select{font:inherit;color:var(--ink);background:var(--card2);border:1px so
     <div class="lin"><a class="bt" href="../para-voce/">✦ Refazer o questionário Para você</a><a class="bt" href="../?listas=1">★ Minhas listas (<span id="nLis">0</span>)</a></div>
     <p class="nota">O questionário só sugere: você continua vendo tudo na vitrine. Cada questionário pode virar uma lista de acompanhamento.</p></section>
 
-  <section class="sec"><h2>Preferências</h2>
+  <section class="sec" id="sPref"><h2>Configurações: moeda, idioma e tela</h2>
     <div class="lin">
       <label>Tema<select id="pTema"><option value="">Escuro (padrão)</option><option value="light">Claro</option></select></label>
       <label>Tamanho da letra<select id="pFonte"><option value="p">Pequena</option><option value="">Normal</option><option value="g">Grande</option></select></label>
-      <label>Moeda dos valores<select id="pMoeda"><option value="USD">Dólar (US$)</option><option value="BRL">Real (R$)</option><option value="EUR">Euro (€)</option></select></label>
+      <label>Moeda dos valores<select id="pMoeda"><option value="USD">Dólar americano (US$)</option><option value="BRL">Real (R$)</option><option value="EUR">Euro (€)</option><option value="GBP">Libra esterlina (£)</option><option value="CAD">Dólar canadense (C$)</option><option value="MXN">Peso mexicano (MX$)</option><option value="ARS">Peso argentino (AR$)</option><option value="CLP">Peso chileno (CLP$)</option><option value="COP">Peso colombiano (COL$)</option><option value="PEN">Sol peruano (S/)</option><option value="UYU">Peso uruguaio ($U)</option><option value="PYG">Guarani (₲)</option><option value="CHF">Franco suíço (CHF)</option><option value="JPY">Iene (¥)</option><option value="CNY">Yuan (CN¥)</option><option value="AUD">Dólar australiano (A$)</option><option value="INR">Rupia indiana (₹)</option><option value="AED">Dirham (AED)</option><option value="ILS">Shekel (₪)</option><option value="ZAR">Rand (R)</option></select></label>
       <label>Idioma<select id="pIdioma"><option value="pt">Português</option><option value="en" disabled>English (em breve)</option></select></label>
     </div>
     <h2 style="margin-top:14px">Avisos</h2>
@@ -109,7 +109,7 @@ let EU = null;
 const LIMITE_IA = {gratuito: 0, basico: 10, pro: 40, ultra: Infinity};
 const NOME_PL = {gratuito: "Visitante (Gratuito)", basico: "Básico", pro: "Pro", ultra: "UltraPro"};
 // plano: campo "plano" do /api/me quando a Clauds tiver; antes disso, quem tem premium (membro/admin) ou está no teste = Pro; cliente sem teste = Gratuito
-function planoDe(eu){ return !eu ? "gratuito" : eu.plano || (eu.teste || eu.premium ? "pro" : "gratuito"); }
+function planoDe(eu){ return !eu ? "gratuito" : eu.plano || "ultra"; }   // 07/11 (Rodrigo): todo cadastrado no UltraPro até o servidor mandar o plano
 function aplica(){
   const r = document.documentElement;
   PREF.tema ? r.setAttribute("data-theme", PREF.tema) : r.removeAttribute("data-theme");
@@ -153,7 +153,7 @@ function uso(){
 function mostraPlano(){
   const pl = planoDe(EU);
   let t = NOME_PL[pl];
-  if(EU && EU.teste && EU.teste_ate){ const d = Math.ceil((new Date(EU.teste_ate) - new Date()) / 864e5); t = `Teste grátis do Pro · ${d > 0 ? d + (d === 1 ? " dia restante" : " dias restantes") : "termina hoje"}`; }
+  if(EU && EU.teste && EU.teste_ate){ const d = Math.ceil((new Date(EU.teste_ate) - new Date()) / 864e5); t = `UltraPro · teste grátis: ${d > 0 ? d + (d === 1 ? " dia restante" : " dias restantes") : "termina hoje"}`; }
   $("#plTxt").innerHTML = `<b>${t}</b>` + (EU && EU.estados && EU.estados.length ? ` · estados: ${EU.estados.map(s => String(s).replace(/[^A-Z]/g, "")).join(", ")}` : "");
 }
 let fora = 0;
