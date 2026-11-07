@@ -8,7 +8,7 @@
 <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="manifest" href="/site.webmanifest">
 <style>*,*::before,*::after{box-sizing:border-box}html,body{margin:0}img{max-width:100%}[hidden]{display:none!important}
 :root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}</style>
-</head><body><link rel="preload" href="d_dados_1519c644b1.json" as="fetch" crossorigin="anonymous"><link rel="preload" href="d_eua_145aaf5d14.json" as="fetch" crossorigin="anonymous"><title>Vitrine BLR</title>
+</head><body><link rel="preload" href="d_dados_8d1b4134dd.json" as="fetch" crossorigin="anonymous"><link rel="preload" href="d_eua_145aaf5d14.json" as="fetch" crossorigin="anonymous"><title>Vitrine BLR</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -806,7 +806,7 @@ body{transition:padding-right .5s var(--mola)}
       <button type="button" class="btFiltros" id="btFiltros" aria-expanded="false">Mais filtros ▾</button>
       <label class="f-sempre f-lista">Estado<select id="fUf"><option value="">Todos</option></select></label>
       <label>Tipo<select id="fTipo"><option value="">Todos</option></select></label>
-      <label class="f-sempre">Leilão<select id="fMod"><option value="">Todos os leilões</option><option value="imposto">Dívida de imposto</option><option value="execucao">Execução de hipoteca</option><option value="governo">Imóvel do governo (HUD, Fannie…)</option></select></label>
+      <label class="f-sempre">Leilão<select id="fMod"><option value="">Todos os leilões</option><option value="imposto">Dívida de imposto</option><option value="execucao">Execução de hipoteca</option><option value="governo">Imóvel do governo (VA, Freddie Mac…)</option></select></label>
       <label class="f-lista">Situação<select id="fSit"><option value="prox">Leilão pela frente</option><option value="hist">Já leiloados (histórico)</option><option value="vend">Só os vendidos</option><option value="todos">Todos</option></select></label>
       <label>Leilão de<input type="date" id="fDe"></label>
       <label>Leilão até<input type="date" id="fAte"></label>
@@ -872,7 +872,7 @@ body{transition:padding-right .5s var(--mola)}
 <div class="modal" id="modal" hidden><div class="mbox" role="dialog" aria-modal="true" aria-labelledby="mTit">
   <button class="x" id="mX" type="button" aria-label="Fechar">✕</button><div id="mBody"></div></div></div>
 
-<script>(function(){var q=function(u){return fetch(u).then(function(r){if(!r.ok)throw new Error(u+' '+r.status);return r.json()})};Promise.all([q('d_dados_1519c644b1.json'),q('d_eua_145aaf5d14.json')]).then(function(x){window.__DADOS=x[0];window.__EUA=x[1];var s=document.createElement('script');s.textContent=document.getElementById('app').textContent;document.body.appendChild(s)}).catch(function(e){var d=document.createElement('p');d.style.cssText='padding:24px;font:16px sans-serif';d.textContent='Não foi possível carregar os dados ('+e.message+'). Recarregue a página.';document.body.prepend(d)})})();</script>
+<script>(function(){var q=function(u){return fetch(u).then(function(r){if(!r.ok)throw new Error(u+' '+r.status);return r.json()})};Promise.all([q('d_dados_8d1b4134dd.json'),q('d_eua_145aaf5d14.json')]).then(function(x){window.__DADOS=x[0];window.__EUA=x[1];var s=document.createElement('script');s.textContent=document.getElementById('app').textContent;document.body.appendChild(s)}).catch(function(e){var d=document.createElement('p');d.style.cssText='padding:24px;font:16px sans-serif';d.textContent='Não foi possível carregar os dados ('+e.message+'). Recarregue a página.';document.body.prepend(d)})})();</script>
 <script type="text/plain" id="app">
 const DADOS = window.__DADOS;
 const EUA = window.__EUA;
@@ -1124,7 +1124,15 @@ function salvaSeg(sync){
   $("#nSeg").textContent = SEG.length; $("#btSeg").classList.toggle("tem", SEG.length > 0);
   document.querySelectorAll("[data-seg]").forEach(b => { const on = segue(b.dataset.seg); b.classList.toggle("on", on); b.textContent = segTxt(b.dataset.seg); });
   if(sync !== false && PODE && DB && UID) DB.doc(`interesses/${UID}/seguindo/lista`).set({itens: SEG, listas: LISTAS, em: new Date().toISOString()}).catch(() => {});
-  if(SITE && SESSAO) api("/api/listas", {listas: LISTAS}).catch(() => {});   // 404 até a Clauds criar; o navegador continua valendo
+  // 07/11: PUT /api/listas (Clauds, até 64 KB por login). Debounce de 1,5 s; se o servidor falhar, o navegador continua valendo
+  if(SITE && SESSAO){ clearTimeout(salvaSeg.t); salvaSeg.t = setTimeout(() => api("/api/listas", {listas: LISTAS}, "PUT").catch(er => console.warn("listas no servidor:", er.st, er.erro)), 1500); }
+}
+// ao entrar: junta as listas do servidor com as do navegador (por id; a do servidor ganha só se a local não existir)
+async function carregaListasServidor(){
+  try{ const d = await api("/api/listas"); const ls = Array.isArray(d.listas) ? d.listas : Array.isArray(d) ? d : [];
+    let mudou = false;
+    for(const li of ls) if(li && li.id && Array.isArray(li.itens) && !LISTAS.some(x => x.id === li.id)){ LISTAS.push(li); mudou = true; }
+    if(mudou || ls.length < LISTAS.length) salvaSeg(); else refazSeg(); }catch(e){}
 }
 const itemDe = l => ({i: l.i, ab: l.ab, d: l.d, em: HOJE_L, nm: refLote(l)});
 function poeNaLista(li, i, dentro){ const l = L.find(x => x.i === i); if(!l) return;
@@ -1392,15 +1400,24 @@ $("#grid").addEventListener("keydown", e => { if(e.target.closest("button")) ret
    BLR no /admin do servidor (o convite chega por link e a pessoa cria a senha lá). O servidor abre o pacote cifrado com a chave
    pública dele (dados/premium.enc.json) e entrega só a quem está logado. */
 const API = "https://api.blrdevelopment.com";
-const api = (r, corpo) => fetch(API + r, corpo ? {method: "POST", credentials: "include", headers: {"Content-Type": "application/json"},
-  body: JSON.stringify(corpo)} : {credentials: "include"}).then(async x => { const j = await x.json().catch(() => ({}));
-  if(!x.ok) throw Object.assign(new Error(j.mensagem || "falha"), {st: x.status}); return j; });
+// 07/11 (Clauds 06–07/11): escrita com sessão leva X-CSRF (vem no /api/me); PUT em /api/listas e /api/perfil
+let CSRF = "";
+const api = (r, corpo, met) => fetch(API + r, corpo ? {method: met || "POST", credentials: "include",
+  headers: {"Content-Type": "application/json", ...(CSRF ? {"X-CSRF": CSRF} : {})}, body: JSON.stringify(corpo)} : {credentials: "include"})
+  .then(async x => { const j = await x.json().catch(() => ({}));
+  if(!x.ok) throw Object.assign(new Error(j.mensagem || "falha"), {st: x.status, erro: j.erro}); return j; });
 let SESSAO = null;
 async function entraConta(eu){
-  let pac = await api("/api/premium");   // só em memória (nunca no localStorage)
-  if(pac.z) pac = await new Response(new Blob([Uint8Array.from(atob(pac.z), c => c.charCodeAt(0))]).stream()
-    .pipeThrough(new DecompressionStream("gzip"))).json();   // pacote compactado (vitrine_site.py, 28/10)
+  CSRF = eu.csrf || CSRF;
+  // papel "cliente" (cadastro aberto / teste) não recebe o pacote premium (403 so_membro): entra logado, sem os dados de membro
+  let pac = null;
+  try{ pac = await api("/api/premium");   // só em memória (nunca no localStorage)
+    if(pac.z) pac = await new Response(new Blob([Uint8Array.from(atob(pac.z), c => c.charCodeAt(0))]).stream()
+      .pipeThrough(new DecompressionStream("gzip"))).json(); }   // pacote compactado (vitrine_site.py, 28/10)
+  catch(er){ if(er.st !== 403) throw er; pac = null; }
   SESSAO = eu; MEMBRO = pac;
+  carregaListasServidor();
+  if(!pac){ $("#whoTxt").textContent = String(eu.nome || eu.email || "Cliente").split(" ")[0]; logado($("#whoTxt").textContent, eu.email); render(); return; }
   await carregaPremium();
   $("#dot").classList.toggle("on", ASSIN); $("#whoTxt").textContent = String(eu.nome || eu.email || "Membro").split(" ")[0];
   logado($("#whoTxt").textContent, eu.email); render();
@@ -1435,7 +1452,7 @@ function menuUsuario(e){
     document.removeEventListener("click", fora); const x = $("#uMenu"); if(x){ x.remove(); b.setAttribute("aria-expanded", "false"); } }), 0);
 }
 function abreEntrar(){
-  if(MEMBRO){ menuUsuario(); return; }
+  if(MEMBRO || SESSAO){ menuUsuario(); return; }
   abreModal(`<h3 id="mTit">Entrar</h3><p>Use o e-mail e a senha do seu acesso BLR. O acesso é criado pela BLR: você recebe um link para criar a sua senha.</p>
     <form class="fcad" id="fConta"><label>E-mail<input name="email" type="email" autocomplete="username" required></label>
       <label>Senha<input name="senha" type="password" autocomplete="current-password" required></label>

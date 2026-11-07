@@ -186,7 +186,16 @@ const usd = n => n == null ? "—" : "US$ " + Math.round(n).toLocaleString("pt-B
 const usdK = n => n >= 1e6 ? "US$ " + (n / 1e6).toLocaleString("pt-BR", {maximumFractionDigits: 1}) + " mi" : "US$ " + Math.round(n / 1000) + " mil";
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const ler = () => { try { return JSON.parse(localStorage.getItem(CHAVE) || "null"); } catch (e) { return null; } };
-const grava = p => { try { localStorage.setItem(CHAVE, JSON.stringify(p)); } catch (e) {} };
+const grava = p => { try { localStorage.setItem(CHAVE, JSON.stringify(p)); } catch (e) {} nuvemPerfil(p); };
+/* 07/11 (Clauds): logado, o questionário vai para /api/perfil (chave "questionario", junto com o que a página Conta guardou)
+   e as listas para /api/listas. Falhou? O navegador continua valendo; nada trava a página. */
+let EU = null;
+const escreve = (r, corpo) => fetch(API + r, {method: "PUT", credentials: "include", headers: {"Content-Type": "application/json", ...(EU && EU.csrf ? {"X-CSRF": EU.csrf} : {})}, body: JSON.stringify(corpo)});
+async function nuvemPerfil(q) { if (!EU) return;
+  try { const g = await (await fetch(API + "/api/perfil", {credentials: "include"})).json(); const per = {...((g && g.perfil) || {}), questionario: q};
+    if (JSON.stringify({perfil: per}).length <= 4000) await escreve("/api/perfil", {perfil: per}); } catch (e) {} }
+async function nuvemListas() { if (!EU) return;
+  try { await escreve("/api/listas", {listas: JSON.parse(localStorage.getItem("blr_listas_v1") || "[]")}); } catch (e) {} }
 const app = $("#app"), fichaEl = $("#ficha"), mapaEl = $("#mapa");
 try { if (localStorage.getItem("blr_tema") === "light") document.documentElement.dataset.theme = "light"; } catch (e) {}
 
@@ -276,8 +285,8 @@ async function inicio() {
 // membro logado na vitrine (mesmo login, servidor da Clauds): posição exata, foto e Street View
 async function membro() {
   try {
-    await busca(API + "/api/me", {credentials: "include"});
-    let pac = await busca(API + "/api/premium", {credentials: "include"});
+    EU = await busca(API + "/api/me", {credentials: "include"});
+    let pac = await busca(API + "/api/premium", {credentials: "include"});   // cliente: 403 → segue como visitante, mas logado (EU)
     if (pac.z) pac = await new Response(new Blob([Uint8Array.from(atob(pac.z), c => c.charCodeAt(0))]).stream().pipeThrough(new DecompressionStream("gzip"))).json();
     PREM = pac.premium || {}; PRIV = pac.privado || {}; MEMBRO = true;
     document.dispatchEvent(new Event("membro"));
@@ -551,6 +560,7 @@ function salvaLista(nome, chips) {
   if (li) Object.assign(li, {nome: nome || li.nome, itens, crit, perfil: PERFIL, em: HOJE});
   else { li = {id: "q" + Date.now().toString(36), nome: nome || "Meu questionário", cor: LCOR[ls.length % LCOR.length], itens, crit, perfil: PERFIL, em: HOJE}; ls.push(li); }
   try { localStorage.setItem("blr_listas_v1", JSON.stringify(ls)); } catch (e) {}
+  nuvemListas();
   return li.id;
 }
 

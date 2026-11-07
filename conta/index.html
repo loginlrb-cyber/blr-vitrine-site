@@ -99,7 +99,8 @@ const API = "https://api.blrdevelopment.com";
 const $ = s => document.querySelector(s);
 const ler = (k, d) => { try{ const v = JSON.parse(localStorage.getItem(k)); return v ?? d; }catch(e){ return d; } };
 const grava = (k, v) => { try{ localStorage.setItem(k, JSON.stringify(v)); }catch(e){} };
-const api = (r, corpo, met) => fetch(API + r, corpo ? {method: met || "POST", credentials: "include", headers: {"Content-Type": "application/json"}, body: JSON.stringify(corpo)}
+let CSRF = "";   // vem no /api/me (Clauds 06/11); toda escrita com sessão leva X-CSRF
+const api = (r, corpo, met) => fetch(API + r, corpo ? {method: met || "POST", credentials: "include", headers: {"Content-Type": "application/json", ...(CSRF ? {"X-CSRF": CSRF} : {})}, body: JSON.stringify(corpo)}
   : {credentials: "include"}).then(async x => { const j = await x.json().catch(() => ({})); if(!x.ok) throw Object.assign(new Error(j.mensagem || "falha"), {st: x.status}); return j; });
 // 1 lugar para as preferências da conta (lido também pela vitrine): blr_conta_pref
 const PREF0 = {tema: "", fonte: "", idioma: "pt", modo: "self", avisos: {lista: true, data: true, whats: false}};
@@ -107,7 +108,8 @@ let PREF = {...PREF0, ...ler("blr_conta_pref", {})}; PREF.avisos = {...PREF0.avi
 let EU = null;
 const LIMITE_IA = {gratuito: 0, basico: 10, pro: 40, ultra: Infinity};
 const NOME_PL = {gratuito: "Visitante (Gratuito)", basico: "Básico", pro: "Pro", ultra: "UltraPro"};
-function planoDe(eu){ return !eu ? "gratuito" : eu.plano || (eu.teste || ["admin", "membro", "assinante", "cliente"].includes(eu.papel) ? "pro" : "gratuito"); }
+// plano: campo "plano" do /api/me quando a Clauds tiver; antes disso, quem tem premium (membro/admin) ou está no teste = Pro; cliente sem teste = Gratuito
+function planoDe(eu){ return !eu ? "gratuito" : eu.plano || (eu.teste || eu.premium ? "pro" : "gratuito"); }
 function aplica(){
   const r = document.documentElement;
   PREF.tema ? r.setAttribute("data-theme", PREF.tema) : r.removeAttribute("data-theme");
@@ -116,9 +118,13 @@ function aplica(){
   $("#modoTxt").textContent = PREF.modo === "partner" ? "Partner Bidder é do plano UltraPro: a BLR fala com você para combinar como operamos juntos."
     : "Você dá o lance por conta própria, com os dados e a análise da BLR.";
 }
-async function salvaServidor(dados){   // PUT /api/perfil (pedido à Clauds); sem a rota, o pedido vai como interesse (a BLR atualiza no /admin)
-  try{ await api("/api/perfil", dados, "PUT"); return true; }catch(e){}
-  try{ await api("/api/interesse", {tipo: "atualizar conta", ...dados, email: (EU && EU.email) || dados.email || "", texto: "Atualização da conta: " + JSON.stringify(dados), pagina: location.href.slice(0, 300)}); return true; }catch(e){ return false; }
+/* /api/perfil (Clauds 06/11): 1 objeto por login, até 4.096 bytes, e o PUT SUBSTITUI tudo. Por isso lê, junta e grava,
+   sem apagar o que o questionário Para você guardou. Sem a rota: pedido vai como interesse e a BLR atualiza no /admin. */
+async function salvaServidor(parte){
+  try{ const g = await api("/api/perfil"); const per = {...((g && g.perfil) || {}), ...parte};
+    if(JSON.stringify({perfil: per}).length > 4000) delete per.contato;   // o essencial cabe; contato também vai como interesse
+    await api("/api/perfil", {perfil: per}, "PUT"); if(!parte.contato) return true; }catch(e){ console.warn("perfil:", e.st); }
+  try{ await api("/api/interesse", {tipo: "atualizar conta", email: (EU && EU.email) || "", ...(parte.contato || {}), texto: "Atualização da conta: " + JSON.stringify(parte), pagina: location.href.slice(0, 300)}); return true; }catch(e){ return false; }
 }
 function salvaPref(){ grava("blr_conta_pref", PREF); aplica(); if(EU) salvaServidor({pref: PREF}); }
 // preferências
@@ -137,7 +143,7 @@ function preenche(){ const f = $("#fDados"); f.nome.value = (EU && EU.nome) || c
   f.telefone.value = (EU && (EU.telefone || EU.whats)) || cad.whats || ""; }
 $("#fDados").onsubmit = async e => { e.preventDefault(); const f = e.target, d = {nome: f.nome.value.trim(), telefone: f.telefone.value.trim(), email: f.email.value};
   grava("vitrine_cadastro", {...cad, nome: d.nome, whats: d.telefone, email: d.email}); $("#okDados").textContent = "Salvando…";
-  $("#okDados").textContent = EU ? (await salvaServidor(d) ? "Salvo ✓" : "Salvo neste navegador; o servidor não respondeu, tente mais tarde.") : "Salvo neste navegador ✓"; };
+  $("#okDados").textContent = EU ? (await salvaServidor({contato: {nome: d.nome, telefone: d.telefone}}) ? "Salvo ✓" : "Salvo neste navegador; o servidor não respondeu, tente mais tarde.") : "Salvo neste navegador ✓"; };
 function uso(){
   const u = ler("blr_ia_uso", {}), mes = new Date().toISOString().slice(0, 7), n = u.mes === mes ? u.n || 0 : 0, pl = planoDe(EU), lim = LIMITE_IA[pl];
   $("#iaTxt").textContent = lim === Infinity ? `${n} consultas este mês · ilimitado no seu plano.` : lim ? `${n} de ${lim} consultas este mês (${NOME_PL[pl]}).`
@@ -156,9 +162,10 @@ $("#btLimpa").onclick = () => { if(!fora){ fora = 1; $("#okLimpa").textContent =
   $("#okLimpa").textContent = "Apagado ✓"; fora = 0; };
 $("#btSair").onclick = () => api("/api/logout", {}).catch(() => {}).finally(() => location.href = "../");
 aplica(); preenche(); mostraPlano(); uso();
-api("/api/me").then(eu => { EU = eu; $("#btSair").hidden = false; const p = eu.pref || (eu.perfil && eu.perfil.pref);
-  if(p && typeof p === "object"){ PREF = {...PREF, ...p, avisos: {...PREF.avisos, ...(p.avisos || {})}}; grava("blr_conta_pref", PREF); aplica(); }
-  preenche(); mostraPlano(); uso(); }).catch(() => { $("#semSessao").hidden = false; });
+api("/api/me").then(async eu => { EU = eu; CSRF = eu.csrf || ""; $("#btSair").hidden = false; preenche(); mostraPlano(); uso();
+  try{ const g = await api("/api/perfil"), p = g && g.perfil && g.perfil.pref;
+    if(p && typeof p === "object"){ PREF = {...PREF, ...p, avisos: {...PREF.avisos, ...(p.avisos || {})}}; grava("blr_conta_pref", PREF); aplica(); }
+    const c = g && g.perfil && g.perfil.contato; if(c && !EU.telefone) { EU.telefone = c.telefone; preenche(); } }catch(e){} }).catch(() => { $("#semSessao").hidden = false; });
 </script>
 </body>
 </html>
