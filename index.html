@@ -762,6 +762,10 @@ body{transition:padding-right .5s var(--mola)}
 .tourBal div{display:flex;align-items:center;gap:10px}.tourBal div span{color:var(--mute);font-size:12px;margin-right:auto}
 .tourBal .cta{padding:7px 14px;font-size:13px}
 .pro a.lnk{display:block;text-align:center;margin-top:4px;font-size:12px}
+.plEsc{display:grid;gap:10px;margin:6px 0 12px}
+.plOp{all:unset;box-sizing:border-box;cursor:pointer;display:grid;grid-template-columns:1fr auto;gap:2px 10px;padding:12px 14px;border-radius:12px;border:1px solid var(--line2);background:var(--surf)}
+.plOp:hover,.plOp:focus-visible{border-color:var(--acc)}.plOp.dest{border-color:var(--acc);background:var(--ok-bg)}
+.plOp b{font-size:15px}.plOp span{font-weight:700;text-align:right}.plOp small{font-weight:500;color:var(--mute)}.plOp em{grid-column:1/-1;font-style:normal;color:var(--tx2);font-size:12.5px}
 </style>
 
 <header class="top"><div class="wrap">
@@ -777,7 +781,7 @@ body{transition:padding-right .5s var(--mola)}
     <button class="hbt conta" id="btConta" type="button" hidden aria-pressed="false" title="Conta BLR: margem, reforma e título">🧮<span class="lg-full"> Conta</span></button>
     <select class="moeda" id="moeda" aria-label="Moeda dos valores"></select>
     <button class="hbt seg" id="btSeg" type="button" aria-label="Lotes que você acompanha">★ <b id="nSeg">0</b></button>
-    <button class="hbt ass" id="btAssina" type="button">Assinar<span class="lg-full"> · US$ 9,99/mês</span></button>
+    <button class="hbt ass" id="btAssina" type="button">Assinar<span class="lg-full"> · a partir de US$ 9,90/mês</span></button>
     <button class="hbt carr" id="btCarr" type="button" aria-label="Carrinho">🛒 <b id="nCarr">0</b></button>
     <!-- 28/10: Entrar fica no fim; logado vira menu do usuário (o "Sair" ao lado da Conta deslogou o testador num clique errado) -->
     <button class="hbt ent" id="btEntrar" type="button" hidden aria-haspopup="true" aria-expanded="false">Entrar</button>
@@ -1437,7 +1441,7 @@ function abreEntrar(){
       <label>Senha<input name="senha" type="password" autocomplete="current-password" required></label>
       <button class="cta" type="submit">Entrar</button><div class="nota" id="entErro"></div></form>
     <div class="nota">Esqueceu a senha? <button type="button" class="lnk" id="btEsq">Receber um link para criar uma senha nova</button></div>
-    <div class="nota">Ainda não tem acesso? <button type="button" class="lnk" data-teste>Teste grátis por 7 dias</button> (só e-mail e telefone) ou <button type="button" class="lnk" data-assina>assine por US$ 9,99/mês</button>. <a class="lnk" href="planos/">Ver todos os planos</a> · <button type="button" class="lnk" data-tour>Como usar a vitrine</button></div>`);
+    <div class="nota">Ainda não tem acesso? <button type="button" class="lnk" data-teste>Teste grátis por 7 dias</button> (só e-mail e telefone) ou <button type="button" class="lnk" data-assina>assine a partir de US$ 9,90/mês</button>. <a class="lnk" href="planos/">Ver todos os planos</a> · <button type="button" class="lnk" data-tour>Como usar a vitrine</button></div>`);
   $("#fConta").onsubmit = async e => { e.preventDefault(); const f = new FormData(e.target), bt = e.target.querySelector("button[type=submit]");
     bt.disabled = true; bt.textContent = "Entrando…";
     // o autopreenchimento do Chrome guardou o e-mail em MAIÚSCULAS e o servidor compara exato (28/10): sempre minúsculo e sem espaço
@@ -1847,7 +1851,7 @@ async function abre(i){
     const bc = $("#btCopia"); if(bc) bc.onclick = async () => { try{ await navigator.clipboard.writeText(p.parcela); bc.querySelector("small").textContent = "copiado ✓"; }catch(e){ bc.querySelector("small").textContent = p.parcela; } };
   } else {
     $("#secPriv").innerHTML = `<h4>Endereço e links</h4><div class="trava"><span>🔒</span><div><b>Endereço, parcela, Street View e a página do leilão ficam com os assinantes.</b><br>
-      <button type="button" class="lnk" data-assina>Assine por US$ 9,99/mês</button> ou <button type="button" class="lnk" data-info="${l.i}">peça as informações deste lote</button>.</div></div>`;
+      <button type="button" class="lnk" data-assina>Assine a partir de US$ 9,90/mês</button> ou <button type="button" class="lnk" data-info="${l.i}">peça as informações deste lote</button>.</div></div>`;
   }
   if(PODE && !HIST(l)){
     const ja = await jaInteressado(l);
@@ -2103,30 +2107,31 @@ async function envia(p, ok){
 }
 function formDe(id, onSubmit){ const f = $("#" + id); f.addEventListener("submit", e => { e.preventDefault();
   onSubmit({...Object.fromEntries(new FormData(f)), quer: [...f.querySelectorAll("input[name=quer]:checked")].map(x => x.value)}); }); }
-/* 07/11: os 4 planos do Miro (planos/). Básico e UltraPro ainda sem preço: o pedido vai como interesse e a BLR responde. */
-const PLANO_NOME = {basico: "Básico", pro: "Pro", ultra: "UltraPro"};
+/* 07/11 (Cris): os planos do Miro com preço: Básico US$ 9,90 · Pro US$ 49,90 · UltraPro US$ 249,90 por mês (planos/ usa os mesmos).
+   Sem plano escolhido (botão "Assinar"), abre a escolha; com plano, o pedido. Pagamento: a BLR manda o link (nada é cobrado aqui). */
+const PLANOS = {
+  basico: {n: "Básico", p: "9,90", ben: ["Ficha completa e filtros avançados", "1 estado à sua escolha (troca 1× por mês)", "Self Bidder: você opera por conta própria", "Assistente de IA: 10 consultas por mês"]},
+  pro: {n: "Pro", p: "49,90", ben: ["Tudo do Básico, em até 3 estados", "Teto de lance BLR, ARV e a conta ao vivo de cada lote", "Posição exata, contorno do lote, Street View, endereço e parcela", "Várias listas e alertas de oportunidades", "Self Bidder com suporte a dúvidas · IA: 40 consultas por mês"]},
+  ultra: {n: "UltraPro", p: "249,90", ben: ["Tudo do Pro, em todos os estados", "Partner Bidder: a BLR opera com você e divide o risco", "Comunidade, mentoria e oferta de lotes já arrematados", "Sala de leilão ao vivo, consultoria de engenharia e o curso completo", "Assistente de IA ilimitado"]}};
+const PLANO_NOME = Object.fromEntries(Object.entries(PLANOS).map(([k, v]) => [k, v.n]));
 function abreAssina(plano){
-  plano = PLANO_NOME[plano] ? plano : "pro";
-  if(plano !== "pro"){
-    abreModal(`<h3 id="mTit">Plano <em>${PLANO_NOME[plano]}</em></h3>
-      <p>${plano === "ultra" ? "Todos os estados, Partner Bidder (a BLR opera com você e divide o risco), comunidade, sala de leilão ao vivo, consultoria de engenharia e o curso completo."
-        : "Ficha completa e filtros avançados em 1 estado à sua escolha, Self Bidder e 10 consultas por mês ao assistente de IA."}
-        O preço de lançamento sai em breve: deixe o contato e a BLR fala com você antes. <a class="lnk" href="planos/">Comparar os planos</a></p>
-      <form class="fcad" id="fAss">${campos()}<button class="cta" type="submit">Quero o ${PLANO_NOME[plano]}</button>
-        <div class="nota">Nada é cobrado nesta página. Enquanto isso, você pode <button type="button" class="lnk" data-teste>testar o Pro por 7 dias</button>.</div></form>`);
-    formDe("fAss", d => envia({tipo: "plano " + PLANO_NOME[plano], ...d}, `Pedido do plano ${PLANO_NOME[plano]} recebido. A BLR fala com você antes do lançamento.`));
+  const P = PLANOS[plano];
+  if(!P){
+    abreModal(`<h3 id="mTit">Escolha o seu plano</h3>
+      <div class="plEsc">${Object.entries(PLANOS).map(([k, v]) => `<button type="button" class="plOp ${k === "pro" ? "dest" : ""}" data-plano="${k}">
+        <b>${v.n}</b><span class="num">US$ ${v.p}<small>/mês</small></span><em>${esc(v.ben[k === "basico" ? 0 : 1])}</em></button>`).join("")}</div>
+      <div class="nota"><button type="button" class="lnk" data-teste>Testar o Pro por 7 dias grátis</button> · <a class="lnk" href="planos/">comparar tudo</a></div>`);
+    document.querySelectorAll("[data-plano]").forEach(b => b.onclick = () => abreAssina(b.dataset.plano));
     return;
   }
-  abreModal(`<h3 id="mTit">Assinatura <em>BLR</em></h3>
-    <div class="preco-ass"><b class="num">US$ 9,99</b><span>por mês · cancele quando quiser</span></div>
-    <ul class="ben"><li>Teto de lance BLR de cada lote analisado (o máximo que ainda deixa lucro)</li>
-      <li>ARV: quanto a casa vale depois de reformada, em faixa</li><li>Folga entre o lance de abertura e o nosso teto</li>
-      <li>Camada de ARV no mapa e ordenação por maior folga</li><li>Endereço, parcela, Street View, cadastro e cartório direto no lote</li>
-      <li>Pedido de análise BLR para lotes listados (Texas, Filadélfia, Michigan)</li></ul>
+  abreModal(`<h3 id="mTit">Plano <em>${P.n}</em></h3>
+    <div class="preco-ass"><b class="num">US$ ${P.p}</b><span>por mês · cancele quando quiser</span></div>
+    <ul class="ben">${P.ben.map(x => `<li>${esc(x)}</li>`).join("")}</ul>
     <form class="fcad" id="fAss">${campos(`<label>Você é<select name="perfil"><option>Investidor</option><option>Corretor / agente</option><option>Construtor</option><option>Outro</option></select></label>`)}
-      <button class="cta" type="submit">Quero assinar</button>
-      <div class="nota">Depois do cadastro, a BLR manda o link de pagamento seguro e libera o seu acesso. Nada é cobrado nesta página.${CONTATO.whats ? ` Dúvidas: WhatsApp ${esc(CONTATO.whats)}${CONTATO.email ? " · " + esc(CONTATO.email) : ""}.` : ""}</div></form>`);
-  formDe("fAss", d => envia({tipo: "assinatura", ...d}, "Pedido de assinatura recebido. Você recebe o link de pagamento e o acesso em seguida."));
+      <button class="cta" type="submit">Quero o ${P.n}</button>
+      <div class="nota">Depois do cadastro, a BLR manda o link de pagamento seguro e libera o seu acesso. Nada é cobrado nesta página. <button type="button" class="lnk" data-assina-outro>Ver os outros planos</button>${CONTATO.whats ? ` · Dúvidas: WhatsApp ${esc(CONTATO.whats)}${CONTATO.email ? " · " + esc(CONTATO.email) : ""}.` : ""}</div></form>`);
+  const o = document.querySelector("[data-assina-outro]"); if(o) o.onclick = () => abreAssina();
+  formDe("fAss", d => envia({tipo: "assinatura " + P.n, plano: plano, preco: "US$ " + P.p + "/mês", ...d}, `Pedido do plano ${P.n} recebido. Você recebe o link de pagamento e o acesso em seguida.`));
 }
 function abreInfo(i){
   const l = L.find(x => x.i === i); if(!l) return;
@@ -2185,7 +2190,7 @@ function abreCalc(){
     <p style="font-size:12.5px"><b>Fora da Flórida</b> ainda não temos comparáveis casa a casa. O ARV sai <b>estimado</b>: pelo valor de mercado que o condado publica, quando ele é confiável; senão pelo preço por pé² vendido no CEP (Redfin) × a área da casa; e, sem casa achada, pelo valor das casas mais baratas do CEP (Zillow). Sem área no edital, a área vem da projeção da casa no mapa nacional de construções da FEMA × andares (na Flórida, metade das casas ficou a menos de 25% da área do cadastro). Esses lotes mostram o teto estimado e se fechariam na conta, mas só entram nos critérios BLR depois da análise.</p>
     <button class="cta" type="button" onclick="fechaModal()">Entendi</button></div>`);
 }
-$("#btAssina").onclick = abreAssina;
+$("#btAssina").onclick = () => abreAssina();
 $("#btCarr").onclick = abreCarr;
 
 /* ---------- mapa único em vetor: EUA → estado → condado → bairro e ruas. Zoom aproxima = entra, afasta = sai ---------- */
@@ -2337,8 +2342,8 @@ function criaMapa(){
   const RG = document.createElement("aside"); RG.className = "regiao"; RG.id = "regiao"; RG.setAttribute("aria-label", "Oportunidades nesta área do mapa");
   box.appendChild(RG); Lf.DomEvent.disableClickPropagation(RG); Lf.DomEvent.disableScrollPropagation(RG);
   let RG_ABERTO = null, RG_MIN = false;
-  const BENEF = () => ASSIN ? "" : `<div class="pro"><b>O que o Pro libera</b><ul><li>Posição exata e o contorno de cada lote</li><li>Street View, endereço e parcela</li><li>Teto BLR, ARV e a conta ao vivo</li><li>Várias listas de acompanhamento</li><li>Assistente de IA da BLR</li></ul>
-    <button type="button" class="cta" data-teste>Testar 7 dias grátis</button><button type="button" class="lnk" data-assina>ou assinar · US$ 9,99/mês</button><a class="lnk" href="planos/">ver todos os planos</a></div>`;
+  const BENEF = () => ASSIN ? "" : `<div class="pro"><b>O que o Pro libera · US$ 49,90/mês</b><ul><li>Posição exata e o contorno de cada lote</li><li>Street View, endereço e parcela</li><li>Teto BLR, ARV e a conta ao vivo</li><li>Várias listas de acompanhamento</li><li>Assistente de IA da BLR</li></ul>
+    <button type="button" class="cta" data-teste>Testar 7 dias grátis</button><button type="button" class="lnk" data-assina>ou assinar · a partir de US$ 9,90/mês</button><a class="lnk" href="planos/">ver todos os planos</a></div>`;
   function cartaoRG(l){
     const ab = RG_ABERTO === l.i, fz = forcaDe(l);
     return `<article class="grc${ab ? " ab" : ""}" data-rc="${l.i}"><div class="grf">${fotoCard(l)}</div>
