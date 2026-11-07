@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<meta name="theme-color" content="#0b0d11">
+<title>Minha conta — BLR</title>
+<link rel="icon" type="image/svg+xml" href="/blr-icon-small.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600&family=Sora:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* 07/11 (Cris, Miro "Conta"): dados pessoais, plano/cobrança, perfil do investidor (Self/Partner Bidder), preferências,
+   uso da IA, privacidade, senha. Antifrágil: tudo que depende do servidor tenta a rota da Clauds e, sem ela, guarda no
+   navegador e manda o pedido pela /api/interesse; a página nunca fica em branco. */
+:root{--bg:#0b0d11;--card:rgba(255,255,255,.055);--card2:rgba(255,255,255,.09);--ink:#f3f1ec;--mute:#a7abb3;--line:rgba(255,255,255,.12);
+  --gold:#e2b75e;--ok:#7fd6a4;--bad:#f08a76;--r:18px}
+:root[data-theme="light"]{--bg:#f4f1ea;--card:rgba(255,255,255,.8);--card2:#fff;--ink:#16181d;--mute:#5c6169;--line:rgba(20,20,30,.12);--gold:#a87a22;--ok:#1d7a4a;--bad:#b3402b}
+:root[data-fonte="g"]{font-size:17px}:root[data-fonte="p"]{font-size:14px}
+*{box-sizing:border-box}html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font:1rem/1.55 Sora,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+a{color:inherit}.serif{font-family:Fraunces,Georgia,serif;font-weight:500}
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:16px clamp(16px,4vw,40px);border-bottom:1px solid var(--line)}
+.top a{text-decoration:none;font-weight:600}.top .vol{color:var(--mute);font-weight:500}
+main{max-width:860px;margin:0 auto;padding:24px clamp(16px,4vw,40px) 60px;display:flex;flex-direction:column;gap:14px}
+h1{font-size:clamp(26px,4vw,38px);margin:4px 0 0}
+.sec{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:18px}
+.sec h2{margin:0 0 10px;font-size:17px}
+.lin{display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center}
+label{display:flex;flex-direction:column;gap:4px;font-size:13px;color:var(--mute);min-width:200px;flex:1}
+input,select{font:inherit;color:var(--ink);background:var(--card2);border:1px solid var(--line);border-radius:10px;padding:9px 11px;min-width:0}
+.bt{all:unset;box-sizing:border-box;cursor:pointer;padding:9px 14px;border-radius:10px;border:1px solid var(--line);background:var(--card2);font-weight:600;font-size:14px;text-align:center}
+.bt:hover{border-color:var(--gold)}.bt.pri{background:var(--gold);color:#1a1408;border-color:var(--gold)}
+.bt.perigo{border-color:var(--bad);color:var(--bad)}
+.bt:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+.nota{color:var(--mute);font-size:13px}.ok{color:var(--ok);font-size:13px}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.seg button{all:unset;cursor:pointer;padding:10px 14px;font-size:14px}
+.seg button[aria-pressed="true"]{background:var(--gold);color:#1a1408;font-weight:600}
+.barra{height:8px;border-radius:99px;background:var(--card2);overflow:hidden;margin:6px 0}.barra i{display:block;height:100%;background:var(--gold)}
+.chk{flex-direction:row;align-items:center;gap:8px;color:var(--ink);font-size:14px;min-width:0;flex:0 0 auto}
+.aviso{border-color:var(--gold)}
+[hidden]{display:none!important}input[type=checkbox]{flex:0 0 auto;width:18px;height:18px}
+@media (max-width:560px){label,label.chk{min-width:0;flex:1 1 100%}.seg{display:flex;flex-direction:column;width:100%}.seg button{text-align:center}.lin .bt{flex:1 1 100%}}
+</style>
+</head>
+<body>
+<header class="top"><a href="../">BLR <span class="serif">Vitrine</span></a><a class="vol" href="../">← voltar ao mapa</a></header>
+<main>
+  <h1 class="serif">Minha conta</h1>
+  <div class="sec aviso" id="semSessao" hidden><b>Você não está conectado.</b> <span class="nota">As preferências abaixo ficam neste navegador. Para ver o seu plano, <a href="../?entrar=1">entre na sua conta</a> ou <a href="../?teste=1">comece o teste grátis de 7 dias</a>.</span></div>
+
+  <section class="sec" id="sDados"><h2>Dados pessoais</h2>
+    <form id="fDados" class="lin">
+      <label>Nome<input name="nome" autocomplete="name"></label>
+      <label>E-mail<input name="email" type="email" autocomplete="email" readonly></label>
+      <label>Telefone / WhatsApp<input name="telefone" type="tel" autocomplete="tel"></label>
+      <button class="bt pri" type="submit">Salvar</button><span id="okDados" class="ok" role="status"></span>
+    </form></section>
+
+  <section class="sec"><h2>Plano e cobrança</h2>
+    <div class="lin"><div id="plTxt">Visitante (Gratuito)</div><a class="bt" href="../planos/">Ver planos</a></div>
+    <p class="nota" id="cobTxt">A cobrança é feita pela BLR: depois do pedido você recebe o link de pagamento seguro. Cartão, faturas, recibos e cancelamento vão aparecer aqui quando o pagamento online for ligado. Para cancelar agora, fale com a BLR.</p></section>
+
+  <section class="sec"><h2>Perfil do investidor</h2>
+    <div class="seg" role="group" aria-label="Como você quer operar">
+      <button type="button" data-modo="self" aria-pressed="true">Self Bidder · opero sozinho</button>
+      <button type="button" data-modo="partner" aria-pressed="false">Partner Bidder · opero com a BLR</button></div>
+    <p class="nota" id="modoTxt"></p>
+    <div class="lin"><a class="bt" href="../para-voce/">✦ Refazer o questionário Para você</a><a class="bt" href="../?listas=1">★ Minhas listas (<span id="nLis">0</span>)</a></div>
+    <p class="nota">O questionário só sugere: você continua vendo tudo na vitrine. Cada questionário pode virar uma lista de acompanhamento.</p></section>
+
+  <section class="sec"><h2>Preferências</h2>
+    <div class="lin">
+      <label>Tema<select id="pTema"><option value="">Escuro (padrão)</option><option value="light">Claro</option></select></label>
+      <label>Tamanho da letra<select id="pFonte"><option value="p">Pequena</option><option value="">Normal</option><option value="g">Grande</option></select></label>
+      <label>Moeda dos valores<select id="pMoeda"><option value="USD">Dólar (US$)</option><option value="BRL">Real (R$)</option><option value="EUR">Euro (€)</option></select></label>
+      <label>Idioma<select id="pIdioma"><option value="pt">Português</option><option value="en" disabled>English (em breve)</option></select></label>
+    </div>
+    <h2 style="margin-top:14px">Avisos</h2>
+    <div class="lin">
+      <label class="chk"><input type="checkbox" id="nLista"> Lote novo que combina com uma lista</label>
+      <label class="chk"><input type="checkbox" id="nData"> Leilão de um lote das minhas listas chegando (7 dias antes)</label>
+      <label class="chk"><input type="checkbox" id="nWhats"> Também pelo WhatsApp</label>
+    </div><p class="nota">Os avisos vão por e-mail. A escolha fica gravada; o envio automático começa assim que o servidor estiver pronto.</p></section>
+
+  <section class="sec"><h2>Uso do assistente de IA</h2>
+    <div id="iaTxt" class="nota"></div><div class="barra"><i id="iaBar" style="width:0"></i></div></section>
+
+  <section class="sec"><h2>Senha e segurança</h2>
+    <div class="lin"><a class="bt" href="../?senha=1">Receber link para criar uma senha nova</a><button class="bt" type="button" id="btSair" hidden>Sair da conta</button></div></section>
+
+  <section class="sec"><h2>Privacidade</h2>
+    <p class="nota">A BLR guarda só o necessário para o seu acesso. Leia a <a href="../privacy/">política de privacidade</a> ou peça a <a href="../data-deletion/">exclusão dos seus dados</a>.</p>
+    <div class="lin"><button class="bt perigo" type="button" id="btLimpa">Apagar meus dados deste navegador</button><span id="okLimpa" class="nota" role="status"></span></div></section>
+</main>
+<script>
+const API = "https://api.blrdevelopment.com";
+const $ = s => document.querySelector(s);
+const ler = (k, d) => { try{ const v = JSON.parse(localStorage.getItem(k)); return v ?? d; }catch(e){ return d; } };
+const grava = (k, v) => { try{ localStorage.setItem(k, JSON.stringify(v)); }catch(e){} };
+const api = (r, corpo, met) => fetch(API + r, corpo ? {method: met || "POST", credentials: "include", headers: {"Content-Type": "application/json"}, body: JSON.stringify(corpo)}
+  : {credentials: "include"}).then(async x => { const j = await x.json().catch(() => ({})); if(!x.ok) throw Object.assign(new Error(j.mensagem || "falha"), {st: x.status}); return j; });
+// 1 lugar para as preferências da conta (lido também pela vitrine): blr_conta_pref
+const PREF0 = {tema: "", fonte: "", idioma: "pt", modo: "self", avisos: {lista: true, data: true, whats: false}};
+let PREF = {...PREF0, ...ler("blr_conta_pref", {})}; PREF.avisos = {...PREF0.avisos, ...(PREF.avisos || {})};
+let EU = null;
+const LIMITE_IA = {gratuito: 0, basico: 10, pro: 40, ultra: Infinity};
+const NOME_PL = {gratuito: "Visitante (Gratuito)", basico: "Básico", pro: "Pro", ultra: "UltraPro"};
+function planoDe(eu){ return !eu ? "gratuito" : eu.plano || (eu.teste || ["admin", "membro", "assinante", "cliente"].includes(eu.papel) ? "pro" : "gratuito"); }
+function aplica(){
+  const r = document.documentElement;
+  PREF.tema ? r.setAttribute("data-theme", PREF.tema) : r.removeAttribute("data-theme");
+  PREF.fonte ? r.setAttribute("data-fonte", PREF.fonte) : r.removeAttribute("data-fonte");
+  document.querySelectorAll("[data-modo]").forEach(b => b.setAttribute("aria-pressed", b.dataset.modo === PREF.modo));
+  $("#modoTxt").textContent = PREF.modo === "partner" ? "Partner Bidder é do plano UltraPro: a BLR fala com você para combinar como operamos juntos."
+    : "Você dá o lance por conta própria, com os dados e a análise da BLR.";
+}
+async function salvaServidor(dados){   // PUT /api/perfil (pedido à Clauds); sem a rota, o pedido vai como interesse (a BLR atualiza no /admin)
+  try{ await api("/api/perfil", dados, "PUT"); return true; }catch(e){}
+  try{ await api("/api/interesse", {tipo: "atualizar conta", ...dados, email: (EU && EU.email) || dados.email || "", texto: "Atualização da conta: " + JSON.stringify(dados), pagina: location.href.slice(0, 300)}); return true; }catch(e){ return false; }
+}
+function salvaPref(){ grava("blr_conta_pref", PREF); aplica(); if(EU) salvaServidor({pref: PREF}); }
+// preferências
+$("#pTema").value = PREF.tema; $("#pFonte").value = PREF.fonte; $("#pIdioma").value = PREF.idioma;
+$("#pMoeda").value = (() => { try{ return localStorage.getItem("vitrine_moeda") || "USD"; }catch(e){ return "USD"; } })();
+$("#pTema").onchange = e => { PREF.tema = e.target.value; salvaPref(); try{ localStorage.setItem("blr_tema", PREF.tema === "light" ? "light" : ""); }catch(er){} };   // mesma chave do Para você
+$("#pFonte").onchange = e => { PREF.fonte = e.target.value; salvaPref(); };
+$("#pIdioma").onchange = e => { PREF.idioma = e.target.value; salvaPref(); };
+$("#pMoeda").onchange = e => { try{ localStorage.setItem("vitrine_moeda", e.target.value); }catch(er){} };
+[["#nLista", "lista"], ["#nData", "data"], ["#nWhats", "whats"]].forEach(([s, k]) => { $(s).checked = !!PREF.avisos[k]; $(s).onchange = e => { PREF.avisos[k] = e.target.checked; salvaPref(); }; });
+document.querySelectorAll("[data-modo]").forEach(b => b.onclick = () => { PREF.modo = b.dataset.modo; salvaPref(); });
+$("#nLis").textContent = ler("blr_listas_v1", []).length;
+// dados pessoais: do servidor; sem sessão, do último cadastro feito neste navegador
+const cad = ler("vitrine_cadastro", {});
+function preenche(){ const f = $("#fDados"); f.nome.value = (EU && EU.nome) || cad.nome || ""; f.email.value = (EU && EU.email) || cad.email || "";
+  f.telefone.value = (EU && (EU.telefone || EU.whats)) || cad.whats || ""; }
+$("#fDados").onsubmit = async e => { e.preventDefault(); const f = e.target, d = {nome: f.nome.value.trim(), telefone: f.telefone.value.trim(), email: f.email.value};
+  grava("vitrine_cadastro", {...cad, nome: d.nome, whats: d.telefone, email: d.email}); $("#okDados").textContent = "Salvando…";
+  $("#okDados").textContent = EU ? (await salvaServidor(d) ? "Salvo ✓" : "Salvo neste navegador; o servidor não respondeu, tente mais tarde.") : "Salvo neste navegador ✓"; };
+function uso(){
+  const u = ler("blr_ia_uso", {}), mes = new Date().toISOString().slice(0, 7), n = u.mes === mes ? u.n || 0 : 0, pl = planoDe(EU), lim = LIMITE_IA[pl];
+  $("#iaTxt").textContent = lim === Infinity ? `${n} consultas este mês · ilimitado no seu plano.` : lim ? `${n} de ${lim} consultas este mês (${NOME_PL[pl]}).`
+    : `O assistente de IA é dos planos pagos; no teste de 7 dias você usa à vontade. Este mês: ${n}.`;
+  $("#iaBar").style.width = (lim && lim !== Infinity ? Math.min(100, 100 * n / lim) : 0) + "%";
+}
+function mostraPlano(){
+  const pl = planoDe(EU);
+  let t = NOME_PL[pl];
+  if(EU && EU.teste && EU.teste_ate){ const d = Math.ceil((new Date(EU.teste_ate) - new Date()) / 864e5); t = `Teste grátis do Pro · ${d > 0 ? d + (d === 1 ? " dia restante" : " dias restantes") : "termina hoje"}`; }
+  $("#plTxt").innerHTML = `<b>${t}</b>` + (EU && EU.estados && EU.estados.length ? ` · estados: ${EU.estados.map(s => String(s).replace(/[^A-Z]/g, "")).join(", ")}` : "");
+}
+let fora = 0;
+$("#btLimpa").onclick = () => { if(!fora){ fora = 1; $("#okLimpa").textContent = "Toque de novo para confirmar: apaga listas, preferências e cadastro deste navegador."; return; }
+  try{ Object.keys(localStorage).filter(k => /^(blr_|vitrine_)/.test(k)).forEach(k => localStorage.removeItem(k)); }catch(e){}
+  $("#okLimpa").textContent = "Apagado ✓"; fora = 0; };
+$("#btSair").onclick = () => api("/api/logout", {}).catch(() => {}).finally(() => location.href = "../");
+aplica(); preenche(); mostraPlano(); uso();
+api("/api/me").then(eu => { EU = eu; $("#btSair").hidden = false; const p = eu.pref || (eu.perfil && eu.perfil.pref);
+  if(p && typeof p === "object"){ PREF = {...PREF, ...p, avisos: {...PREF.avisos, ...(p.avisos || {})}}; grava("blr_conta_pref", PREF); aplica(); }
+  preenche(); mostraPlano(); uso(); }).catch(() => { $("#semSessao").hidden = false; });
+</script>
+</body>
+</html>

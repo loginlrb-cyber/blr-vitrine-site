@@ -755,6 +755,13 @@ body{transition:padding-right .5s var(--mola)}
 #v-mapa .painel.min .pbar{flex-wrap:wrap;row-gap:6px}
 #v-mapa .painel.min .truf{display:none}
 @media (max-width:760px){#v-mapa .painel.min .pbar{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none}#v-mapa .painel.min .pbar>*{flex:0 0 auto}}
+/* 07/11: tour de primeiro acesso (anel + balão, sem bloquear cliques) e link de planos no bloco Pro */
+.tourAnel{position:fixed;z-index:1400;border:2px solid var(--acc);border-radius:12px;pointer-events:none;box-shadow:0 0 0 4px rgba(0,0,0,.25),0 0 24px rgba(111,211,176,.35);transition:all .35s cubic-bezier(.2,.8,.2,1)}
+.tourBal{position:fixed;z-index:1401;background:var(--surf2);border:1px solid var(--line2);border-radius:14px;padding:14px 14px 12px;box-shadow:0 18px 44px rgba(0,0,0,.55);color:var(--tx);font-size:13.5px;transition:top .35s,left .35s}
+.tourBal b{font-size:15px}.tourBal p{margin:6px 0 10px;color:var(--tx2);line-height:1.45}
+.tourBal div{display:flex;align-items:center;gap:10px}.tourBal div span{color:var(--mute);font-size:12px;margin-right:auto}
+.tourBal .cta{padding:7px 14px;font-size:13px}
+.pro a.lnk{display:block;text-align:center;margin-top:4px;font-size:12px}
 </style>
 
 <header class="top"><div class="wrap">
@@ -795,6 +802,7 @@ body{transition:padding-right .5s var(--mola)}
       <button type="button" class="btFiltros" id="btFiltros" aria-expanded="false">Mais filtros ▾</button>
       <label class="f-sempre f-lista">Estado<select id="fUf"><option value="">Todos</option></select></label>
       <label>Tipo<select id="fTipo"><option value="">Todos</option></select></label>
+      <label class="f-sempre">Leilão<select id="fMod"><option value="">Todos os leilões</option><option value="imposto">Dívida de imposto</option><option value="execucao">Execução de hipoteca</option><option value="governo">Imóvel do governo (HUD, Fannie…)</option></select></label>
       <label class="f-lista">Situação<select id="fSit"><option value="prox">Leilão pela frente</option><option value="hist">Já leiloados (histórico)</option><option value="vend">Só os vendidos</option><option value="todos">Todos</option></select></label>
       <label>Leilão de<input type="date" id="fDe"></label>
       <label>Leilão até<input type="date" id="fAte"></label>
@@ -1282,15 +1290,27 @@ function opcoes(){   // 04/11: refeita a cada estado que chega, mantendo a escol
   const ts = [...new Set(L.map(l => l.u).filter(Boolean))].sort();
   $("#fTipo").insertAdjacentHTML("beforeend", ts.map(t => `<option data-o value="${esc(t)}">${esc(tipo(t))}</option>`).join(""));
   $("#fUf").value = v0[0]; $("#fTipo").value = v0[1];
+  const nm = {}; L.forEach(l => { if(!HIST(l)){ const m = modLeilao(l); nm[m] = (nm[m] || 0) + 1; } });
+  document.querySelectorAll("#fMod option[value]").forEach(o => { if(!o.value) return; o.dataset.t = o.dataset.t || o.textContent;
+    o.textContent = o.dataset.t + (nm[o.value] ? ` (${nm[o.value].toLocaleString("pt-BR")})` : " (em breve)"); o.disabled = !nm[o.value]; });
 }
+/* 07/11 (Cris, God's Eye View): cada lote cai num tipo de leilão pelo "tp" que vitrine_outros grava. Sem tp = imposto (FL e o
+   que veio antes). Execução de hipoteca e imóvel do governo entram como camadas "não analisadas pela BLR". */
+const MOD_GOV = /hud|homepath|homesteps|fannie|freddie|\bva\b|usda|gsa|marshals|tesouro|treasury/i, MOD_EXE = /sheriff|trustee|mortgage/i;
+// "md" vem do vitrine_outros (07/11); sem ele, deduz pelo nome (o Sheriff sale do Linebarger é por imposto e já vem com md)
+// 07/11 (Cris): o leilão que acontece numa plataforma privada (Auction.com, Xome, Hubzu) ganha só um link para ela; nada é copiado de lá
+const PLATS = [[/auction\.com/i, "Auction.com", "https://www.auction.com/"], [/xome/i, "Xome", "https://www.xome.com/"], [/hubzu/i, "Hubzu", "https://www.hubzu.com/"],
+  [/hud/i, "HUD Home Store", "https://www.hudhomestore.gov/"], [/homepath|fannie/i, "HomePath", "https://homepath.fanniemae.com/"]];
+const PLAT_LK = l => { const p = PLATS.find(x => x[0].test(String(l.fo || "") + " " + String(l.tp || ""))); return p ? ` O lance é dado no <a class="lnk" href="${p[2]}" target="_blank" rel="noopener">${p[1]} ↗</a>.` : ""; };
+const modLeilao = l => { if(l.md) return l.md; const t = String(l.tp || ""); return MOD_GOV.test(t) ? "governo" : MOD_EXE.test(t) ? "execucao" : "imposto"; };
 function filtrados(paraMapa, semSel){
-  const q = $("#fBusca").value.trim().toLowerCase(), uf = $("#fUf").value, tp = $("#fTipo").value, mx = +$("#fMax").value || 0, tip = $("#fTip").checked, on = $("#fOn").checked,
+  const q = $("#fBusca").value.trim().toLowerCase(), uf = $("#fUf").value, tp = $("#fTipo").value, md = $("#fMod").value, mx = +$("#fMax").value || 0, tip = $("#fTip").checked, on = $("#fOn").checked,
         mn = +$("#fMin").value || 0, fz = +$("#fFz").value || 0, dsc = +$("#fDesc").value || 0, cta = ASSIN && $("#fFecha").checked;
   const sit = paraMapa ? (HISTON === "vend" ? "vend" : HISTON ? "todos" : "prox") : $("#fSit").value, sg = paraMapa ? FSEG : $("#fSeg").checked;
   const cr = paraMapa ? CRITM : CRIT;
   let r = L.filter(l => (!cr || noCrit(l)) && (sit === "todos" || (sit === "vend" ? HIST(l) && l.rs && l.rs.s === "vendido" : (sit === "hist") === HIST(l))) && (!sg || (paraMapa ? naSeg(l.i) : segue(l.i))) &&
     (!q || [l.ci, l.co, l.zip].some(x => (x||"").toLowerCase().includes(q))) && (!uf || l.uf === uf) &&
-    (!tp || l.u === tp) && naData(l.d) && (!paraMapa || semSel || !LSEL || (l.f === LSEL.f && l.d === LSEL.d)) &&
+    (!tp || l.u === tp) && (!md || modLeilao(l) === md) && naData(l.d) && (!paraMapa || semSel || !LSEL || (l.f === LSEL.f && l.d === LSEL.d)) &&
     (!mx || (l.ab || 0) * tx() <= mx) && (!tip || (l.et === "final" && l.ft === "tipico")) && (!on || (l.on && l.on !== "nao_consultado")) &&
     (!mn || (l.ab || 0) * tx() >= mn) && (!fz || forcaDe(l) >= fz) && (!dsc || (l.desc ?? -1) >= dsc) &&
     (!cta || (!HIST(l) && l.ab > 0 && l.teto >= l.ab)));
@@ -1333,7 +1353,7 @@ function cartao(l){
 const PAG = 120;
 let mostrar = PAG;
 // filtros em uso (Estado e Ordenar não contam: o mapa tem o seu seletor de estado)
-const F_VAL = ["#fBusca","#fTipo","#fDe","#fAte","#fMin","#fMax","#fFz","#fDesc"], F_CHK = ["#fTip","#fOn","#fFecha"];
+const F_VAL = ["#fBusca","#fTipo","#fMod","#fDe","#fAte","#fMin","#fMax","#fFz","#fDesc"], F_CHK = ["#fTip","#fOn","#fFecha"];
 const nFiltros = () => F_VAL.filter(s => $(s).value.trim()).length + F_CHK.filter(s => $(s).checked).length;
 function render(){
   const r = filtrados(), fm = MAPA ? filtrados(true) : null, nf = nFiltros(), noMapa = !$("#v-mapa").hidden;
@@ -1396,6 +1416,9 @@ function menuUsuario(e){
     ${SESSAO && SESSAO.teste && SESSAO.teste_ate ? `<div class="nota">Teste grátis: ${(d => d > 0 ? plural(d, "dia", "dias") + " restantes" : "termina hoje")(Math.ceil((new Date(SESSAO.teste_ate) - new Date()) / 864e5))} · <button type="button" class="lnk" data-assina>Assinar</button></div>` : ""}
     <button type="button" class="lnk" role="menuitem" data-listas>★ Minhas listas</button>
     <a class="lnk" role="menuitem" href="para-voce/">✦ Questionário Para você</a>
+    <a class="lnk" role="menuitem" href="conta/">👤 Minha conta</a>
+    <a class="lnk" role="menuitem" href="planos/">◆ Planos</a>
+    <button type="button" class="lnk" role="menuitem" data-tour>? Como usar a vitrine</button>
     ${SITE ? `<button type="button" class="lnk" role="menuitem" data-ia>✦ Assistente BLR</button>` : ""}
     ${SITE && SESSAO && SESSAO.papel === "admin" ? `<a class="lnk" role="menuitem" href="admin/">⚙ Administrar usuários</a>` : ""}
     <button type="button" class="sair" role="menuitem">Sair da conta</button>`;
@@ -1414,7 +1437,7 @@ function abreEntrar(){
       <label>Senha<input name="senha" type="password" autocomplete="current-password" required></label>
       <button class="cta" type="submit">Entrar</button><div class="nota" id="entErro"></div></form>
     <div class="nota">Esqueceu a senha? <button type="button" class="lnk" id="btEsq">Receber um link para criar uma senha nova</button></div>
-    <div class="nota">Ainda não tem acesso? <button type="button" class="lnk" data-teste>Teste grátis por 7 dias</button> (só e-mail e telefone) ou <button type="button" class="lnk" data-assina>assine por US$ 9,99/mês</button>.</div>`);
+    <div class="nota">Ainda não tem acesso? <button type="button" class="lnk" data-teste>Teste grátis por 7 dias</button> (só e-mail e telefone) ou <button type="button" class="lnk" data-assina>assine por US$ 9,99/mês</button>. <a class="lnk" href="planos/">Ver todos os planos</a> · <button type="button" class="lnk" data-tour>Como usar a vitrine</button></div>`);
   $("#fConta").onsubmit = async e => { e.preventDefault(); const f = new FormData(e.target), bt = e.target.querySelector("button[type=submit]");
     bt.disabled = true; bt.textContent = "Entrando…";
     // o autopreenchimento do Chrome guardou o e-mail em MAIÚSCULAS e o servidor compara exato (28/10): sempre minúsculo e sem espaço
@@ -1449,6 +1472,47 @@ function abreCadastro(){
       envia({tipo: "teste 7 dias", nome: email.split("@")[0], email, whats: tel}, "Pedido de teste recebido. A BLR libera o seu acesso e manda o link para criar a senha."); } };
 }
 document.addEventListener("click", e => { if(e.target.closest("[data-teste]")){ e.preventDefault(); abreCadastro(); } });
+/* 07/11 (Cris, Miro "Primeiros passos"): tour de primeiro acesso. Não bloqueia nada (o anel e o balão deixam clicar o resto),
+   pula sozinho o passo cujo botão não está na tela (celular, painel fechado) e abre 1× por navegador; volta pelo menu "Como usar". */
+const TOUR = [
+  ["#mapa", "O mapa dos EUA", "Cada número é um grupo de oportunidades. Aproxime e eles se dividem até virar lote por lote."],
+  ["#regiao", "Oportunidades da região", "Aqui aparecem até 9 lotes do pedaço do mapa que você está vendo. Toque num cartão para abrir."],
+  ["#pMin", "Calendário de leilões", "Abra para ver os próximos leilões e escolher um: o mapa mostra só os lotes dele."],
+  ["#tgFil", "Filtros", "Tipo de imóvel, tipo de leilão (imposto, execução de hipoteca, governo), preço e data."],
+  ["#tgSeg", "Suas listas", "Marque ★ nos lotes e organize em listas. Aqui o mapa mostra só o que você acompanha."],
+  ["#iaFab", "Assistente BLR", "Pergunte sobre um lote, um condado ou como funciona o leilão."],
+  ["#btEntrar", "Sua conta", "Entre, comece o teste grátis de 7 dias ou veja os planos."]];
+function tour(forca){
+  try{ if(!forca && (localStorage.getItem("blr_tour_v1") || navigator.webdriver)) return; }catch(e){ if(!forca) return; }
+  const vis = s => { const el = $(s); if(!el) return null; const r = el.getBoundingClientRect(); return r.width > 4 && r.height > 4 && r.bottom > 0 && r.top < innerHeight ? el : null; };
+  const passos = TOUR.filter(p => vis(p[0])); if(!passos.length) return;
+  document.querySelectorAll(".tourAnel,.tourBal").forEach(x => x.remove());
+  const anel = document.createElement("div"); anel.className = "tourAnel";
+  const bal = document.createElement("div"); bal.className = "tourBal"; bal.setAttribute("role", "dialog"); bal.setAttribute("aria-live", "polite");
+  document.body.append(anel, bal);
+  let n = 0;
+  const fim = () => { anel.remove(); bal.remove(); removeEventListener("resize", poe); try{ localStorage.setItem("blr_tour_v1", "1"); }catch(e){} };
+  function poe(){
+    const el = vis(passos[n][0]); if(!el){ if(++n < passos.length) return poe(); return fim(); }
+    const r = el.getBoundingClientRect(), g = 6;
+    Object.assign(anel.style, {left: r.left - g + "px", top: r.top - g + "px", width: r.width + 2 * g + "px", height: r.height + 2 * g + "px"});
+    bal.innerHTML = `<b>${esc(passos[n][1])}</b><p>${esc(passos[n][2])}</p><div><span>${n + 1} de ${passos.length}</span>
+      <button type="button" class="lnk" data-tp="sai">Pular</button><button type="button" class="cta" data-tp="seg">${n + 1 < passos.length ? "Próximo" : "Começar"}</button></div>`;
+    const bw = Math.min(300, innerWidth - 24), bh = bal.offsetHeight || 150, grande = r.height > innerHeight * .5;
+    let top = grande ? r.top + r.height / 2 - bh / 2 : r.bottom + 12 + bh < innerHeight ? r.bottom + 12 : r.top - bh - 12;
+    let left = grande ? r.left + r.width / 2 - bw / 2 : r.left + r.width / 2 - bw / 2;
+    bal.style.width = bw + "px"; bal.style.top = Math.max(12, Math.min(innerHeight - bh - 12, top)) + "px"; bal.style.left = Math.max(12, Math.min(innerWidth - bw - 12, left)) + "px";
+    bal.querySelector('[data-tp="seg"]').focus({preventScroll: true});
+  }
+  bal.addEventListener("click", e => { const b = e.target.closest("[data-tp]"); if(!b) return; if(b.dataset.tp === "sai" || ++n >= passos.length) fim(); else poe(); });
+  bal.addEventListener("keydown", e => { if(e.key === "Escape") fim(); });
+  addEventListener("resize", poe);
+  poe();
+}
+document.addEventListener("click", e => { if(e.target.closest("[data-tour]")){ e.preventDefault(); const m = $("#uMenu"); if(m) m.remove(); fechaModal(); tour(true); } });
+// 1ª visita: espera o mapa e os estados chegarem; se houver janela aberta (atalho, cadastro), não atrapalha
+{ let t = 0; const tenta = () => { if(window.__PARTES_OK || ++t > 40){ if(!document.querySelector(".modal:not([hidden])")) tour(false); } else setTimeout(tenta, 500); };
+  if(!new URLSearchParams(location.search).toString()) setTimeout(tenta, 1500); }
 /* esqueci a senha (28/10): o servidor da Clauds já cria a senha por link (/api/senha); enquanto ele não tiver /api/esqueci
    (404), o pedido vai para a BLR pelo envia() e o admin manda o "Novo link" no /admin. A resposta é a mesma exista ou não a conta. */
 function abreEsqueci(email0){
@@ -1603,6 +1667,9 @@ async function iaEnvia(){
     // 30/10: com histórico o servidor às vezes devolve só o aviso "Não consegui montar uma resposta"; tenta 1× sem o histórico
     if(IA.hist.length && /^não consegui montar/i.test(r.resposta || "")) r = await api("/api/assistente", {pergunta: t, contexto: ctx, historico: []});
     const resp = r.resposta || "Sem resposta.";
+    // 07/11 (Miro "uso da IA"): conta as consultas do mês neste navegador; aparece em conta/. O limite de verdade fica no servidor.
+    try{ const mes = new Date().toISOString().slice(0, 7), u = JSON.parse(localStorage.getItem("blr_ia_uso") || "{}");
+      localStorage.setItem("blr_ia_uso", JSON.stringify({mes, n: (u.mes === mes ? u.n || 0 : 0) + 1})); }catch(e){}
     w.innerHTML = mdBasico(resp + (r.cortada ? " …" : "")); w.classList.remove("esp"); iaEstado();
     if(r.cortada){ try{ localStorage.setItem("vitrine_ia_amostra", hoje()); }catch(e){} iaCorte(w); }
     else IA.hist.push({role: "user", content: t}, {role: "assistant", content: resp});
@@ -1709,6 +1776,7 @@ async function abre(i){
         : `<tr class="dest"><td>Teto de lance BLR</td><td style="font-family:var(--f-b)">ainda não analisado</td></tr>`}</table>
       ${l.aq ? `<div class="nota">${l.aq === "v" ? `Pelas vendas reais do entorno${l.cp ? ` (${l.cp.n} comparáveis, até ${l.cp.r || 1} milha, confiança ${l.cp.c})` : ""}` : "Estimativa sem comparáveis, " + (l.aq === "b" ? "pelo valor de mercado que o condado publica" : l.aq === "m" ? "pelo preço/pé² vendido no CEP (Redfin) × a área da construção, com 10% de desconto" : "pelo valor das casas mais baratas do CEP (Zillow)")}${l.ae ? `; área estimada ~${l.ae.toLocaleString("pt-BR")} pé² (${AF_T[l.af] || "estimada"})` : ""}${l.un > 1 ? `; o cadastro registra ${l.un} unidades` : ""}${l.y ? `; construída em ${l.y}` : ""}. Serve para priorizar; não entra nos critérios BLR até a análise.</div>` : ""}
       <div class="nota">Fonte: ${esc(l.fo || "edital do condado")}. ${esc(l.nt || "")}</div>
+      ${modLeilao(l) !== "imposto" ? `<div class="nota"><b>Não analisado pela BLR.</b> ${modLeilao(l) === "governo" ? "Imóvel à venda por programa do governo federal." : "Leilão de execução de hipoteca."}${PLAT_LK(l)}</div>` : ""}
       <div class="aviso" style="margin-top:10px">Quer que a BLR passe este lote pelo funil (comparáveis, reforma, teto de lance e ônus)? <button type="button" class="lnk" data-info="${l.i}">Peça a análise</button>.</div></div>
       ${secoesConta(l)}`
     : `<div class="sec"><h4>Números</h4><table class="tab2">
@@ -2035,7 +2103,20 @@ async function envia(p, ok){
 }
 function formDe(id, onSubmit){ const f = $("#" + id); f.addEventListener("submit", e => { e.preventDefault();
   onSubmit({...Object.fromEntries(new FormData(f)), quer: [...f.querySelectorAll("input[name=quer]:checked")].map(x => x.value)}); }); }
-function abreAssina(){
+/* 07/11: os 4 planos do Miro (planos/). Básico e UltraPro ainda sem preço: o pedido vai como interesse e a BLR responde. */
+const PLANO_NOME = {basico: "Básico", pro: "Pro", ultra: "UltraPro"};
+function abreAssina(plano){
+  plano = PLANO_NOME[plano] ? plano : "pro";
+  if(plano !== "pro"){
+    abreModal(`<h3 id="mTit">Plano <em>${PLANO_NOME[plano]}</em></h3>
+      <p>${plano === "ultra" ? "Todos os estados, Partner Bidder (a BLR opera com você e divide o risco), comunidade, sala de leilão ao vivo, consultoria de engenharia e o curso completo."
+        : "Ficha completa e filtros avançados em 1 estado à sua escolha, Self Bidder e 10 consultas por mês ao assistente de IA."}
+        O preço de lançamento sai em breve: deixe o contato e a BLR fala com você antes. <a class="lnk" href="planos/">Comparar os planos</a></p>
+      <form class="fcad" id="fAss">${campos()}<button class="cta" type="submit">Quero o ${PLANO_NOME[plano]}</button>
+        <div class="nota">Nada é cobrado nesta página. Enquanto isso, você pode <button type="button" class="lnk" data-teste>testar o Pro por 7 dias</button>.</div></form>`);
+    formDe("fAss", d => envia({tipo: "plano " + PLANO_NOME[plano], ...d}, `Pedido do plano ${PLANO_NOME[plano]} recebido. A BLR fala com você antes do lançamento.`));
+    return;
+  }
   abreModal(`<h3 id="mTit">Assinatura <em>BLR</em></h3>
     <div class="preco-ass"><b class="num">US$ 9,99</b><span>por mês · cancele quando quiser</span></div>
     <ul class="ben"><li>Teto de lance BLR de cada lote analisado (o máximo que ainda deixa lucro)</li>
@@ -2257,7 +2338,7 @@ function criaMapa(){
   box.appendChild(RG); Lf.DomEvent.disableClickPropagation(RG); Lf.DomEvent.disableScrollPropagation(RG);
   let RG_ABERTO = null, RG_MIN = false;
   const BENEF = () => ASSIN ? "" : `<div class="pro"><b>O que o Pro libera</b><ul><li>Posição exata e o contorno de cada lote</li><li>Street View, endereço e parcela</li><li>Teto BLR, ARV e a conta ao vivo</li><li>Várias listas de acompanhamento</li><li>Assistente de IA da BLR</li></ul>
-    <button type="button" class="cta" data-teste>Testar 7 dias grátis</button><button type="button" class="lnk" data-assina>ou assinar · US$ 9,99/mês</button></div>`;
+    <button type="button" class="cta" data-teste>Testar 7 dias grátis</button><button type="button" class="lnk" data-assina>ou assinar · US$ 9,99/mês</button><a class="lnk" href="planos/">ver todos os planos</a></div>`;
   function cartaoRG(l){
     const ab = RG_ABERTO === l.i, fz = forcaDe(l);
     return `<article class="grc${ab ? " ab" : ""}" data-rc="${l.i}"><div class="grf">${fotoCard(l)}</div>
@@ -2847,7 +2928,7 @@ document.querySelectorAll(".tabs button").forEach(b => b.onclick = () => {
 // digitar na busca ou num valor redesenha uma vez quando a pessoa para (antes: grade e ~2.700 pontos do mapa a cada tecla)
 let tRender = 0;
 const renderLogo = e => { clearTimeout(tRender); tRender = setTimeout(() => { mostrar = PAG; render(); }, /^(search|number|text)$/.test(e.target.type) ? 220 : 0); };
-["#fBusca","#fUf","#fTipo","#fSit","#fDe","#fAte","#fMin","#fMax","#fFz","#fDesc","#fTip","#fOn","#fSeg"].forEach(s => $(s).addEventListener("input", renderLogo));
+["#fBusca","#fUf","#fTipo","#fMod","#fSit","#fDe","#fAte","#fMin","#fMax","#fFz","#fDesc","#fTip","#fOn","#fSeg"].forEach(s => $(s).addEventListener("input", renderLogo));
 // "fecha na minha conta" usa o teto (só assinante)
 $("#fFecha").addEventListener("input", e => { if(!ASSIN){ e.target.checked = false; abreAssina(); return; } renderLogo(e); });
 // ↺ (30/10, Rodrigo): limpa filtros, leilão escolhido, Critérios, ★ e estado, e volta ao país inteiro
@@ -2875,6 +2956,11 @@ document.querySelectorAll(".segCrit button").forEach(b => b.onclick = () => { co
 $("#btSeg").onclick = abreSeg;   // faltava: o ★ do topo não abria a lista (Cris 24/10)
 $("#btFiltros").onclick = () => { const a = $(".filtros").classList.toggle("aberta"); $("#btFiltros").setAttribute("aria-expanded", a); $("#btFiltros").textContent = a ? "Menos filtros ▴" : "Mais filtros ▾"; };
 { const q = new URLSearchParams(location.search).get("lista"); if(q && LISTAS.some(x => x.id === q)){ FSEG = q; $("#tgSeg").setAttribute("aria-pressed", true); } }
+/* 07/11: atalhos de outras páginas (planos/, conta/): ?teste=1 cadastro de 7 dias · ?plano=basico|pro|ultra pedido do plano ·
+   ?entrar=1 · ?senha=1 · ?listas=1 · ?tour=1. Cada um só abre uma janela; se der erro, a vitrine segue normal. */
+{ const q = new URLSearchParams(location.search);
+  try{ if(q.get("teste")) abreCadastro(); else if(q.get("plano")) abreAssina(q.get("plano")); else if(q.get("entrar")) abreEntrar();
+    else if(q.get("senha")) abreEsqueci(""); else if(q.get("listas")) abreSeg(); else if(q.get("tour")) setTimeout(() => tour(true), 1200); }catch(e){ console.warn("atalho", e); } }
 $("#tgSeg").onclick = () => { FSEG = FSEG ? false : true; $("#tgSeg").setAttribute("aria-pressed", !!FSEG); render(); };
 /* 02/11 (Cris): o botão alterna Histórico junto → Só vendidos → sem histórico */
 const tgHistPinta = () => { const b = $("#tgHist"); b.textContent = HISTON === "vend" ? "Só vendidos" : "Histórico"; b.setAttribute("aria-pressed", !!HISTON);

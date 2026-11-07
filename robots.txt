@@ -1,6 +1,8 @@
 User-agent: *
 Allow: /apresentacao/
 Allow: /checklist/
+Allow: /conta/
 Allow: /data-deletion/
+Allow: /planos/
 Allow: /privacy/
 Disallow: /

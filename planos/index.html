@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0b0d11">
+<title>Planos — BLR</title>
+<meta name="description" content="Planos da vitrine de leilões de imóveis nos EUA da BLR Developments: Gratuito, Básico, Pro e UltraPro.">
+<link rel="icon" type="image/svg+xml" href="/blr-icon-small.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,500&family=Sora:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* 07/11 (Cris, Miro "Primeiro acesso → página de ativação"): 4 planos. A tabela vem de PLANOS (uma fonte só);
+   preço null = "em breve". Robusto: página estática, funciona sem o servidor; com sessão, marca o plano atual. */
+:root{--bg:#0b0d11;--bg2:#12151b;--card:rgba(255,255,255,.055);--card2:rgba(255,255,255,.09);--ink:#f3f1ec;--mute:#a7abb3;--line:rgba(255,255,255,.12);
+  --gold:#e2b75e;--gold2:#f4d58d;--ok:#7fd6a4;--sh:0 18px 50px rgba(0,0,0,.45);--r:20px}
+:root[data-theme="light"]{--bg:#f4f1ea;--bg2:#ebe6da;--card:rgba(255,255,255,.75);--card2:#fff;--ink:#16181d;--mute:#5c6169;--line:rgba(20,20,30,.12);--gold:#a87a22;--gold2:#c4952f;--ok:#1d7a4a;--sh:0 18px 40px rgba(60,50,20,.15)}
+*{box-sizing:border-box}html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font:15px/1.55 Sora,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+a{color:inherit}.serif{font-family:Fraunces,Georgia,serif;font-weight:500;letter-spacing:-.01em}
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:16px clamp(16px,4vw,40px);border-bottom:1px solid var(--line)}
+.top a{text-decoration:none;font-weight:600}.top .vol{color:var(--mute);font-weight:500}
+main{max-width:1180px;margin:0 auto;padding:28px clamp(16px,4vw,40px) 60px}
+h1{font-size:clamp(28px,4.4vw,44px);margin:6px 0 6px;line-height:1.1}
+.sub{color:var(--mute);max-width:640px;margin:0 0 26px}
+.grade{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}
+@media (max-width:1000px){.grade{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:560px){.grade{grid-template-columns:1fr}}
+.pl{position:relative;background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:20px 18px 18px;display:flex;flex-direction:column;gap:12px;box-shadow:var(--sh)}
+.pl.dest{border-color:var(--gold);background:linear-gradient(180deg,rgba(226,183,94,.12),var(--card) 40%)}
+.pl .tag{position:absolute;top:-11px;left:18px;background:var(--gold);color:#1a1408;font-size:11px;font-weight:700;padding:3px 10px;border-radius:99px;letter-spacing:.04em;text-transform:uppercase}
+.pl .atual{background:var(--ok)}
+.pl h2{margin:0;font-size:22px}
+.pl .pr{font-size:26px;font-weight:700}.pl .pr small{font-size:13px;font-weight:500;color:var(--mute)}
+.pl .pr.breve{font-size:15px;color:var(--mute);font-weight:500}
+.pl .qm{color:var(--mute);font-size:13px;margin:-6px 0 0}
+.pl ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:7px;font-size:13.5px;flex:1}
+.pl li{padding-left:22px;position:relative}.pl li::before{content:"✓";position:absolute;left:0;color:var(--ok);font-weight:700}
+.pl li.mais{color:var(--mute);padding-left:0}.pl li.mais::before{content:none}
+.cta{all:unset;box-sizing:border-box;text-align:center;cursor:pointer;padding:12px 14px;border-radius:12px;font-weight:600;background:var(--card2);border:1px solid var(--line)}
+.cta:hover{border-color:var(--gold)}.pl.dest .cta{background:var(--gold);color:#1a1408;border-color:var(--gold)}
+.cta:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+.bid{margin-top:34px;display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media (max-width:700px){.bid{grid-template-columns:1fr}}
+.bid div{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:18px}
+.bid h3{margin:0 0 6px;font-size:18px}.bid p{margin:0;color:var(--mute);font-size:14px}
+.nota{color:var(--mute);font-size:13px;margin-top:22px}
+[hidden]{display:none!important}
+</style>
+</head>
+<body>
+<header class="top"><a href="../">BLR <span class="serif">Vitrine</span></a><a class="vol" href="../">← voltar ao mapa</a></header>
+<main>
+  <h1 class="serif">Escolha como quer usar a vitrine</h1>
+  <p class="sub">Comece grátis: o mapa dos EUA com todos os leilões e o valor da dívida. Teste o Pro por 7 dias, só com e-mail e telefone, sem cartão.</p>
+  <div class="grade" id="grade"></div>
+  <div class="bid">
+    <div><h3>Self Bidder</h3><p>Você dá o lance por conta própria, com os dados e a análise da BLR. Nos planos Básico e Pro.</p></div>
+    <div><h3>Partner Bidder</h3><p>A BLR opera junto com você e divide o risco, no leilão online ou presencial. No UltraPro.</p></div>
+  </div>
+  <p class="nota" id="nota">Os planos Básico e UltraPro estão sendo montados. Peça agora e a BLR fala com você antes de lançar, com o preço de lançamento. Nada é cobrado nesta página.</p>
+</main>
+<script>
+try{ const t = (JSON.parse(localStorage.getItem("blr_conta_pref") || "{}") || {}).tema || (localStorage.getItem("blr_tema") === "light" ? "light" : ""); if(t) document.documentElement.dataset.theme = t; }catch(e){}
+const PLANOS = [
+  {id: "gratuito", nome: "Gratuito", preco: 0, quem: "para conhecer",
+   itens: ["Mapa dos EUA com todos os leilões", "Lista de oportunidades", "Valor da dívida (lance de abertura) de cada lote", "Calendário dos próximos leilões"],
+   cta: "Criar acesso grátis", href: "../?teste=1"},
+  {id: "basico", nome: "Básico", preco: null, quem: "para quem foca em 1 estado",
+   itens: ["Tudo do Gratuito", "Ficha completa e filtros avançados", "1 estado à sua escolha (troca 1× por mês)", "Self Bidder: você opera por conta própria", "Assistente de IA: 10 consultas por mês"],
+   cta: "Quero o Básico", href: "../?plano=basico"},
+  {id: "pro", nome: "Pro", preco: 9.99, quem: "o mais escolhido", dest: true,
+   itens: ["Tudo do Básico", "Calculadora no mapa: teto BLR, ARV e a conta ao vivo", "Posição exata, contorno do lote e Street View", "Até 3 estados (troca 1× por mês)", "Self Bidder com suporte a dúvidas", "Várias listas e alertas de oportunidades", "Assistente de IA: 40 consultas por mês"],
+   cta: "Testar 7 dias grátis", href: "../?teste=1"},
+  {id: "ultra", nome: "UltraPro", preco: null, quem: "para operar com a BLR",
+   itens: ["Tudo do Pro", "Todos os estados dos EUA", "Partner Bidder: a BLR opera e divide o risco", "Comunidade: alertas, oferta de lotes já arrematados, mentoria", "Sala de leilão online em tempo real", "Consultoria de engenharia", "Curso completo “da pesquisa ao arremate”", "Assistente de IA ilimitado"],
+   cta: "Quero o UltraPro", href: "../?plano=ultra"}];
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"}[c]));
+const preco = p => p === 0 ? `Grátis` : p ? `US$ ${p.toFixed(2).replace(".", ",")}<small> /mês</small>` : "";
+function monta(atual){
+  document.getElementById("grade").innerHTML = PLANOS.map(p => `<section class="pl ${p.dest ? "dest" : ""}">
+    ${atual === p.id ? `<span class="tag atual">Seu plano</span>` : p.dest ? `<span class="tag">Mais escolhido</span>` : ""}
+    <h2 class="serif">${esc(p.nome)}</h2><p class="qm">${esc(p.quem)}</p>
+    <div class="pr ${p.preco == null ? "breve" : ""}">${p.preco == null ? "Preço de lançamento em breve" : preco(p.preco)}</div>
+    <ul>${p.itens.map(i => `<li class="${i.startsWith("Tudo do") ? "mais" : ""}">${esc(i)}</li>`).join("")}</ul>
+    <a class="cta" href="${p.href}">${atual === p.id ? "Voltar ao mapa" : esc(p.cta)}</a></section>`).join("");
+}
+monta(null);
+// com sessão, marca o plano atual (campo "plano" do /api/me quando a Clauds tiver; antes disso, assinante = Pro). Sem servidor: fica como está.
+fetch("https://api.blrdevelopment.com/api/me", {credentials: "include"}).then(r => r.ok ? r.json() : null).then(eu => {
+  if(!eu) return; const pl = eu.plano || (eu.papel === "admin" || eu.papel === "membro" || eu.teste ? "pro" : "gratuito");
+  if(PLANOS.some(p => p.id === pl)) monta(pl); }).catch(() => {});
+</script>
+</body>
+</html>
