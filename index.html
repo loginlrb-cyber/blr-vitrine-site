@@ -824,6 +824,8 @@ body{transition:padding-right .5s var(--mola)}
 .plEsc{display:grid;gap:10px;margin:6px 0 12px}
 .plOp{all:unset;box-sizing:border-box;cursor:pointer;display:grid;grid-template-columns:1fr auto;gap:2px 10px;padding:12px 14px;border-radius:12px;border:1px solid var(--line2);background:var(--surf)}
 .plOp:hover,.plOp:focus-visible{border-color:var(--acc)}.plOp.dest{border-color:var(--acc);background:var(--ok-bg)}
+:root[data-fonte="g"] :is(#v-negocios,#v-pacotes,#v-portfolio,#v-guia,#v-cobertura,#fBody,#mBody){zoom:1.12}:root[data-fonte="p"] :is(#v-negocios,#v-pacotes,#v-portfolio,#v-guia,#v-cobertura,#fBody,#mBody){zoom:.92}   /* o mapa fica fora: zoom desalinha os cliques do Leaflet */
+.ciclo{display:inline-flex;margin:2px 0 10px}.ciclo button small{font-size:11px;color:var(--ok);font-weight:600;margin-left:4px}
 .plOp b{font-size:15px}.plOp span{font-weight:700;text-align:right}.plOp small{font-weight:500;color:var(--mute)}.plOp em{grid-column:1/-1;font-style:normal;color:var(--tx2);font-size:12.5px}
 </style>
 
@@ -1286,6 +1288,9 @@ function abreSeg(id){
   m.querySelectorAll("[data-desce]").forEach(b => b.onclick = () => move(b.dataset.desce, 1));
   pacoteEventos(li);
 }
+
+/* 07/11: tamanho da letra das Configurações (conta/, blr_conta_pref); o mapa é só escuro, então o tema não muda aqui */
+try{ const f = (JSON.parse(localStorage.getItem("blr_conta_pref") || "{}") || {}).fonte; if(f === "g" || f === "p") document.documentElement.dataset.fonte = f; }catch(e){}
 
 /* ---------- análise do pacote (07/11, Rodrigo; story map v3, BIDLIST "Análise do pacote") ----------
    A mesma conta da JV de cada ficha, lote a lote, somada: cada lote entra com a modalidade e o lance escolhidos aqui
@@ -2046,7 +2051,8 @@ async function abre(i){
     const bc = $("#btCopia"); if(bc) bc.onclick = async () => { try{ await navigator.clipboard.writeText(p.parcela); bc.querySelector("small").textContent = "copiado ✓"; }catch(e){ bc.querySelector("small").textContent = p.parcela; } };
   } else {
     $("#secPriv").innerHTML = `<h4>Endereço e links</h4><div class="trava"><span>🔒</span><div><b>Endereço, parcela, Street View e a página do leilão ficam com os assinantes.</b><br>
-      <button type="button" class="lnk" data-assina>Assine a partir de US$ 9,90/mês</button> ou <button type="button" class="lnk" data-info="${l.i}">peça as informações deste lote</button>.</div></div>`;
+      ${SESSAO ? `Seu acesso UltraPro está sendo liberado pela BLR; os dados aparecem assim que a liberação chegar à sua conta. Enquanto isso, <button type="button" class="lnk" data-info="${l.i}">peça as informações deste lote</button>.`   /* 07/11: logado sem o pacote do servidor (papel cliente) */
+        : `<button type="button" class="lnk" data-assina>Assine a partir de US$ 9,90/mês</button> ou <button type="button" class="lnk" data-info="${l.i}">peça as informações deste lote</button>.`}</div></div>`;
   }
   if(PODE && !HIST(l)){
     const ja = await jaInteressado(l);
@@ -2305,28 +2311,39 @@ function formDe(id, onSubmit){ const f = $("#" + id); f.addEventListener("submit
 /* 07/11 (Cris): os planos do Miro com preço: Básico US$ 9,90 · Pro US$ 49,90 · UltraPro US$ 249,90 por mês (planos/ usa os mesmos).
    Sem plano escolhido (botão "Assinar"), abre a escolha; com plano, o pedido. Pagamento: a BLR manda o link (nada é cobrado aqui). */
 const PLANOS = {
-  basico: {n: "Básico", p: "9,90", ben: ["Ficha completa e filtros avançados", "1 estado à sua escolha (troca 1× por mês)", "Self Bidder: você opera por conta própria", "Assistente de IA: 10 consultas por mês"]},
-  pro: {n: "Pro", p: "49,90", ben: ["Tudo do Básico, em até 3 estados", "Teto de lance BLR, ARV e a conta ao vivo de cada lote", "Posição exata, contorno do lote, Street View, endereço e parcela", "Várias listas e alertas de oportunidades", "Self Bidder com suporte a dúvidas · IA: 40 consultas por mês"]},
-  ultra: {n: "UltraPro", p: "249,90", ben: ["Tudo do Pro, em todos os estados", "Partner Bidder: a BLR opera com você e divide o risco", "Comunidade, mentoria e oferta de lotes já arrematados", "Sala de leilão ao vivo, consultoria de engenharia e o curso completo", "Assistente de IA ilimitado"]}};
+  basico: {n: "Básico", p: "9,90", a: "99", am: "8,25", ec: "19,80", ben: ["Ficha completa e filtros avançados", "1 estado à sua escolha (troca 1× por mês)", "Self Bidder: você opera por conta própria", "Assistente de IA: 10 consultas por mês"]},
+  pro: {n: "Pro", p: "49,90", a: "499", am: "41,58", ec: "99,80", ben: ["Tudo do Básico, em até 3 estados", "Teto de lance BLR, ARV e a conta ao vivo de cada lote", "Posição exata, contorno do lote, Street View, endereço e parcela", "Várias listas e alertas de oportunidades", "Self Bidder com suporte a dúvidas · IA: 40 consultas por mês"]},
+  ultra: {n: "UltraPro", p: "249,90", a: "2.499", am: "208,25", ec: "499,80", ben: ["Tudo do Pro, em todos os estados", "Partner Bidder: a BLR opera com você e divide o risco", "Comunidade, mentoria e oferta de lotes já arrematados", "Sala de leilão ao vivo, consultoria de engenharia e o curso completo", "Assistente de IA ilimitado"]}};
 const PLANO_NOME = Object.fromEntries(Object.entries(PLANOS).map(([k, v]) => [k, v.n]));
-function abreAssina(plano){
+/* 07/11 (Rodrigo): mensal ou anual; o anual sai por 10 meses (2 grátis) e dá 20% de desconto na taxa de sucesso do self bider */
+let CICLO = "m";
+try{ if(localStorage.getItem("blr_ciclo") === "a") CICLO = "a"; }catch(e){}
+const cicloSeg = () => `<div class="ciclo seg" role="group" aria-label="Forma de pagamento"><button type="button" data-ciclo="m" aria-pressed="${CICLO === "m"}">Mensal</button><button type="button" data-ciclo="a" aria-pressed="${CICLO === "a"}">Anual <small>2 meses grátis</small></button></div>`;
+const precoPl = v => CICLO === "a" ? `US$ ${v.a}<small>/ano</small>` : `US$ ${v.p}<small>/mês</small>`;
+function cicloEventos(f){ document.querySelectorAll("#mBody [data-ciclo]").forEach(b => b.onclick = () => { CICLO = b.dataset.ciclo; try{ localStorage.setItem("blr_ciclo", CICLO); }catch(e){} f(); }); }
+function abreAssina(plano, ciclo){
+  if(typeof plano !== "string") plano = null;
+  if(ciclo === "anual" || ciclo === "a") CICLO = "a"; else if(ciclo === "mensal" || ciclo === "m") CICLO = "m";
   const P = PLANOS[plano];
   if(!P){
-    abreModal(`<h3 id="mTit">Escolha o seu plano</h3>
+    abreModal(`<h3 id="mTit">Escolha o seu plano</h3>${cicloSeg()}
       <div class="plEsc">${Object.entries(PLANOS).map(([k, v]) => `<button type="button" class="plOp ${k === "pro" ? "dest" : ""}" data-plano="${k}">
-        <b>${v.n}</b><span class="num">US$ ${v.p}<small>/mês</small></span><em>${esc(v.ben[k === "basico" ? 0 : 1])}</em></button>`).join("")}</div>
+        <b>${v.n}</b><span class="num">${precoPl(v)}</span><em>${CICLO === "a" ? `equivale a US$ ${v.am}/mês · economia de US$ ${v.ec}` : esc(v.ben[k === "basico" ? 0 : 1])}</em></button>`).join("")}</div>
       <div class="nota"><button type="button" class="lnk" data-teste>Testar o Pro por 7 dias grátis</button> · <a class="lnk" href="planos/">comparar tudo</a></div>`);
     document.querySelectorAll("[data-plano]").forEach(b => b.onclick = () => abreAssina(b.dataset.plano));
+    cicloEventos(() => abreAssina());
     return;
   }
-  abreModal(`<h3 id="mTit">Plano <em>${P.n}</em></h3>
-    <div class="preco-ass"><b class="num">US$ ${P.p}</b><span>por mês · cancele quando quiser</span></div>
+  abreModal(`<h3 id="mTit">Plano <em>${P.n}</em></h3>${cicloSeg()}
+    <div class="preco-ass"><b class="num">US$ ${CICLO === "a" ? P.a : P.p}</b><span>${CICLO === "a" ? `por ano (equivale a US$ ${P.am}/mês, economia de US$ ${P.ec}) · 20% de desconto na taxa por arremate` : "por mês · cancele quando quiser"}</span></div>
     <ul class="ben">${P.ben.map(x => `<li>${esc(x)}</li>`).join("")}</ul>
     <form class="fcad" id="fAss">${campos(`<label>Você é<select name="perfil"><option>Investidor</option><option>Corretor / agente</option><option>Construtor</option><option>Outro</option></select></label>`)}
       <button class="cta" type="submit">Quero o ${P.n}</button>
       <div class="nota">Depois do cadastro, a BLR manda o link de pagamento seguro e libera o seu acesso. Nada é cobrado nesta página. <button type="button" class="lnk" data-assina-outro>Ver os outros planos</button>${CONTATO.whats ? ` · Dúvidas: WhatsApp ${esc(CONTATO.whats)}${CONTATO.email ? " · " + esc(CONTATO.email) : ""}.` : ""}</div></form>`);
   const o = document.querySelector("[data-assina-outro]"); if(o) o.onclick = () => abreAssina();
-  formDe("fAss", d => envia({tipo: "assinatura " + P.n, plano: plano, preco: "US$ " + P.p + "/mês", ...d}, `Pedido do plano ${P.n} recebido. Você recebe o link de pagamento e o acesso em seguida.`));
+  cicloEventos(() => abreAssina(plano));
+  formDe("fAss", d => envia({tipo: "assinatura " + P.n + (CICLO === "a" ? " anual" : " mensal"), plano: plano, ciclo: CICLO === "a" ? "anual" : "mensal",
+    preco: CICLO === "a" ? "US$ " + P.a + "/ano" : "US$ " + P.p + "/mês", ...d}, `Pedido do plano ${P.n} recebido. Você recebe o link de pagamento e o acesso em seguida.`));
 }
 function abreInfo(i){
   const l = L.find(x => x.i === i); if(!l) return;
@@ -3205,7 +3222,7 @@ $("#btFiltros").onclick = () => { const a = $(".filtros").classList.toggle("aber
 /* 07/11: atalhos de outras páginas (planos/, conta/): ?teste=1 cadastro de 7 dias · ?plano=basico|pro|ultra pedido do plano ·
    ?entrar=1 · ?senha=1 · ?listas=1 · ?tour=1. Cada um só abre uma janela; se der erro, a vitrine segue normal. */
 { const q = new URLSearchParams(location.search);
-  try{ if(q.get("teste")) abreCadastro(); else if(q.get("plano")) abreAssina(q.get("plano")); else if(q.get("entrar")) abreEntrar();
+  try{ if(q.get("teste")) abreCadastro(); else if(q.get("plano")) abreAssina(q.get("plano"), q.get("ciclo")); else if(q.get("entrar")) abreEntrar();
     else if(q.get("senha")) abreEsqueci(""); else if(q.get("listas")) abreSeg(); else if(q.get("tour")) setTimeout(() => tour(true), 1200); }catch(e){ console.warn("atalho", e); } }
 $("#tgSeg").onclick = () => { FSEG = FSEG ? false : true; $("#tgSeg").setAttribute("aria-pressed", !!FSEG); render(); };
 /* 02/11 (Cris): o botão alterna Histórico junto → Só vendidos → sem histórico */

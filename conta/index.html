@@ -16,6 +16,9 @@
 :root{--bg:#0b0d11;--card:rgba(255,255,255,.055);--card2:rgba(255,255,255,.09);--ink:#f3f1ec;--mute:#a7abb3;--line:rgba(255,255,255,.12);
   --gold:#e2b75e;--ok:#7fd6a4;--bad:#f08a76;--r:18px}
 :root[data-theme="light"]{--bg:#f4f1ea;--card:rgba(255,255,255,.8);--card2:#fff;--ink:#16181d;--mute:#5c6169;--line:rgba(20,20,30,.12);--gold:#a87a22;--ok:#1d7a4a;--bad:#b3402b}
+:root{color-scheme:dark}:root[data-theme="light"]{color-scheme:light}
+select option{background:var(--bg);color:var(--ink)}
+.okPref{color:var(--ok);font-size:13px;min-height:1em}
 :root[data-fonte="g"]{font-size:17px}:root[data-fonte="p"]{font-size:14px}
 *{box-sizing:border-box}html,body{margin:0}
 body{background:var(--bg);color:var(--ink);font:1rem/1.55 Sora,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
@@ -72,11 +75,12 @@ input,select{font:inherit;color:var(--ink);background:var(--card2);border:1px so
 
   <section class="sec" id="sPref"><h2>Configurações: moeda, idioma e tela</h2>
     <div class="lin">
-      <label>Tema<select id="pTema"><option value="">Escuro (padrão)</option><option value="light">Claro</option></select></label>
+      <label>Tema<select id="pTema"><option value="">Escuro (padrão)</option><option value="light">Claro (nesta página e no Para você; o mapa é escuro)</option></select></label>
       <label>Tamanho da letra<select id="pFonte"><option value="p">Pequena</option><option value="">Normal</option><option value="g">Grande</option></select></label>
       <label>Moeda dos valores<select id="pMoeda"><option value="USD">Dólar americano (US$)</option><option value="BRL">Real (R$)</option><option value="EUR">Euro (€)</option><option value="GBP">Libra esterlina (£)</option><option value="CAD">Dólar canadense (C$)</option><option value="MXN">Peso mexicano (MX$)</option><option value="ARS">Peso argentino (AR$)</option><option value="CLP">Peso chileno (CLP$)</option><option value="COP">Peso colombiano (COL$)</option><option value="PEN">Sol peruano (S/)</option><option value="UYU">Peso uruguaio ($U)</option><option value="PYG">Guarani (₲)</option><option value="CHF">Franco suíço (CHF)</option><option value="JPY">Iene (¥)</option><option value="CNY">Yuan (CN¥)</option><option value="AUD">Dólar australiano (A$)</option><option value="INR">Rupia indiana (₹)</option><option value="AED">Dirham (AED)</option><option value="ILS">Shekel (₪)</option><option value="ZAR">Rand (R)</option></select></label>
       <label>Idioma<select id="pIdioma"><option value="pt">Português</option><option value="en" disabled>English (em breve)</option></select></label>
     </div>
+    <p class="okPref" id="okPref" role="status"></p>
     <h2 style="margin-top:14px">Avisos</h2>
     <div class="lin">
       <label class="chk"><input type="checkbox" id="nLista"> Lote novo que combina com uma lista</label>
@@ -121,19 +125,25 @@ function aplica(){
 /* /api/perfil (Clauds 06/11): 1 objeto por login, até 4.096 bytes, e o PUT SUBSTITUI tudo. Por isso lê, junta e grava,
    sem apagar o que o questionário Para você guardou. Sem a rota: pedido vai como interesse e a BLR atualiza no /admin. */
 async function salvaServidor(parte){
+  let ok = false;
   try{ const g = await api("/api/perfil"); const per = {...((g && g.perfil) || {}), ...parte};
     if(JSON.stringify({perfil: per}).length > 4000) delete per.contato;   // o essencial cabe; contato também vai como interesse
-    await api("/api/perfil", {perfil: per}, "PUT"); if(!parte.contato) return true; }catch(e){ console.warn("perfil:", e.st); }
-  try{ await api("/api/interesse", {tipo: "atualizar conta", email: (EU && EU.email) || "", ...(parte.contato || {}), texto: "Atualização da conta: " + JSON.stringify(parte), pagina: location.href.slice(0, 300)}); return true; }catch(e){ return false; }
+    await api("/api/perfil", {perfil: per}, "PUT"); ok = true; }catch(e){ console.warn("perfil:", e.st, e.erro); }
+  if(!parte.contato) return ok;
+  // 07/11: o aviso à BLR (interesse) é extra; se o perfil gravou, está salvo mesmo que o aviso falhe
+  try{ await api("/api/interesse", {tipo: "atualizar conta", email: (EU && EU.email) || "", ...(parte.contato || {}), texto: "Atualização da conta: " + JSON.stringify(parte), pagina: location.href.slice(0, 300)}); return true; }
+  catch(e){ console.warn("interesse:", e.st, e.erro); return ok; }
 }
-function salvaPref(){ grava("blr_conta_pref", PREF); aplica(); if(EU) salvaServidor({pref: PREF}); }
+function avisoPref(t){ const e = $("#okPref"); if(e){ e.textContent = t; clearTimeout(avisoPref.t); avisoPref.t = setTimeout(() => e.textContent = "", 6000); } }
+function salvaPref(){ grava("blr_conta_pref", PREF); aplica(); avisoPref("Salvo ✓ · vale ao voltar ao mapa");
+  if(EU) salvaServidor({pref: PREF}).then(ok => { if(!ok) avisoPref("Salvo neste navegador ✓ (a sua conta no servidor não respondeu agora)"); }); }
 // preferências
 $("#pTema").value = PREF.tema; $("#pFonte").value = PREF.fonte; $("#pIdioma").value = PREF.idioma;
 $("#pMoeda").value = (() => { try{ return localStorage.getItem("vitrine_moeda") || "USD"; }catch(e){ return "USD"; } })();
 $("#pTema").onchange = e => { PREF.tema = e.target.value; salvaPref(); try{ localStorage.setItem("blr_tema", PREF.tema === "light" ? "light" : ""); }catch(er){} };   // mesma chave do Para você
 $("#pFonte").onchange = e => { PREF.fonte = e.target.value; salvaPref(); };
 $("#pIdioma").onchange = e => { PREF.idioma = e.target.value; salvaPref(); };
-$("#pMoeda").onchange = e => { try{ localStorage.setItem("vitrine_moeda", e.target.value); }catch(er){} };
+$("#pMoeda").onchange = e => { try{ localStorage.setItem("vitrine_moeda", e.target.value); }catch(er){} avisoPref("Salvo ✓ · os valores do mapa aparecem em " + e.target.options[e.target.selectedIndex].text); };
 [["#nLista", "lista"], ["#nData", "data"], ["#nWhats", "whats"]].forEach(([s, k]) => { $(s).checked = !!PREF.avisos[k]; $(s).onchange = e => { PREF.avisos[k] = e.target.checked; salvaPref(); }; });
 document.querySelectorAll("[data-modo]").forEach(b => b.onclick = () => { PREF.modo = b.dataset.modo; salvaPref(); });
 $("#nLis").textContent = ler("blr_listas_v1", []).length;
@@ -154,6 +164,7 @@ function mostraPlano(){
   const pl = planoDe(EU);
   let t = NOME_PL[pl];
   if(EU && EU.teste && EU.teste_ate){ const d = Math.ceil((new Date(EU.teste_ate) - new Date()) / 864e5); t = `UltraPro · teste grátis: ${d > 0 ? d + (d === 1 ? " dia restante" : " dias restantes") : "termina hoje"}`; }
+  if(EU && pl === "ultra" && !EU.plano && !EU.premium && EU.papel !== "membro" && EU.papel !== "admin") t += " · endereço, ARV e teto em liberação pela BLR";   // 07/11: o servidor ainda não entrega o pacote ao papel cliente
   $("#plTxt").innerHTML = `<b>${t}</b>` + (EU && EU.estados && EU.estados.length ? ` · estados: ${EU.estados.map(s => String(s).replace(/[^A-Z]/g, "")).join(", ")}` : "");
 }
 let fora = 0;
