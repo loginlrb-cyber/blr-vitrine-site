@@ -123,6 +123,7 @@ body:has(#cmpbar:not([hidden])) .iafab{bottom:calc(84px + env(safe-area-inset-bo
 .vguia .hero,.vguia .crit{display:none}
 /* 07/11 (Rodrigo): barra nova, Pacotes e Meu portfólio */
 .vpriv .hero,.vpriv .crit{display:none}
+.avTopo{position:fixed;left:50%;top:calc(70px + env(safe-area-inset-top,0px));transform:translateX(-50%);z-index:2000;max-width:min(560px,calc(100% - 32px));background:var(--surf2);color:var(--tx);border:1px solid var(--acc);border-radius:12px;padding:12px 16px;font-size:13.5px;box-shadow:0 12px 40px rgba(0,0,0,.45);cursor:pointer}
 .vlt{position:absolute;transform:translate(-50%,calc(-100% - var(--r) - 3px));white-space:nowrap;pointer-events:none;font:700 11px/1.2 var(--f-m);color:#EEF0F3;background:rgba(12,14,18,.85);border:1px solid rgba(255,255,255,.14);padding:1px 5px;border-radius:6px}
 .tbi{display:none;font-style:normal}
 .tbn{font-family:var(--f-m);font-weight:500;font-size:11px;margin-left:5px;padding:1px 6px;border-radius:9px;background:var(--surf2);color:var(--tx2)}
@@ -1579,12 +1580,15 @@ const api = (r, corpo, met) => fetch(API + r, corpo ? {method: met || "POST", cr
   headers: {"Content-Type": "application/json", ...(CSRF ? {"X-CSRF": CSRF} : {})}, body: JSON.stringify(corpo)} : {credentials: "include"})
   .then(async x => { const j = await x.json().catch(() => ({}));
   if(!x.ok) throw Object.assign(new Error(j.mensagem || "falha"), {st: x.status, erro: j.erro}); return j; });
-let SESSAO = null, CARREGA_CONTA = false;   // 07/11: enquanto o pacote da conta chega, a ficha diz "carregando" em vez do cadeado
+let SESSAO = null, CARREGA_CONTA = false;
+// aviso no topo da página (07/11): sem alert(), some sozinho em 20 s
+function avisoTopo(t){ let d = $("#avTopo"); if(!d){ d = document.createElement("div"); d.id = "avTopo"; d.className = "avTopo"; d.setAttribute("role", "status"); document.body.appendChild(d); }
+  d.textContent = t; d.hidden = false; clearTimeout(avisoTopo.t); avisoTopo.t = setTimeout(() => d.hidden = true, 20000); d.onclick = () => d.hidden = true; }   // 07/11: enquanto o pacote da conta chega, a ficha diz "carregando" em vez do cadeado
 async function entraConta(eu){
   CSRF = eu.csrf || CSRF;
   // papel "cliente" (cadastro aberto / teste) não recebe o pacote premium (403 so_membro): entra logado, sem os dados de membro
   let pac = null;
-  try{ pac = await api("/api/premium");   // só em memória (nunca no localStorage)
+  try{ pac = await Promise.race([api("/api/premium"), new Promise((_, n) => setTimeout(() => n(Object.assign(new Error("o servidor demorou mais de 60 s"), {st: "tempo"})), 60000))]);   // só em memória (nunca no localStorage)
     if(pac.z) pac = await new Response(new Blob([Uint8Array.from(atob(pac.z), c => c.charCodeAt(0))]).stream()
       .pipeThrough(new DecompressionStream("gzip"))).json(); }   // pacote compactado (vitrine_site.py, 28/10)
   catch(er){ if(er.st !== 403) throw er; pac = null; }
@@ -1649,7 +1653,14 @@ function abreEntrar(){
     // 28/10: diz em que etapa parou (login, /api/me ou pacote), para não confundir senha certa com pacote que não abriu
     let etapa = "login";
     try{ await api("/api/login", {email: String(f.get("email")).trim().toLowerCase(), senha: f.get("senha")});
-      etapa = "me"; const eu = await api("/api/me"); etapa = "pacote"; await entraConta(eu); fechaModal(); }
+      etapa = "me"; const eu = await api("/api/me");
+      // 07/11: a janela fecha já; o pacote (6 a 9 MB) carrega por trás, com "Carregando os dados da sua conta…" na ficha
+      fechaModal(); $("#whoTxt").textContent = String(eu.nome || eu.email || "Membro").split(" ")[0]; logado($("#whoTxt").textContent, eu.email);
+      CARREGA_CONTA = true; if(ABERTO && $("#ficha").classList.contains("on")) abre(ABERTO);
+      entraConta(eu).catch(er => { console.warn("login BLR: pacote", er.st, er.message);
+        avisoTopo(`Você entrou, mas os dados de assinante não abriram (${er.st || "sem resposta"}${er.message && er.message !== "falha" ? ": " + er.message : ""}). Atualize a página; se continuar, avise a BLR.`); })
+        .finally(() => { CARREGA_CONTA = false; if(ABERTO && !MEMBRO && $("#ficha").classList.contains("on")) abre(ABERTO); });
+      return; }
     catch(er){ bt.disabled = false; bt.textContent = "Entrar"; console.warn("login BLR:", etapa, er.st, er.message);
       if(etapa !== "login"){ $("#entErro").textContent = `A senha foi aceita, mas os dados de membro não abriram (etapa ${etapa}, código ${er.st || "sem resposta"}${er.message !== "falha" ? ": " + er.message : ""}). Avise a BLR com esta mensagem.`; return; }
       $("#entErro").textContent = [401, 403, 429].includes(er.st) ? (er.message !== "falha" ? er.message
@@ -1742,7 +1753,8 @@ if(SITE){ $("#btEntrar").hidden = false; $("#btEntrar").onclick = abreEntrar;
   document.body.classList.add("aguarda");
   const solta = () => document.body.classList.remove("aguarda"); setTimeout(solta, 6000);
   CARREGA_CONTA = true;
-  setTimeout(() => api("/api/me").then(entraConta).catch(er => { if(er && er.st !== 401) console.warn("conta:", er.st, er.erro || er.message); })
+  setTimeout(() => api("/api/me").then(entraConta).catch(er => { if(er && er.st !== 401){ console.warn("conta:", er.st, er.erro || er.message);
+      avisoTopo(`Os dados da sua conta não abriram agora (${er.st || "sem resposta"}). Atualize a página em instantes.`); } })
     .finally(() => { CARREGA_CONTA = false; solta(); if(ABERTO && !MEMBRO && $("#ficha").classList.contains("on")) abre(ABERTO); }), 0); }
 
 /* ---------- assistente de IA (30/10, Rodrigo): botão flutuante no canto direito, só no site ----------
