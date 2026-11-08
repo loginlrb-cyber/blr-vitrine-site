@@ -1579,7 +1579,7 @@ const api = (r, corpo, met) => fetch(API + r, corpo ? {method: met || "POST", cr
   headers: {"Content-Type": "application/json", ...(CSRF ? {"X-CSRF": CSRF} : {})}, body: JSON.stringify(corpo)} : {credentials: "include"})
   .then(async x => { const j = await x.json().catch(() => ({}));
   if(!x.ok) throw Object.assign(new Error(j.mensagem || "falha"), {st: x.status, erro: j.erro}); return j; });
-let SESSAO = null;
+let SESSAO = null, CARREGA_CONTA = false;   // 07/11: enquanto o pacote da conta chega, a ficha diz "carregando" em vez do cadeado
 async function entraConta(eu){
   CSRF = eu.csrf || CSRF;
   // papel "cliente" (cadastro aberto / teste) não recebe o pacote premium (403 so_membro): entra logado, sem os dados de membro
@@ -1594,6 +1594,8 @@ async function entraConta(eu){
   await carregaPremium();
   $("#dot").classList.toggle("on", ASSIN); $("#whoTxt").textContent = String(eu.nome || eu.email || "Membro").split(" ")[0];
   logado($("#whoTxt").textContent, eu.email); render();
+  // 07/11 (Rodrigo): ficha aberta antes de o pacote chegar ficava com o cadeado; agora se refaz com endereço e links
+  if(ABERTO && $("#ficha").classList.contains("on")) abre(ABERTO);
 }
 /* menu do usuário (28/10): logado, o botão do fim do topo abre um menu com o nome e "Sair da conta"; sair pede dois toques
    de propósito, sem confirm() do navegador */
@@ -1739,7 +1741,9 @@ if(SITE){ $("#btEntrar").hidden = false; $("#btEntrar").onclick = abreEntrar;
   try{ localStorage.removeItem("vitrine_membro"); }catch(e){}   // senha do mês antiga que ficou guardada em texto aberto
   document.body.classList.add("aguarda");
   const solta = () => document.body.classList.remove("aguarda"); setTimeout(solta, 6000);
-  setTimeout(() => api("/api/me").then(entraConta).catch(() => {}).finally(solta), 0); }
+  CARREGA_CONTA = true;
+  setTimeout(() => api("/api/me").then(entraConta).catch(er => { if(er && er.st !== 401) console.warn("conta:", er.st, er.erro || er.message); })
+    .finally(() => { CARREGA_CONTA = false; solta(); if(ABERTO && !MEMBRO && $("#ficha").classList.contains("on")) abre(ABERTO); }), 0); }
 
 /* ---------- assistente de IA (30/10, Rodrigo): botão flutuante no canto direito, só no site ----------
    Toque abre o chat; segurar ouve a pergunta e responde por voz (Web Speech do navegador). A página manda a pergunta, o
@@ -2050,7 +2054,9 @@ async function abre(i){
     hs.forEach((a, n) => { if(hs.some((b, m) => m < n && (b.href === a.href || (host(b) === host(a) && /cadastro/i.test(a.textContent + b.textContent))))) a.remove(); });
     const bc = $("#btCopia"); if(bc) bc.onclick = async () => { try{ await navigator.clipboard.writeText(p.parcela); bc.querySelector("small").textContent = "copiado ✓"; }catch(e){ bc.querySelector("small").textContent = p.parcela; } };
   } else {
-    $("#secPriv").innerHTML = `<h4>Endereço e links</h4><div class="trava"><span>🔒</span><div><b>Endereço, parcela, Street View e a página do leilão ficam com os assinantes.</b><br>
+    $("#secPriv").innerHTML = CARREGA_CONTA ? `<h4>Endereço e links</h4><div class="trava"><span>⏳</span><div><b>Carregando os dados da sua conta…</b><br>Endereço, parcela e Street View aparecem aqui em alguns segundos.</div></div>`
+      : MEMBRO ? `<h4>Endereço e links</h4><div class="trava"><span>—</span><div><b>Este lote ainda não tem endereço nem parcela nos dados da BLR.</b><br><button type="button" class="lnk" data-info="${l.i}">Peça as informações deste lote</button>.</div></div>`
+      : `<h4>Endereço e links</h4><div class="trava"><span>🔒</span><div><b>Endereço, parcela, Street View e a página do leilão ficam com os assinantes.</b><br>
       ${SESSAO ? `Seu acesso UltraPro está sendo liberado pela BLR; os dados aparecem assim que a liberação chegar à sua conta. Enquanto isso, <button type="button" class="lnk" data-info="${l.i}">peça as informações deste lote</button>.`   /* 07/11: logado sem o pacote do servidor (papel cliente) */
         : `<button type="button" class="lnk" data-assina>Assine a partir de US$ 9,90/mês</button> ou <button type="button" class="lnk" data-info="${l.i}">peça as informações deste lote</button>.`}</div></div>`;
   }
