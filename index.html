@@ -78,6 +78,7 @@ a{color:var(--info)}
 .iam{flex:1;overflow-y:auto;padding:12px 14px;display:flex;flex-direction:column;gap:10px}
 .iab{padding:9px 12px;border-radius:12px;font-size:13.5px;line-height:1.5;white-space:pre-wrap;max-width:92%}
 .ia-r{background:var(--surf);color:var(--tx2);align-self:flex-start}.ia-u{background:var(--ok-bg);color:var(--tx);align-self:flex-end}
+.iasug{display:flex;flex-wrap:wrap;gap:6px;margin:2px 0 4px}.iasug button{font:inherit;font-size:12.5px;padding:6px 10px;border-radius:999px;border:1px solid var(--line2);background:transparent;color:var(--tx2);cursor:pointer;text-align:left}.iasug button:hover,.iasug button:focus-visible{border-color:var(--acc);color:var(--tx)}   /* 09/11: perguntas prontas */
 .iab.esp{color:var(--mute);font-style:italic}.iab.erro{color:var(--mute)}
 .iab.cortada{-webkit-mask-image:linear-gradient(#000 45%,transparent);mask-image:linear-gradient(#000 45%,transparent)}
 .iacta{align-self:stretch;display:flex;flex-direction:column;gap:6px;padding:12px;border:1px solid var(--ok-ln);border-radius:12px;background:var(--ok-bg);font-size:13px;color:var(--tx2)}
@@ -90,6 +91,7 @@ a{color:var(--info)}
 .iamic.on{color:#0C0E12;background:#6FD3B0;border-color:#6FD3B0;animation:iaPulso 1.2s ease-in-out infinite}
 .iapriv{font-size:11px;color:var(--mute);padding:0 12px 10px}
 /* botão flutuante: estrela-bússola BLR (dourado + rosa dos ventos verde-menta) */
+@media (max-width:760px){body:has(#iaBox:not([hidden])) .iafab{visibility:hidden;pointer-events:none}}   /* 09/11: no celular o botão cobria o Enviar do chat (display:none apagaria o degradê da estrela do cabeçalho) */
 .iafab{all:unset;box-sizing:border-box;position:fixed;right:20px;bottom:calc(20px + env(safe-area-inset-bottom,0px));z-index:1150;width:58px;height:58px;border-radius:50%;cursor:pointer;display:grid;place-items:center;
   background:radial-gradient(circle at 35% 30%,#232934,#0E1116 70%);border:1px solid rgba(226,172,72,.55);box-shadow:0 10px 30px rgba(0,0,0,.45),0 0 0 6px rgba(226,172,72,.07),0 0 24px rgba(226,172,72,.22);
   touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;transition:transform .2s var(--suave,ease),right .3s var(--suave,ease)}
@@ -1691,15 +1693,16 @@ document.addEventListener("click", e => { if(e.target.closest("[data-teste]")){ 
 /* 07/11 (Cris, Miro "Primeiros passos"): tour de primeiro acesso. Não bloqueia nada (o anel e o balão deixam clicar o resto),
    pula sozinho o passo cujo botão não está na tela (celular, painel fechado) e abre 1× por navegador; volta pelo menu "Como usar". */
 const TOUR = [
+  /* 09/11 (Cris): o assistente vem primeiro: é ali que a pessoa tira qualquer dúvida */
+  ["#iaFab", "Comece por aqui: o Assistente BLR", "Pergunte qualquer coisa, por escrito ou segurando o botão para falar: como funciona cada leilão, os próximos leilões de um estado, os melhores lotes da área que você está vendo, a conta de um lote, os planos. Ele responde com os dados da plataforma."],
   ["#mapa", "O mapa dos EUA", "Cada número é um grupo de oportunidades. Aproxime e eles se dividem até virar lote por lote."],
   ["#regiao", "Oportunidades da região", "Aqui aparecem até 9 lotes do pedaço do mapa que você está vendo. Toque num cartão para abrir."],
   ["#pMin", "Calendário de leilões", "Abra para ver os próximos leilões e escolher um: o mapa mostra só os lotes dele."],
   ["#tgFil", "Filtros", "Tipo de imóvel, tipo de leilão (imposto, execução de hipoteca, governo), preço e data."],
   ["#tgSeg", "Suas listas", "Marque ★ nos lotes e organize em listas. Aqui o mapa mostra só o que você acompanha."],
-  ["#iaFab", "Assistente BLR", "Pergunte sobre um lote, um condado ou como funciona o leilão."],
   ["#btEntrar", "Sua conta", "Entre, comece o teste grátis de 7 dias ou veja os planos."]];
 function tour(forca){
-  try{ if(!forca && (localStorage.getItem("blr_tour_v1") || navigator.webdriver)) return; }catch(e){ if(!forca) return; }
+  try{ if(!forca && (localStorage.getItem("blr_tour_v2") || navigator.webdriver)) return; }catch(e){ if(!forca) return; }
   const vis = s => { const el = $(s); if(!el) return null; const r = el.getBoundingClientRect(); return r.width > 4 && r.height > 4 && r.bottom > 0 && r.top < innerHeight ? el : null; };
   const passos = TOUR.filter(p => vis(p[0])); if(!passos.length) return;
   document.querySelectorAll(".tourAnel,.tourBal").forEach(x => x.remove());
@@ -1707,7 +1710,7 @@ function tour(forca){
   const bal = document.createElement("div"); bal.className = "tourBal"; bal.setAttribute("role", "dialog"); bal.setAttribute("aria-live", "polite");
   document.body.append(anel, bal);
   let n = 0;
-  const fim = () => { anel.remove(); bal.remove(); removeEventListener("resize", poe); try{ localStorage.setItem("blr_tour_v1", "1"); }catch(e){} };
+  const fim = () => { anel.remove(); bal.remove(); removeEventListener("resize", poe); try{ localStorage.setItem("blr_tour_v2", "1"); }catch(e){} };
   function poe(){
     const el = vis(passos[n][0]); if(!el){ if(++n < passos.length) return poe(); return fim(); }
     const r = el.getBoundingClientRect(), g = 6;
@@ -1776,7 +1779,107 @@ function iaTela(){
   for(const k in t) if(t[k] == null) delete t[k];
   return t;
 }
-function iaContexto(canal){
+/* 09/11 (Cris: "a IA tem que responder tudo"): além do Guia, a IA recebe o que a plataforma sabe em geral (IA_SABER), os planos,
+   o panorama por estado, o calendário (do estado em foco ou o geral), os melhores lotes da área da tela e, quando a pergunta cita
+   um estado, o resumo dele. Tudo sai do que esta página já tem para esta pessoa (nada além do que ela veria); endereço não vai. */
+const IA_SABER = [
+  "## A BLR e a plataforma",
+  "- A BLR Developments é uma investidora imobiliária de Boston (EUA) que compra imóveis em leilão público e conhece o processo por dentro. A Vitrine BLR (BIDMAP) junta num mapa os leilões públicos dos EUA, lidos direto das fontes oficiais: editais dos condados, leiloeiros, tribunais e órgãos do governo.",
+  "- Os dados são atualizados todo dia. Um lote sai quando o dono paga a dívida (resgate) ou o leilão é adiado ou cancelado; por isso o edital oficial é o que vale e deve ser conferido antes do lance.",
+  "- A análise BLR completa (teto, ARV pelas vendas reais, Força) hoje existe para a Flórida. Nos outros estados o lote aparece com ARV estimado (valor oficial do condado ou preço por pé² do CEP) ou como \"listado\" (dado do edital, sem a conta completa). Alguns estados não têm leilão no calendário, só estoque de venda direta (land bank, imóveis do governo).",
+  "- Abas: BIDMAP (o mapa), BIDLIST (a lista dos lotes, com ordenação e colunas), Pacotes (listas ★ dos lotes que você acompanha), Meu portfólio (o que você arrematou) e Guia (cada item explicado). O questionário \"Para você\" monta uma lista com os lotes que combinam com o seu perfil.",
+  "- Como comprar: Self Bidder (planos Básico e Pro): você se inscreve no leilão e dá o lance por conta própria, com a análise da plataforma. Partner Bidder (UltraPro, por convite e depois de homologação): a BLR opera o lance com você e divide o risco. O botão \"Quero participar deste leilão\" pede à BLR para inscrever e dar o lance por você.",
+  "- Teste grátis de 7 dias só com e-mail e telefone. O plano anual sai pelo preço de 10 meses. O pagamento é por link enviado pela BLR; nada é cobrado dentro do site.",
+  "## Tipos de leilão nos EUA (regras gerais; cada estado e condado tem as suas, e o edital é o que vale)",
+  "- Tax deed (imposto, escritura): o condado vende o imóvel por imposto atrasado e quem ganha recebe a escritura. Em geral a hipoteca privada cai; lien de governo pode continuar; o IRS (receita federal), quando tem lien, pode resgatar o imóvel em até 120 dias.",
+  "- Tax lien (certificado): você compra a dívida de imposto, não o imóvel. Ganha juros quando o dono paga; se ele não pagar no prazo de resgate (de meses a anos, conforme o estado), você pode pedir a escritura. Muitos certificados são resgatados.",
+  "- Pensilvânia: Upset Sale (por imposto; hipoteca e alguns liens continuam com o comprador), Judicial Sale (o tribunal limpa os gravames) e Repository (o que sobrou sem lance, vendido por oferta).",
+  "- Execução de hipoteca (foreclosure, sheriff sale, trustee sale): o banco executa a dívida e o imóvel vai a leilão; o lance de abertura costuma ser o que o banco quer recuperar. Se ninguém cobre, o banco fica com o imóvel (REO). Dívidas anteriores à hipoteca executada podem continuar.",
+  "- Imóveis do governo (HUD, VA, Fannie Mae/HomePath, Freddie Mac/HomeSteps, USDA, Tesouro): casas tomadas por programas federais, vendidas por oferta ou leilão online, muitas vezes com um período inicial em que só quem vai morar no imóvel pode ofertar.",
+  "- Land bank: órgão público que vende imóveis abandonados por venda direta (sem leilão marcado), às vezes exigindo um plano de reforma.",
+  "- Auction.com, Xome e Hubzu são plataformas privadas: a vitrine só mostra o link, e o lance é dado lá.",
+  "## Do edital à escritura (passo a passo comum)",
+  "- 1) Ler o edital e a lista oficial. 2) Inscrever-se até a data limite e depositar a caução, quando há. 3) Dar o lance, presencial ou online (nas plataformas online costuma haver buyer's premium, uma taxa sobre o lance, por exemplo 5%). 4) Pagar o saldo no prazo do edital, que pode ser no mesmo dia ou em poucos dias. 5) O condado registra a escritura, o que leva de semanas a meses. 6) Em alguns estados o antigo dono ainda pode resgatar depois da venda.",
+  "- O imóvel é vendido como está (\"as is\"), quase sempre sem visita por dentro e às vezes ocupado (a desocupação é custo e prazo do comprador).",
+  "- A escritura de leilão por imposto muitas vezes não aceita seguro de título de imediato: o caminho é o quiet title (processo que confirma o título), que custa e leva meses. A conta BLR já reserva esse custo.",
+  "## Riscos que o investidor deve olhar",
+  "- Dívida que continua com o comprador (lien de governo, IRS, hipoteca em Upset), ocupação, estado da casa, erro no edital (endereço ou parcela trocados), resgate pelo dono, prazo até poder vender e preço de venda abaixo do ARV estimado.",
+  "## Como o assistente responde",
+  "- Usa os dados desta plataforma (aqui e no Guia), inclusive o calendário, o resumo por estado e os lotes da área da tela. Ao citar um lote, diz o estado, o condado, a cidade e os números (abertura, teto, ARV) para a pessoa achar no mapa. Se algo não está aqui, diz que a vitrine não tem o dado e sugere pedir a análise à BLR pelo botão do lote ou pelo contato. Não é recomendação de compra: teto e ARV são estimativas a confirmar."
+].join("\n");
+const iaNorm = s => String(s || "").normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
+const IA_UF_EN = {"AL": "Alabama", "AK": "Alaska", "AZ": "Arizona", "AR": "Arkansas", "CA": "California", "CO": "Colorado", "CT": "Connecticut", "DE": "Delaware", "DC": "Washington DC", "FL": "Florida", "GA": "Georgia", "HI": "Hawaii", "ID": "Idaho", "IL": "Illinois", "IN": "Indiana", "IA": "Iowa", "KS": "Kansas", "KY": "Kentucky", "LA": "Louisiana", "ME": "Maine", "MD": "Maryland", "MA": "Massachusetts", "MI": "Michigan", "MN": "Minnesota", "MS": "Mississippi", "MO": "Missouri", "MT": "Montana", "NE": "Nebraska", "NV": "Nevada", "NH": "New Hampshire", "NJ": "New Jersey", "NM": "New Mexico", "NY": "New York", "NC": "North Carolina", "ND": "North Dakota", "OH": "Ohio", "OK": "Oklahoma", "OR": "Oregon", "PA": "Pennsylvania", "RI": "Rhode Island", "SC": "South Carolina", "SD": "South Dakota", "TN": "Tennessee", "TX": "Texas", "UT": "Utah", "VT": "Vermont", "VA": "Virginia", "WA": "Washington", "WV": "West Virginia", "WI": "Wisconsin", "WY": "Wyoming", "PR": "Puerto Rico"};
+function iaUfDaPergunta(q){   // "leilões em Ohio", "o que tem na FL?" -> UF
+  const n = " " + iaNorm(q).replace(/[^a-z]+/g, " ") + " ";
+  let achou = null;
+  const nomes = Object.entries(UFN).concat(Object.entries(IA_UF_EN));   // português e inglês ("West Virginia", "New York")
+  for(const [uf, nome] of nomes){ const t = iaNorm(nome).replace(/[^a-z]+/g, " ").trim();
+    if(t && n.includes(" " + t + " ") && (!achou || t.length > achou[1])) achou = [uf, t.length]; }   // "Virgínia Ocidental" ganha de "Virgínia"
+  if(achou) return achou[0];
+  const m = String(q || "").match(/\b[A-Z]{2}\b/g) || [];
+  return m.find(x => UFN[x]) || null;
+}
+function iaLote(l){   // o lote em poucas palavras, sem endereço
+  const o = {id: l.i, estado: l.uf, condado: l.co, cidade: l.ci, cep: l.zip, imovel: TIPO[l.u] || l.u, leilao: l.tp, modalidade: modLeilao(l),
+    data: l.d || "sem data (venda contínua ou a definir)", abertura: l.ab, valor_cadastro: l.jv, desconto_pct: l.desc, teto_blr: l.teto, arv: l.arv,
+    area_pes2: l.a, ano: l.y, forca_0a5: LIST(l) ? undefined : forcaDe(l),
+    faixa: l.et === "final" ? (l.ft === "tipico" ? "fecha no típico" : "faixa fraca") : undefined, etapa: ETAPA[l.et] || l.et,
+    resultado: HIST(l) ? resTxt(l) : undefined};
+  for(const c in o) if(o[c] == null || o[c] === "") delete o[c];
+  return o;
+}
+const iaMelhor = (a, c) => noCrit(c) - noCrit(a) || forcaDe(c) - forcaDe(a) || (c.desc ?? -1) - (a.desc ?? -1);
+function iaLeilao(a){ const o = {data: a.d, estado: a.uf, condado: a.co, tipo: a.t, inscricao_ate: a.pi, onde: a.on};
+  for(const c in o) if(o[c] == null || o[c] === "") delete o[c]; return o; }
+function iaResumoUF(uf){   // um estado: lotes, leilões, condados com mais lotes e os melhores lotes já carregados nesta página
+  const x = POR_UF.get(uf) || {lei: [], n: 0, nd: 0, co: 0}, vivos = L.filter(l => l.uf === uf && !HIST(l)), porCo = {};
+  for(const l of vivos) porCo[l.co] = (porCo[l.co] || 0) + 1;
+  return {estado: UFN[uf] || uf, uf, lotes_a_venda: x.n, sem_data_ou_venda_continua: x.nd, condados: x.co, nos_criterios_blr: vivos.filter(noCrit).length,
+    analise_completa_blr: uf === "FL", leiloes_proximos: x.lei.slice(0, 40).map(iaLeilao),
+    condados_com_mais_lotes: Object.entries(porCo).sort((a, b) => b[1] - a[1]).slice(0, 12).map(([c, n]) => c + ": " + n),
+    melhores_lotes: vivos.sort(iaMelhor).slice(0, 12).map(iaLote),
+    lotes_carregados_na_pagina: PARTES.length ? UF_OK.has(uf) : true};
+}
+function iaPanorama(){
+  const T = (DADOS.cobertura && DADOS.cobertura.tot) || {};
+  return {dados_de: DADOS.meta && DADOS.meta.gerado,
+    totais: {lotes_a_venda: T.lotes, leiloes_no_calendario: LEI.length, estados: T.estados, estados_com_leilao: T.com_leilao, condados: T.condados,
+      nos_criterios_blr: T.nos_criterios, ja_leiloados_no_historico: T.historico},
+    por_estado: [...POR_UF.entries()].sort((a, b) => b[1].n - a[1].n)
+      .map(([uf, x]) => `${UFN[uf] || uf} (${uf}): ${x.n} lotes, ${x.lei.length} leilões${x.lei[0] ? ", próximo em " + x.lei[0].d : ""}`),
+    planos: Object.values(PLANOS).map(p => ({plano: p.n, mensal_usd: p.p, anual_usd: p.a, inclui: p.ben})),
+    imoveis_comprados_pela_blr: (DADOS.comprados || []).length};
+}
+function iaSugestoes(){   // 09/11: perguntas prontas conforme o que está na tela
+  const l = ABERTO && L.find(x => x.i === ABERTO), o = MAPA && MAPA.onde ? MAPA.onde() : {}, est = o.uf && (UFN[o.uf] || o.uf);
+  const q = [];
+  if(l) q.push("Este lote vale a pena? Explique o teto e a conta", "Quais os riscos deste lote?");
+  q.push(est ? `Quais os próximos leilões em ${est}?` : "Quais os próximos leilões?", "Quais os melhores lotes nesta área do mapa?");
+  if(!l) q.push("Como funciona um leilão de tax deed?");
+  q.push("Qual plano é melhor para mim?");
+  return q.slice(0, 4);
+}
+function iaContexto(canal, pergunta){
+  const ctx = iaContexto0(canal);
+  try{
+    ctx.saber = IA_SABER; ctx.plataforma = iaPanorama();
+    const uf = iaUfDaPergunta(pergunta) || (ctx.tela && Object.keys(UFN).find(u => UFN[u] === ctx.tela.estado)) || null;
+    if(uf) ctx.estado_em_foco = iaResumoUF(uf);
+    else ctx.proximos_leiloes = LEI.slice(0, 30).map(iaLeilao);
+    const rg = (window.__RG || []).slice(0, 15);
+    if(rg.length) ctx.area_da_tela = {nota: "melhores lotes da área do mapa que a pessoa está vendo, do melhor para o pior", lotes: rg.map(iaLote)};
+    if(!uf) ctx.melhores_nos_criterios = L.filter(l => !HIST(l) && noCrit(l)).sort(iaMelhor).slice(0, 10).map(iaLote);
+    // o servidor aceita até 60 KB: corta do menos importante para o mais importante
+    const cabe = () => JSON.stringify(ctx).length < 56000;
+    if(!cabe() && ctx.estado_em_foco) ctx.estado_em_foco.leiloes_proximos = ctx.estado_em_foco.leiloes_proximos.slice(0, 15);
+    if(!cabe()) delete ctx.melhores_nos_criterios;
+    if(!cabe() && ctx.area_da_tela) ctx.area_da_tela.lotes = ctx.area_da_tela.lotes.slice(0, 6);
+    if(!cabe()) ctx.plataforma.por_estado = ctx.plataforma.por_estado.slice(0, 20);
+    if(!cabe()) delete ctx.saber;
+  }catch(e){ console.warn("contexto da IA", e); }
+  return ctx;
+}
+function iaContexto0(canal){
   const g = guiaSecoes().map(([t, , it]) => "## " + t + "\n" + it.map(([a, b]) => "- " + a.replace(/<[^>]+>/g, "") + ": " + b).join("\n")).join("\n\n");
   const base = {guia: g, tela: iaTela(), canal};
   const l = ABERTO && L.find(x => x.i === ABERTO);
@@ -1816,16 +1919,17 @@ function abreIA(abrir){
   let p = $("#iaBox");
   if(p){ p.hidden = abrir ? false : !p.hidden; if(!p.hidden){ iaSobre(); $("#iaTxt").focus(); } return; }
   p = document.createElement("aside"); p.id = "iaBox"; p.className = "iabox"; p.setAttribute("aria-label", "Assistente BLR");
-  const ola = SESSAO ? "Pergunte sobre qualquer item do mapa, um termo do leilão ou o lote aberto na ficha (o teto, a conta, a conta da JV, o bairro…). Eu explico com os números que a plataforma tem; não é recomendação de compra."
-    : "Olá! Sou o assistente da BLR. Você pode fazer uma pergunta por dia como visitante; a resposta completa e as perguntas sem limite são dos assinantes.";
+  const ola = SESSAO ? "Pode perguntar qualquer coisa: como funciona cada tipo de leilão, os próximos leilões de um estado, os melhores lotes da área do mapa, o lote aberto na ficha (o teto, a conta, a conta da JV, o bairro) ou os planos. Eu respondo com os dados da plataforma; não é recomendação de compra."
+    : "Olá! Sou o assistente da BLR: pergunte qualquer coisa sobre os leilões, os lotes e a plataforma. Como visitante, você tem uma pergunta por dia; a resposta completa e as perguntas sem limite são dos assinantes.";
   p.innerHTML = `<div class="iah">${IA_ESTRELA}<b>Assistente BLR</b><span id="iaSobre"></span><button type="button" class="iax" aria-label="Fechar">✕</button></div>
-    <div class="iam" id="iaMsgs" aria-live="polite"><div class="iab ia-r">${esc(ola)}</div></div>
+    <div class="iam" id="iaMsgs" aria-live="polite"><div class="iab ia-r">${esc(ola)}</div><div class="iasug" id="iaSug">${iaSugestoes().map(q => `<button type="button" data-q="${esc(q)}">${esc(q)}</button>`).join("")}</div></div>
     <form class="iaf" id="iaF"><textarea id="iaTxt" rows="2" maxlength="800" placeholder="Ex.: por que este lote está na faixa fraca?"></textarea>
       ${IA_SR ? `<button class="iamic" id="iaMic" type="button" aria-label="Falar a pergunta" title="Falar a pergunta"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21"/></svg></button>` : ""}
       <button class="cta" type="submit">Enviar</button></form>
     <div class="iapriv">As conversas ficam guardadas pela BLR para melhorar o assistente. Não escreva senhas nem dados pessoais.</div>`;
   document.body.appendChild(p);
   p.querySelector(".iax").onclick = () => { p.hidden = true; iaCala(); };
+  $("#iaSug").addEventListener("click", e => { const b = e.target.closest("[data-q]"); if(!b) return; $("#iaSug").remove(); $("#iaTxt").value = b.dataset.q; iaEnvia(); });
   $("#iaTxt").addEventListener("keydown", e => { if(e.key === "Enter" && !e.shiftKey){ e.preventDefault(); $("#iaF").requestSubmit(); } });
   $("#iaF").onsubmit = e => { e.preventDefault(); iaEnvia(); };
   if($("#iaMic")) $("#iaMic").onclick = () => IA.ouvindo ? IA.ouvindo.stop() : iaOuve(false);
@@ -1881,7 +1985,7 @@ async function iaEnvia(){
   $("#iaTxt").value = ""; iaMsg(t, "u");
   if(!SESSAO && iaAmostraUsada()){ iaCorte(iaMsg("Você já usou a pergunta de hoje como visitante.", "r")); return; }
   IA.ocupado = true; const w = iaMsg("Pensando…", "r"); w.classList.add("esp"); iaEstado("pensa");
-  try{ const ctx = iaContexto(voz ? "voz" : "texto");
+  try{ const ctx = iaContexto(voz ? "voz" : "texto", t);
     let r = await api("/api/assistente", {pergunta: t, contexto: ctx, historico: IA.hist.slice(-6)});
     // 30/10: com histórico o servidor às vezes devolve só o aviso "Não consegui montar uma resposta"; tenta 1× sem o histórico
     if(IA.hist.length && /^não consegui montar/i.test(r.resposta || "")) r = await api("/api/assistente", {pergunta: t, contexto: ctx, historico: []});
@@ -2598,6 +2702,7 @@ function criaMapa(){
     const b = M.getBounds(), vis = [];
     for(const l of ULT){ if(HIST(l) || (!SEMON && SEMDADO(l))) continue; const ll = posDe(l); if(ll && b.contains(ll)) vis.push(l); }
     vis.sort((a, c) => noCrit(c) - noCrit(a) || forcaDe(c) - forcaDe(a) || !!fotoDe(c) - !!fotoDe(a) || (c.desc ?? -1) - (a.desc ?? -1));
+    window.__RG = vis.slice(0, 40);   // 09/11: o assistente de IA lê os melhores lotes da área da tela
     const top = vis.slice(0, 9);
     if(RG_ABERTO && !top.some(l => l.i === RG_ABERTO)){ const x = vis.find(l => l.i === RG_ABERTO); if(x) top[top.length ? top.length - 1 : 0] = x; }
     RG.classList.toggle("min", RG_MIN);
