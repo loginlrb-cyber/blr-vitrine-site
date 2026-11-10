@@ -8,7 +8,7 @@
 <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="manifest" href="/site.webmanifest">
 <style>*,*::before,*::after{box-sizing:border-box}html,body{margin:0}img{max-width:100%}[hidden]{display:none!important}
 :root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}</style>
-</head><body><link rel="preload" href="d_dados_42217b78fc.json" as="fetch" crossorigin="anonymous"><link rel="preload" href="d_eua_145aaf5d14.json" as="fetch" crossorigin="anonymous"><title>BLR Developments</title>
+</head><body><link rel="preload" href="d_dados_45a0ac301c.json" as="fetch" crossorigin="anonymous"><link rel="preload" href="d_eua_145aaf5d14.json" as="fetch" crossorigin="anonymous"><title>BLR Developments</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -241,7 +241,8 @@ body.aguarda #whoTxt,body.aguarda #btAssina{visibility:hidden}   /* 2.2: até o 
 .thumb img.foto{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
 .thumb .grad{position:absolute;inset:0;background:linear-gradient(180deg,rgba(12,14,18,.55) 0,transparent 30%,transparent 62%,rgba(12,14,18,.8) 100%);pointer-events:none}
 .thumb .area{z-index:1;color:#EEF0F3!important;text-shadow:0 1px 2px rgba(0,0,0,.8)}
-.thumb .badge,.thumb .data{z-index:1}
+.thumb .badge,.thumb .data,.thumb .tipoFoto{z-index:1}
+.thumb .tipoFoto{position:absolute;left:10px;top:42px;font-size:11px;font-weight:700;padding:4px 8px;border-radius:999px;background:rgba(12,14,18,.9);color:var(--tx);border:1px solid var(--c,var(--line2));box-shadow:inset 3px 0 0 var(--c,var(--acc));max-width:calc(100% - 20px);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .gal{display:flex;flex-direction:column;gap:8px}
 .gal figure{margin:0;position:relative;border-radius:12px;overflow:hidden;border:1px solid var(--line)}
 .gal img{display:block;width:100%;height:auto}
@@ -350,6 +351,7 @@ body{transition:padding-right .25s ease}
   body.pfic #fBody .sec>h4::after{display:none}
   body.pfic .sec,body.pfic table,body.pfic figure{break-inside:avoid}
   body.pfic a{color:#111}
+  body.pfic .nbar i,body.pfic .fnota,body.pfic .nfx,body.pfic .npills b{print-color-adjust:exact;-webkit-print-color-adjust:exact}
   body.pfic #fBody::after{content:"BLR Developments · www.blrdevelopment.com · teto e ARV são estimativas da BLR; confira antes de dar lance. Não é oferta nem recomendação de investimento.";display:block;margin-top:18px;padding-top:8px;border-top:1px solid #ccc;font-size:10.5px;color:#555}
   @page{margin:12mm}
 }
@@ -830,6 +832,123 @@ body{transition:padding-right .5s var(--mola)}
 :root[data-fonte="g"] :is(#v-negocios,#v-pacotes,#v-portfolio,#v-guia,#v-cobertura,#fBody,#mBody){zoom:1.12}:root[data-fonte="p"] :is(#v-negocios,#v-pacotes,#v-portfolio,#v-guia,#v-cobertura,#fBody,#mBody){zoom:.92}   /* o mapa fica fora: zoom desalinha os cliques do Leaflet */
 .ciclo{display:inline-flex;margin:2px 0 10px}.ciclo button small{font-size:11px;color:var(--ok);font-weight:600;margin-left:4px}
 .plOp b{font-size:15px}.plOp span{font-weight:700;text-align:right}.plOp small{font-weight:500;color:var(--mute)}.plOp em{grid-column:1/-1;font-style:normal;color:var(--tx2);font-size:12.5px}
+/* nota 0–100 e selo de veracidade na ficha (público: número, faixa e palavras; sem teto, sem fórmula) */
+.n-alta{--nf:#6FD3B0;--nf-bg:rgba(111,211,176,.16);--nf-ln:rgba(111,211,176,.5)}
+.n-boa{--nf:#E2AC48;--nf-bg:rgba(226,172,72,.16);--nf-ln:rgba(226,172,72,.5)}
+.n-media{--nf:#C5D0E0;--nf-bg:rgba(197,208,224,.12);--nf-ln:rgba(197,208,224,.45)}
+.n-fraca{--nf:#E0943A;--nf-bg:rgba(224,148,58,.16);--nf-ln:rgba(224,148,58,.55)}
+.n-baixa{--nf:#E8573F;--nf-bg:rgba(232,87,63,.16);--nf-ln:rgba(232,87,63,.55)}
+.n-sem{--nf:#8B93A1;--nf-bg:rgba(139,147,161,.1);--nf-ln:var(--line2)}
+.fnota{flex:none;width:46px;height:46px;border-radius:13px;display:grid;place-items:center;font:700 16px/1 var(--f-m);border:1px solid var(--nf-ln,var(--line2));background:var(--nf-bg,var(--surf));color:var(--nf,var(--tx));letter-spacing:-.03em}
+.nselo{display:flex;flex-direction:column;gap:10px}
+.nnota,.nselo-b{background:var(--surf);border:1px solid var(--line);border-radius:14px;padding:12px 14px}
+.nnota{border-color:var(--nf-ln);background:linear-gradient(180deg,var(--nf-bg),var(--surf) 48%)}
+.nnota-h,.nselo-h{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--nota);font-weight:600}
+.nfx,.npills b{font-style:normal;font-weight:700;letter-spacing:.04em;text-transform:uppercase;font-size:11px;line-height:1.2;padding:4px 8px;border-radius:999px;white-space:nowrap}
+.nfx{color:var(--nf);border:1px solid var(--nf-ln);background:var(--nf-bg)}
+.npills{display:flex;flex-wrap:wrap;gap:4px;justify-content:flex-end}
+.nnota-corpo{display:flex;flex-direction:column;gap:8px;margin-top:6px}
+.nnota-n{display:flex;align-items:baseline;gap:4px}
+.nnota-n strong{font:700 40px/1 var(--f-d);letter-spacing:-.03em;color:var(--nf)}
+.nnota-n small{color:var(--nota);font-size:13px;font-family:var(--f-m)}
+.nbar{height:8px;width:100%;border-radius:99px;background:var(--surf2);overflow:hidden}
+.nbar i{display:block;height:100%;border-radius:99px;background:var(--nf);max-width:100%}
+.npq{list-style:none;display:flex;flex-wrap:wrap;gap:6px;margin:8px 0 0;padding:0}
+.npq li{font-size:13px;line-height:1.35;color:var(--tx);background:var(--surf2);border:1px solid var(--line);border-radius:8px;padding:5px 8px}
+.nnota-rod{margin:8px 0 0;font-size:12px;color:var(--nota)}
+.nselo-b{box-shadow:inset 4px 0 0 var(--line2)}
+.nselo-ok{box-shadow:inset 4px 0 0 #6FD3B0}
+.nselo-ok .npills b{color:#0C0E12;background:#6FD3B0;border:1px solid #6FD3B0}
+.nselo-velho{border-color:rgba(232,87,63,.55);box-shadow:inset 4px 0 0 #E8573F}
+.nselo-velho .npills b.pv{color:#F2B8A8;background:var(--bad-bg);border:1px solid rgba(232,87,63,.55)}
+.nselo-ext{border-style:dashed;border-color:rgba(226,172,72,.6)}
+.nselo-ext:not(.nselo-velho){box-shadow:inset 4px 0 0 #E2AC48}
+.nselo-ext .npills b.px{color:var(--ink);background:var(--acc);border:1px solid var(--acc)}
+.nselo-falta .npills b.pf{color:var(--tx2);background:var(--surf2);border:1px solid var(--line2)}
+.nselo-av{margin:8px 0 0;font-size:13.5px;line-height:1.4;padding:8px 10px;border-radius:10px;color:var(--tx)}
+.nselo-velho .nselo-av{background:var(--bad-bg);color:#F2B8A8}
+.nselo-ext .nselo-av{background:var(--ok-bg);color:var(--tx)}
+.nselo-velho.nselo-ext .nselo-av{background:var(--bad-bg);color:#F2B8A8}
+.nselo-b dl{margin:10px 0 0;display:grid;gap:8px}
+.nselo-b dl div{display:grid;grid-template-columns:minmax(88px,7.4rem) minmax(0,1fr);gap:8px;align-items:baseline}
+.nselo-b dt{margin:0;color:var(--nota);font-size:12px}
+.nselo-b dd{margin:0;color:var(--tx);font-size:14px;overflow-wrap:anywhere}
+.nselo-b a{font-weight:600}
+.nselo-b .falta{color:var(--mute);font-style:italic}
+@media (max-width:420px){
+  .nnota-n strong{font-size:36px}
+  .nselo-b dl div{grid-template-columns:1fr;gap:1px}
+  .fnota{width:40px;height:40px;font-size:14px;border-radius:11px}
+}
+/* calculadora grátis na ficha: lance + reforma; sem a conta do teto */
+.calc-livre{background:var(--surf);border:1px solid var(--line);border-radius:14px;padding:12px 14px;display:flex;flex-direction:column;gap:10px}
+.calc-livre h3{margin:0;font-family:var(--f-d);font-size:16px;font-weight:600;letter-spacing:-.01em}
+.cl-sub{margin:0;color:var(--tx2);font-size:13px;line-height:1.4}
+.cl-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px 10px}
+.cl-arv{grid-column:1/-1}
+.calc-livre label{display:flex;flex-direction:column;gap:4px;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--nota);font-weight:600}
+.calc-livre input{font:600 16px/1.3 var(--f-m);padding:9px 10px;border-radius:10px;border:1px solid var(--line2);background:var(--bg2);color:var(--tx);width:100%;letter-spacing:0;text-transform:none}
+.calc-livre input:focus{outline:2px solid var(--acc);outline-offset:1px}
+.calc-livre input[readonly]{background:var(--surf2);color:var(--tx)}
+.cl-faixa{margin:0;font-size:13px;line-height:1.45;color:var(--tx2);background:var(--info-bg);border:1px solid rgba(141,176,220,.3);border-radius:10px;padding:8px 10px}
+.cl-faixa b{color:var(--tx);font-family:var(--f-m);font-weight:600;letter-spacing:0;text-transform:none}
+.cl-sem{background:transparent;border-style:dashed;border-color:var(--line2);color:var(--nota)}
+.cl-hint{margin:0;font-size:12px;color:var(--nota);line-height:1.35}
+.cl-out{display:flex;flex-direction:column;gap:8px}
+.cl-espera{margin:0;color:var(--nota);font-size:13px;line-height:1.4}
+.cl-tab{width:100%;border-collapse:collapse;font-size:13.5px}
+.cl-tab caption{caption-side:top;text-align:left;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--mute);font-weight:600;padding:0 0 4px}
+.cl-tab td{padding:6px 0;border-bottom:1px solid var(--line);vertical-align:baseline}
+.cl-tab td:last-child{text-align:right;font-family:var(--f-m);font-variant-numeric:tabular-nums;white-space:nowrap}
+.cl-tab .cl-fora{font-family:var(--f-b);color:var(--nota);font-size:12.5px;white-space:normal}
+.cl-tab tr.cl-tot td{font-weight:600;color:var(--tx);border-bottom:0}
+.cl-kpis{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.cl-kpis div{background:var(--bg2);border:1px solid var(--line);border-radius:12px;padding:8px 10px}
+.cl-kpis span{display:block;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--nota);font-weight:600}
+.cl-kpis b{display:block;margin-top:2px;font:700 20px/1.2 var(--f-d);letter-spacing:-.02em}
+.cl-pos{color:var(--ok)}
+.cl-neg{color:var(--bad)}
+.cl-def,.cl-aviso{margin:0;font-size:12.5px;line-height:1.45;color:var(--nota)}
+.cl-aviso{color:var(--tx2)}
+.cl-passa{margin:0;font-size:13px;line-height:1.4;color:#F2B8A8;background:var(--bad-bg);border-radius:10px;padding:8px 10px}
+@media (max-width:420px){
+  .cl-grid,.cl-kpis{grid-template-columns:1fr}
+  .cl-kpis b{font-size:22px}
+}
+/* tipo de leilão: faixa de filtro (mapa e lista), legenda e selo na ficha */
+.tipoBar{flex:none;padding:8px 10px 10px;border-bottom:1px solid var(--line);background:transparent}
+.tipoBar-h{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:6px}
+.tipoBar-h span{font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--mute);font-weight:600}
+#tipoLegBt{all:unset;cursor:pointer;box-sizing:border-box;font-size:12.5px;font-weight:600;color:var(--acc);padding:6px 2px;min-height:36px}
+.tipoChips{display:flex;flex-wrap:wrap;gap:6px;padding-bottom:2px}
+#tipoBar .tipoChips button{all:unset;cursor:pointer;box-sizing:border-box;flex:0 0 auto;display:inline-flex;align-items:center;gap:6px;min-height:40px;padding:6px 10px;border-radius:999px;border:1px solid var(--line2);background:var(--surf2);color:var(--tx2);font-size:12.5px;font-weight:600;white-space:nowrap}
+#tipoBar .tipoChips button b{font-family:var(--f-m);font-weight:500;font-size:11px;color:var(--tx);background:var(--bg);border-radius:999px;padding:1px 6px}
+#tipoBar .tipoChips button .tlp{width:8px;height:8px;border-radius:50%;background:var(--c,var(--line2));flex:none}
+#tipoBar .tipoChips button[aria-pressed=true]{background:var(--acc);color:var(--ink);border-color:var(--acc)}
+#tipoBar .tipoChips button[aria-pressed=true] b{background:rgba(26,19,6,.16);color:var(--ink)}
+#tipoBar .tipoChips button.zero:not([aria-pressed=true]){opacity:.5}
+.tipoLeg{margin-top:8px;display:grid;gap:8px;max-height:min(38vh,280px);overflow:auto}
+.tipoLeg article{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:8px 10px;box-shadow:inset 3px 0 0 var(--c,var(--line2))}
+.tipoLeg b{display:flex;justify-content:space-between;gap:8px;font-size:13px;color:var(--tx)}
+.tipoLeg p{margin:4px 0 0;color:var(--tx2);font-size:12.5px;line-height:1.45}
+#v-negocios .tipoBar{border:1px solid var(--line);border-radius:var(--r);margin:0 0 14px;background:var(--bg2)}
+#v-negocios .tipoLeg{max-height:none;overflow:visible}
+.tl-tax_deed{--c:#E2AC48}.tl-tax_lien{--c:#C3CAD5}.tl-sheriff_judicial{--c:#8DB0DC}.tl-upset{--c:#E8573F}
+.tl-foreclosure{--c:#E8B941}.tl-land_bank{--c:#6FD3B0}.tl-reo{--c:#B3A4E6}.tl-governo_federal{--c:#7EB6D9}.tl-nao_informado{--c:#7B8391}
+.tag.tl{border-color:var(--ok-ln);color:var(--acc)}
+.selo-tipo{margin:0 0 12px;border:1px solid var(--line);border-radius:14px;padding:12px 14px;background:var(--surf);box-shadow:inset 4px 0 0 var(--c,var(--acc))}
+.selo-tipo.tl-nao_informado{border-style:dashed}
+.selo-tipo-h{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--mute);font-weight:600}
+.selo-tipo-h b{font-family:var(--f-d);font-size:16px;letter-spacing:0;text-transform:none;color:var(--tx);font-weight:600}
+.selo-tipo p{margin:6px 0 0;font-size:13.5px;line-height:1.45;color:var(--tx2)}
+/* Recolhido = só a barra, como antes do filtro por tipo. A tipoBar dentro do .min,
+   com max-height quase da tela, cobria o mapa no celular e comia o toque nos cartões. */
+#v-mapa .painel.min .tipoBar{display:none}
+@media (max-width:760px){
+  #tipoBar .tipoChips button,#tipoLegBt{min-height:44px}
+  .tipoLeg{max-height:28vh}
+  #v-mapa .tipoLeg{padding-bottom:8px}
+}
 </style>
 
 <header class="top"><div class="wrap">
@@ -909,6 +1028,11 @@ body{transition:padding-right .5s var(--mola)}
           <button class="tg" id="tgEUA" type="button" title="Cobertura por estado">EUA</button>
           <button class="tg" id="tgReset" type="button" title="Limpar tudo e voltar ao mapa inteiro" aria-label="Limpar filtros e voltar ao mapa inteiro">↺</button>
           <button class="pmin" id="pMin" type="button" aria-label="Recolher a lista" aria-expanded="true">▾</button></div>
+        <section class="tipoBar" id="tipoBar" aria-label="Tipo de leilão">
+          <div class="tipoBar-h"><span>Tipo de leilão</span><button type="button" id="tipoLegBt" aria-expanded="false" aria-controls="tipoLeg">O que significa</button></div>
+          <div class="tipoChips" id="tipoChips" role="toolbar"></div>
+          <div class="tipoLeg" id="tipoLeg" hidden></div>
+        </section>
         <div class="mFil" id="mFil" hidden></div>
         <label class="truf">Estado <select id="trUf"><option value="">Todos os estados</option></select></label>
         <div id="painelC"></div></aside>
@@ -937,6 +1061,7 @@ body{transition:padding-right .5s var(--mola)}
   <div class="pega" aria-hidden="true"></div>
   <div class="fh">
     <div class="fhT"><div id="fBadge"></div><b id="fhTit"></b><small id="fhSub"></small></div>
+    <div class="fnota n-sem" id="fNota" hidden aria-hidden="true"></div>
     <button class="fpdf" id="fPdf" type="button" title="Salvar esta ficha em PDF (ou imprimir)">⤓ PDF</button>
     <button class="x" id="fX" aria-label="Fechar">✕</button>
   </div>
@@ -946,7 +1071,7 @@ body{transition:padding-right .5s var(--mola)}
 <div class="modal" id="modal" hidden><div class="mbox" role="dialog" aria-modal="true" aria-labelledby="mTit">
   <button class="x" id="mX" type="button" aria-label="Fechar">✕</button><div id="mBody"></div></div></div>
 
-<script>(function(){var q=function(u){return fetch(u).then(function(r){if(!r.ok)throw new Error(u+' '+r.status);return r.json()})};Promise.all([q('d_dados_42217b78fc.json'),q('d_eua_145aaf5d14.json')]).then(function(x){window.__DADOS=x[0];window.__EUA=x[1];var s=document.createElement('script');s.textContent=document.getElementById('app').textContent;document.body.appendChild(s)}).catch(function(e){var d=document.createElement('p');d.style.cssText='padding:24px;font:16px sans-serif';d.textContent='Não foi possível carregar os dados ('+e.message+'). Recarregue a página.';document.body.prepend(d)})})();</script>
+<script>(function(){var q=function(u){return fetch(u).then(function(r){if(!r.ok)throw new Error(u+' '+r.status);return r.json()})};Promise.all([q('d_dados_45a0ac301c.json'),q('d_eua_145aaf5d14.json')]).then(function(x){window.__DADOS=x[0];window.__EUA=x[1];var s=document.createElement('script');s.textContent=document.getElementById('app').textContent;document.body.appendChild(s)}).catch(function(e){var d=document.createElement('p');d.style.cssText='padding:24px;font:16px sans-serif';d.textContent='Não foi possível carregar os dados ('+e.message+'). Recarregue a página.';document.body.prepend(d)})})();</script>
 <script type="text/plain" id="app">
 const DADOS = window.__DADOS;
 const EUA = window.__EUA;
@@ -966,7 +1091,34 @@ const L = DADOS.lotes;
 /* 04/11 (site leve): no site os lotes vêm por estado (vitrine_site.separa_dados). DADOS.partes = [{uf, a: arquivo, n}] e DADOS.idx =
    contas do país para a 1ª pintura; cada parte chega com o próprio txt e entra em L por maisLotes() (fim do script). No artifact
    DADOS.lotes já vem inteiro e não há partes. */
+// SELO_DE_CODIGO_INI
+/* sl = [código, data] na tabela txt (vitrine_monta.compacta_lote). O texto do selo nasce aqui. */
+function seloDeCodigo(l, code, data, hoje){
+  const c = String(code || "");
+  const externo = c.includes("e");
+  const semData = c.includes("d") || !data;
+  const passou = c.includes("p");
+  const fo = String(l.fo || "").trim();
+  let fonte = "";
+  if(externo) fonte = "link externo (dados não conferidos pela BLR)";
+  else if(!c.includes("f")) fonte = fo.split("(")[0].trim().slice(0, 40);
+  const link = String(l.lk || "").trim();
+  const iso = semData ? "" : String(data).slice(0, 10);
+  let idade = null;
+  if(iso && /^\d{4}-\d{2}-\d{2}/.test(iso) && typeof hoje === "string" && /^\d{4}-\d{2}-\d{2}/.test(hoje)){
+    const n = s => Date.UTC(+s.slice(0, 4), +s.slice(5, 7) - 1, +s.slice(8, 10)) / 864e5;
+    idade = Math.max(0, n(hoje) - n(iso));
+  }
+  const velho = semData ? true : (c.includes("v") || passou || (idade != null && idade > 14));
+  const rotulo = fonte || "fonte não informada";
+  let texto = semData ? "data de atualização não informada" : ("Fonte: " + rotulo + " · atualizado há " + idade + " dias");
+  if(passou) texto += " (leilão já passou)";
+  return {fonte: fonte, link: link, externo: externo, atualizado: iso || null, idade_dias: idade, velho: velho, texto: texto};
+}
+// SELO_DE_CODIGO_FIM
 const prepLote = (l, txt) => { for(const k of ["nt", "fo", "jvq", "tp", "u", "mc"]) if(typeof l[k] === "number") l[k] = txt[l[k]];   // vitrine_monta: textos repetidos em índice
+  if(Array.isArray(l.pq)) l.nota_porque = l.pq.map(n => typeof n === "number" ? txt[n] : n);
+  if(l.selo == null && Array.isArray(l.sl)) l.selo = seloDeCodigo(l, typeof l.sl[0] === "number" ? txt[l.sl[0]] : l.sl[0], typeof l.sl[1] === "number" ? txt[l.sl[1]] : l.sl[1], HOJE);
   if(l.li == null && l.lien) l.li = l.lien; if(l.ct == null && l.conta_terreno) l.ct = l.conta_terreno; };
 for(const l of L) prepLote(l, DADOS.txt || []);
 const PARTES = DADOS.partes || [], UF_OK = new Set(), IDX = DADOS.idx || null;
@@ -1491,6 +1643,66 @@ const PLATS = [[/auction\.com/i, "Auction.com", "https://www.auction.com/"], [/x
   [/hud/i, "HUD Home Store", "https://www.hudhomestore.gov/"], [/homepath|fannie/i, "HomePath", "https://homepath.fanniemae.com/"]];
 const PLAT_LK = l => { const p = PLATS.find(x => x[0].test(String(l.fo || "") + " " + String(l.tp || ""))); return p ? ` O lance é dado no <a class="lnk" href="${p[2]}" target="_blank" rel="noopener">${p[1]} ↗</a>.` : ""; };
 const modLeilao = l => { if(l.md) return l.md; const t = String(l.tp || ""); return MOD_GOV.test(t) ? "governo" : MOD_EXE.test(t) ? "execucao" : "imposto"; };
+/* TIPO_LEILAO_INI — mesmos textos e a mesma ordem de vitrine_tipo.py. tp vem de vitrine_outros; sem tp na FL = tax deed (vitrine_monta). */
+const TIPOS_LEILAO = [
+  {id:"tax_deed", nome:"Tax deed", legenda:"Em geral o condado vende o imóvel por imposto atrasado e quem arremata recebe a escritura. A hipoteca privada costuma cair; um lien de governo pode continuar, e o IRS, quando há lien, pode ter prazo para resgatar. Regras variam por estado. Confira o edital."},
+  {id:"tax_lien", nome:"Tax lien", legenda:"Em geral você compra o certificado da dívida de imposto, não o imóvel. O retorno vem dos juros se o dono pagar; a escritura só pode vir se ele não pagar no prazo, que muda conforme o estado. Muitos certificados são resgatados. Regras variam por estado. Confira o edital."},
+  {id:"sheriff_judicial", nome:"Sheriff / judicial", legenda:"Em geral a sheriff sale é o leilão do xerife, por imposto ou por execução, e a judicial sale é a venda pelo tribunal. Na judicial, os liens anteriores costumam ser cortados; na sheriff sale, o que continua no imóvel depende de qual dívida está sendo vendida. Regras variam por estado. Confira o edital."},
+  {id:"upset", nome:"Upset", legenda:"Em geral a upset sale é uma venda por imposto em que a hipoteca e alguns liens podem sobreviver: a dívida anterior não some só porque você arrematou. Regras variam por estado. Confira o edital."},
+  {id:"foreclosure", nome:"Foreclosure", legenda:"Em geral é a execução da hipoteca, no tribunal ou em trustee sale fora dele: o credor coloca o imóvel à venda para recuperar a dívida. Dívidas anteriores à que está sendo executada podem continuar. Se ninguém cobre o lance, o credor pode ficar com o imóvel. Regras variam por estado. Confira o edital."},
+  {id:"land_bank", nome:"Land bank (condado/cidade)", legenda:"Em geral é venda direta do land bank do condado ou da cidade, ou estoque municipal equivalente: repositório do que sobrou de um leilão, ou imóvel adjudicado ao município. Não é leilão de imposto nem imóvel de agência federal. Regras variam por estado. Confira o edital."},
+  {id:"reo", nome:"REO", legenda:"Em geral é imóvel que ficou com o credor e é vendido do estoque dele, não num leilão de imposto. Entra aqui o REO de banco e também Fannie Mae (HomePath) e Freddie Mac (HomeSteps). Ocupação, estado do imóvel e o que ainda pesa no título variam. Regras variam por estado. Confira o edital."},
+  {id:"governo_federal", nome:"Governo federal (venda, não leilão)", legenda:"Em geral é imóvel de agência federal (HUD, VA e programas parecidos) vendido por oferta, não por lance de leilão. Valem as regras e os prazos do programa. Confira o edital/anúncio."},
+  {id:"nao_informado", nome:"Tipo não informado", legenda:"Em geral a vitrine não atribui um tipo quando o lote não trouxe um nome reconhecido, ou quando o campo veio vazio fora da Flórida (lá, sem nome, o fluxo é tax deed). Confira o edital."}
+];
+const REGRAS_TIPO = [
+  ["upset", /upset/i],
+  ["reo", /\breo\b|real estate owned|bank-owned|bank owned|homepath|homesteps|fannie|freddie/i],
+  ["sheriff_judicial", /sheriff|(?<!non-)judicial/i],
+  ["governo_federal", /\bhud\b|\bva\b|usda|\bgsa\b|marshals|tesouro|treasury/i],
+  ["land_bank", /land\s*bank|repositor|adjudicat/i],
+  ["tax_lien", /\bliens?\b|certificate|certificado/i],
+  ["tax_deed", /tax\s*deed|tax\s*foreclos|tax\s*forfeit/i],
+  ["foreclosure", /foreclos|trustee/i]
+];
+let TLF = "";
+function tipoPorId(id){ return TIPOS_LEILAO.find(t => t.id === id) || TIPOS_LEILAO[TIPOS_LEILAO.length - 1]; }
+function tipoLeilao(l){
+  const tp = String(l && l.tp || "").trim().toLowerCase();
+  const md = String(l && l.md || "").trim().toLowerCase();
+  const uf = String(l && l.uf || "").trim().toUpperCase();
+  for(const [id, re] of REGRAS_TIPO){ if(re.test(tp)) return tipoPorId(id); }
+  if(md === "governo") return tipoPorId("governo_federal");
+  if(!tp && uf === "FL") return tipoPorId("tax_deed");
+  return tipoPorId("nao_informado");
+}
+function seloTipoHTML(l){
+  const t = tipoLeilao(l);
+  return `<section class="selo-tipo tl-${t.id}" aria-label="Tipo de leilão"><div class="selo-tipo-h"><span>Tipo de leilão</span><b>${esc(t.nome)}</b></div><p>${esc(t.legenda)}</p></section>`;
+}
+function baseTipo(){
+  const salvo = TLF; TLF = "";
+  const r = filtrados(!$("#v-mapa").hidden);
+  TLF = salvo;
+  return r.filter(l => !HIST(l));
+}
+function pintaTipoBar(){
+  const box = $("#tipoChips"); if(!box) return;
+  const xs = baseTipo(), n = {};
+  for(const t of TIPOS_LEILAO) n[t.id] = 0;
+  for(const l of xs) n[tipoLeilao(l).id]++;
+  const sc = box.scrollLeft;
+  const chips = [{id:"", nome:"Todos"}].concat(TIPOS_LEILAO);
+  box.innerHTML = chips.map(t => {
+    const q = t.id ? n[t.id] : xs.length, on = (t.id || "") === (TLF || "");
+    const cor = t.id ? ` tl-${t.id}` : "";
+    return `<button type="button" data-tl="${t.id}" aria-pressed="${on}" class="${cor}${q ? "" : " zero"}">${t.id ? `<i class="tlp" aria-hidden="true"></i>` : ""}${esc(t.nome)} <b>${q.toLocaleString("pt-BR")}</b></button>`;
+  }).join("");
+  box.scrollLeft = sc;
+  const leg = $("#tipoLeg");
+  if(leg) leg.innerHTML = TIPOS_LEILAO.map(t => `<article class="tl-${t.id}"><b>${esc(t.nome)} <span class="num">${n[t.id].toLocaleString("pt-BR")}</span></b><p>${esc(t.legenda)}</p></article>`).join("");
+}
+/* TIPO_LEILAO_FIM */
 function filtrados(paraMapa, semSel){
   const q = $("#fBusca").value.trim().toLowerCase(), uf = $("#fUf").value, tp = $("#fTipo").value, md = $("#fMod").value, mx = +$("#fMax").value || 0, tip = $("#fTip").checked, on = $("#fOn").checked,
         mn = +$("#fMin").value || 0, fz = +$("#fFz").value || 0, dsc = +$("#fDesc").value || 0, cta = ASSIN && $("#fFecha").checked;
@@ -1498,7 +1710,7 @@ function filtrados(paraMapa, semSel){
   const cr = paraMapa ? CRITM : CRIT;
   let r = L.filter(l => (!cr || noCrit(l)) && (sit === "todos" || (sit === "vend" ? HIST(l) && l.rs && l.rs.s === "vendido" : (sit === "hist") === HIST(l))) && (!sg || (paraMapa ? naSeg(l.i) : segue(l.i))) &&
     (!q || [l.ci, l.co, l.zip].some(x => (x||"").toLowerCase().includes(q))) && (!uf || l.uf === uf) &&
-    (!tp || l.u === tp) && (!md || modLeilao(l) === md) && naData(l.d) && (!paraMapa || semSel || !LSEL || (l.f === LSEL.f && l.d === LSEL.d)) &&
+    (!tp || l.u === tp) && (!md || modLeilao(l) === md) && (!TLF || tipoLeilao(l).id === TLF) && naData(l.d) && (!paraMapa || semSel || !LSEL || (l.f === LSEL.f && l.d === LSEL.d)) &&
     (!mx || (l.ab || 0) * tx() <= mx) && (!tip || (l.et === "final" && l.ft === "tipico")) && (!on || (l.on && l.on !== "nao_consultado")) &&
     (!mn || (l.ab || 0) * tx() >= mn) && (!fz || forcaDe(l) >= fz) && (!dsc || (l.desc ?? -1) >= dsc) &&
     (!cta || (!HIST(l) && l.ab > 0 && l.teto >= l.ab)));
@@ -1528,6 +1740,7 @@ function cartao(l){
     <div class="thumb">${thumb}
       ${selo1(l)}
       ${HIST(l) ? "" : `<span class="data ${dd === 0 ? "hoje" : ""}">${!l.d ? "Land bank · venda direta" : dd === 0 ? "Leilão hoje" : "Leilão " + dm(l.d) + " · " + emDias(dd)}</span>`}
+      ${(() => { const t = tipoLeilao(l); return `<span class="tipoFoto tl-${t.id}">${esc(t.nome)}</span>`; })()}
       ${l.lote_m2 ? `<span class="area num">${rotLote(l)} ${l.lote_m2.toLocaleString("pt-BR")} m²</span>` : ""}</div>
     <div class="cb">
       <div class="preco"><div><small>${HIST(l) && l.rs && l.rs.v ? "Vendido por" : rotLance(l)}</small><br><b class="num">${usd(HIST(l) && l.rs && l.rs.v ? l.rs.v : l.ab)}</b>${orig(HIST(l) && l.rs && l.rs.v ? l.rs.v : l.ab)}</div>
@@ -1542,8 +1755,9 @@ const PAG = 120;
 let mostrar = PAG;
 // filtros em uso (Estado e Ordenar não contam: o mapa tem o seu seletor de estado)
 const F_VAL = ["#fBusca","#fTipo","#fMod","#fDe","#fAte","#fMin","#fMax","#fFz","#fDesc"], F_CHK = ["#fTip","#fOn","#fFecha"];
-const nFiltros = () => F_VAL.filter(s => $(s).value.trim()).length + F_CHK.filter(s => $(s).checked).length;
+const nFiltros = () => F_VAL.filter(s => $(s).value.trim()).length + F_CHK.filter(s => $(s).checked).length + (TLF ? 1 : 0);
 function render(){
+  pintaTipoBar();
   const r = filtrados(), fm = MAPA ? filtrados(true) : null, nf = nFiltros(), noMapa = !$("#v-mapa").hidden;
   const fm0 = LSEL && fm ? filtrados(true, true) : fm;   // o painel conta sem o leilão escolhido (os outros leilões seguem com número)
   MF = fm0 && new Set(fm0);
@@ -1797,6 +2011,7 @@ const IA_SABER = [
   "- Execução de hipoteca (foreclosure, sheriff sale, trustee sale): o banco executa a dívida e o imóvel vai a leilão; o lance de abertura costuma ser o que o banco quer recuperar. Se ninguém cobre, o banco fica com o imóvel (REO). Dívidas anteriores à hipoteca executada podem continuar.",
   "- Imóveis do governo (HUD, VA, Fannie Mae/HomePath, Freddie Mac/HomeSteps, USDA, Tesouro): casas tomadas por programas federais, vendidas por oferta ou leilão online, muitas vezes com um período inicial em que só quem vai morar no imóvel pode ofertar.",
   "- Land bank: órgão público que vende imóveis abandonados por venda direta (sem leilão marcado), às vezes exigindo um plano de reforma.",
+  "- Na vitrine, o filtro e o selo Tipo de leilão separam land bank de condado/cidade, REO (banco, Fannie Mae/HomePath e Freddie Mac/HomeSteps) e governo federal (HUD, VA: venda por oferta, não leilão). Lote sem um tipo reconhecido aparece como tipo não informado. Confira o edital ou o anúncio.",
   "- Auction.com, Xome e Hubzu são plataformas privadas: a vitrine só mostra o link, e o lance é dado lá.",
   "## Do edital à escritura (passo a passo comum)",
   "- 1) Ler o edital e a lista oficial. 2) Inscrever-se até a data limite e depositar a caução, quando há. 3) Dar o lance, presencial ou online (nas plataformas online costuma haver buyer's premium, uma taxa sobre o lance, por exemplo 5%). 4) Pagar o saldo no prazo do edital, que pode ser no mesmo dia ou em poucos dias. 5) O condado registra a escritura, o que leva de semanas a meses. 6) Em alguns estados o antigo dono ainda pode resgatar depois da venda.",
@@ -2063,12 +2278,245 @@ async function jaInteressado(l){
 /* ---------- ficha ---------- */
 let ABRE = 0;
 let ABERTO = null;
+// CALC_LIVRE_INICIO
+/* Calculadora grátis da ficha. Não refaz a conta do teto.
+   Não-membro: o ARV é o que a pessoa digita. Faixa só se mc.zb e mc.z (ZHVI do CEP ou do condado)
+   abrem uma janela larga. Não lê am, arv, teto nem o preço vezes a área deste lote.
+   Membro: os números da assinatura aparecem preenchidos.
+   Lucro e retorno descontam custos fixos, quiet title, taxa da plataforma e 6% de venda. */
+const CL_PASSO = 25000, CL_RAZAO = 1.5, CL_LARGURA = 50000, CL_NB = "\u00a0";
+const CL_FIXOS = 2550, CL_QUIET_USD = 2000, CL_VENDA = 0.06;
+const CL_QUIET = {tax_deed: 1, upset: 1};
+function clDin(v){
+  const n = Math.round(+v);
+  if(!isFinite(n)) return "—";
+  const s = String(Math.abs(n)).replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+  return (n < 0 ? "−" : "") + "US$" + CL_NB + s;
+}
+function clPct(x){
+  if(!isFinite(+x)) return "—";
+  const n = Math.round(+x * 1000) / 10;
+  return (n < 0 ? "−" : "") + Math.abs(n).toFixed(1).replace(".", ",") + "%";
+}
+function clNum(s){
+  if(s == null) return null;
+  const t = String(s).trim().replace(/\s/g, "").replace(",", ".");
+  if(t === "" || t === "-" || t === "+") return null;
+  const n = Number(t);
+  return isFinite(n) ? n : null;
+}
+function clTipoId(l){
+  if(!l) return "";
+  if(typeof tipoLeilao === "function"){ try{ const t = tipoLeilao(l); if(t && t.id) return t.id; }catch(e){} }
+  return String(l.tipo_id || "");
+}
+function clQuietPadrao(l){ return CL_QUIET[clTipoId(l)] ? CL_QUIET_USD : 0; }
+function clPremioInfo(l, lance){
+  if(!l) return {usd: 0, pct: null};
+  const usdKeys = ["premio_usd", "buyer_premium_usd", "bp_usd"];
+  for(const k of usdKeys){ const v = clNum(l[k]); if(v != null && v >= 0) return {usd: Math.round(v), pct: null}; }
+  for(const k of ["buyer_premium", "bp", "premio_pct"]){
+    const v = clNum(l[k]); if(v == null || v < 0) continue;
+    if(v > 40) return {usd: Math.round(v), pct: null};
+    const pct = v < 1 ? v : v / 100;
+    return {usd: lance > 0 ? Math.round(lance * pct) : 0, pct};
+  }
+  return {usd: 0, pct: null};
+}
+function faixaAmpla(mc){
+  if(!mc || typeof mc !== "object" || Array.isArray(mc)) return null;
+  const lo = +mc.zb, hi = +mc.z;
+  if(!(lo > 0) || !(hi > lo) || hi / lo < CL_RAZAO) return null;
+  const a = Math.floor(lo / CL_PASSO) * CL_PASSO, b = Math.ceil(hi / CL_PASSO) * CL_PASSO;
+  if(!(a > 0) || !(b > a) || b / a < CL_RAZAO || (b - a) < CL_LARGURA) return null;
+  return [a, b];
+}
+function calcLivre(arv, lance, reforma, custos){
+  if(arv == null || lance == null || reforma == null) return null;
+  if(!isFinite(+arv) || !isFinite(+lance) || !isFinite(+reforma)) return null;
+  arv = Math.round(+arv); lance = Math.round(+lance); reforma = Math.round(+reforma);
+  if(!(arv > 0) || !(lance > 0) || reforma < 0) return null;
+  custos = custos || {};
+  let fixos = custos.fixos == null ? CL_FIXOS : +custos.fixos;
+  let quiet = custos.quiet == null ? 0 : +custos.quiet;
+  let premio = custos.premio == null ? 0 : +custos.premio;
+  let venda = custos.venda == null ? arv * CL_VENDA : +custos.venda;
+  if(!isFinite(fixos) || !isFinite(quiet) || !isFinite(premio) || !isFinite(venda)) return null;
+  fixos = Math.round(fixos); quiet = Math.round(quiet); premio = Math.round(premio); venda = Math.round(venda);
+  if(fixos < 0 || quiet < 0 || premio < 0 || venda < 0) return null;
+  const lucro = arv - lance - reforma - fixos - quiet - premio - venda;
+  const investido = lance + reforma + fixos + quiet + premio;
+  if(!(investido > 0)) return null;
+  return {arv, lance, reforma, fixos, quiet, premio, venda, lucro, investido, roi: lucro / investido};
+}
+function calcLivreHTML(l, assin){
+  const membro = !!assin;
+  const arvN = membro && isFinite(+l.am) && +l.am > 0 ? Math.round(+l.am) : null;
+  const tetoN = membro && l.teto != null && l.teto !== "" && isFinite(+l.teto) && +l.teto > 0 ? Math.round(+l.teto) : null;
+  const tetoFecha = membro && l.teto != null && l.teto !== "" && isFinite(+l.teto) && +l.teto <= 0;
+  const faixa = membro ? null : faixaAmpla(l && l.mc);
+  const faixaHtml = faixa
+    ? `<p class="cl-faixa">Sugestão de faixa do lugar, não deste lote: índice público de preço de casa do CEP ou do condado (casas mais baratas até a típica), arredondada de 25 em 25 mil: <b>${clDin(faixa[0])} – ${clDin(faixa[1])}</b>.</p>`
+    : (membro ? "" : `<p class="cl-faixa cl-sem">Não há faixa ampla no dado público deste lugar. Digite o ARV que você estimar.</p>`);
+  const tetoHtml = tetoN != null
+    ? `<label class="cl-arv">Teto BLR (US$)<input data-cl="teto" type="number" inputmode="numeric" readonly tabindex="-1" aria-readonly="true" value="${tetoN}"></label>`
+    : (tetoFecha ? `<p class="cl-hint cl-arv">Teto BLR: não fecha. Já vem da assinatura e não entra nesta conta.</p>` : "");
+  const hint = membro
+    ? (arvN != null || tetoN != null || tetoFecha
+      ? "Preenchido com o ARV e o teto que a assinatura já tem neste lote. Dá para mudar o ARV e simular."
+      : "Este lote não tem ARV nem teto da BLR. Dá para simular com o seu ARV.")
+    : "O ARV exato da BLR fica com os assinantes. Use o seu.";
+  const quiet = clQuietPadrao(l);
+  const prem = clPremioInfo(l, null);
+  const vendaIni = arvN ? Math.round(arvN * CL_VENDA) : "";
+  const quietTxt = quiet
+    ? "Padrão US$ 2.000 em tax deed e upset: esses tipos em geral não entregam título segurável na hora. Nos outros tipos o padrão é zero. Dá para editar."
+    : "Padrão zero neste tipo. Tax deed e upset começam em US$ 2.000. Dá para editar se o edital pedir quiet title.";
+  const premTxt = prem.pct != null
+    ? "O lote traz taxa da plataforma de " + (prem.pct < 0.01 ? (prem.pct * 100).toFixed(2).replace(".", ",") : String(Math.round(prem.pct * 1000) / 10).replace(".", ",")) + "% do lance. O valor em dólar entra quando você informar o lance. Dá para editar."
+    : (prem.usd > 0 ? "Preenchido com a taxa da plataforma que já veio no lote. Dá para editar." : "Este lote não traz taxa da plataforma. Padrão zero. Dá para editar.");
+  return `<section class="calc-livre" id="calcLivre" aria-label="Calculadora grátis de lucro e retorno">
+    <h3>Calculadora grátis</h3>
+    <p class="cl-sub">Digite o lance e a reforma. O lucro estimado e o retorno já descontam os custos abaixo.</p>
+    <div class="cl-grid">
+      <label class="cl-arv">ARV (US$)<input data-cl="arv" inputmode="numeric" min="0" step="1000" type="number" value="${arvN == null ? "" : arvN}" placeholder="o seu ARV" aria-describedby="clArvHint"></label>
+      ${tetoHtml}
+      <label>Lance (US$)<input data-cl="lance" inputmode="numeric" min="0" step="100" type="number" placeholder="o seu lance"></label>
+      <label>Custo de reforma (US$)<input data-cl="reforma" inputmode="numeric" min="0" step="100" type="number" placeholder="0 se não houver"></label>
+      <label>Custos fixos do leilão (US$)<input data-cl="fixos" inputmode="numeric" min="0" step="50" type="number" value="${CL_FIXOS}"></label>
+      <label>Quiet title (US$)<input data-cl="quiet" inputmode="numeric" min="0" step="100" type="number" value="${quiet}"></label>
+      <label>Taxa da plataforma (US$)<input data-cl="premio" inputmode="numeric" min="0" step="50" type="number" value="${prem.usd}"${prem.pct != null ? ` data-auto="1" data-pct="${prem.pct}"` : ""}></label>
+      <label>Custo de venda (US$)<input data-cl="venda" inputmode="numeric" min="0" step="100" type="number" value="${vendaIni}" data-auto="1" data-pct="${CL_VENDA}"></label>
+    </div>
+    <p class="cl-hint" id="clArvHint">${hint}</p>
+    <p class="cl-hint">Custos fixos: padrão US$ 2.550 (busca de título, registro, inspeção e seguro). ${quietTxt} ${premTxt} Custo de venda: padrão 6% do ARV, só nesta estimativa.</p>
+    ${faixaHtml}
+    <div class="cl-out" data-cl-out aria-live="polite"><p class="cl-espera">Informe o ARV, o lance e a reforma para ver o lucro estimado e o retorno.</p></div>
+    <p class="cl-def">Lucro estimado = ARV − lance − reforma − custos fixos − quiet title − taxa da plataforma − custo de venda. Retorno = lucro ÷ (lance + reforma + custos fixos + quiet title + taxa da plataforma). O custo de venda sai do ARV.</p>
+    <p class="cl-aviso">Estimativa, não é garantia; confira o edital.</p>
+  </section>`;
+}
+function calcLivreResultado(c, teto){
+  const cls = c.lucro < 0 ? "cl-neg" : "cl-pos";
+  const passa = teto != null && c.lance > teto;
+  const linha = (nome, val) => `<tr><td>${nome}</td><td>${clDin(val)}</td></tr>`;
+  const total = c.lance + c.reforma + c.fixos + c.quiet + c.premio + c.venda;
+  return `<table class="cl-tab"><caption>Custos considerados</caption>
+      ${linha("Lance no leilão", c.lance)}
+      ${linha("Reforma", c.reforma)}
+      ${linha("Custos fixos do leilão", c.fixos)}
+      ${linha("Quiet title", c.quiet)}
+      ${linha("Taxa da plataforma", c.premio)}
+      ${linha("Custo de venda", c.venda)}
+      <tr class="cl-tot"><td>Total dos custos</td><td>${clDin(total)}</td></tr></table>
+    <div class="cl-kpis">
+      <div><span>Lucro estimado</span><b class="${cls}">${clDin(c.lucro)}</b></div>
+      <div><span>Retorno</span><b class="${cls}">${clPct(c.roi)}</b></div>
+    </div>
+    <p class="cl-hint">Líquido destes custos. Estimativa, não é garantia; confira o edital.</p>
+    ${passa ? `<p class="cl-passa">Este lance passa do teto BLR preenchido na sua conta.</p>` : ""}`;
+}
+function calcLivrePreenche(box){
+  if(!box) return;
+  const out = box.querySelector("[data-cl-out]"); if(!out) return;
+  const arvEl = box.querySelector("[data-cl=arv]"), lanceEl = box.querySelector("[data-cl=lance]");
+  const arv0 = clNum(arvEl && arvEl.value), lance0 = clNum(lanceEl && lanceEl.value);
+  const vendaEl = box.querySelector("[data-cl=venda]"), premEl = box.querySelector("[data-cl=premio]");
+  if(vendaEl && vendaEl.dataset.auto === "1") vendaEl.value = arv0 > 0 ? String(Math.round(arv0 * +vendaEl.dataset.pct)) : "";
+  if(premEl && premEl.dataset.auto === "1" && premEl.dataset.pct) premEl.value = lance0 > 0 ? String(Math.round(lance0 * +premEl.dataset.pct)) : "0";
+  const arv = clNum(arvEl && arvEl.value), lance = clNum(lanceEl && lanceEl.value);
+  const reforma = clNum(box.querySelector("[data-cl=reforma]").value);
+  const n0 = el => { const n = clNum(el && el.value); return n == null ? 0 : n; };
+  const c = calcLivre(arv, lance, reforma, {
+    fixos: n0(box.querySelector("[data-cl=fixos]")), quiet: n0(box.querySelector("[data-cl=quiet]")),
+    premio: n0(premEl), venda: n0(vendaEl)});
+  if(!c){ out.innerHTML = `<p class="cl-espera">Informe o ARV, o lance e a reforma para ver o lucro estimado e o retorno.</p>`; return; }
+  const tEl = box.querySelector("[data-cl=teto]");
+  out.innerHTML = calcLivreResultado(c, tEl ? clNum(tEl.value) : null);
+}
+// CALC_LIVRE_FIM
+/* Nota e selo na ficha. Só o que já veio no lote (nota, nota_porque, selo): número, faixa e palavras.
+   Linha com dígito, teto, ARV ou $ não entra — a fórmula e o valor do teto ficam de fora. */
+const faixaNota = n => n >= 80 ? {id:"alta", nome:"alta"} : n >= 60 ? {id:"boa", nome:"boa"} : n >= 40 ? {id:"media", nome:"média"} : n >= 20 ? {id:"fraca", nome:"fraca"} : {id:"baixa", nome:"baixa"};
+const porqueOk = s => { const t = String(s ?? "").replace(/\s+/g, " ").trim(); if(!t || /\d|teto|arv|\$/i.test(t)) return ""; return t.charAt(0).toUpperCase() + t.slice(1); };
+const dataIso = s => typeof s === "string" && /^\d{4}-\d{2}-\d{2}/.test(s) ? s.slice(0, 10) : "";
+const idadeTxt = n => n == null || n === "" || !isFinite(+n) ? "" : +n <= 0 ? "hoje" : +n === 1 ? "há 1 dia" : "há " + (+n) + " dias";
+const linkHttp = u => { try{ const x = new URL(u); return x.protocol === "http:" || x.protocol === "https:" ? x.href : ""; }catch(e){ return ""; } };
+const hostDe = u => { try{ return new URL(u).hostname.replace(/^www\./i, ""); }catch(e){ return ""; } };
+const nomeExterno = u => { const h = hostDe(u); if(/auction\.com$/i.test(h)) return "Auction.com"; if(/xome\.com$/i.test(h)) return "Xome"; if(/hubzu\.com$/i.test(h)) return "Hubzu"; return h; };
+const seloExterno = s => !!(s && (s.externo || /não conferidos|nao conferidos|link externo/i.test(s.fonte || "") || /(?:^|\.)(auction\.com|xome\.com|hubzu\.com)$/i.test(hostDe(s.link || ""))));
+function pintaNota(l){
+  const fn = $("#fNota"); if(!fn) return;
+  const tem = l.nota != null && l.nota !== "" && isFinite(+l.nota);
+  const fx = tem ? faixaNota(+l.nota) : {id:"sem", nome:"sem dado"};
+  fn.hidden = false; fn.setAttribute("aria-hidden", "false");
+  fn.className = "fnota n-" + fx.id;
+  fn.textContent = tem ? String(Math.round(+l.nota)) : "—";
+  fn.title = tem ? "Nota BLR " + Math.round(+l.nota) + " de 100, faixa " + fx.nome : "Nota BLR: sem dado";
+  fn.setAttribute("aria-label", fn.title);
+}
+function notaSeloHTML(l){
+  const tem = l.nota != null && l.nota !== "" && isFinite(+l.nota);
+  const fx = tem ? faixaNota(+l.nota) : {id:"sem", nome:"sem dado"};
+  const n = tem ? Math.round(+l.nota) : null;
+  const pq = (Array.isArray(l.nota_porque) ? l.nota_porque : []).map(porqueOk).filter(Boolean);
+  const itens = (pq.length ? pq : ["Explicação: sem dado"]).map(x => `<li>${esc(x)}</li>`).join("");
+  const nota = `<div class="nnota n-${fx.id}">
+    <div class="nnota-h"><span>Nota BLR</span><b class="nfx">${esc(fx.nome)}</b></div>
+    <div class="nnota-corpo">
+      <div class="nnota-n"><strong>${n == null ? "—" : n}</strong><small>${n == null ? "sem dado" : "/100"}</small></div>
+      <div class="nnota-lado">
+        <div class="nbar" role="img" aria-label="${n == null ? "Nota sem dado" : "Nota " + n + " de 100, faixa " + fx.nome}"><i style="width:${n == null ? 0 : Math.max(0, Math.min(100, n))}%"></i></div>
+        <ul class="npq">${itens}</ul>
+      </div>
+    </div>
+    <p class="nnota-rod">Leitura em palavras.</p></div>`;
+  const s = l.selo && typeof l.selo === "object" ? l.selo : null;
+  if(!s) return `<section class="nselo" aria-label="Nota BLR e veracidade do dado">${nota}
+    <div class="nselo-b nselo-falta"><div class="nselo-h"><span>Veracidade</span><span class="npills"><b class="pf">sem dado</b></span></div>
+    <p class="nselo-av">Selo de veracidade: sem dado.</p></div></section>`;
+  const ext = seloExterno(s);
+  const iso = dataIso(s.atualizado);
+  const semData = !iso;
+  const velho = !!s.velho && !semData;
+  const passou = /passou/i.test(s.texto || "");
+  const fonteBruta = String(s.fonte || "").trim();
+  const fonteOficial = fonteBruta && !/não conferidos|nao conferidos|link externo/i.test(fonteBruta) ? fonteBruta : "";
+  const semFonte = !ext && !fonteOficial;
+  const cls = ["nselo-b", ext ? "nselo-ext" : "", semData || semFonte ? "nselo-falta" : "", velho ? "nselo-velho" : "", !ext && !semData && !velho && !semFonte ? "nselo-ok" : ""].filter(Boolean).join(" ");
+  const pills = [ext ? `<b class="px">não conferido</b>` : "", semFonte ? `<b class="pf">falta a fonte</b>` : "", semData ? `<b class="pf">falta a data</b>` : "", velho ? `<b class="pv">dado velho</b>` : "", !ext && !semData && !velho && !semFonte ? `<b>em dia</b>` : ""].filter(Boolean).join("");
+  const avisos = [];
+  if(ext) avisos.push("Link externo. Dados não conferidos pela BLR.");
+  if(velho) avisos.push(passou ? "Dado velho: o leilão já passou" + (s.idade_dias != null && +s.idade_dias > 14 ? " e a coleta tem " + s.idade_dias + " dias." : ".") : "Dado velho: atualizado " + (idadeTxt(s.idade_dias) || "há mais de 14 dias") + ".");
+  if(semFonte) avisos.push("Fonte não informada.");
+  if(semData) avisos.push("Data de atualização não informada.");
+  const onde = ext ? (nomeExterno(s.link || "") || "marketplace privado") : "";
+  const quando = semData ? "não informada" : dm(iso) + "/" + iso.slice(0, 4) + (idadeTxt(s.idade_dias) ? " · " + idadeTxt(s.idade_dias) : "");
+  const href = linkHttp(String(s.link || "").trim());
+  const linkDd = !String(s.link || "").trim() ? `<span class="falta">${ext ? "link externo não informado" : "não informado"}</span>`
+    : href ? `<a href="${esc(href)}" target="_blank" rel="noopener${ext ? " nofollow" : ""}">${ext ? "Abrir link externo ↗" : "Abrir fonte oficial ↗"}</a>`
+    : `<span class="falta">não é um endereço web</span>`;
+  const linhas = ext
+    ? `<div><dt>Onde</dt><dd>${esc(onde)}</dd></div>`
+    : `<div><dt>Fonte</dt><dd class="${fonteOficial ? "" : "falta"}">${esc(fonteOficial || "não informada")}</dd></div>`;
+  return `<section class="nselo" aria-label="Nota BLR e veracidade do dado">${nota}
+    <div class="${cls}">
+      <div class="nselo-h"><span>Veracidade</span><span class="npills">${pills}</span></div>
+      ${avisos.length ? `<p class="nselo-av">${avisos.map(esc).join(" ")}</p>` : ""}
+      <dl>
+        ${linhas}
+        <div><dt>Coletado em</dt><dd class="${semData ? "falta" : ""}">${esc(quando)}</dd></div>
+        <div><dt>${ext ? "Link" : "Link oficial"}</dt><dd>${linkDd}</dd></div>
+      </dl>
+    </div></section>`;
+}
 async function abre(i){
   const l = L.find(x => x.i === i); if(!l) return;
   ABERTO = i; iaSobre();
   const tok = ++ABRE;
   const dd = dias(l.d), on = ONUS[l.on] || ONUS.nao_consultado;
   $("#fBadge").innerHTML = selo1(l, true).replace('class="badge', 'style="position:static" class="badge');
+  pintaNota(l);
   const lugar = l.ci && l.ci !== l.co ? `${l.ci}, ${l.co} County` : `${l.co} County`;
   $("#fhTit").textContent = `${lugar} · ${l.uf}`; $("#fhSub").textContent = `${l.d ? "Leilão " + dm(l.d) + "/" + l.d.slice(0, 4) : VD}${l.ab ? " · abertura " + usd(l.ab) : ""}`;
   const quando = `${LIST(l) ? (UFN[l.uf] || l.uf) : tipo(l.u)} · ${qd(l)}${!l.d ? "" : HIST(l) ? (dd > 0 ? " (saiu da lista antes)" : " (já aconteceu)") : dd > 0 ? " (em " + plural(dd, "dia", "dias") + ")" : dd === 0 ? " (hoje)" : " (já foi)"}`;
@@ -2116,6 +2564,9 @@ async function abre(i){
   $("#fBody").innerHTML = `
     ${fts.length ? fig(fts[0], "fhero") : `<div class="semfoto">${LIST(l) ? "Lote listado · sem foto" : "Sem foto deste lote"}${l.lote_m2 ? ` · ${rotLote(l)} ${l.lote_m2.toLocaleString("pt-BR")} m²` : ""}</div>`}
     <div class="ftit"><h2 id="fTit">${esc(lugar)}</h2><div class="loc" id="fSub">${esc(quando)}</div>${SITE ? `<button type="button" class="lnk iaL" data-ia>✦ Perguntar à IA sobre este lote</button>` : ""}</div>
+    ${seloTipoHTML(l)}
+    ${notaSeloHTML(l)}
+    ${calcLivreHTML(l, ASSIN)}
     ${HIST(l) ? "" : resumoHTML(l, gap)}
     ${resultado}
     ${acoes}
@@ -2604,7 +3055,7 @@ function criaMapa(){
     return HIST(l) ? b * .85 : LIST(l) ? b * .9 : b + forcaDe(l) * (zz >= Z_CO ? .5 : .15); };   // listado: tamanho único
   const ttL = l => HIST(l) ? `<b>${esc(l.ci || l.co)}</b> · ${esc(resTxt(l))}<br><span style="color:var(--mute)">Leilão de ${dm(l.d)} · abertura ${usd(l.ab)}</span>`
     : `${SEMDADO(l) ? `<span style="color:var(--mute)">Sem dado para a conta: ${faltaTxt(l)}</span>` : `${forcaHTML(l)} <span style="color:var(--mute)">${LIST(l) ? "desconto " + (l.desc ?? "—") + "%" : FORCA_T[forcaDe(l)]}</span>`}<br><b>${esc(l.ci || l.co)}</b> · ${usd(l.ab)}<br>${l.et === "final" ? (ASSIN ? `Teto ${k(l.teto)} · ARV ${l.arv ? k(l.arv[0]) + "–" + k(l.arv[1]).replace(sim() + " ", "") : "—"}` : `Nos critérios BLR · teto para assinantes`)
-    : LIST(l) ? `<span style="color:var(--mute)">Listado · ${rotLance(l).toLowerCase()} · cadastro ${k(l.jv)}</span>` : `<span style="color:var(--mute)">Fora: ${esc(ETAPA[l.et] || l.et)}</span>`}<br><span style="color:var(--mute)">${l.d ? "Leilão " + dm(l.d) : VD}</span>`;
+    : LIST(l) ? `<span style="color:var(--mute)">Listado · ${rotLance(l).toLowerCase()} · cadastro ${k(l.jv)}</span>` : `<span style="color:var(--mute)">Fora: ${esc(ETAPA[l.et] || l.et)}</span>`}<br><span style="color:var(--mute)">${esc(tipoLeilao(l).nome)} · ${l.d ? "Leilão " + dm(l.d) : VD}</span>`;
   let ULT = [];
   /* 07/11 (Cris, no modelo de mapa agrupado): em vez de milhares de bolinhas, GRUPOS com o número grande; cada zoom divide os grupos
      por proximidade até sobrar o lote (bola de sempre a partir de Z_SOLTO ou quando o grupo tem 1). Grade de CEL px na tela e depois
@@ -2685,7 +3136,7 @@ function criaMapa(){
     const ab = RG_ABERTO === l.i, fz = forcaDe(l);
     return `<article class="grc${ab ? " ab" : ""}" data-rc="${l.i}"><div class="grf">${fotoCard(l)}</div>
       <div class="grt"><div class="grp num">${usd(l.ab)} <small>${esc(rotLance(l).toLowerCase())}</small></div>
-        <div class="grs">${esc(l.ci || l.co)}, ${esc(l.uf)} · ${esc(tipoL(l))}${l.d ? " · leilão " + dm(l.d) : ""}</div>
+        <div class="grs">${esc(l.ci || l.co)}, ${esc(l.uf)} · ${esc(tipoLeilao(l).nome)}${l.d ? " · leilão " + dm(l.d) : ""}</div>
         <div class="grv">${forcaHTML(l)} ${noCrit(l) ? "Nos critérios BLR" : LIST(l) ? (l.desc != null ? `−${l.desc}% do cadastro` : "Listado") : esc(ETAPA[l.et] || "")}</div></div>
       ${ab ? `<div class="grx"><table>
         ${l.jv ? `<tr><td>Cadastro</td><td>${k(l.jv)}${l.desc != null ? ` · lance −${l.desc}%` : ""}</td></tr>` : ""}
@@ -3164,7 +3615,7 @@ function guiaSecoes(){   // também é a base do assistente de IA (iaContexto)
       ["Todos / Critérios", "Todos: cada lote à venda. Critérios: só os que passaram em todo o funil BLR (casa construída, preço que fecha, sem dívida que passe ao comprador)."],
       ["★", "Mostra só os lotes que você acompanha (estrela no cartão)."],
       ["Histórico", "Liga ou desliga os lotes que já foram a leilão."],
-      ["Filtros", "Busca, condado, tipo, data, faixa de lance, força mínima, desconto mínimo, “fecha no típico”, “ônus conferido” e “fecha na minha conta”. Só o que passa fica no mapa e nas contagens. O número no botão diz quantos filtros estão ligados."],
+      ["Filtros", "Busca, estado, tipo de imóvel, tipo de leilão (com a contagem de lotes e a legenda), data, faixa de lance, força mínima, desconto mínimo, “fecha no típico”, “ônus conferido” e “fecha na minha conta”. Só o que passa fica no mapa e nas contagens. O número no botão diz quantos filtros estão ligados."],
       ["Estado", "Escolhe o estado e voa até ele."],
       ["Renda do bairro", "Pinta os bairros (setores do Censo) pela renda das famílias, comparada com a mediana do condado."],
       ["Valor das casas", "Pinta os bairros pelo valor da casa típica. Ligada junto com a renda, o roxo escuro mostra onde os dois são altos."],
@@ -3224,6 +3675,7 @@ function guiaSecoes(){   // também é a base do assistente de IA (iaContexto)
       ["N lotes fecham com a sua conta", "Quantos lotes analisados ficam com teto acima da abertura com os seus números; fora da Flórida, quantos fechariam na estimativa."]]],
     ["Leilão", "Termos que aparecem no calendário e no painel", [
       ["Tax deed", "Leilão do imóvel por imposto atrasado: quem ganha recebe a escritura."],
+      ["Tipo de leilão", "Filtro e selo do lote: tax deed, tax lien, sheriff/judicial, upset, foreclosure, land bank do condado ou da cidade, REO (banco, Fannie Mae e Freddie Mac) e governo federal (HUD, VA: venda por oferta, não leilão). Em geral as regras mudam por estado. Se o lote não trouxe um tipo reconhecido, o selo diz tipo não informado. Confira o edital."],
       ["Upset / judicial (PA)", "Upset: venda por imposto em que algumas dívidas continuam. Judicial: venda que limpa os gravames."],
       ["Venda do xerife", "Leilão feito pelo xerife do condado, por imposto ou por execução."],
       ["Inscrição até", "Último dia para se cadastrar e depositar a caução para poder dar lance."],
@@ -3319,16 +3771,23 @@ const renderLogo = e => { clearTimeout(tRender); tRender = setTimeout(() => { mo
 // "fecha na minha conta" usa o teto (só assinante)
 $("#fFecha").addEventListener("input", e => { if(!ASSIN){ e.target.checked = false; abreAssina(); return; } renderLogo(e); });
 // ↺ (30/10, Rodrigo): limpa filtros, leilão escolhido, Critérios, ★ e estado, e volta ao país inteiro
-$("#tgReset").onclick = () => { F_VAL.forEach(s => $(s).value = ""); F_CHK.forEach(s => $(s).checked = false); $("#fUf").value = "";
+$("#tgReset").onclick = () => { F_VAL.forEach(s => $(s).value = ""); F_CHK.forEach(s => $(s).checked = false); TLF = ""; $("#fUf").value = "";
   LSEL = null; CRITM = false; FSEG = false; HISTON = true;
   $("#segCritM").querySelectorAll("button").forEach(x => x.setAttribute("aria-pressed", x.dataset.crit === "0"));
   $("#tgSeg").setAttribute("aria-pressed", false); tgHistPinta();
   mostrar = PAG; render(); if(MAPA) MAPA.us(); };
-$("#fLimpa").onclick = () => { F_VAL.forEach(s => $(s).value = ""); F_CHK.forEach(s => $(s).checked = false); mostrar = PAG; render(); };
+$("#fLimpa").onclick = () => { F_VAL.forEach(s => $(s).value = ""); F_CHK.forEach(s => $(s).checked = false); TLF = ""; mostrar = PAG; render(); };
 // 30/10 (Rodrigo): um conjunto só de filtros; no mapa ele mora no painel (botão Filtros), em Negócios no topo da lista
+function poeTipoBar(){
+  const bar = $("#tipoBar"); if(!bar) return;
+  if(!$("#v-mapa").hidden){ const ref = $("#mFil"); if(bar.nextElementSibling !== ref) $("#painel").insertBefore(bar, ref); }
+  else if(!$("#v-negocios").hidden){ const v = $("#v-negocios"); if(v.firstElementChild !== bar) v.insertBefore(bar, v.firstChild); }
+}
 function poeFiltros(){ const F = $(".filtros");
   if(!$("#v-mapa").hidden){ if(F.parentElement !== $("#mFil")) $("#mFil").append(F); }
-  else if(F.parentElement !== $("#v-negocios")) $("#v-negocios").prepend(F); }
+  else if(F.parentElement !== $("#v-negocios")) $("#v-negocios").prepend(F);
+  poeTipoBar();
+}
 $("#tgFil").onclick = () => { const a = $("#mFil").hidden; $("#mFil").hidden = !a; $("#tgFil").setAttribute("aria-pressed", a); if(a) minPainel(false); };
 poeFiltros();
 $("#fOrd").addEventListener("input", () => { if($("#fOrd").value === "gap" && !ASSIN){ $("#fOrd").value = "d"; abreAssina(); } mostrar = PAG; render(); });
@@ -3341,6 +3800,10 @@ document.querySelectorAll(".segCrit button").forEach(b => b.onclick = () => { co
   if(m) CRITM = v; else CRIT = v;
   b.parentElement.querySelectorAll("button").forEach(x => x.setAttribute("aria-pressed", (x.dataset.crit === "1") === v)); critTexto(); mostrar = PAG; render(); });
 $("#btFiltros").onclick = () => { const a = $(".filtros").classList.toggle("aberta"); $("#btFiltros").setAttribute("aria-expanded", a); $("#btFiltros").textContent = a ? "Menos filtros ▴" : "Mais filtros ▾"; };
+$("#tipoChips").addEventListener("click", e => { const b = e.target.closest("[data-tl]"); if(!b) return;
+  const id = b.dataset.tl || ""; TLF = !id || id === TLF ? "" : id; mostrar = PAG; render(); });
+$("#tipoLegBt").onclick = () => { const leg = $("#tipoLeg"), a = leg.hidden; leg.hidden = !a;
+  $("#tipoLegBt").setAttribute("aria-expanded", String(a)); $("#tipoLegBt").textContent = a ? "Fechar legenda" : "O que significa"; };
 { const q = new URLSearchParams(location.search).get("lista"); if(q && LISTAS.some(x => x.id === q)){ FSEG = q; $("#tgSeg").setAttribute("aria-pressed", true); } }
 /* 07/11: atalhos de outras páginas (planos/, conta/): ?teste=1 cadastro de 7 dias · ?plano=basico|pro|ultra pedido do plano ·
    ?entrar=1 · ?senha=1 · ?listas=1 · ?tour=1. Cada um só abre uma janela; se der erro, a vitrine segue normal. */
@@ -3372,6 +3835,11 @@ function secAlterna(h){
 }
 $("#fBody").addEventListener("click", e => { const h = e.target.closest(".sec>h4"); if(h && !e.target.closest("button,a")) secAlterna(h); });
 $("#fBody").addEventListener("keydown", e => { const h = e.target.closest && e.target.closest(".sec>h4"); if(h && (e.key === "Enter" || e.key === " ")){ e.preventDefault(); secAlterna(h); } });
+$("#fBody").addEventListener("input", e => {
+  const box = e.target.closest && e.target.closest("#calcLivre"); if(!box) return;
+  if(e.target.matches && e.target.matches("[data-cl=venda],[data-cl=premio]")) e.target.dataset.auto = "";
+  calcLivrePreenche(box);
+});
 function verLote(i){ abre(i); if(MAPA && !$("#v-mapa").hidden) MAPA.foca(i); }
 
 /* ---------- conta BLR ao vivo (Cris 26/10): régua da margem que sobra no fim, nível da reforma (leve 20, média 30, geral 45
