@@ -3041,6 +3041,7 @@ function criaMapa(){
   const EUA48 = Lf.latLngBounds([24.4, -124.8], [49.4, -66.9]);
   M.fitBounds(EUA48, {padding: [6, 6]});
   M.createPane("sat").style.zIndex = 250;
+  M.createPane("aereo").style.zIndex = 410; M.getPane("aereo").style.pointerEvents = "none";
   M.createPane("ruas").style.zIndex = 430; M.getPane("ruas").style.pointerEvents = "none";
   M.createPane("lotes").style.zIndex = 620;
   M.createPane("comp").style.zIndex = 640;
@@ -3066,8 +3067,9 @@ function criaMapa(){
   const ctys = cty.filter(c => ufsCom.has(Object.keys(PRE).find(u => PRE[u] === c.id.slice(0, 2))));
   const ttCo = d => { const v = porCo.get(d.id) || [], n = lotesCo(d.id).length;
     return `<b>${esc(d.properties.name)} County</b><br>${v.length ? v.slice(0, 4).map(a => `${dm(a.d)} · ${esc(a.t)}`).join("<br>") : `<span style="color:var(--mute)">sem leilão no calendário</span>`}${n ? `<br><span style="color:var(--ok)">${plural(n, "lote", "lotes")}</span>` : ""}`; };
+  let AEREO = false;   // foto aérea do USGS só no zoom alto (o recheio do condado sai para o contorno aparecer)
   const estilCo = d => { const v = porCo.get(d.id), s = d.id === nivel.f, zz = z();
-    return {renderer: rBase, fillColor: v || FCOM.has(d.id) ? "#3A4456" : "#20252E",   // 28/10: sem escala de data (a data fica no hover e na lista) fillOpacity: zz < Z_CO ? (v ? .92 : .55) : s ? (ON.sat ? 0 : .05) : (v ? .4 : .25),
+    return {renderer: rBase, fillColor: v || FCOM.has(d.id) ? "#3A4456" : "#20252E",   // 28/10: sem escala de data (a data fica no hover e na lista) fillOpacity: zz < Z_CO ? (v ? .92 : .55) : s ? ((ON.sat || AEREO) ? 0 : .05) : (v ? .4 : .25),
             color: s ? "#EEF0F3" : "#0C0E12", weight: s ? 2.2 : zz < Z_CO ? .6 : 1}; };
   const camCo = Lf.geoJSON({type: "FeatureCollection", features: ctys}, {renderer: rBase, style: estilCo,
     onEachFeature: (d, ly) => { ly.bindTooltip(() => ttCo(d), {sticky: true, className: "tt-l"});
@@ -3110,6 +3112,41 @@ function criaMapa(){
       else M.flyToBounds(b, {padding: [70, 70], maxZoom: Math.max(zz + 1.5, Math.min(Z_SOLTO + .5, zz + 4)), duration: VOO}); });
     mk.addTo(camClu);
   }
+  let camAereo = null;
+  const Z_POL = 16, POLC = {}, POLTOK = {n: 0};
+  function celPol(la, ln){ const n = v => Math.floor(v * 10 + 1e-6); return n(la) + "_" + n(ln); }
+  function poePol(i, pol, zz){
+    if(!pol || pol.length < 3) return;
+    const g = Lf.polygon(pol, {renderer: rLotes, color: "#F2C14E", weight: zz >= 16 ? 2.6 : 1.6, fillColor: "#F2C14E", fillOpacity: .2});
+    if(i) g.on("click", () => abre(i));
+    g.addTo(camPol);
+  }
+  function aereoPerto(zz){
+    const on = zz >= 15;
+    if(on !== AEREO){ AEREO = on; camCo.setStyle(estilCo); botoesCam(); }
+    if(!on){ if(camAereo && M.hasLayer(camAereo)) M.removeLayer(camAereo); return; }
+    if(!camAereo) camAereo = Lf.tileLayer(TILE + "{z}/{y}/{x}", {pane: "aereo", opacity: .92, maxZoom: 19, maxNativeZoom: 16});
+    if(!M.hasLayer(camAereo)) camAereo.addTo(M);
+  }
+  function contornosDoZoom(vivos, zz){
+    const tk = ++POLTOK.n;
+    if(zz < Z_POL) return;
+    const loc = location.hostname === "127.0.0.1" || location.hostname === "localhost";
+    if(loc && Array.isArray(window.__contornoTeste)) poePol("", window.__contornoTeste, zz);
+    const vis = [];
+    for(const [l, ll] of vivos){ if(HIST(l)) continue; vis.push(l); const p = EXATO[l.i]; if(p && p.pol && p.pol.length > 2) poePol(l.i, p.pol, zz); }
+    if(!(MEMBRO || DB || loc)) return;
+    const celulas = new Map();
+    for(const l of vis){ const p = EXATO[l.i]; if(p && p.pol && p.pol.length > 2) continue; if(l.la == null || l.ln == null) continue;
+      const k = celPol(l.la, l.ln); let a = celulas.get(k); if(!a) celulas.set(k, a = []); a.push(l.i); }
+    const chaves = [...celulas.keys()].slice(0, 12);
+    Promise.all(chaves.map(k => { if(!POLC[k]) POLC[k] = fetch("pol/" + k + ".json").then(r => r.ok ? r.json() : {}).catch(() => ({})); return POLC[k]; })).then(async () => {
+      if(tk !== POLTOK.n || z() < Z_POL) return;
+      const ainda = new Set(vis.map(l => l.i));
+      for(const k of chaves){ const d = await POLC[k]; if(tk !== POLTOK.n) return;
+        for(const i of celulas.get(k) || []){ if(ainda.has(i) && d && d[i]) poePol(i, d[i], z()); } }
+    });
+  }
   function desenha(){
     camL.clearLayers(); camClu.clearLayers(); camPol.clearLayers(); MARK.clear();
     const zz = z(), b = M.getBounds().pad(.25), vivos = [], hist = [];
@@ -3125,9 +3162,9 @@ function criaMapa(){
         if(o){ const n1 = o.ls.length, n2 = c.ls.length; o.x = (o.x * n1 + c.x * n2) / (n1 + n2); o.y = (o.y * n1 + c.y * n2) / (n1 + n2); o.ls.push(...c.ls); } else fim.push(c); }
       for(const c of fim) c.ls.length === 1 ? solto(c.ls[0][0], c.ls[0][1]) : grupo(c, zz);
     }
-    // de perto, o contorno real do lote no mapa (membro: posição exata + "pol" do privado, vitrine_contornos.py)
-    if(zz >= 15) for(const [l] of vivos){ const p = EXATO[l.i]; if(!p || !p.pol || p.pol.length < 3) continue;
-      Lf.polygon(p.pol, {renderer: rLotes, color: "#F2C14E", weight: zz >= 17 ? 2.4 : 1.6, fillColor: "#F2C14E", fillOpacity: .12}).on("click", () => abre(l.i)).addTo(camPol); }
+    // de perto: foto aérea do USGS (grátis) e o contorno. O polígono que já veio no privado desenha na hora;
+    // o resto pede só as células dos lotes visíveis (vitrine/pol, vitrine_contornos.py --compacta). Longe, não pede.
+    aereoPerto(zz); contornosDoZoom(vivos, zz);
     onda(); rotulosARV(); if(ON.sat && !SITE) satLotes();
     regiao();
   }
@@ -3359,7 +3396,7 @@ function criaMapa(){
     const temB = !!camSet, temS = !!(nivel.f && (SITE || SAT[nivel.f]));
     cam.querySelector("[data-c=renda]").disabled = !temB; cam.querySelector("[data-c=valor]").disabled = !temB; cam.querySelector("[data-c=sat]").disabled = !temS;
     const ba = cam.querySelector("[data-c=arv]"); ba.innerHTML = "ARV BLR nos lotes" + (ASSIN ? "" : `<span class="cad">🔒</span>`);
-    cam.querySelector("small").textContent = temB ? "Ligue renda e valor juntos para ver onde os dois são altos." : SITE ? "Bairros: por enquanto só nos condados da Flórida." : "Bairros e satélite: por enquanto só nos condados da Flórida.";
+    cam.querySelector("small").textContent = AEREO ? "Foto aérea do USGS nesta aproximação. Bairros, por enquanto, só na Flórida." : temB ? "Ligue renda e valor juntos para ver onde os dois são altos." : SITE ? "Bairros: por enquanto só nos condados da Flórida." : "Bairros e o satélite gravado: por enquanto só nos condados da Flórida.";
   }
   // legenda com valores
   const faixaUS = (m, i) => !m ? ["menos de 0,85×", "0,85 a 1,15×", "mais de 1,15×"][i] : [`até ${k(.85 * m)}`, `${k(.85 * m)} a ${k(1.15 * m).replace(sim() + " ", "")}`, `mais de ${k(1.15 * m)}`][i];
