@@ -23,13 +23,21 @@ a{color:inherit}.serif{font-family:Fraunces,Georgia,serif;font-weight:500;letter
 main{max-width:1180px;margin:0 auto;padding:28px clamp(16px,4vw,40px) 60px}
 h1{font-size:clamp(28px,4.4vw,44px);margin:6px 0 6px;line-height:1.1}
 .sub{color:var(--mute);max-width:640px;margin:0 0 26px}
-.grade{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}
+.grade{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;margin-top:18px}
+.pl.dest,.pl.trial{padding-top:28px}
 @media (max-width:1000px){.grade{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media (max-width:560px){.grade{grid-template-columns:1fr}}
 .pl{position:relative;background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:20px 18px 18px;display:flex;flex-direction:column;gap:12px;box-shadow:var(--sh)}
 .pl.dest{border-color:var(--gold);background:linear-gradient(180deg,rgba(226,183,94,.12),var(--card) 40%)}
-.pl .tag{position:absolute;top:-11px;left:18px;background:var(--gold);color:#1a1408;font-size:11px;font-weight:700;padding:3px 10px;border-radius:99px;letter-spacing:.04em;text-transform:uppercase}
-.pl .atual{background:var(--ok)}
+.pl-tags{position:absolute;top:-11px;left:14px;display:flex;flex-wrap:wrap;gap:6px}
+.pl .tag{position:static;background:var(--gold);color:#1a1408;font-size:11px;font-weight:700;padding:3px 10px;border-radius:99px;letter-spacing:.04em;text-transform:uppercase}
+.pl .tag.selo-trial{background:#1a1408;color:#f4d58d;border:1px solid var(--gold)}
+.pl .atual{background:var(--ok);color:#062216}
+.pl.trial{box-shadow:inset 0 3px 0 var(--gold),var(--sh)}
+.trial-banner{display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px;margin:0 0 18px;padding:12px 14px;border-radius:14px;border:1px solid var(--gold);background:linear-gradient(90deg,rgba(226,183,94,.24),rgba(226,183,94,.06))}
+.trial-banner b{font-size:15.5px;letter-spacing:-.01em}
+.trial-banner span{color:var(--mute);font-size:13.5px}
+.trial-linha{margin:0;color:#1a1408;background:var(--gold);border-radius:8px;padding:6px 8px;font-size:12.5px;font-weight:700;text-align:center}
 .pl h2{margin:0;font-size:22px}
 .pl .pr{font-size:26px;font-weight:700}.pl .pr small{font-size:13px;font-weight:500;color:var(--mute)}
 .pl .pr .eq{display:block;font-size:12.5px;font-weight:500;color:var(--ok);margin-top:4px}
@@ -58,6 +66,7 @@ h1{font-size:clamp(28px,4.4vw,44px);margin:6px 0 6px;line-height:1.1}
 <main>
   <h1 class="serif">Escolha o seu plano</h1>
   <p class="sub">Comece grátis: o mapa dos EUA com todos os leilões e o valor da dívida. Teste o Pro por 7 dias, só com e-mail e telefone, sem cartão.</p>
+  <div class="trial-banner" id="trialBanner"><b>7 dias grátis para testar o Pro</b><span>Vale para o Pro e o UltraPro. O Básico não tem. Sem cartão: se não assinar, você continua como visitante. Nada é cobrado nesta página.</span></div>
   <div class="ciclo" role="group" aria-label="Forma de pagamento"><button type="button" data-ciclo="m" aria-pressed="true">Mensal</button><button type="button" data-ciclo="a" aria-pressed="false">Anual <small>2 meses grátis</small></button></div>
   <div class="grade" id="grade"></div>
   <div class="bid">
@@ -81,6 +90,9 @@ const PLANOS = [
   {id: "ultra", nome: "UltraPro", preco: 249.90, anual: 2499, quem: "para operar com a BLR",
    itens: ["Tudo do Pro", "Todos os estados dos EUA", "Partner Bidder: a BLR opera e divide o risco", "Comunidade: alertas, oferta de lotes já arrematados, mentoria", "Sala de leilão online em tempo real", "Consultoria de engenharia", "Curso completo “da pesquisa ao arremate”", "Assistente de IA ilimitado"],
    cta: "Quero o UltraPro", href: "../?plano=ultra"}];
+const TRIAL_SELO = "7 dias grátis";
+const TRIAL_NOTA = "7 dias grátis para testar o Pro";
+function temTrial(id){ return id === "pro" || id === "ultra"; }
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"}[c]));
 const preco = p => p === 0 ? `Grátis` : p ? `US$ ${p.toFixed(2).replace(".", ",")}<small> /mês</small>` : "";
 // 07/11 (Rodrigo): mensal ou anual (10 meses = 2 grátis)
@@ -91,15 +103,25 @@ const precoDe = p => CICLO === "a" && p.anual ? `US$ ${p.anual.toLocaleString("p
 const hrefDe = p => CICLO === "a" && p.anual ? `../?plano=${p.id}&ciclo=anual` : p.href;
 const ctaDe = p => CICLO === "a" && p.anual ? `Quero o ${p.nome} anual` : p.cta;
 document.querySelectorAll("[data-ciclo]").forEach(b => b.onclick = () => { CICLO = b.dataset.ciclo; try{ localStorage.setItem("blr_ciclo", CICLO); }catch(e){} monta(ATUAL); });
+function cartaoPlano(p, atual){
+  const trial = temTrial(p.id);
+  const tags = [
+    atual === p.id ? `<span class="tag atual">Seu plano</span>` : "",
+    atual !== p.id && p.dest ? `<span class="tag">Mais escolhido</span>` : "",
+    atual !== p.id && trial ? `<span class="tag selo-trial">${TRIAL_SELO}</span>` : ""
+  ].filter(Boolean).join("");
+  return `<section class="pl ${p.dest ? "dest" : ""} ${trial ? "trial" : ""}" data-plano="${p.id}" data-trial="${trial ? "1" : "0"}">
+    ${tags ? `<div class="pl-tags">${tags}</div>` : ""}
+    <h2 class="serif">${esc(p.nome)}</h2><p class="qm">${esc(p.quem)}</p>
+    <div class="pr ${p.preco == null ? "breve" : ""}">${p.preco == null ? "Preço de lançamento em breve" : precoDe(p)}</div>
+    ${trial ? `<p class="trial-linha">${TRIAL_NOTA}</p>` : ""}
+    <ul>${p.itens.map(i => `<li class="${i.startsWith("Tudo do") ? "mais" : ""}">${esc(i)}</li>`).join("")}</ul>
+    <a class="cta" href="${atual === p.id ? "../" : hrefDe(p)}">${atual === p.id ? "Voltar ao mapa" : esc(ctaDe(p))}</a></section>`;
+}
 function monta(atual){
   ATUAL = atual;
   document.querySelectorAll("[data-ciclo]").forEach(b => b.setAttribute("aria-pressed", b.dataset.ciclo === CICLO));
-  document.getElementById("grade").innerHTML = PLANOS.map(p => `<section class="pl ${p.dest ? "dest" : ""}">
-    ${atual === p.id ? `<span class="tag atual">Seu plano</span>` : p.dest ? `<span class="tag">Mais escolhido</span>` : ""}
-    <h2 class="serif">${esc(p.nome)}</h2><p class="qm">${esc(p.quem)}</p>
-    <div class="pr ${p.preco == null ? "breve" : ""}">${p.preco == null ? "Preço de lançamento em breve" : precoDe(p)}</div>
-    <ul>${p.itens.map(i => `<li class="${i.startsWith("Tudo do") ? "mais" : ""}">${esc(i)}</li>`).join("")}</ul>
-    <a class="cta" href="${atual === p.id ? "../" : hrefDe(p)}">${atual === p.id ? "Voltar ao mapa" : esc(ctaDe(p))}</a></section>`).join("");
+  document.getElementById("grade").innerHTML = PLANOS.map(p => cartaoPlano(p, atual)).join("");
 }
 monta(null);
 // com sessão, marca o plano atual (campo "plano" do /api/me quando a Clauds tiver; antes disso, assinante = Pro). Sem servidor: fica como está.

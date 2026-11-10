@@ -455,7 +455,9 @@ body{transition:padding-right .25s ease}
 .camadas button[disabled]{opacity:.45;cursor:default}
 .camadas .cad{font-size:10.5px;color:var(--acc);margin-left:4px}
 .hbt{all:unset;cursor:pointer;font-size:13px;font-weight:600;padding:8px 12px;border-radius:9px;white-space:nowrap}
-.hbt.ass{background:var(--acc);color:var(--ink)}
+.hbt.ass{background:var(--acc);color:var(--ink);display:inline-flex;align-items:center;gap:6px}
+.hbt.ass .selo-trial{background:#1A1306;color:#F4D58D;border-radius:999px;padding:2px 7px;font-size:10.5px;font-weight:700;line-height:1.25;letter-spacing:.01em}
+.hbt.ass .t-curto{display:none}
 .hbt.carr{border:1px solid var(--line2);color:var(--tx2);display:inline-flex;gap:6px;align-items:center}
 .hbt.carr.tem{color:var(--tx);border-color:var(--acc)}
 .hbt.carr b{font-family:var(--f-m);font-weight:500}
@@ -526,8 +528,16 @@ body{transition:padding-right .25s ease}
   .fcad .chks{grid-template-columns:1fr}
   .zdica{font-size:11px;top:46px}
 }
+@media (max-width:640px){   /* o selo do teste cabe no topo: logo curto e texto curto do botão */
+  .logo .lg-full{display:none}
+  .logo .lg-curto{display:inline}
+  .hbt.ass{gap:4px;padding:6px 8px}
+  .hbt.ass .t-longo{display:none}
+  .hbt.ass .t-curto{display:inline}
+}
 @media (max-width:480px){   /* site: Entrar/Sair e a Conta não cabiam em 400 px (cabeçalho tem altura fixa) */
   .hbt{padding:7px 5px}
+  .hbt.ass{padding:5px 6px}
   .hbt.ent{font-size:0;padding:5px 7px}.hbt.ent::before{content:"👤";font-size:14px}
   .tabs button{padding:7px 4px;font-size:12px}
   .moeda{padding:7px 3px;max-width:52px;font-size:11.5px}
@@ -831,7 +841,11 @@ body{transition:padding-right .5s var(--mola)}
 .plOp:hover,.plOp:focus-visible{border-color:var(--acc)}.plOp.dest{border-color:var(--acc);background:var(--ok-bg)}
 :root[data-fonte="g"] :is(#v-negocios,#v-pacotes,#v-portfolio,#v-guia,#v-cobertura,#fBody,#mBody){zoom:1.12}:root[data-fonte="p"] :is(#v-negocios,#v-pacotes,#v-portfolio,#v-guia,#v-cobertura,#fBody,#mBody){zoom:.92}   /* o mapa fica fora: zoom desalinha os cliques do Leaflet */
 .ciclo{display:inline-flex;margin:2px 0 10px}.ciclo button small{font-size:11px;color:var(--ok);font-weight:600;margin-left:4px}
-.plOp b{font-size:15px}.plOp span{font-weight:700;text-align:right}.plOp small{font-weight:500;color:var(--mute)}.plOp em{grid-column:1/-1;font-style:normal;color:var(--tx2);font-size:12.5px}
+.plOp b{font-size:15px;display:flex;align-items:center;gap:6px;flex-wrap:wrap}.plOp span{font-weight:700;text-align:right}.plOp small{font-weight:500;color:var(--mute)}.plOp em{grid-column:1/-1;font-style:normal;color:var(--tx2);font-size:12.5px}
+.plOp .selo-trial{background:var(--acc);color:var(--ink);border-radius:999px;padding:1px 7px;font-size:10.5px;font-weight:700;letter-spacing:.02em;line-height:1.3}
+.trial-faixa{margin:0 0 12px;padding:10px 12px;border-radius:12px;border:1px solid var(--ok-ln);background:var(--ok-bg);color:var(--tx);font-size:13.5px;line-height:1.45}
+.trial-faixa b{color:var(--ink);background:var(--acc);border-radius:999px;padding:2px 8px;font-size:11px;letter-spacing:.03em;text-transform:uppercase;margin-right:6px}
+.plOp .trial-linha{grid-column:1/-1;color:var(--ink);background:var(--acc);border-radius:8px;padding:4px 8px;font-size:12px;font-weight:700;text-align:center}
 /* nota 0–100 e selo de veracidade na ficha (público: número, faixa e palavras; sem teto, sem fórmula) */
 .n-alta{--nf:#6FD3B0;--nf-bg:rgba(111,211,176,.16);--nf-ln:rgba(111,211,176,.5)}
 .n-boa{--nf:#E2AC48;--nf-bg:rgba(226,172,72,.16);--nf-ln:rgba(226,172,72,.5)}
@@ -965,7 +979,7 @@ body{transition:padding-right .5s var(--mola)}
     <select class="moeda" id="moeda" aria-label="Moeda dos valores" hidden></select>
     <a class="hbt cfg" id="btCfg" href="conta/#sPref" title="Configurações: moeda, idioma, tema" aria-label="Configurações">⚙</a>
     <span class="plSelo" id="plSelo" hidden></span>
-    <button class="hbt ass" id="btAssina" type="button">Assinar<span class="lg-full"> · a partir de US$ 9,90/mês</span></button>
+    <button class="hbt ass" id="btAssina" type="button" data-trial="1" aria-label="Assinar — 7 dias grátis no Pro" title="Assinar — 7 dias grátis no Pro">Assinar<span class="selo-trial"><span class="t-longo">7 dias grátis no Pro</span><span class="t-curto">7 dias grátis</span></span></button>
     <button class="hbt carr" id="btCarr" type="button" aria-label="Carrinho de encomenda" title="Carrinho de encomenda">🛒 <b id="nCarr">0</b></button>
     <!-- 28/10: Entrar fica no fim; logado vira menu do usuário (o "Sair" ao lado da Conta deslogou o testador num clique errado) -->
     <button class="hbt ent" id="btEntrar" type="button" hidden aria-haspopup="true" aria-expanded="false">Entrar</button>
@@ -1862,7 +1876,7 @@ function abreEntrar(){
       <label>Senha<input name="senha" type="password" autocomplete="current-password" required></label>
       <button class="cta" type="submit">Entrar</button><div class="nota" id="entErro"></div></form>
     <div class="nota">Esqueceu a senha? <button type="button" class="lnk" id="btEsq">Receber um link para criar uma senha nova</button></div>
-    <div class="nota">Ainda não tem acesso? <button type="button" class="lnk" data-teste>Teste grátis por 7 dias</button> (só e-mail e telefone) ou <button type="button" class="lnk" data-assina>assine a partir de US$ 9,90/mês</button>. <a class="lnk" href="planos/">Ver todos os planos</a> · <button type="button" class="lnk" data-tour>Como usar a plataforma</button></div>`);
+    <div class="nota">Ainda não tem acesso? <button type="button" class="lnk" data-teste>Teste grátis por 7 dias</button> (só e-mail e telefone) ou <button type="button" class="lnk" data-assina>Assinar — 7 dias grátis no Pro</button>. <a class="lnk" href="planos/">Ver todos os planos</a> · <button type="button" class="lnk" data-tour>Como usar a plataforma</button></div>`);
   $("#fConta").onsubmit = async e => { e.preventDefault(); const f = new FormData(e.target), bt = e.target.querySelector("button[type=submit]");
     bt.disabled = true; bt.textContent = "Entrando…";
     // o autopreenchimento do Chrome guardou o e-mail em MAIÚSCULAS e o servidor compara exato (28/10): sempre minúsculo e sem espaço
@@ -2003,7 +2017,7 @@ const IA_SABER = [
   "- A análise BLR completa (teto, ARV pelas vendas reais, Força) hoje existe para a Flórida. Nos outros estados o lote aparece com ARV estimado (valor oficial do condado ou preço por pé² do CEP) ou como \"listado\" (dado do edital, sem a conta completa). Alguns estados não têm leilão no calendário, só estoque de venda direta (land bank, imóveis do governo).",
   "- Abas: BIDMAP (o mapa), BIDLIST (a lista dos lotes, com ordenação e colunas), Pacotes (listas ★ dos lotes que você acompanha), Meu portfólio (o que você arrematou) e Guia (cada item explicado). O questionário \"Para você\" monta uma lista com os lotes que combinam com o seu perfil.",
   "- Como comprar: Self Bidder (planos Básico e Pro): você se inscreve no leilão e dá o lance por conta própria, com a análise da plataforma. Partner Bidder (UltraPro, por convite e depois de homologação): a BLR opera o lance com você e divide o risco. O botão \"Quero participar deste leilão\" pede à BLR para inscrever e dar o lance por você.",
-  "- Teste grátis de 7 dias só com e-mail e telefone. O plano anual sai pelo preço de 10 meses. O pagamento é por link enviado pela BLR; nada é cobrado dentro do site.",
+  "- Teste grátis de 7 dias, só com e-mail e telefone, para testar o Pro. O UltraPro entra nesse teste; o Básico não tem. O plano anual sai pelo preço de 10 meses. O pagamento é por link enviado pela BLR; nada é cobrado dentro do site. Sem cartão: se não assinar, a pessoa continua como visitante.",
   "## Tipos de leilão nos EUA (regras gerais; cada estado e condado tem as suas, e o edital é o que vale)",
   "- Tax deed (imposto, escritura): o condado vende o imóvel por imposto atrasado e quem ganha recebe a escritura. Em geral a hipoteca privada cai; lien de governo pode continuar; o IRS (receita federal), quando tem lien, pode resgatar o imóvel em até 120 dias.",
   "- Tax lien (certificado): você compra a dívida de imposto, não o imóvel. Ganha juros quando o dono paga; se ele não pagar no prazo de resgate (de meses a anos, conforme o estado), você pode pedir a escritura. Muitos certificados são resgatados.",
@@ -2625,7 +2639,7 @@ async function abre(i){
       : MEMBRO ? `<h4>Endereço e links</h4><div class="trava"><span>—</span><div><b>Este lote ainda não tem endereço nem parcela nos dados da BLR.</b><br><button type="button" class="lnk" data-info="${l.i}">Peça as informações deste lote</button>.</div></div>`
       : `<h4>Endereço e links</h4><div class="trava"><span>🔒</span><div><b>Endereço, parcela, Street View e a página do leilão ficam com os assinantes.</b><br>
       ${SESSAO ? `Seu acesso UltraPro está sendo liberado pela BLR; os dados aparecem assim que a liberação chegar à sua conta. Enquanto isso, <button type="button" class="lnk" data-info="${l.i}">peça as informações deste lote</button>.`   /* 07/11: logado sem o pacote do servidor (papel cliente) */
-        : `<button type="button" class="lnk" data-assina>Assine a partir de US$ 9,90/mês</button> ou <button type="button" class="lnk" data-info="${l.i}">peça as informações deste lote</button>.`}</div></div>`;
+        : `<button type="button" class="lnk" data-assina>${TRIAL_BOTAO}</button> ou <button type="button" class="lnk" data-info="${l.i}">peça as informações deste lote</button>.`}</div></div>`;
   }
   if(PODE && !HIST(l)){
     const ja = await jaInteressado(l);
@@ -2882,7 +2896,13 @@ async function envia(p, ok){
 function formDe(id, onSubmit){ const f = $("#" + id); f.addEventListener("submit", e => { e.preventDefault();
   onSubmit({...Object.fromEntries(new FormData(f)), quer: [...f.querySelectorAll("input[name=quer]:checked")].map(x => x.value)}); }); }
 /* 07/11 (Cris): os planos do Miro com preço: Básico US$ 9,90 · Pro US$ 49,90 · UltraPro US$ 249,90 por mês (planos/ usa os mesmos).
-   Sem plano escolhido (botão "Assinar"), abre a escolha; com plano, o pedido. Pagamento: a BLR manda o link (nada é cobrado aqui). */
+   Sem plano escolhido (botão "Assinar"), abre a escolha; com plano, o pedido. Pagamento: a BLR manda o link (nada é cobrado aqui).
+   10/11: o teste de 7 dias é do Pro e do UltraPro. O Básico não tem. Não há cobrança automática nesta página. */
+const TRIAL_SELO = "7 dias grátis";
+const TRIAL_NOTA = "7 dias grátis para testar o Pro";
+const TRIAL_BOTAO = "Assinar — 7 dias grátis no Pro";
+function temTrial(id){ return id === "pro" || id === "ultra"; }
+function seloTrialHTML(id){ return temTrial(id) ? `<span class="selo-trial">${TRIAL_SELO}</span>` : ""; }
 const PLANOS = {
   basico: {n: "Básico", p: "9,90", a: "99", am: "8,25", ec: "19,80", ben: ["Ficha completa e filtros avançados", "1 estado à sua escolha (troca 1× por mês)", "Self Bidder: você opera por conta própria", "Assistente de IA: 10 consultas por mês"]},
   pro: {n: "Pro", p: "49,90", a: "499", am: "41,58", ec: "99,80", ben: ["Tudo do Básico, em até 3 estados", "Teto de lance BLR, ARV e a conta ao vivo de cada lote", "Posição exata, contorno do lote, Street View, endereço e parcela", "Várias listas e alertas de oportunidades", "Self Bidder com suporte a dúvidas · IA: 40 consultas por mês"]},
@@ -2893,21 +2913,25 @@ let CICLO = "m";
 try{ if(localStorage.getItem("blr_ciclo") === "a") CICLO = "a"; }catch(e){}
 const cicloSeg = () => `<div class="ciclo seg" role="group" aria-label="Forma de pagamento"><button type="button" data-ciclo="m" aria-pressed="${CICLO === "m"}">Mensal</button><button type="button" data-ciclo="a" aria-pressed="${CICLO === "a"}">Anual <small>2 meses grátis</small></button></div>`;
 const precoPl = v => CICLO === "a" ? `US$ ${v.a}<small>/ano</small>` : `US$ ${v.p}<small>/mês</small>`;
+function htmlPlanoOp(k, v){
+  return `<button type="button" class="plOp ${k === "pro" ? "dest" : ""}" data-plano="${k}" data-trial="${temTrial(k) ? "1" : "0"}">
+        <b>${v.n}${seloTrialHTML(k)}</b><span class="num">${precoPl(v)}</span><em>${CICLO === "a" ? `equivale a US$ ${v.am}/mês · economia de US$ ${v.ec}` : esc(v.ben[k === "basico" ? 0 : 1])}</em>${temTrial(k) ? `<span class="trial-linha">${TRIAL_NOTA}</span>` : ""}</button>`;
+}
 function cicloEventos(f){ document.querySelectorAll("#mBody [data-ciclo]").forEach(b => b.onclick = () => { CICLO = b.dataset.ciclo; try{ localStorage.setItem("blr_ciclo", CICLO); }catch(e){} f(); }); }
 function abreAssina(plano, ciclo){
   if(typeof plano !== "string") plano = null;
   if(ciclo === "anual" || ciclo === "a") CICLO = "a"; else if(ciclo === "mensal" || ciclo === "m") CICLO = "m";
   const P = PLANOS[plano];
+  const faixa = `<p class="trial-faixa"><b>${TRIAL_SELO}</b> ${TRIAL_NOTA}. Vale para o Pro e o UltraPro. O Básico não tem. Sem cartão: se não assinar, você continua como visitante.</p>`;
   if(!P){
-    abreModal(`<h3 id="mTit">Escolha o seu plano</h3>${cicloSeg()}
-      <div class="plEsc">${Object.entries(PLANOS).map(([k, v]) => `<button type="button" class="plOp ${k === "pro" ? "dest" : ""}" data-plano="${k}">
-        <b>${v.n}</b><span class="num">${precoPl(v)}</span><em>${CICLO === "a" ? `equivale a US$ ${v.am}/mês · economia de US$ ${v.ec}` : esc(v.ben[k === "basico" ? 0 : 1])}</em></button>`).join("")}</div>
+    abreModal(`<h3 id="mTit">Escolha o seu plano</h3>${faixa}${cicloSeg()}
+      <div class="plEsc">${Object.entries(PLANOS).map(([k, v]) => htmlPlanoOp(k, v)).join("")}</div>
       <div class="nota"><button type="button" class="lnk" data-teste>Testar o Pro por 7 dias grátis</button> · <a class="lnk" href="planos/">comparar tudo</a></div>`);
     document.querySelectorAll("[data-plano]").forEach(b => b.onclick = () => abreAssina(b.dataset.plano));
     cicloEventos(() => abreAssina());
     return;
   }
-  abreModal(`<h3 id="mTit">Plano <em>${P.n}</em></h3>${cicloSeg()}
+  abreModal(`<h3 id="mTit">Plano <em>${P.n}</em></h3>${temTrial(plano) ? faixa : ""}${cicloSeg()}
     <div class="preco-ass"><b class="num">US$ ${CICLO === "a" ? P.a : P.p}</b><span>${CICLO === "a" ? `por ano (equivale a US$ ${P.am}/mês, economia de US$ ${P.ec}) · 20% de desconto na taxa por arremate` : "por mês · cancele quando quiser"}</span></div>
     <ul class="ben">${P.ben.map(x => `<li>${esc(x)}</li>`).join("")}</ul>
     <form class="fcad" id="fAss">${campos(`<label>Você é<select name="perfil"><option>Investidor</option><option>Corretor / agente</option><option>Construtor</option><option>Outro</option></select></label>`)}
@@ -3131,7 +3155,7 @@ function criaMapa(){
   box.appendChild(RG); Lf.DomEvent.disableClickPropagation(RG); Lf.DomEvent.disableScrollPropagation(RG);
   let RG_ABERTO = null, RG_MIN = false;
   const BENEF = () => ASSIN ? "" : `<div class="pro"><b>O que o Pro libera · US$ 49,90/mês</b><ul><li>Posição exata e o contorno de cada lote</li><li>Street View, endereço e parcela</li><li>Teto BLR, ARV e a conta ao vivo</li><li>Várias listas de acompanhamento</li><li>Assistente de IA da BLR</li></ul>
-    <button type="button" class="cta" data-teste>Testar 7 dias grátis</button><button type="button" class="lnk" data-assina>ou assinar · a partir de US$ 9,90/mês</button><a class="lnk" href="planos/">ver todos os planos</a></div>`;
+    <button type="button" class="cta" data-teste>Testar 7 dias grátis</button><button type="button" class="lnk" data-assina>${TRIAL_BOTAO}</button><a class="lnk" href="planos/">ver todos os planos</a></div>`;
   function cartaoRG(l){
     const ab = RG_ABERTO === l.i, fz = forcaDe(l);
     return `<article class="grc${ab ? " ab" : ""}" data-rc="${l.i}"><div class="grf">${fotoCard(l)}</div>
