@@ -79,6 +79,7 @@ a{color:var(--info)}
 .iab{padding:9px 12px;border-radius:12px;font-size:13.5px;line-height:1.5;white-space:pre-wrap;max-width:92%}
 .ia-r{background:var(--surf);color:var(--tx2);align-self:flex-start}.ia-u{background:var(--ok-bg);color:var(--tx);align-self:flex-end}
 .iasug{display:flex;flex-wrap:wrap;gap:6px;margin:2px 0 4px}.iasug button{font:inherit;font-size:12.5px;padding:6px 10px;border-radius:999px;border:1px solid var(--line2);background:transparent;color:var(--tx2);cursor:pointer;text-align:left}.iasug button:hover,.iasug button:focus-visible{border-color:var(--acc);color:var(--tx)}   /* 09/11: perguntas prontas */
+.fcad label.aceite{display:block;font-size:12.5px;line-height:1.45;color:var(--tx2);font-weight:400;text-transform:none;letter-spacing:0}.fcad label.aceite input{display:inline-block;width:auto;padding:0;margin:0 7px 0 0;vertical-align:-2px;accent-color:var(--acc)}.fcad label.aceite a{color:var(--acc)}   /* 11/11: aceite dos termos (texto corrido, sem maiúsculas) */
 .iab.esp{color:var(--mute);font-style:italic}.iab.erro{color:var(--mute)}
 .iab.cortada{-webkit-mask-image:linear-gradient(#000 45%,transparent);mask-image:linear-gradient(#000 45%,transparent)}
 .iacta{align-self:stretch;display:flex;flex-direction:column;gap:6px;padding:12px;border:1px solid var(--ok-ln);border-radius:12px;background:var(--ok-bg);font-size:13px;color:var(--tx2)}
@@ -1970,6 +1971,7 @@ function menuUsuario(e){
     <a class="lnk" role="menuitem" href="conta/#sPref">⚙ Configurações (moeda, idioma)</a>
     <a class="lnk" role="menuitem" href="planos/">◆ Planos</a>
     <button type="button" class="lnk" role="menuitem" data-tour>? Como usar a plataforma</button>
+    <a class="lnk" role="menuitem" href="termos/">§ Termos de Uso</a><a class="lnk" role="menuitem" href="privacy/">§ Privacidade</a>
     ${SITE ? `<button type="button" class="lnk" role="menuitem" data-ia>✦ Assistente BLR</button>` : ""}
     ${SITE && SESSAO && SESSAO.papel === "admin" ? `<a class="lnk" role="menuitem" href="admin/">⚙ Administrar usuários</a>` : ""}
     <button type="button" class="sair" role="menuitem">Sair da conta</button>`;
@@ -2023,12 +2025,16 @@ function abreCadastro(){
       <li>Várias listas de acompanhamento e o questionário <b>Para você</b></li><li>Assistente de IA da BLR</li></ul>
     <form class="fcad" id="fTeste"><label>E-mail<input name="email" type="email" autocomplete="email" required></label>
       <label>Telefone / WhatsApp (com o código do país)<input name="telefone" type="tel" autocomplete="tel" required minlength="8" placeholder="+1 617 000 0000"></label>
+      <label class="aceite"><input type="checkbox" name="termos" required> Li e aceito os <a href="termos/" target="_blank" rel="noopener">Termos de Uso</a> e a <a href="privacy/" target="_blank" rel="noopener">Política de Privacidade</a>.</label>
+      <label class="aceite"><input type="checkbox" name="sms"> Quero receber novidades e oportunidades da BLR por SMS/WhatsApp (opcional). A frequência varia; podem incidir tarifas de mensagem e dados. Responda SAIR/STOP para parar e AJUDA/HELP para ajuda. Não é condição para usar a plataforma.</label>
       <button class="cta" type="submit">Começar o teste</button><div class="nota" id="tErro"></div>
       <div class="nota">Sem cartão. Depois dos 7 dias você continua como visitante, se não assinar.</div></form>`);
   $("#fTeste").onsubmit = async e => { e.preventDefault(); const f = new FormData(e.target), bt = e.target.querySelector("button[type=submit]");
     const email = String(f.get("email")).trim().toLowerCase(), tel = String(f.get("telefone")).trim();
     bt.disabled = true; bt.textContent = "Enviando…";
-    try{ await api("/api/cadastro", {email, telefone: tel});
+    // 11/11 (Cris, termos no padrão PropertyRadar): o aceite dos Termos e o consentimento de SMS vão com data e versão
+    const aceite = {termos: "2026-11-11", aceito_em: new Date().toISOString(), sms_marketing: !!f.get("sms")};
+    try{ await api("/api/cadastro", {email, telefone: tel, aceite});
       abreModal(`<h3 id="mTit">Quase lá ✓</h3><p class="ok-msg">Mandamos para <b>${esc(email)}</b> o link para criar a sua senha. O teste de 7 dias começa quando você entrar.</p><button class="cta" type="button" onclick="fechaModal()">Fechar</button>`); }
     catch(er){ if(er.st === 429){ bt.disabled = false; bt.textContent = "Começar o teste"; $("#tErro").textContent = "Muitas tentativas. Espere alguns minutos."; return; }
       envia({tipo: "teste 7 dias", nome: email.split("@")[0], email, whats: tel}, "Pedido de teste recebido. A BLR libera o seu acesso e manda o link para criar a senha."); } };
@@ -3418,6 +3424,7 @@ function abreAssina(plano, ciclo){
     <div class="preco-ass"><b class="num">US$ ${CICLO === "a" ? P.a : P.p}</b><span>${CICLO === "a" ? `por ano (equivale a US$ ${P.am}/mês, economia de US$ ${P.ec}) · 20% de desconto na taxa por arremate` : "por mês · cancele quando quiser"}</span></div>
     <ul class="ben">${P.ben.map(x => `<li>${esc(x)}</li>`).join("")}</ul>
     <form class="fcad" id="fAss">${campos(`<label>Você é<select name="perfil"><option>Investidor</option><option>Corretor / agente</option><option>Construtor</option><option>Outro</option></select></label>`)}
+      <label class="aceite"><input type="checkbox" name="termos" required> Li e aceito os <a href="termos/" target="_blank" rel="noopener">Termos de Uso</a> e a <a href="privacy/" target="_blank" rel="noopener">Política de Privacidade</a>.</label>
       <button class="cta" type="submit">Quero o ${P.n}</button>
       <div class="nota">Depois do cadastro, a BLR manda o link de pagamento seguro e libera o seu acesso. Nada é cobrado nesta página. <button type="button" class="lnk" data-assina-outro>Ver os outros planos</button>${CONTATO.whats ? ` · Dúvidas: WhatsApp ${esc(CONTATO.whats)}${CONTATO.email ? " · " + esc(CONTATO.email) : ""}.` : ""}</div></form>`);
   const o = document.querySelector("[data-assina-outro]"); if(o) o.onclick = () => abreAssina();
