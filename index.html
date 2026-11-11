@@ -2,7 +2,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex,nofollow"><meta name="theme-color" content="#0C0E12">
 <meta name="description" content="BLR Developments: imóveis indo a leilão nos EUA, analisados e precificados pela BLR.">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob: https:; connect-src 'self' https://api.blrdevelopment.com; frame-src https://www.google.com; object-src 'none'; base-uri 'self'; form-action 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob: https:; connect-src 'self' https://api.blrdevelopment.com; frame-src https://www.google.com https://www.mapillary.com; object-src 'none'; base-uri 'self'; form-action 'self'">
 <link rel="icon" href="/favicon.ico" sizes="any"><link rel="icon" type="image/svg+xml" href="/blr-icon-small.svg">
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png"><link rel="icon" type="image/png" sizes="16x16" href="/favicon-16.png">
 <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="manifest" href="/site.webmanifest">
@@ -3176,6 +3176,11 @@ async function abre(i){
       const sem = $("#fBody").querySelector(".fsem");
       if(sem) sem.outerHTML = figSv;
       else { const anc = $("#fBody").querySelector(".fhero, .lote-big"); (anc || $("#fBody")).insertAdjacentHTML(anc ? "beforebegin" : "afterbegin", figSv); }
+    } else if(SITE && p.mly && p.mly.id){   // 11/11: sem Street View, a foto de rua do Mapillary (CC-BY-SA, visualizador oficial ao vivo)
+      const figM = `<figure class="fhero sv"><iframe src="https://www.mapillary.com/embed?image_key=${encodeURIComponent(p.mly.id)}&style=photo" loading="lazy" allowfullscreen referrerpolicy="no-referrer-when-downgrade" title="Foto de rua (Mapillary)"></iframe><figcaption>Foto de rua · © Mapillary contributors (CC-BY-SA 4.0)${p.mly.ano ? ", foto de " + esc(String(p.mly.ano)) : ""} · a ${esc(String(p.mly.m))} m do centro do lote · arraste para olhar em volta</figcaption></figure>`;
+      const sem = $("#fBody").querySelector(".fsem");
+      if(sem) sem.outerHTML = figM;
+      else { const anc = $("#fBody").querySelector(".fhero, .lote-big"); (anc || $("#fBody")).insertAdjacentHTML(anc ? "beforebegin" : "afterbegin", figM); }
     }
     $("#secPriv").innerHTML = `<h4>Endereço e links</h4>
       <div style="font-size:16px;font-weight:600;margin-bottom:4px">${esc(p.e)}</div>
