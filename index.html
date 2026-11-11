@@ -1033,6 +1033,12 @@ body{transition:padding-right .5s var(--mola)}
 .novos{border:1px solid var(--line);border-radius:var(--r);background:var(--surf);padding:12px 14px}
 .novos .novosTit{font-family:var(--f-d);font-size:16px;font-weight:600;margin:0 0 6px}
 .novos p{margin:0;color:var(--tx2);font-size:13.5px;line-height:1.45}
+/* 11/11 (redesign): para o visitante, o aviso vira uma linha só e não empurra o mapa */
+.novos[data-novos-modo="visita"]{display:flex;align-items:center;gap:10px;padding:7px 12px;border-radius:12px}
+.novos[data-novos-modo="visita"] .novosTit{margin:0;font-size:13.5px;flex:1}.novos[data-novos-modo="visita"] .novosTit::after{content:" · assinantes veem os lotes novos dos seus estados";font-family:var(--f-b);font-weight:400;color:var(--tx2);font-size:12.5px}
+.novos[data-novos-modo="visita"] p:not(.novosTit){display:none}.novos[data-novos-modo="visita"] .novosCta{flex:none;padding:6px 12px;font-size:12.5px}
+.novosSlot:has(.novos[data-novos-modo="visita"]){margin:0 0 8px}
+@media (max-width:760px){.novos[data-novos-modo="visita"] .novosTit::after{content:none}}
 .novos .novosCta{all:unset;box-sizing:border-box;cursor:pointer;display:inline-flex;align-items:center;min-height:40px;margin-top:10px;padding:8px 12px;border-radius:10px;background:var(--acc);color:var(--ink);font-weight:700;font-size:13.5px}
 .novos .novosCta:focus-visible,.novosBt:focus-visible{outline:2px solid var(--tx);outline-offset:2px}
 .novosLista{max-height:220px;overflow:auto;margin-top:8px}
@@ -3563,7 +3569,7 @@ $("#btCarr").onclick = abreCarr;
 
 /* ---------- mapa único em vetor: EUA → estado → condado → bairro e ruas. Zoom aproxima = entra, afasta = sai ---------- */
 let MAPA = null;
-let LEGF = window.innerWidth < 760;   // legenda recolhida no celular
+let LEGF = true;   // 11/11 (redesign): legenda começa recolhida (o tour e o Guia explicam); abre no botão
 const urg = d => dias(d) <= 10;
 const MES = ["jan","fev","mar","abr","mai","jun","jul","ago","set","out","nov","dez"];
 const chipData = d => `<div class="dt ${urg(d) ? "u" : ""}"><b>${d.slice(8,10)}</b><span>${MES[+d.slice(5,7)-1]}</span></div>`;
