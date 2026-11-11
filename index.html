@@ -335,6 +335,7 @@ body.aguarda #whoTxt,body.aguarda #btAssina{visibility:hidden}   /* 2.2: até o 
 .fhero figcaption{position:absolute;left:10px;bottom:10px;font-size:11px;padding:3px 8px;border-radius:6px;background:rgba(12,14,18,.8);color:#C9CED8}
 .fcapa{margin:-18px -20px 0;border-radius:0 0 20px 20px;overflow:hidden;background:#17202c;min-height:180px}
 .fcapa .fhero{margin:0}
+.fhero.aerea{position:relative}.fhero.aerea .aer-svg{position:absolute;left:0;top:0;width:100%;height:220px;pointer-events:none}.fhero.aerea img{height:220px!important;aspect-ratio:auto!important}
 .fcapa .fhero img,.fcapa .fhero.sv iframe{width:100%;height:220px;max-height:46vh;object-fit:cover}
 .fsem{min-height:196px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:28px 22px;text-align:center;color:#F4F7FB;background:linear-gradient(165deg,#2c3a50 0%,#17202c 62%,#3a2c22 100%)}
 .fsem svg{width:48px;height:48px;flex:none}
@@ -383,12 +384,30 @@ body.prel #relPdf{display:block;background:#fff;color:#111;min-height:100vh}
 .rel-bar{display:flex;gap:8px;margin:0 0 12px}
 .rel-bar button{font:600 13px system-ui,sans-serif;padding:8px 12px;border-radius:8px;border:1px solid #bbb;background:#fff;color:#111;cursor:pointer}
 .rel-rod{margin-top:16px;padding-top:8px;border-top:1px solid #ccc;font-size:12px;color:#333}
+/* 11/11 (Cris): relatório com a cara da BLR — faixa escura com logo, filete dourado, marca d'água em toda página, rodapé com o site */
+.rel{position:relative}
+.rel-topo{display:flex;align-items:center;gap:12px;background:#0C0E12;color:#F4F1EA;border-radius:10px;padding:12px 16px;margin:0 0 14px;border-bottom:3px solid #E2AC48;print-color-adjust:exact;-webkit-print-color-adjust:exact}
+.rel-topo .rt-nome{font:700 17px/1.1 var(--f-d),system-ui,sans-serif;letter-spacing:.01em}
+.rel-topo .rt-sub{font-size:11.5px;color:#C9B98F;letter-spacing:.08em;text-transform:uppercase;margin-top:3px}
+.rel-topo .rt-dir{margin-left:auto;text-align:right;font-size:11.5px;color:#C9B98F;line-height:1.35}
+.rel-topo .rt-dir b{color:#E2AC48;font-weight:600}
+.rel h2{border-left:3px solid #E2AC48;padding-left:8px}
+.rel th{color:#6B5520;font-size:12px;letter-spacing:.04em;text-transform:uppercase}
+.rel-marca{position:fixed;inset:0;pointer-events:none;display:none;align-items:center;justify-content:center;z-index:0;overflow:hidden}
+.rel-marca span{transform:rotate(-32deg);font:800 74px/1 var(--f-d),system-ui,sans-serif;letter-spacing:.06em;color:rgba(226,172,72,.11);white-space:nowrap;text-align:center}
+.rel-marca span small{display:block;font-size:22px;letter-spacing:.32em;margin-top:10px}
+.rel>*:not(.rel-marca){position:relative;z-index:1}
+body.prel .rel-marca{display:flex}
+.rel-rod{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;border-top:2px solid #E2AC48!important}
+.rel-rod b{color:#6B5520}
 @media print{
   body.prel>*:not(#relPdf){display:none!important}
   body.prel #relPdf,.rel{display:block!important;background:#fff!important;color:#111!important}
   .rel-bar{display:none!important}
   .rel table,.rel h2,.rel .av{break-inside:avoid}
   .rel .av{print-color-adjust:exact;-webkit-print-color-adjust:exact}
+  .rel-marca{display:flex!important;print-color-adjust:exact;-webkit-print-color-adjust:exact}
+  html:has(body.prel),body.prel{background:#fff!important}
   @page{margin:12mm}
 }
 .fh .x{all:unset;cursor:pointer;margin-left:auto;width:34px;height:34px;border-radius:9px;display:grid;place-items:center;color:var(--tx2);border:1px solid var(--line2);flex:none}
@@ -2948,6 +2967,9 @@ function relatorioHTML(l, op){
   const quando = relData(op.gerado) || "sem dado";
   return `<article class="rel" data-relatorio>
     <div class="rel-bar"><button type="button" data-rel-pdf>Salvar PDF</button><button type="button" data-rel-fecha>Fechar</button></div>
+    <div class="rel-marca" aria-hidden="true"><span>BLR DEVELOPMENTS<small>blrdevelopment.com</small></span></div>
+    <header class="rel-topo"><svg viewBox="0 0 64 64" width="38" height="38" aria-hidden="true"><rect width="64" height="64" rx="14" fill="#0C0E12"/><path d="M32 59C25 50 11 39 11 26A21 21 0 1 1 53 26C53 39 39 50 32 59Z" fill="#E8B04B"/><path d="M32 13L45 24H41V36H23V24H19Z" fill="#0C0E12"/><rect x="29" y="27" width="6" height="9" rx="1" fill="#E8B04B"/></svg><div><div class="rt-nome">BLR Developments</div><div class="rt-sub">Relatório do lote · leilões nos EUA</div></div>
+      <div class="rt-dir"><b>blrdevelopment.com</b><br>Gerado em ${relEsc(quando)}</div></header>
     <h1>Relatório do lote</h1>
     <p class="rel-lugar">${relEsc(relLugar(l) || "sem dado")}</p>
     ${aviso ? `<p class="av">${relEsc(aviso)}</p>` : ""}
@@ -2960,7 +2982,7 @@ function relatorioHTML(l, op){
     <p>Resultado: ${relEsc(resultado)}. Estimativa.</p>
     ${faixa}
     <h2>Fontes</h2>${fontes}
-    <footer class="rel-rod">Gerado em ${relEsc(quando)}. estimativa, não é recomendação</footer>
+    <footer class="rel-rod"><span><b>BLR Developments</b> · blrdevelopment.com</span><span>Gerado em ${relEsc(quando)}. estimativa, não é recomendação</span></footer>
   </article>`;
 }
 // RELATORIO_FIM
@@ -3058,6 +3080,29 @@ function partesNS(l){
   const corte = html.lastIndexOf(fim);
   return {nota:html.slice(0, i).replace("Nota BLR e veracidade do dado", "Nota BLR") + fim,
     selo:`<section class="nselo" aria-label="Selo de fonte e data">` + html.slice(i, corte) + fim};
+}
+/* 11/11: capa aérea do lote (USGS NAIP, domínio público) para quem não tem foto de rua. ~240 m de largura em Web Mercator;
+   contorno exato por cima quando já chegou (EXATO/pol), senão um círculo na posição do lote. Só assinante (posição exata). */
+function capaAerea(la, ln, pol){
+  const R = 6378137, X = g => R * g * Math.PI / 180, Y = g => R * Math.log(Math.tan(Math.PI / 4 + g * Math.PI / 360));
+  const W = 800, H = 450, temPol = Array.isArray(pol) && pol.length > 2;
+  let cx = X(ln), cy = Y(la), hx = 120 / Math.cos(la * Math.PI / 180), hy = hx * H / W;
+  if(temPol){   // enquadra a parcela inteira (lote rural grande) com 20% de folga
+    const xs = pol.map(q => X(q[1])), ys = pol.map(q => Y(q[0])), x0 = Math.min(...xs), x1 = Math.max(...xs), y0 = Math.min(...ys), y1 = Math.max(...ys);
+    cx = (x0 + x1) / 2; cy = (y0 + y1) / 2;
+    hx = Math.max(hx, (x1 - x0) / 2 * 1.2, (y1 - y0) / 2 * 1.2 * W / H); hy = hx * H / W;
+  }
+  const bb = `bbox=${cx - hx},${cy - hy},${cx + hx},${cy + hy}&bboxSR=3857&imageSR=3857&size=${W},${H}&format=jpg&f=image`;
+  // basemap USGSImageryOnly (o mesmo do mapa no zoom alto); se falhar, o NAIP do ImageServer (instável: 502 em 11/11)
+  const url = `https://basemap.nationalmap.gov/arcgis/rest/services/USGSImageryOnly/MapServer/export?${bb}`,
+        url2 = `https://imagery.nationalmap.gov/arcgis/rest/services/USGSNAIPImagery/ImageServer/exportImage?${bb}`;
+  const px = (a, o) => [((X(o) - (cx - hx)) / (2 * hx) * W).toFixed(1), (((cy + hy) - Y(a)) / (2 * hy) * H).toFixed(1)];
+  const forma = temPol
+    ? `<polygon points="${pol.map(([a, o]) => px(a, o).join(",")).join(" ")}" fill="rgba(242,193,78,.18)" stroke="#F2C14E" stroke-width="3"/>`
+    : `<circle cx="${W / 2}" cy="${H / 2}" r="34" fill="none" stroke="#F2C14E" stroke-width="3" stroke-dasharray="8 6"/><circle cx="${W / 2}" cy="${H / 2}" r="5" fill="#F2C14E"/>`;
+  return `<figure class="fhero sv aerea"><img src="${url}" data-alt2="${url2}" onerror="if(this.dataset.alt2){this.src=this.dataset.alt2;this.dataset.alt2=''}" alt="Foto aérea do lote" loading="lazy" style="display:block;width:100%;aspect-ratio:16/9;object-fit:cover;background:#17202c">
+    <svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid slice" class="aer-svg" aria-hidden="true">${forma}</svg>
+    <figcaption>Foto aérea (USGS, domínio público) · sem foto de rua perto deste lote${Array.isArray(pol) && pol.length > 2 ? " · contorno da parcela no cadastro" : " · círculo = posição do lote"}</figcaption></figure>`;
 }
 async function abre(i){
   const l = L.find(x => x.i === i); if(!l) return;
@@ -3181,6 +3226,9 @@ async function abre(i){
       const sem = $("#fBody").querySelector(".fsem");
       if(sem) sem.outerHTML = figM;
       else { const anc = $("#fBody").querySelector(".fhero, .lote-big"); (anc || $("#fBody")).insertAdjacentHTML(anc ? "beforebegin" : "afterbegin", figM); }
+    } else if(SITE && p.la != null && p.ln != null){   // 11/11 (Cris, lote rural de Bucks): sem Street View nem Mapillary, a capa é a foto aérea do USGS com o lote marcado
+      const sem = $("#fBody").querySelector(".fsem");
+      if(sem) sem.outerHTML = capaAerea(p.la, p.ln, (EXATO[i] && EXATO[i].pol) || (p.pol) || null);
     }
     $("#secPriv").innerHTML = `<h4>Endereço e links</h4>
       <div style="font-size:16px;font-weight:600;margin-bottom:4px">${esc(p.e)}</div>
