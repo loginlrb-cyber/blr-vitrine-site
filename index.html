@@ -3646,7 +3646,7 @@ $("#btCarr").onclick = abreCarr;
 
 /* ---------- mapa único em vetor: EUA → estado → condado → bairro e ruas. Zoom aproxima = entra, afasta = sai ---------- */
 let MAPA = null;
-let LEGF = true;   // 11/11 (redesign): legenda começa recolhida (o tour e o Guia explicam); abre no botão
+let LEGF = window.innerWidth < 760;   // 11/11: no computador a legenda começa aberta (Cris: "não tem mais a tabelinha no canto"); no celular recolhida, abre no botão e sozinha ao ligar renda/valor
 const urg = d => dias(d) <= 10;
 const MES = ["jan","fev","mar","abr","mai","jun","jul","ago","set","out","nov","dez"];
 const chipData = d => `<div class="dt ${urg(d) ? "u" : ""}"><b>${d.slice(8,10)}</b><span>${MES[+d.slice(5,7)-1]}</span></div>`;
@@ -3713,11 +3713,12 @@ function criaMapa(){
   M.fitBounds(EUA48, {padding: [6, 6]});
   M.createPane("sat").style.zIndex = 250;
   M.createPane("aereo").style.zIndex = 410; M.getPane("aereo").style.pointerEvents = "none";
+  M.createPane("setores").style.zIndex = 415;   // 11/11: bairros (renda/valor) acima da foto aérea do zoom alto (410), abaixo das ruas
   M.createPane("ruas").style.zIndex = 430; M.getPane("ruas").style.pointerEvents = "none";
   M.createPane("lotes").style.zIndex = 620;
   M.createPane("comp").style.zIndex = 640;
   // 28/10: tolerance amplia o alvo de clique/toque de cada bola para ≥ 24 px (raio 2–5 px + 10 px de folga), sem mudar o desenho
-  const rBase = Lf.canvas({padding: .3}), rRuas = Lf.canvas({pane: "ruas", padding: .3}), rLotes = Lf.canvas({pane: "lotes", padding: .3, tolerance: 10});
+  const rBase = Lf.canvas({padding: .3}), rSet = Lf.canvas({pane: "setores", padding: .3}), rRuas = Lf.canvas({pane: "ruas", padding: .3}), rLotes = Lf.canvas({pane: "lotes", padding: .3, tolerance: 10});
   let nivel = {uf: null, f: null};
   const z = () => M.getZoom();
   // estados
@@ -3794,7 +3795,7 @@ function criaMapa(){
   }
   function aereoPerto(zz){
     const on = zz >= 15;
-    if(on !== AEREO){ AEREO = on; camCo.setStyle(estilCo); botoesCam(); }
+    if(on !== AEREO){ AEREO = on; camCo.setStyle(estilCo); pintaSet(); }   // pintaSet refaz bairros (opacidade sobre a foto), legenda e botões
     if(!on){ if(camAereo && M.hasLayer(camAereo)) M.removeLayer(camAereo); return; }
     if(!camAereo) camAereo = Lf.tileLayer(TILE + "{z}/{y}/{x}", {pane: "aereo", opacity: .92, maxZoom: 19, maxNativeZoom: 16});
     if(!M.hasLayer(camAereo)) camAereo.addTo(M);
@@ -3983,12 +3984,15 @@ function criaMapa(){
     setF = f; medV = medR = null;
     // FL vem no bairros.json; o resto do país, um arquivo por condado (nacional/nac_bairros.py, ACS 5 anos)
     // (o artifact, com limite de arquivos, leva um arquivo por dezena do código do estado só com os condados que têm lote: bairros_g<1º dígito>.json)
-    const bz = (await BAIRROS)[f] || await fetch("bairros/" + f + ".json").then(r => r.ok ? r.json() : null).catch(() => null)
-      || await fetch("bairros_g" + f[0] + ".json").then(r => r.ok ? r.json() : {}).then(j => j[f]).catch(() => null);
+    // 11/11: Broward vinha vazio no bairros.json da FL (sem renda/valor em nenhum setor) e o arquivo nacional do condado, que tem os dados, nunca era lido
+    const temDado = j => j && j.features && j.features.some(ft => ft.properties && (ft.properties.r || ft.properties.v));
+    const bfl = (await BAIRROS)[f];
+    const bz = (temDado(bfl) && bfl) || await fetch("bairros/" + f + ".json").then(r => r.ok ? r.json() : null).catch(() => null)
+      || await fetch("bairros_g" + f[0] + ".json").then(r => r.ok ? r.json() : {}).then(j => j[f]).catch(() => null) || bfl;
     if(!bz || setF !== f) { pintaSet(); return; }
     medV = mediana(bz.features.map(ft => ft.properties.v));
     medR = mediana(bz.features.map(ft => ft.properties.rz ? ft.properties.r / ft.properties.rz : null));
-    camSet = Lf.geoJSON(bz, {renderer: rBase, style: () => ({fillOpacity: 0, weight: .5, color: "rgba(255,255,255,.14)"}),
+    camSet = Lf.geoJSON(bz, {renderer: rSet, style: () => ({fillOpacity: 0, weight: .5, color: "rgba(255,255,255,.14)"}),
       onEachFeature: (ft, ly) => { const p = ft.properties, vz = p.v && medV ? p.v / medV : null;
         ly.bindTooltip(`<b>Setor ${esc(p.g.slice(5))}</b><br>Renda das famílias ${k(p.r)}${p.rz ? ` · ${CL[cls(p.rz)]} do condado (${String(p.rz).replace(".", ",")}×)` : ""}<br>Casa típica ${k(p.v)}${vz ? ` · ${CL[cls(vz)]} (${vz.toFixed(2).replace(".", ",")}×)` : ""}`, {className: "tt-l", sticky: true}); }}).addTo(M);
     pintaSet();
@@ -3996,7 +4000,7 @@ function criaMapa(){
   function pintaSet(){
     const bairro = ON.renda || ON.valor;
     if(camSet) camSet.setStyle(ft => { const c = bairro ? corSet(ft.properties) : null;
-      return c ? {fillColor: c, fillOpacity: .62, weight: .5, color: "#0C0E12"} : {fillOpacity: 0, weight: .5, color: "rgba(255,255,255,.14)", dashArray: bairro ? "2 3" : null}; });
+      return c ? {fillColor: c, fillOpacity: AEREO ? .48 : .62, weight: .5, color: "#0C0E12"} : {fillOpacity: 0, weight: .5, color: "rgba(255,255,255,.14)", dashArray: bairro ? "2 3" : null}; });
     if(camSat) camSat.setOpacity(bairro ? .5 : 1);
     legenda(); botoesCam();
   }
@@ -4075,6 +4079,7 @@ function criaMapa(){
   cam.addEventListener("click", e => { const b = e.target.closest("button"); if(!b || b.disabled) return; const c = b.dataset.c;
     if(c === "arv" && !ASSIN){ abreAssina(); return; }
     ON[c] = !ON[c]; b.setAttribute("aria-pressed", ON[c]);
+    if((c === "renda" || c === "valor") && ON[c]) LEGF = false;   // ligou renda/valor: abre a tabelinha com as faixas
     if(c === "sat") satDe(nivel.f); else if(c === "arv") rotulosARV(); pintaSet(); });
   cam.querySelector("b").onclick = () => cam.classList.toggle("aberta");   // celular: a caixa abre e fecha no título
   Lf.DomEvent.disableClickPropagation(cam); Lf.DomEvent.disableScrollPropagation(cam); box.appendChild(cam);
@@ -4083,7 +4088,7 @@ function criaMapa(){
     const temB = !!camSet, temS = !!(nivel.f && (SITE || SAT[nivel.f]));
     cam.querySelector("[data-c=renda]").disabled = !temB; cam.querySelector("[data-c=valor]").disabled = !temB; cam.querySelector("[data-c=sat]").disabled = !temS;
     const ba = cam.querySelector("[data-c=arv]"); ba.innerHTML = "ARV BLR nos lotes" + (ASSIN ? "" : `<span class="cad">🔒</span>`);
-    cam.querySelector("small").textContent = AEREO ? "Foto aérea do USGS nesta aproximação. Bairros, por enquanto, só na Flórida." : temB ? "Ligue renda e valor juntos para ver onde os dois são altos." : SITE ? "Bairros: por enquanto só nos condados da Flórida." : "Bairros e o satélite gravado: por enquanto só nos condados da Flórida.";
+    cam.querySelector("small").textContent = AEREO ? (temB ? "Foto aérea do USGS nesta aproximação; renda e valor do bairro continuam por cima." : "Foto aérea do USGS nesta aproximação.") : temB ? "Ligue renda e valor juntos para ver onde os dois são altos." : SITE ? "Bairros: por enquanto só nos condados da Flórida." : "Bairros e o satélite gravado: por enquanto só nos condados da Flórida.";
   }
   // legenda com valores
   const faixaUS = (m, i) => !m ? ["menos de 0,85×", "0,85 a 1,15×", "mais de 1,15×"][i] : [`até ${k(.85 * m)}`, `${k(.85 * m)} a ${k(1.15 * m).replace(sim() + " ", "")}`, `mais de ${k(1.15 * m)}`][i];
