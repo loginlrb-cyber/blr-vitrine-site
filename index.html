@@ -8,7 +8,7 @@
 <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="manifest" href="/site.webmanifest">
 <style>*,*::before,*::after{box-sizing:border-box}html,body{margin:0}img{max-width:100%}[hidden]{display:none!important}
 :root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}</style>
-</head><body><link rel="preload" href="d_dados_4d7944ded9.json" as="fetch" crossorigin="anonymous"><link rel="preload" href="d_eua_145aaf5d14.json" as="fetch" crossorigin="anonymous"><title>BLR Developments</title>
+</head><body><link rel="preload" href="d_dados_ee192f073e.json" as="fetch" crossorigin="anonymous"><link rel="preload" href="d_eua_145aaf5d14.json" as="fetch" crossorigin="anonymous"><title>BLR Developments</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -1218,7 +1218,7 @@ body{transition:padding-right .5s var(--mola)}
 <div class="modal" id="modal" hidden><div class="mbox" role="dialog" aria-modal="true" aria-labelledby="mTit">
   <button class="x" id="mX" type="button" aria-label="Fechar">✕</button><div id="mBody"></div></div></div>
 
-<script>(function(){var q=function(u){return fetch(u).then(function(r){if(!r.ok)throw new Error(u+' '+r.status);return r.json()})};Promise.all([q('d_dados_4d7944ded9.json'),q('d_eua_145aaf5d14.json')]).then(function(x){window.__DADOS=x[0];window.__EUA=x[1];var s=document.createElement('script');s.textContent=document.getElementById('app').textContent;document.body.appendChild(s)}).catch(function(e){var d=document.createElement('p');d.style.cssText='padding:24px;font:16px sans-serif';d.textContent='Não foi possível carregar os dados ('+e.message+'). Recarregue a página.';document.body.prepend(d)})})();</script>
+<script>(function(){var q=function(u){return fetch(u).then(function(r){if(!r.ok)throw new Error(u+' '+r.status);return r.json()})};Promise.all([q('d_dados_ee192f073e.json'),q('d_eua_145aaf5d14.json')]).then(function(x){window.__DADOS=x[0];window.__EUA=x[1];var s=document.createElement('script');s.textContent=document.getElementById('app').textContent;document.body.appendChild(s)}).catch(function(e){var d=document.createElement('p');d.style.cssText='padding:24px;font:16px sans-serif';d.textContent='Não foi possível carregar os dados ('+e.message+'). Recarregue a página.';document.body.prepend(d)})})();</script>
 <script type="text/plain" id="app">
 const DADOS = window.__DADOS;
 const EUA = window.__EUA;
@@ -2635,16 +2635,17 @@ function brrrr(x){
 function brrrrHTML(l){
   if(!ASSIN) return `<div class="sec br"><h4>Alugar e refinanciar (BRRRR)</h4><p class="nota">No Pro e no UltraPro: aluguel, refinanciamento a 80% do ARV, parcela, fluxo mensal, dinheiro que fica no negócio e DSCR. <button type="button" class="lnk" data-assina>Ver planos</button></p></div>`;
   const ref = l.am ? Math.round(l.am) : "";
+  setTimeout(() => { const bx = document.querySelector(`[data-br="${CSS.escape(l.i)}"]`); if(bx) brrrrPinta(bx); }, 0);   // conta já aparece com os valores iniciais
   return `<div class="sec br" data-br="${esc(l.i)}"><h4>Alugar e refinanciar (BRRRR)</h4>
     <div class="cl-grid">
       <label>ARV (US$)<input data-brc="arv" type="number" min="0" step="1000" inputmode="numeric" value="${ref}"></label>
       <label>Lance (US$)<input data-brc="lance" type="number" min="0" step="100" inputmode="numeric" value="${l.ab || ""}"></label>
       <label>Reforma (US$)<input data-brc="reforma" type="number" min="0" step="100" inputmode="numeric" placeholder="0"></label>
       <label>Compra e título (US$)<input data-brc="compra" type="number" min="0" step="50" inputmode="numeric" value="${CL_FIXOS + clQuietPadrao(l)}"></label>
-      <label>Aluguel mensal (US$)<input data-brc="aluguel" type="number" min="0" step="25" inputmode="numeric" placeholder="o aluguel do bairro"></label>
+      <label>Aluguel mensal (US$)<input data-brc="aluguel" type="number" min="0" step="25" inputmode="numeric" value="${l.al || ""}" placeholder="o aluguel do bairro"></label>
     </div>
     <div class="br-out" data-brout><p class="nota">Digite o aluguel mensal para ver a conta.</p></div>
-    <p class="nota">Padrões: vacância 5%, administração 8%, manutenção 8% do aluguel; seguro 0,6% e imposto 1,5% do ARV ao ano; refinanciamento a 80% do ARV, 30 anos, 7,5% a.a., custo de 3%. Estimativa, não é proposta de banco. Dica: o aluguel de referência do Section 8 está no site do HUD (Fair Market Rents).</p></div>`;
+    <p class="nota">Padrões: vacância 5%, administração 8%, manutenção 8% do aluguel; seguro 0,6% e imposto 1,5% do ARV ao ano; refinanciamento a 80% do ARV, 30 anos, 7,5% a.a., custo de 3%. Estimativa, não é proposta de banco. ${l.al ? "Aluguel inicial: mediano de 3 quartos (ou do setor) no bairro, Censo ACS 2019–2023; confira com o Section 8 (HUD Fair Market Rents) e anúncios da região." : "Dica: o aluguel de referência do Section 8 está no site do HUD (Fair Market Rents)."}</p></div>`;
 }
 function brrrrPinta(box){
   const v = k => { const e = box.querySelector(`[data-brc="${k}"]`); return e && e.value !== "" ? +e.value : null; };
