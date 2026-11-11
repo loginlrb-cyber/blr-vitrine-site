@@ -8,7 +8,7 @@
 <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="manifest" href="/site.webmanifest">
 <style>*,*::before,*::after{box-sizing:border-box}html,body{margin:0}img{max-width:100%}[hidden]{display:none!important}
 :root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}</style>
-</head><body><link rel="preload" href="d_dados_f6af212a95.json" as="fetch" crossorigin="anonymous"><link rel="preload" href="d_eua_145aaf5d14.json" as="fetch" crossorigin="anonymous"><title>BLR Developments</title>
+</head><body><link rel="preload" href="d_dados_4d7944ded9.json" as="fetch" crossorigin="anonymous"><link rel="preload" href="d_eua_145aaf5d14.json" as="fetch" crossorigin="anonymous"><title>BLR Developments</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -122,9 +122,9 @@ body:has(#cmpbar:not([hidden])) .iafab{bottom:calc(84px + env(safe-area-inset-bo
 @media (max-width:430px){.top #btEntrar{font-size:0;padding:7px 8px}.top #btEntrar::before{content:"👤";font-size:14px}.top #guiaC{display:none}.top .moeda{width:46px!important;padding-inline:2px!important}.top .acoes-top{gap:3px!important}}   /* site: o "Entrar" passava 15 px da tela; vira só o ícone */   /* celular: o topo não cabe; abre pelo menu do usuário, pelo Guia e pela ficha */
 @media (max-width:640px){.iabox{left:8px;right:8px;bottom:calc(86px + env(safe-area-inset-bottom,0px));width:auto;max-height:62vh}}
 /* guia (assinante) */
-.vguia .hero,.vguia .crit{display:none}
+.vguia .hero,.vguia .crit,.vguia .novosSlot{display:none}
 /* 07/11 (Rodrigo): barra nova, Pacotes e Meu portfólio */
-.vpriv .hero,.vpriv .crit{display:none}
+.vpriv .hero,.vpriv .crit,.vpriv .novosSlot{display:none}
 .avTopo{position:fixed;left:50%;top:calc(70px + env(safe-area-inset-top,0px));transform:translateX(-50%);z-index:2000;max-width:min(560px,calc(100% - 32px));background:var(--surf2);color:var(--tx);border:1px solid var(--acc);border-radius:12px;padding:12px 16px;font-size:13.5px;box-shadow:0 12px 40px rgba(0,0,0,.45);cursor:pointer}
 .vlt{position:absolute;transform:translate(-50%,calc(-100% - var(--r) - 3px));white-space:nowrap;pointer-events:none;font:700 11px/1.2 var(--f-m);color:#EEF0F3;background:rgba(12,14,18,.85);border:1px solid rgba(255,255,255,.14);padding:1px 5px;border-radius:6px}
 .tbi{display:none;font-style:normal}
@@ -241,8 +241,7 @@ body.aguarda #whoTxt,body.aguarda #btAssina{visibility:hidden}   /* 2.2: até o 
 .thumb img.foto{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
 .thumb .grad{position:absolute;inset:0;background:linear-gradient(180deg,rgba(12,14,18,.55) 0,transparent 30%,transparent 62%,rgba(12,14,18,.8) 100%);pointer-events:none}
 .thumb .area{z-index:1;color:#EEF0F3!important;text-shadow:0 1px 2px rgba(0,0,0,.8)}
-.thumb .badge,.thumb .data,.thumb .tipoFoto{z-index:1}
-.thumb .tipoFoto{position:absolute;left:10px;top:42px;font-size:11px;font-weight:700;padding:4px 8px;border-radius:999px;background:rgba(12,14,18,.9);color:var(--tx);border:1px solid var(--c,var(--line2));box-shadow:inset 3px 0 0 var(--c,var(--acc));max-width:calc(100% - 20px);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.thumb .badge,.thumb .data{z-index:1}
 .gal{display:flex;flex-direction:column;gap:8px}
 .gal figure{margin:0;position:relative;border-radius:12px;overflow:hidden;border:1px solid var(--line)}
 .gal img{display:block;width:100%;height:auto}
@@ -329,6 +328,30 @@ body.aguarda #whoTxt,body.aguarda #btAssina{visibility:hidden}   /* 2.2: até o 
 .fhero.sv iframe{display:block;width:100%;height:320px;border:0;background:#1D222B}.fhero.sv+.fhero,.fhero.sv+.lote-big{margin-top:10px}
 .fhero.sv figcaption{position:static;display:block;border-radius:0;background:var(--surf2);color:var(--tx2);padding:6px 12px}
 .fhero figcaption{position:absolute;left:10px;bottom:10px;font-size:11px;padding:3px 8px;border-radius:6px;background:rgba(12,14,18,.8);color:#C9CED8}
+.fcapa{margin:-18px -20px 0;border-radius:0 0 20px 20px;overflow:hidden;background:#17202c;min-height:180px}
+.fcapa .fhero{margin:0}
+.fcapa .fhero img,.fcapa .fhero.sv iframe{width:100%;height:220px;max-height:46vh;object-fit:cover}
+.fsem{min-height:196px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:28px 22px;text-align:center;color:#F4F7FB;background:linear-gradient(165deg,#2c3a50 0%,#17202c 62%,#3a2c22 100%)}
+.fsem svg{width:48px;height:48px;flex:none}
+.fsem b{font:600 18px/1.25 var(--f-d)}
+.fsem span{max-width:36ch;font-size:14.5px;line-height:1.45;color:#D5DCE8}
+.selo-tipo .fcont{margin-top:10px}
+.fcont{display:flex;flex-wrap:wrap;gap:8px}
+.fcont .chip{min-height:48px;display:inline-flex;align-items:center;padding:8px 14px;border-radius:999px;border:1px solid var(--line2);background:var(--surf);color:var(--tx);font-weight:600}
+.fcont.passou .chip{background:#4A241E;color:#FFE8E2;border-color:#C46B58}
+.flance{padding:14px 16px;border-radius:16px;border:1px solid var(--line2);background:var(--surf)}
+.flance span{display:block;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--tx2)}
+.flance b{font:700 32px/1.1 var(--f-d);color:var(--tx)}
+.facoes .bfi{min-height:48px;font-size:15px}
+.fpdf,.fh .x{min-width:44px;min-height:44px}
+.fpdf{height:44px;padding:0 12px}
+.fh .x{width:44px;height:44px}
+.fcmp,.fpdf-fim{grid-column:1 / -1;min-height:48px}
+.fpdf-fim{border:0;border-radius:14px;background:var(--acc);color:var(--ink);font:700 16px/1 var(--f-b);cursor:pointer}
+.fpdf-fim:focus-visible{outline:3px solid #fff;outline-offset:2px}
+.friscos{margin-top:10px;display:grid;gap:6px}
+.friscos>b{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--tx2)}
+.npq li{font-size:14px;padding:8px 10px}
 .ftit h2{font-family:var(--f-d);font-size:26px;line-height:1.15;margin:0 0 6px;text-wrap:balance}
 .ftit .loc{color:var(--tx2);font-size:14px}
 body{transition:padding-right .25s ease}
@@ -628,7 +651,7 @@ body.vmapa{overflow:hidden}
 .contato a.wa{background:#1F7A4D;border-color:#1F7A4D;color:#fff;font-weight:600}
 @media (min-width:1000px){body.fon.vmapa{padding-right:0}}
 @media (max-width:760px){
-  #v-mapa .painel{left:0;right:0;top:auto;bottom:0;width:auto;max-height:50%;border-radius:16px 16px 0 0}
+  #v-mapa .painel{left:0;right:0;top:auto;bottom:calc(56px + env(safe-area-inset-bottom,0px));width:auto;max-height:46%;border-radius:16px 16px 0 0}
   #v-mapa .painel.min{bottom:0}
   #v-mapa .trilha{left:8px;top:8px;max-width:calc(100% - 16px);font-size:12px;padding:4px 10px}
   #v-mapa .mapa-box .leg{right:8px;bottom:auto;top:48px;max-width:62%}
@@ -687,8 +710,41 @@ body{transition:padding-right .5s var(--mola)}
   .ficha{top:max(48px,env(safe-area-inset-top,0px));left:0;width:100%;border-left:0;border-radius:22px 22px 0 0;transform:translateY(104%);padding-top:0;box-shadow:0 -20px 60px rgba(0,0,0,.5);overflow:hidden}
   .ficha.on{transform:translateY(var(--arrasto,0px))}
   .ficha.arrastando{transition:none}
-  .ficha .pega{display:block;width:40px;height:5px;border-radius:3px;background:var(--line2);margin:8px auto 0;flex:none}
+  .ficha .pega{display:flex;align-items:center;justify-content:center;width:100%;height:44px;margin:0;background:transparent;flex:none}
+  .ficha .pega::after{content:"";width:44px;height:5px;border-radius:3px;background:var(--line2)}
   #v-mapa .painel{border-radius:22px 22px 0 0;-webkit-backdrop-filter:blur(16px) saturate(160%);backdrop-filter:blur(16px) saturate(160%)}
+}
+/* celular estreito (360–414): folha que deixa o mapa à vista, leitura em camadas, alvo de 44 px */
+.fchaves{display:none}
+@media (max-width:480px){
+  html,body{overflow-x:hidden}
+  .irpara{top:48px;left:8px;width:calc(100% - 16px);min-width:0}
+  #v-mapa .trilha{top:8px;max-width:52%}
+  #v-mapa .mapa-box .leg{top:8px;left:auto;right:8px;bottom:auto;max-width:min(160px,46vw);padding:6px 8px;font-size:11px}
+  .camadas{top:100px!important;bottom:auto;right:8px}
+  .camadas>b{min-height:44px;display:flex;align-items:center}
+  .regiao{max-height:calc(100% - 116px)}
+  .ficha{top:auto;bottom:0;height:92dvh;max-height:92dvh;transform:translateY(110%)}
+  .ficha.on{transform:translateY(calc(var(--folha, 18%) + var(--arrasto, 0px)))}
+  .ficha.on.cheia{--folha:0%}
+  .ficha .pega{display:flex}
+  #fPdf,.fh .x,.facoes .bfi,.cta,#pMin,.regiao .rmin,.hbt,.fpdf-fim,.fcont .chip{min-width:44px;min-height:48px}
+  #fPdf,.fh .x{height:44px}
+  .camadas.aberta button{min-height:44px}
+  .clu{min-width:44px;min-height:44px}
+  .fchaves{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:0}
+  .fchaves div{background:var(--surf);border:1px solid var(--line);border-radius:12px;padding:8px 10px;min-width:0}
+  .fchaves dt{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--mute)}
+  .fchaves dd{margin:2px 0 0;font:600 16px/1.2 var(--f-m);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .selo-tipo p{display:none}
+  .selo-tipo.aberta p{display:block}
+  .selo-tipo-h{min-height:44px;display:flex;align-items:center;justify-content:space-between;gap:8px;cursor:pointer}
+  #fBody .sec>h4{min-height:44px}
+  #fPdf{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0)}
+  .fb{gap:12px;padding:14px 16px 24px}
+  .fcapa{margin:-14px -16px 0}
+  .fsem{min-height:148px;padding:16px}
+  body.fon .regiao,body.fon #v-mapa .painel,body.fon .camadas,body.fon .irpara,body.fon #v-mapa .mapa-box .leg,body.fon #v-mapa .trilha,body.fon .iafab{display:none!important}
 }
 /* conta BLR ao vivo (Cris 26/10): margem, reforma e título mudam o teto e quem passa */
 .hbt.conta{border:1px solid var(--line2);color:var(--tx2)}
@@ -786,7 +842,7 @@ body{transition:padding-right .5s var(--mola)}
 .regiao .grh{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:12px 14px;border-bottom:1px solid var(--fio,var(--line))}
 .regiao .grh .pv{color:var(--acc);text-decoration:none}.regiao .grh .pv:hover{text-decoration:underline}
 .regiao .grh b{display:block;font-family:var(--f-d);font-size:17px}.regiao .grh small{color:var(--tx2);font-size:12px}
-.regiao .rmin{all:unset;cursor:pointer;width:34px;height:34px;display:grid;place-items:center;border-radius:10px;color:var(--tx2)}.regiao .rmin:hover{background:rgba(255,255,255,.06)}
+.regiao .rmin{all:unset;cursor:pointer;width:44px;height:44px;display:grid;place-items:center;border-radius:12px;color:var(--tx2)}.regiao .rmin:hover{background:rgba(255,255,255,.06)}
 .regiao .grl{overflow:auto;padding:10px;display:flex;flex-direction:column;gap:10px;flex:1 1 auto;min-height:0}.regiao .grc,.regiao .pro{flex:0 0 auto}
 .regiao.min{bottom:auto}.regiao.min .grl{display:none}
 .grc{border:1px solid var(--fio,var(--line));border-radius:14px;overflow:hidden;background:rgba(255,255,255,.02);cursor:pointer;transition:border-color .15s,transform .15s}
@@ -802,10 +858,13 @@ body{transition:padding-right .5s var(--mola)}
 .grf .alvo.larga{width:84px;height:84px;margin:-42px 0 0 -42px;border-style:dashed;border-width:2px;box-shadow:none}
 .grf .ftag{position:absolute;left:8px;bottom:8px;font-size:11px;padding:3px 8px;border-radius:999px;background:rgba(12,14,18,.78);color:#E6E9EE}
 .grc .grt{padding:10px 12px 11px}.grc .grp{font-size:17px;font-weight:700}.grc .grp small{font-size:11.5px;font-weight:500;color:var(--tx2)}
-.grc .grs{font-size:12.5px;color:var(--tx2);margin-top:2px}.grc .grv{font-size:12px;margin-top:5px}
+.grc .grs{font-size:13px;color:var(--tx2);margin-top:2px}.grc .grv{font-size:12.5px;margin-top:6px}
+.gn{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:8px}
+.gn b{flex:none;width:48px;height:48px;border-radius:14px;display:grid;place-items:center;font:700 18px/1 var(--f-m);border:1px solid var(--nf-ln,var(--line2));background:var(--nf-bg,var(--surf2));color:var(--nf,var(--tx))}
+.gn span{min-height:48px;display:inline-flex;align-items:center;padding:0 14px;border-radius:999px;border:1px solid var(--c,var(--line2));box-shadow:inset 4px 0 0 var(--c,var(--acc));background:var(--surf);color:var(--tx);font-weight:600}
 .grc .grx{padding:0 12px 12px;font-size:12.5px}.grc .grx table{width:100%;border-collapse:collapse;margin-bottom:10px}
 .grc .grx td{padding:5px 0;border-top:1px solid var(--fio,var(--line))}.grc .grx td:first-child{color:var(--tx2);width:38%}
-.grc .grb{display:flex;flex-wrap:wrap;gap:6px}.grc .grb button{font-size:12.5px}
+.grc .grb{display:flex;flex-wrap:wrap;gap:8px}.grc .grb button{font-size:14px;min-height:48px;padding:0 14px}
 .regiao .pro{border:1px solid color-mix(in srgb,var(--acc) 45%,transparent);border-radius:14px;padding:12px 14px;background:linear-gradient(160deg,color-mix(in srgb,var(--acc) 12%,transparent),transparent)}
 .regiao .pro ul{list-style:none;padding:0;margin:8px 0 10px;display:grid;gap:5px;font-size:12.5px}.regiao .pro li::before{content:"✓ ";color:var(--acc);font-weight:700}
 .regiao .pro .cta{width:100%;justify-content:center}.regiao .pro .lnk{display:block;margin:6px auto 0}
@@ -818,9 +877,19 @@ body{transition:padding-right .5s var(--mola)}
   body.vmapa .iabox{right:400px}
 }
 @media (max-width:760px){
-  .regiao{left:0;right:0;top:auto;bottom:calc(52px + env(safe-area-inset-bottom,0px));width:auto;max-height:44%;border-radius:20px 20px 0 0}
-  .regiao .grl{display:flex;flex-direction:row;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;padding:10px 10px 12px}
-  .regiao .grc,.regiao .pro{flex:0 0 78%;scroll-snap-align:start}.grc .grf{height:120px}.grc.ab{flex-basis:88%;overflow:auto}
+  .regiao{left:0;right:0;top:auto;bottom:calc(112px + env(safe-area-inset-bottom,0px));width:auto;max-height:calc(100% - 116px);border-radius:20px 20px 0 0}
+  .regiao .grl{display:flex;flex-direction:row;align-items:flex-start;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;padding:8px 10px 10px}
+  .regiao .grc,.regiao .pro{flex:0 0 86%;scroll-snap-align:start}
+  .grc .grf{height:72px}
+  .grc.ab{flex-basis:92%;overflow:visible}
+  .grc.ab .grf{display:none}
+  .grc.ab .grt{padding:8px 12px 2px}
+  .grc.ab .gn{margin-top:6px}
+  .grc.ab .grx{padding-bottom:8px}
+  .grc.ab .grx td{padding:2px 0}
+  .grid{grid-template-columns:1fr;gap:12px}
+  .card .acoes{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .card .acoes button{min-height:48px;text-align:center;font-size:14px;padding:0 10px}
   #v-mapa .painel:not(.min) ~ * .regiao,#v-mapa:not(.pmin) .regiao{display:none}
 }
 .labas{display:flex;flex-wrap:wrap;gap:6px;margin:4px 0 12px}
@@ -877,7 +946,6 @@ body{transition:padding-right .5s var(--mola)}
 .nbar i{display:block;height:100%;border-radius:99px;background:var(--nf);max-width:100%}
 .npq{list-style:none;display:flex;flex-wrap:wrap;gap:6px;margin:8px 0 0;padding:0}
 .npq li{font-size:13px;line-height:1.35;color:var(--tx);background:var(--surf2);border:1px solid var(--line);border-radius:8px;padding:5px 8px}
-.nnota-rod{margin:8px 0 0;font-size:12px;color:var(--nota)}
 .nselo-b{box-shadow:inset 4px 0 0 var(--line2)}
 .nselo-ok{box-shadow:inset 4px 0 0 #6FD3B0}
 .nselo-ok .npills b{color:#0C0E12;background:#6FD3B0;border:1px solid #6FD3B0}
@@ -944,6 +1012,24 @@ body{transition:padding-right .5s var(--mola)}
 .pb-faixa button:focus-visible{outline:2px solid var(--tx);outline-offset:2px}
 .pb-faixa.pb-ok{border-style:dashed;border-color:var(--line2);background:transparent}
 .pb-faixa.pb-ok button{background:transparent;color:var(--info);text-decoration:underline;text-underline-offset:3px;padding:8px 0}
+/* Novos desde a última visita: a lista nasce na página. Sem e-mail. */
+.novosSlot{margin:0 0 14px}
+.novosSlot:empty{display:none}
+.novos{border:1px solid var(--line);border-radius:var(--r);background:var(--surf);padding:12px 14px}
+.novos .novosTit{font-family:var(--f-d);font-size:16px;font-weight:600;margin:0 0 6px}
+.novos p{margin:0;color:var(--tx2);font-size:13.5px;line-height:1.45}
+.novos .novosCta{all:unset;box-sizing:border-box;cursor:pointer;display:inline-flex;align-items:center;min-height:40px;margin-top:10px;padding:8px 12px;border-radius:10px;background:var(--acc);color:var(--ink);font-weight:700;font-size:13.5px}
+.novos .novosCta:focus-visible,.novosBt:focus-visible{outline:2px solid var(--tx);outline-offset:2px}
+.novosLista{max-height:220px;overflow:auto;margin-top:8px}
+.novosUf{margin-top:10px}
+.novosUf h3{display:flex;justify-content:space-between;gap:8px;margin:0 0 4px;font-size:13px}
+.novosUf ul{list-style:none;margin:0;padding:0}
+.novosUf li{border-top:1px solid var(--line);padding:6px 0}
+.novosBt{all:unset;box-sizing:border-box;cursor:pointer;display:block;width:100%;font-weight:600;line-height:1.35;overflow-wrap:anywhere}
+.novosBt:hover{color:var(--acc)}
+.novos small,.novosMais{display:block;color:var(--mute);font-size:12px;line-height:1.4;overflow-wrap:anywhere}
+.novosMais{margin:4px 0 0}
+@media (max-width:760px){.novos .novosCta,.novosBt{min-height:44px}}
 /* tipo de leilão: faixa de filtro (mapa e lista), legenda e selo na ficha */
 .tipoBar{flex:none;padding:8px 10px 10px;border-bottom:1px solid var(--line);background:transparent}
 .tipoBar-h{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:6px}
@@ -1008,6 +1094,7 @@ body{transition:padding-right .5s var(--mola)}
     <p>Todo lote com leilão marcado que a BLR acompanha. Na Flórida, cada lote passou pelo nosso funil: casa construída, dados para precificar, preço que fecha e sem dívida pública que passe ao comprador. Nos outros estados, os lotes aparecem como <b>listados</b>: dado oficial do edital, ainda sem a análise da BLR.</p>
     <div class="kpis" id="kpis"></div>
   </section>
+  <div id="novos" class="novosSlot" aria-live="polite"></div>
   <!-- 28/10: Negócios abre nos critérios BLR (o mapa tem o seu próprio Todos/Critérios, que abre em Todos) -->
   <div class="crit"><div class="seg segCrit" id="segCritN" role="group" aria-label="Quais oportunidades mostrar">
     <button data-crit="1" aria-pressed="true">Só nos critérios BLR · Flórida</button><button data-crit="0" aria-pressed="false">Todos os lotes</button></div>
@@ -1101,7 +1188,7 @@ body{transition:padding-right .5s var(--mola)}
 <div class="modal" id="modal" hidden><div class="mbox" role="dialog" aria-modal="true" aria-labelledby="mTit">
   <button class="x" id="mX" type="button" aria-label="Fechar">✕</button><div id="mBody"></div></div></div>
 
-<script>(function(){var q=function(u){return fetch(u).then(function(r){if(!r.ok)throw new Error(u+' '+r.status);return r.json()})};Promise.all([q('d_dados_f6af212a95.json'),q('d_eua_145aaf5d14.json')]).then(function(x){window.__DADOS=x[0];window.__EUA=x[1];var s=document.createElement('script');s.textContent=document.getElementById('app').textContent;document.body.appendChild(s)}).catch(function(e){var d=document.createElement('p');d.style.cssText='padding:24px;font:16px sans-serif';d.textContent='Não foi possível carregar os dados ('+e.message+'). Recarregue a página.';document.body.prepend(d)})})();</script>
+<script>(function(){var q=function(u){return fetch(u).then(function(r){if(!r.ok)throw new Error(u+' '+r.status);return r.json()})};Promise.all([q('d_dados_4d7944ded9.json'),q('d_eua_145aaf5d14.json')]).then(function(x){window.__DADOS=x[0];window.__EUA=x[1];var s=document.createElement('script');s.textContent=document.getElementById('app').textContent;document.body.appendChild(s)}).catch(function(e){var d=document.createElement('p');d.style.cssText='padding:24px;font:16px sans-serif';d.textContent='Não foi possível carregar os dados ('+e.message+'). Recarregue a página.';document.body.prepend(d)})})();</script>
 <script type="text/plain" id="app">
 const DADOS = window.__DADOS;
 const EUA = window.__EUA;
@@ -1146,7 +1233,7 @@ function seloDeCodigo(l, code, data, hoje){
   return {fonte: fonte, link: link, externo: externo, atualizado: iso || null, idade_dias: idade, velho: velho, texto: texto};
 }
 // SELO_DE_CODIGO_FIM
-const prepLote = (l, txt) => { for(const k of ["nt", "fo", "jvq", "tp", "u", "mc"]) if(typeof l[k] === "number") l[k] = txt[l[k]];   // vitrine_monta: textos repetidos em índice
+const prepLote = (l, txt) => { for(const k of ["nt", "fo", "jvq", "tp", "u", "mc", "pa"]) if(typeof l[k] === "number") l[k] = txt[l[k]];   // vitrine_monta: textos repetidos em índice; pa = primeira aparição
   if(Array.isArray(l.pq)) l.nota_porque = l.pq.map(n => typeof n === "number" ? txt[n] : n);
   if(l.selo == null && Array.isArray(l.sl)) l.selo = seloDeCodigo(l, typeof l.sl[0] === "number" ? txt[l.sl[0]] : l.sl[0], typeof l.sl[1] === "number" ? txt[l.sl[1]] : l.sl[1], HOJE);
   if(l.li == null && l.lien) l.li = l.lien; if(l.ct == null && l.conta_terreno) l.ct = l.conta_terreno; };
@@ -1707,8 +1794,9 @@ function tipoLeilao(l){
   return tipoPorId("nao_informado");
 }
 function seloTipoHTML(l){
-  const t = tipoLeilao(l);
-  return `<section class="selo-tipo tl-${t.id}" aria-label="Tipo de leilão"><div class="selo-tipo-h"><span>Tipo de leilão</span><b>${esc(t.nome)}</b></div><p>${esc(t.legenda)}</p></section>`;
+  const t = tipoLeilao(l), c = contagemFicha(l);
+  const prazo = `<div class="fcont ${c.passou ? "passou" : ""}"><b class="chip">${esc(c.rotulo)}</b><span class="chip">${esc(c.detalhe)}</span></div>`;
+  return `<section class="selo-tipo tl-${t.id}" aria-label="Tipo de leilão"><div class="selo-tipo-h"><span>Tipo de leilão</span><b>${esc(t.nome)}</b></div><p>${esc(t.legenda)}</p>${prazo}</section>`;
 }
 function baseTipo(){
   const salvo = TLF; TLF = "";
@@ -1752,6 +1840,14 @@ function filtrados(paraMapa, semSel){
                  : HIST(a) ? dk(b).localeCompare(dk(a)) : dk(a).localeCompare(dk(b))) || noCrit(b) - noCrit(a) || LIST(a) - LIST(b) || (b.desc ?? 0) - (a.desc ?? 0));
   return r;
 }
+function notaTipoHTML(l){
+  const tem = l.nota != null && l.nota !== "" && isFinite(+l.nota);
+  const fx = tem ? faixaNota(+l.nota) : {id:"sem", nome:"sem dado"};
+  const n = tem ? String(Math.round(+l.nota)) : "—";
+  const t = tipoLeilao(l);
+  const rot = tem ? "Nota " + n + " de 100, faixa " + fx.nome : "Nota sem dado";
+  return `<div class="gn"><b class="n-${fx.id}" aria-label="${esc(rot)}">${n}</b><span class="tl-${t.id}">${esc(t.nome)}</span></div>`;
+}
 function cartao(l){
   const dd = dias(l.d), cor = corDe(l), f = formaSVG(l, cor), ft = fotoDe(l);
   const on = ONUS[l.on] || ONUS.nao_consultado;
@@ -1770,12 +1866,12 @@ function cartao(l){
     <div class="thumb">${thumb}
       ${selo1(l)}
       ${HIST(l) ? "" : `<span class="data ${dd === 0 ? "hoje" : ""}">${!l.d ? "Land bank · venda direta" : dd === 0 ? "Leilão hoje" : "Leilão " + dm(l.d) + " · " + emDias(dd)}</span>`}
-      ${(() => { const t = tipoLeilao(l); return `<span class="tipoFoto tl-${t.id}">${esc(t.nome)}</span>`; })()}
       ${l.lote_m2 ? `<span class="area num">${rotLote(l)} ${l.lote_m2.toLocaleString("pt-BR")} m²</span>` : ""}</div>
     <div class="cb">
       <div class="preco"><div><small>${HIST(l) && l.rs && l.rs.v ? "Vendido por" : rotLance(l)}</small><br><b class="num">${usd(HIST(l) && l.rs && l.rs.v ? l.rs.v : l.ab)}</b>${orig(HIST(l) && l.rs && l.rs.v ? l.rs.v : l.ab)}</div>
         ${l.desc != null ? `<span class="desc">−${l.desc}% do cadastro</span>` : ""}</div>
       <div class="loc">${l.ci && l.ci !== l.co ? `<b>${esc(l.ci)}</b>, ${esc(l.co)}` : `<b>${esc(l.co)}</b>`} County · ${esc(l.uf)} ${esc(l.zip || "")}</div>
+      ${notaTipoHTML(l)}
       <div class="met">${met}</div>
       ${tags}
       <div class="acoes">${HIST(l) ? "" : btCarr(l)}${btSeg(l)}${btCmp(l)}${HIST(l) ? "" : `<button type="button" data-info="${l.i}">Pedir informações</button>`}</div>
@@ -1787,6 +1883,7 @@ let mostrar = PAG;
 const F_VAL = ["#fBusca","#fTipo","#fMod","#fDe","#fAte","#fMin","#fMax","#fFz","#fDesc"], F_CHK = ["#fTip","#fOn","#fFecha"];
 const nFiltros = () => F_VAL.filter(s => $(s).value.trim()).length + F_CHK.filter(s => $(s).checked).length + (TLF ? 1 : 0);
 function render(){
+  pintaNovos();
   pintaTipoBar();
   const r = filtrados(), fm = MAPA ? filtrados(true) : null, nf = nFiltros(), noMapa = !$("#v-mapa").hidden;
   const fm0 = LSEL && fm ? filtrados(true, true) : fm;   // o painel conta sem o leilão escolhido (os outros leilões seguem com número)
@@ -1806,6 +1903,7 @@ document.addEventListener("click", e => {
   const t = e.target;
   const pbU = t.closest("[data-pb-ultra]"); if(pbU){ e.preventDefault(); e.stopPropagation(); abreAssina("ultra"); return; }
   const pbC = t.closest("[data-pb-como]"); if(pbC){ e.preventDefault(); e.stopPropagation(); abrePartner(); return; }
+  const nv = t.closest("[data-novos]"); if(nv && nv.dataset.novos){ e.stopPropagation(); abre(nv.dataset.novos); return; }
   const a = t.closest("[data-assina]"); if(a){ e.stopPropagation(); abreAssina(); return; }
   const c = t.closest("[data-carr]"); if(c){ e.stopPropagation(); alternaCarr(c.dataset.carr); return; }
   const sg = t.closest("[data-seg]"); if(sg){ e.stopPropagation(); alternaSeg(sg.dataset.seg); return; }
@@ -2034,6 +2132,7 @@ const IA_SABER = [
   "- Os dados são atualizados todo dia. Um lote sai quando o dono paga a dívida (resgate) ou o leilão é adiado ou cancelado; por isso o edital oficial é o que vale e deve ser conferido antes do lance.",
   "- A análise BLR completa (teto, ARV pelas vendas reais, Força) hoje existe para a Flórida. Nos outros estados o lote aparece com ARV estimado (valor oficial do condado ou preço por pé² do CEP) ou como \"listado\" (dado do edital, sem a conta completa). Alguns estados não têm leilão no calendário, só estoque de venda direta (land bank, imóveis do governo).",
   "- Abas: BIDMAP (o mapa), BIDLIST (a lista dos lotes, com ordenação e colunas), Pacotes (listas ★ dos lotes que você acompanha), Meu portfólio (o que você arrematou) e Guia (cada item explicado). O questionário \"Para você\" monta uma lista com os lotes que combinam com o seu perfil.",
+  "- Novos desde a sua última visita: lista na página, por estado, para o Básico e acima, só nos estados do plano. A data da visita fica neste navegador, na conta. Sem e-mail e sem envio automático.",
   "- Como comprar: Self Bidder (planos Básico e Pro): você se inscreve no leilão e dá o lance por conta própria, com a análise da plataforma. Partner Bidder (UltraPro, por convite e depois de homologação): a BLR opera o lance com você e divide o risco. O botão \"Quero participar deste leilão\" pede à BLR para inscrever e dar o lance por você.",
   "- Teste grátis de 7 dias, só com e-mail e telefone, para testar o Pro. O UltraPro entra nesse teste; o Básico não tem. O plano anual sai pelo preço de 10 meses. O pagamento é por link enviado pela BLR; nada é cobrado dentro do site. Sem cartão: se não assinar, a pessoa continua como visitante.",
   "## Tipos de leilão nos EUA (regras gerais; cada estado e condado tem as suas, e o edital é o que vale)",
@@ -2484,6 +2583,149 @@ function faixaPartnerHTML(plano){
   return `<aside class="pb-faixa" data-pb="visita"><p>Eles te dão uma calculadora. A BLR te dá o teto de lance do analista e, no UltraPro, compra junto.</p><button type="button" data-assina>Ver planos</button></aside>`;
 }
 // PARTNER_FAIXA_FIM
+// NOVOS_INICIO
+/* Novos desde a última visita. A data fica neste navegador, por conta. Sem e-mail e sem servidor novo.
+   Um lote é novo quando a coleta ou a primeira aparição é posterior à visita. Sem data, não entra.
+   A data do leilão não conta como aparição. Não-membro vê só o convite, sem contagem. */
+function novosIso(s){
+  if(typeof s !== "string") return "";
+  const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(s.trim());
+  if(!m) return "";
+  const y = +m[1], mo = +m[2], d = +m[3];
+  const dt = new Date(Date.UTC(y, mo - 1, d));
+  if(dt.getUTCFullYear() !== y || dt.getUTCMonth() !== mo - 1 || dt.getUTCDate() !== d) return "";
+  return m[1] + "-" + m[2] + "-" + m[3];
+}
+function novosColeta(l, gerado){
+  const s = l && l.selo && typeof l.selo === "object" ? l.selo.atualizado : "";
+  const propria = l && typeof l === "object" ? (novosIso(l.coletado) || novosIso(s)) : "";
+  return propria || novosIso(gerado);
+}
+function novosPrimeira(l, gerado){
+  const s = l && l.selo && typeof l.selo === "object" ? l.selo.atualizado : "";
+  const propria = l && typeof l === "object" ? (novosIso(l.pa) || novosIso(l.coletado) || novosIso(s)) : "";
+  return propria || novosIso(gerado);
+}
+function loteNovo(l, visita, gerado){
+  const v = novosIso(visita);
+  if(!v || !l) return false;
+  const c = novosColeta(l, gerado), p = novosPrimeira(l, gerado);
+  return (!!c && c > v) || (!!p && p > v);
+}
+const NOVOS_LIMITE = {basico: 1, pro: 3};
+function estadosDoPlano(sessao, assin){
+  const plano = planoFaixa(sessao, assin);
+  if(plano === "gratuito") return {plano, ve: false, todos: false, ufs: []};
+  const lim = NOVOS_LIMITE[plano] || 0;
+  const ufs = [...new Set(((sessao && Array.isArray(sessao.estados) ? sessao.estados : [])
+    .map(s => String(s).toUpperCase().replace(/[^A-Z]/g, "")).filter(s => s.length === 2)))];
+  if(!lim) return {plano, ve: true, todos: true, ufs: []};
+  return {plano, ve: true, todos: false, ufs: ufs.slice(0, lim)};
+}
+function chaveVisita(sessao, assin){
+  if(planoFaixa(sessao, assin) === "gratuito") return "";
+  const id = sessao && (sessao.email || sessao.id || sessao.uid);
+  return "blr_visita_v1:" + (id ? String(id).trim().toLowerCase() : "membro");
+}
+function visitaLida(gravado, hoje){
+  const anterior = novosIso(gravado && typeof gravado === "object" ? gravado.q : "");
+  const agora = novosIso(hoje);
+  return {anterior, gravar: agora ? {q: agora} : null};
+}
+function novosEsc(s){ return String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
+function novosDataBr(s){
+  const iso = novosIso(s);
+  return iso ? iso.slice(8, 10) + "/" + iso.slice(5, 7) + "/" + iso.slice(0, 4) : "sem dado";
+}
+function novosFonte(l){
+  const s = l && l.selo && typeof l.selo === "object" ? l.selo : null;
+  const f = (s && typeof s.fonte === "string" && s.fonte) || (l && typeof l.fo === "string" && l.fo) || "";
+  const t = String(f).replace(/\s+/g, " ").trim();
+  return t || "fonte não informada";
+}
+function novosLugar(l){
+  const ci = String((l && l.ci) || "").replace(/\s+/g, " ").trim();
+  const co = String((l && l.co) || "").replace(/\s+/g, " ").trim();
+  if(ci && co && ci.toLowerCase() !== co.toLowerCase()) return ci + " · " + co;
+  return ci || co || "sem dado";
+}
+const NOVOS_MAX = 8;
+function novosLista(lotes, visita, recorte, gerado){
+  const por = new Map();
+  const rec = recorte || {todos: true, ufs: []};
+  for(const l of lotes || []){
+    if(!l || !l.i || !loteNovo(l, visita, gerado)) continue;
+    if(!rec.todos && !(rec.ufs || []).includes(l.uf)) continue;
+    if(!por.has(l.uf)) por.set(l.uf, []);
+    por.get(l.uf).push(l);
+  }
+  const ch = l => { const a = novosColeta(l, gerado), b = novosPrimeira(l, gerado); return (a > b ? a : b) || a || b; };
+  return [...por.entries()].map(([uf, ls]) => {
+    ls.sort((a, b) => ch(b).localeCompare(ch(a)) || (a.h ? 1 : 0) - (b.h ? 1 : 0) || String(a.d || "9999").localeCompare(String(b.d || "9999")) || String(a.i).localeCompare(String(b.i)));
+    return {uf, n: ls.length, itens: ls.slice(0, NOVOS_MAX)};
+  });
+}
+function novosConviteHTML(){
+  return `<section class="novos" data-novos-modo="visita"><p class="novosTit">Novos desde a sua última visita</p><p>A lista por estado é dos assinantes, do Básico para cima, só nos estados do plano. Fica neste navegador, na sua conta. Sem e-mail.</p><button type="button" class="novosCta" data-assina>Ver planos</button></section>`;
+}
+function novosHTML(o){
+  o = o || {};
+  const rec = o.recorte || estadosDoPlano(o.sessao, o.assin);
+  if(!rec.ve) return novosConviteHTML();
+  const nomes = o.nomes || {};
+  const nomePl = rec.plano === "basico" ? "Básico" : rec.plano === "pro" ? "Pro" : "UltraPro";
+  if(!rec.todos && !rec.ufs.length){
+    return `<section class="novos" data-novos-modo="sem-estado"><p class="novosTit">Novos desde a sua última visita</p><p>Seu plano ${nomePl} ainda não tem estado escolhido. A lista aparece quando a conta indicar ${rec.plano === "basico" ? "o estado" : "os estados"}. Sem e-mail.</p></section>`;
+  }
+  const visita = novosIso(o.visita);
+  if(!visita){
+    return `<section class="novos" data-novos-modo="primeira"><p class="novosTit">Novos desde a sua última visita</p><p>Primeira visita nesta conta. A partir de agora, os lotes novos nos estados do seu plano aparecem aqui. A data fica só neste navegador. Sem e-mail.</p></section>`;
+  }
+  const grupos = novosLista(o.lotes, visita, rec, o.gerado);
+  grupos.sort((a, b) => (nomes[a.uf] || a.uf).localeCompare(nomes[b.uf] || b.uf, "pt"));
+  const nota = rec.todos ? "Todos os estados do seu plano." : "Só os estados do seu plano.";
+  const cab = `<p class="novosTit">Novos desde a sua última visita</p><p>Desde ${novosDataBr(visita)}, neste navegador, na sua conta. ${novosEsc(nota)} Sem e-mail.</p>`;
+  if(!grupos.length){
+    const espera = o.espera ? `<p>Os estados do seu plano ainda estão chegando.</p>` : `<p>Nenhum lote novo nos seus estados desde ${novosDataBr(visita)}.</p>`;
+    return `<section class="novos" data-novos-modo="${o.espera ? "espera" : "vazio"}">${cab}${espera}</section>`;
+  }
+  const corpo = grupos.map(g => {
+    const lis = g.itens.map(l => {
+      const c = novosColeta(l, o.gerado), p = novosPrimeira(l, o.gerado);
+      const datas = c && p && c !== p
+        ? `coleta ${novosDataBr(c)} · na vitrine desde ${novosDataBr(p)}`
+        : `coleta e primeira aparição ${novosDataBr(c || p)}`;
+      const leilao = novosIso(l.d) ? `leilão ${novosDataBr(l.d)}` : "sem dado";
+      const tipo = String(l.tp || "").replace(/\s+/g, " ").trim();
+      return `<li><button type="button" class="novosBt" data-novos="${novosEsc(l.i)}">${novosEsc(novosLugar(l))}${tipo ? " · " + novosEsc(tipo) : ""} · ${novosEsc(leilao)}${l.h ? " · já leiloado" : ""}</button><small>Fonte: ${novosEsc(novosFonte(l))} · ${novosEsc(datas)}</small></li>`;
+    }).join("");
+    const mais = g.n > g.itens.length ? `<p class="novosMais">e mais ${g.n - g.itens.length} neste estado</p>` : "";
+    return `<div class="novosUf" data-uf="${novosEsc(g.uf)}"><h3>${novosEsc(nomes[g.uf] || g.uf)} <span class="num">${g.n}</span></h3><ul>${lis}</ul>${mais}</div>`;
+  }).join("");
+  const espera = o.espera ? `<p>Os outros estados ainda estão chegando.</p>` : "";
+  return `<section class="novos" data-novos-modo="lista">${cab}<div class="novosLista">${corpo}</div>${espera}</section>`;
+}
+let NOVOS_CHAVE = null, NOVOS_VISITA = "";
+function leVisitaConta(sessao, assin){
+  const chave = chaveVisita(sessao, assin);
+  if(chave === NOVOS_CHAVE) return NOVOS_VISITA;
+  NOVOS_CHAVE = chave;
+  if(!chave){ NOVOS_VISITA = ""; return ""; }
+  let g = null;
+  try{ g = JSON.parse(localStorage.getItem(chave) || "null"); }catch(e){ g = null; }
+  const r = visitaLida(g, HOJE_L);
+  NOVOS_VISITA = r.anterior;
+  if(r.gravar){ try{ localStorage.setItem(chave, JSON.stringify(r.gravar)); }catch(e){} }
+  return r.anterior;
+}
+function pintaNovos(){
+  const el = $("#novos"); if(!el) return;
+  const rec = estadosDoPlano(SESSAO, ASSIN);
+  if(!rec.ve){ el.innerHTML = novosConviteHTML(); return; }
+  const espera = typeof faltam === "function" && faltam() > 0 && (rec.todos || rec.ufs.some(u => !UF_OK.has(u)));
+  el.innerHTML = novosHTML({sessao: SESSAO, assin: ASSIN, recorte: rec, visita: leVisitaConta(SESSAO, ASSIN), lotes: L, nomes: UFN, espera, gerado: HOJE});
+}
+// NOVOS_FIM
 // RELATORIO_INICIO
 /* Relatório do lote, montado aqui na hora de imprimir (window.print). Nada novo no lote.
    Não-membro: a conta usa o ARV digitado e a faixa pública. ARV e teto do lote não entram.
@@ -2658,7 +2900,7 @@ function notaSeloHTML(l){
         <ul class="npq">${itens}</ul>
       </div>
     </div>
-    <p class="nnota-rod">Leitura em palavras.</p></div>`;
+  </div>`;
   const s = l.selo && typeof l.selo === "object" ? l.selo : null;
   if(!s) return `<section class="nselo" aria-label="Nota BLR e veracidade do dado">${nota}
     <div class="nselo-b nselo-falta"><div class="nselo-h"><span>Veracidade</span><span class="npills"><b class="pf">sem dado</b></span></div>
@@ -2698,6 +2940,26 @@ function notaSeloHTML(l){
       </dl>
     </div></section>`;
 }
+function contagemFicha(l){
+  if(!l.d) return {passou:false, rotulo:"Sem data no edital", detalhe:"contagem sem dado"};
+  const dd = dias(l.d), quando = dm(l.d) + "/" + l.d.slice(0, 4);
+  if(HIST(l) && dd > 0) return {passou:true, rotulo:"Saiu da lista", detalhe:quando};
+  if(dd < 0 || HIST(l)) return {passou:true, rotulo:"Leilão já passou", detalhe:quando};
+  if(dd === 0) return {passou:false, rotulo:"Hoje", detalhe:quando + " · hora não veio no edital"};
+  const alvo = new Date(+l.d.slice(0, 4), +l.d.slice(5, 7) - 1, +l.d.slice(8, 10));
+  const ms = Math.max(0, alvo.getTime() - Date.now());
+  const diasN = Math.floor(ms / 86400000), horas = Math.floor((ms % 86400000) / 3600000);
+  const u = (n, a, b) => n + " " + (n === 1 ? a : b);
+  const rel = horas > 0 ? u(diasN, "dia", "dias") + " e " + u(horas, "hora", "horas") : u(diasN, "dia", "dias");
+  return {passou:false, rotulo:rel, detalhe:quando + " · até a data; hora não veio no edital"};
+}
+function partesNS(l){
+  const html = notaSeloHTML(l), i = html.indexOf('<div class="nselo-b'), fim = "</section>";
+  if(i < 0) return {nota:html, selo:""};
+  const corte = html.lastIndexOf(fim);
+  return {nota:html.slice(0, i).replace("Nota BLR e veracidade do dado", "Nota BLR") + fim,
+    selo:`<section class="nselo" aria-label="Selo de fonte e data">` + html.slice(i, corte) + fim};
+}
 async function abre(i){
   const l = L.find(x => x.i === i); if(!l) return;
   ABERTO = i; iaSobre();
@@ -2711,12 +2973,14 @@ async function abre(i){
   const fts = l.img ? [l.img.f && {src: l.img.f, alt: "Fachada", cap: `Fachada · ${esc(l.img.ff || "cadastro do condado")}`},
     l.img.s && {src: l.img.s, alt: "Vista aérea do bairro com as ruas e o contorno do lote",
       cap: `Satélite com as ruas, ~400 m de largura · contorno do ${rotLote(l)}${l.lote_m2 ? " (" + l.lote_m2.toLocaleString("pt-BR") + " m²)" : ""} · USGS NAIP + Censo TIGER`}].filter(Boolean) : [];
-  const fig = (f, cl) => `<figure class="${cl}"><img src="${f.src}" alt="${f.alt}"><figcaption>${f.cap}</figcaption></figure>`;
+  const estreito = window.matchMedia("(max-width:480px)").matches;
+  const fig = (f, cl, lazy) => `<figure class="${cl}"><img src="${f.src}" alt="${f.alt}" ${lazy ? "loading=\"lazy\"" : "fetchpriority=\"high\""} decoding="async"><figcaption>${f.cap}</figcaption></figure>`;
   const gap = l.teto && l.ab ? l.teto - l.ab : null;
   const acoes = `<div class="facoes">${HIST(l) ? "" : `<button type="button" class="bfi ${CARR.includes(l.i) ? "on" : ""}" data-carr="${l.i}">${CARR.includes(l.i) ? "No carrinho ✓" : "+ Carrinho"}</button>
     <button type="button" class="bfi" data-info="${l.i}">Solicitar informações sobre esta parcela</button>`}
     <button type="button" class="bfi ${segue(l.i) ? "on" : ""}" data-seg="${l.i}">${segue(l.i) ? "★ Acompanhando" : "☆ Acompanhar"}</button>
-    <button type="button" class="bfi ${CMP.includes(l.i) ? "on2" : ""}" data-cmp="${l.i}">${CMP.includes(l.i) ? "⇄ Comparando" : "⇄ Comparar"}</button></div>`;
+    <button type="button" class="bfi fcmp ${CMP.includes(l.i) ? "on2" : ""}" data-cmp="${l.i}">${CMP.includes(l.i) ? "⇄ Comparando" : "⇄ Comparar"}</button>
+    <button type="button" class="fpdf-fim" id="fPdfFim">Relatório em PDF</button></div>`;
   const r = l.rs || {};
   const resultado = !HIST(l) ? "" : r.s === "vendido" && r.v ? `<div class="resultado vend"><span>Resultado do leilão de ${dm(l.d)}/${l.d.slice(0,4)}</span>
       <b class="v num">Vendido por ${usd(r.v)}</b>${orig(r.v)}
@@ -2749,17 +3013,24 @@ async function abre(i){
       ${ASSIN && l.ac ? `<div class="nota">ARV limitado a ${String(l.ac).replace(".", ",")}× o valor do cadastro: 9 em cada 10 vendas reais deste tipo de imóvel em ${esc(l.co)} (2025–26) saíram abaixo disso. Os comparáveis davam mais.</div>` : ""}
       <div class="nota">Teto e ARV são estimativas da BLR (comparáveis e valor de mercado), arredondadas. Confirme antes de dar lance. <button type="button" class="lnk" data-calc>Como a BLR calcula?</button></div></div>
       ${secoesConta(l)}`;
-  $("#fBody").innerHTML = `
-    ${fts.length ? fig(fts[0], "fhero") : `<div class="semfoto">${LIST(l) ? "Lote listado · sem foto" : "Sem foto deste lote"}${l.lote_m2 ? ` · ${rotLote(l)} ${l.lote_m2.toLocaleString("pt-BR")} m²` : ""}</div>`}
-    <div class="ftit"><h2 id="fTit">${esc(lugar)}</h2><div class="loc" id="fSub">${esc(quando)}</div>${SITE ? `<button type="button" class="lnk iaL" data-ia>✦ Perguntar à IA sobre este lote</button>` : ""}</div>
+  const lanceTxt = l.ab != null && isFinite(+l.ab) && +l.ab > 0 ? usd(l.ab) : "sem dado";
+  const capa = fts.length ? fig(fts[0], "fhero", false) : `<div class="fsem" role="img" aria-label="Sem foto de rua"><svg viewBox="0 0 48 48" aria-hidden="true"><rect x="6" y="14" width="36" height="24" rx="4" fill="none" stroke="#D5DCE8" stroke-width="2"/><circle cx="18" cy="24" r="3" fill="#E2AC48"/><path d="M6 32l10-8 8 6 6-4 12 8" fill="none" stroke="#F4F7FB" stroke-width="2"/></svg><b>Sem foto de rua</b><span>O Street View entra para assinante quando há panorama deste lote. Sem foto, a ficha segue com o edital.</span></div>`;
+  const ns = partesNS(l);
+  const topo = `
+    <div class="fcapa">${capa}</div>
+    <div class="ftit"><h2 id="fTit">${esc(lugar)}</h2><div class="loc" id="fSub">${esc(UFN[l.uf] || l.uf)}</div>${SITE ? `<button type="button" class="lnk iaL" data-ia>✦ Perguntar à IA sobre este lote</button>` : ""}</div>
+    ${ns.nota}
     ${seloTipoHTML(l)}
-    ${notaSeloHTML(l)}
+    <div class="flance"><span>Lance de abertura</span><b>${lanceTxt}</b></div>
+    ${ns.selo}`;
+  const resto = `
+    <div class="sec"><h4>Calculadora</h4>
     ${faixaPartnerHTML(planoFaixa(SESSAO, ASSIN))}
-    ${calcLivreHTML(l, ASSIN)}
+    ${calcLivreHTML(l, ASSIN)}</div>
     ${HIST(l) ? "" : resumoHTML(l, gap)}
     ${resultado}
     ${acoes}
-    ${fts[1] ? `<div class="gal">${fig(fts[1], "")}</div>` : ""}
+    ${fts[1] ? `<div class="gal">${fig(fts[1], "", true)}</div>` : ""}
     ${LIST(l) ? `<div class="sec"><h4>Imóvel</h4><table class="tab2"><tr><td>Tipo (pela descrição do condado)</td><td style="font-family:var(--f-b)">${esc(tipoL(l))}</td></tr>
       <tr><td>Estado</td><td style="font-family:var(--f-b)">${esc(UFN[l.uf] || l.uf)}</td></tr>
       ${l.onr ? `<tr><td>Ônus</td><td style="font-family:var(--f-b)"><span id="fOnus">${onusTxt(l)}</span>${onusFonte(l)}</td></tr>` : ""}</table></div>`
@@ -2778,10 +3049,16 @@ async function abre(i){
       <div class="nota">Abre o site oficial em outra aba. Zillow, Realtor e a parcela aparecem para assinantes.</div></div>
     <div class="sec" id="secPriv"><h4>Endereço e links</h4><div class="trava">Carregando…</div></div>
     <div class="sec" id="secInt"></div>`;
+  const mostraFicha = () => { $("#ficha").classList.add("on"); $("#ficha").setAttribute("aria-hidden","false"); $("#vel").classList.add("on"); $("#fBody").scrollTop = 0; };
+  if(estreito){ $("#fBody").innerHTML = topo; mostraFicha();
+    await new Promise(r => requestAnimationFrame(r)); if(tok !== ABRE) return;
+    $("#fBody").insertAdjacentHTML("beforeend", resto);
+    const fica = new Set(["Calculadora", "Resumo"]);
+    $("#fBody").querySelectorAll(".sec").forEach(s => { const h = s.querySelector(":scope > h4"); if(h && !fica.has(h.textContent.trim())) s.classList.add("fech"); });
+  } else { $("#fBody").innerHTML = topo + resto; mostraFicha(); }
   $("#fBody").querySelectorAll(".sec>h4").forEach(h => { h.tabIndex = 0; h.setAttribute("role", "button");
     if(SEC_FECH.has(h.textContent.trim())) h.parentElement.classList.add("fech"); h.setAttribute("aria-expanded", !h.parentElement.classList.contains("fech")); });
-  $("#ficha").classList.add("on"); $("#ficha").setAttribute("aria-hidden","false"); $("#vel").classList.add("on");
-  $("#fBody").scrollTop = 0;
+  const pf = $("#fPdfFim"); if(pf) pf.onclick = () => { const b = $("#fPdf"); if(b) b.click(); };
   if(!document.body.classList.contains("fon")){ document.body.classList.add("fon"); setTimeout(() => window.dispatchEvent(new Event("resize")), 300); }
   document.dispatchEvent(new CustomEvent("sel", {detail: l.i}));
   const p = await privado(l);
@@ -2793,9 +3070,12 @@ async function abre(i){
     const sv = pv ? `https://www.google.com/maps/@?api=1&map_action=pano&pano=${encodeURIComponent(pv.p)}&heading=${pv.h}` : `https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=${p.la},${p.ln}`;
     const gm = `https://www.google.com/maps/search/?api=1&query=${p.la},${p.ln}`;
     const ge = `https://earth.google.com/web/@${p.la},${p.ln},20a,220d,35y,0h,55t,0r`;   // Google Earth em 3D, inclinado sobre o lote
-    if(SITE && pv){   // site: a capa vira o Street View ao vivo (Google); a foto aérea continua logo abaixo
-      /* 08/11: lote sem foto nem contorno também ganha o Street View (no topo da ficha) */ { const anc = $("#fBody").querySelector(".fhero, .lote-big"); (anc || $("#fBody")).insertAdjacentHTML(anc ? "beforebegin" : "afterbegin", `<figure class="fhero sv"><iframe src="https://www.google.com/maps/embed?pb=!4v1!6m8!1m7!1s${encodeURIComponent(pv.p)}!2m2!1d${pv.la}!2d${pv.ln}!3f${pv.h}!4f0!5f0.78" loading="lazy" allowfullscreen referrerpolicy="no-referrer-when-downgrade" title="Street View"></iframe>
-        <figcaption>Street View ao vivo (Google${pv.ano ? ", foto de " + esc(pv.ano) : ""}) · a ${pv.m} m do centro do lote · arraste para girar</figcaption></figure>`); } }
+    if(SITE && pv){
+      const figSv = `<figure class="fhero sv"><iframe src="https://www.google.com/maps/embed?pb=!4v1!6m8!1m7!1s${encodeURIComponent(pv.p)}!2m2!1d${pv.la}!2d${pv.ln}!3f${pv.h}!4f0!5f0.78" loading="lazy" allowfullscreen referrerpolicy="no-referrer-when-downgrade" title="Street View"></iframe><figcaption>Street View ao vivo (Google${pv.ano ? ", foto de " + esc(pv.ano) : ""}) · a ${pv.m} m do centro do lote · arraste para girar</figcaption></figure>`;
+      const sem = $("#fBody").querySelector(".fsem");
+      if(sem) sem.outerHTML = figSv;
+      else { const anc = $("#fBody").querySelector(".fhero, .lote-big"); (anc || $("#fBody")).insertAdjacentHTML(anc ? "beforebegin" : "afterbegin", figSv); }
+    }
     $("#secPriv").innerHTML = `<h4>Endereço e links</h4>
       <div style="font-size:16px;font-weight:600;margin-bottom:4px">${esc(p.e)}</div>
       <div class="nota" style="margin:0 0 10px">Parcela ${esc(p.parcela)}</div>
@@ -2842,13 +3122,13 @@ function resumoHTML(l, gap){
     ASSIN && l.ab && arvMax && l.ab > arvMax && `<div class="alerta">⚠ Abertura acima do ARV: o lance de abertura (${k(l.ab)}) já passa do valor estimado de venda (${k(arvMax)}).</div>`,
     ALTO(l) && `<div class="alerta">⚠ ${esc(altoTxt(l))}: a conta usa o ARV travado em 1,5× a casa típica${ASSIN && l.a0 ? ` (antes ${k(l.a0)})` : ""}; confira os comparáveis antes do lance${ASSIN && l.arv_nota ? `. ${esc(l.arv_nota)}` : ""}</div>`,
     tipoConta(l) && `<div class="aviso">${esc(tipoConta(l))}${l.li && typeof l.lx === "string" ? " (" + esc(l.lx) + ")" : ""}</div>`].filter(Boolean).join("");
-  return `<div class="sec"><div class="resumo">
+  return `<div class="sec"><h4>Resumo</h4><div class="resumo">
     <div><span>Abertura</span><b>${usd(l.ab)}</b></div>
     <div><span>Teto${gl("teto")}</span><b>${teto}</b></div>
     <div><span>Folga${gl("folga")}</span><b>${folga}</b></div>
     <div><span>${LIST(l) ? "Desconto" : "Força"}${LIST(l) ? "" : gl("forca")}</span><b>${fz}</b></div></div>
     <div class="resumo-v">${LIST(l) ? (SEMDADO(l) ? "Sem dado para a conta: " + esc(faltaTxt(l)) : EST(l) && temT ? (fechaEst(l) ? "<b>Fecharia</b> na conta estimada (sem análise BLR)" : "Não fecha na conta estimada (sem análise BLR)") : "Listado: ainda sem a análise da BLR")
-      : `${forcaHTML(l)} <b>${VALE_T(n)}</b> · ${FORCA_T[n]}`}</div>${alertas ? `<div style="display:grid;gap:6px;margin-top:8px">${alertas}</div>` : ""}</div>`;
+      : `${forcaHTML(l)} <b>${VALE_T(n)}</b> · ${FORCA_T[n]}`}</div><div class="friscos"><b>Riscos</b>${alertas || `<p class="nota">Nenhum alerta no dado deste lote.</p>`}</div></div>`;
 }
 // barras horizontais na mesma escala, rótulo e valor direto (sem eixo): o lance, o nosso teto e o preço típico do bairro
 // as três partes da conta como seções da ficha (cada uma recolhe e expande)
@@ -2953,7 +3233,7 @@ function fechaRel(){
   if(document.body.dataset.relTit){ document.title = document.body.dataset.relTit; document.body.removeAttribute("data-rel-tit"); }
   window.removeEventListener("afterprint", fechaRel);
 }
-function fecha(){ fechaRel(); ABRE++; ABERTO = null; iaSobre(); $("#ficha").classList.remove("on"); $("#ficha").setAttribute("aria-hidden","true"); $("#vel").classList.remove("on");
+function fecha(){ fechaRel(); ABRE++; ABERTO = null; iaSobre(); $("#ficha").classList.remove("on", "cheia"); $("#ficha").style.removeProperty("--arrasto"); $("#ficha").setAttribute("aria-hidden","true"); $("#vel").classList.remove("on");
   if(document.body.classList.contains("fon")){ document.body.classList.remove("fon"); setTimeout(() => window.dispatchEvent(new Event("resize")), 300); }
   document.dispatchEvent(new CustomEvent("sel", {detail: null})); }
 $("#fX").onclick = fecha; $("#vel").onclick = fecha;
@@ -3044,16 +3324,22 @@ let CAD = {};
 try{ CAD = JSON.parse(localStorage.getItem("vitrine_cadastro") || "{}"); }catch(e){ CAD = {}; }
 function abreModal(html, larga){ $("#mBody").innerHTML = html; $("#mBody").parentElement.classList.toggle("larga", !!larga); $("#modal").hidden = false; const f = $("#mBody input,#mBody button"); if(f) setTimeout(() => f.focus(), 30); }
 function fechaModal(){ $("#modal").hidden = true; }
-// celular: a ficha é uma folha que sobe de baixo; arrastar para baixo (no topo ou com a ficha rolada até o início) fecha
+// celular: folha sobre o mapa. No estreito, arrastar para cima abre inteira e para baixo volta ou fecha.
 (() => { const f = $("#ficha"); let y0 = null, dy = 0, t0 = 0;
   f.addEventListener("touchstart", e => { if(window.innerWidth > 760) return;
-    const noTopo = e.target.closest(".fh,.pega") || $("#fBody").scrollTop <= 0;
-    if(!noTopo || e.target.closest("iframe")) return; y0 = e.touches[0].clientY; dy = 0; t0 = performance.now(); }, {passive: true});
+    const noTopo = e.target.closest(".fh,.pega,.ftopo,.fchaves,.selo-tipo") || $("#fBody").scrollTop <= 0;
+    if(!noTopo || e.target.closest("iframe,button,a,input,textarea,select")) return;
+    y0 = e.touches[0].clientY; dy = 0; t0 = performance.now(); }, {passive: true});
   f.addEventListener("touchmove", e => { if(y0 == null) return; dy = e.touches[0].clientY - y0;
-    if(dy <= 0){ f.style.removeProperty("--arrasto"); f.classList.remove("arrastando"); return; }
-    f.classList.add("arrastando"); f.style.setProperty("--arrasto", (dy < 0 ? 0 : dy) + "px"); }, {passive: true});
+    f.classList.add("arrastando"); f.style.setProperty("--arrasto", dy + "px"); }, {passive: true});
   f.addEventListener("touchend", () => { if(y0 == null) return; const v = dy / Math.max(1, performance.now() - t0);
-    f.classList.remove("arrastando"); f.style.removeProperty("--arrasto"); if(dy > 130 || (dy > 40 && v > .6)) fecha(); y0 = null; });
+    f.classList.remove("arrastando"); f.style.removeProperty("--arrasto");
+    const estreito = window.innerWidth <= 480, cheia = f.classList.contains("cheia");
+    if(estreito && !cheia && dy < -36) f.classList.add("cheia");
+    else if(estreito && cheia && (dy > 110 || (dy > 36 && v > .45))) f.classList.remove("cheia");
+    else if(!cheia && (dy > 110 || (dy > 36 && v > .45))) fecha();
+    else if(!estreito && (dy > 130 || (dy > 40 && v > .6))) fecha();
+    y0 = null; });
 })();
 $("#mX").onclick = fechaModal;
 $("#modal").addEventListener("click", e => { if(e.target === $("#modal")) fechaModal(); });
@@ -3210,6 +3496,35 @@ const selo = g => GRAV[g] ? `<span class="selo ${GRAV[g][1]}">${GRAV[g][0]}</spa
 const lotesCo = f => L.filter(l => l.f === f && !HIST(l) && (MF ? MF.has(l) : !CRITM || noCrit(l)));
 const histCo = f => L.filter(l => l.f === f && HIST(l) && (!CRITM || noCrit(l)));
 let SEMON = false;   // 28/10: "mostrar listados sem análise" (anéis sem dado); desligado, só esses anéis somem do mapa
+/* Contorno exato: pol/<célula>.enc.json usa o mesmo envelope do premium (RSA-OAEP-256 + AES-256-GCM, mesmo kid).
+   A chave AES de cada célula chega dentro do pacote que o servidor só entrega a quem está logado.
+   Pro e UltraPro abrem e desenham. Visitante e Básico não pedem o arquivo. A foto aérea segue para todos. */
+function podePol(){
+  if(!SITE) return !!(DB || MEMBRO);
+  if(!MEMBRO || !SESSAO) return false;
+  const p = planoFaixa(SESSAO, true);
+  return p === "pro" || p === "ultra";
+}
+function b64urlBytes(s){
+  s = String(s || "").replace(/-/g, "+").replace(/_/g, "/");
+  while(s.length % 4) s += "=";
+  const b = atob(s), o = new Uint8Array(b.length);
+  for(let i = 0; i < b.length; i++) o[i] = b.charCodeAt(i);
+  return o;
+}
+async function abrePolEnc(env, chaveB64){
+  if(!env || env.v !== 1 || env.alg !== "RSA-OAEP-256+A256GCM" || !env.kid || !env.ciphertext || !chaveB64) return {};
+  if(MEMBRO && MEMBRO.pol && MEMBRO.pol.kid && env.kid !== MEMBRO.pol.kid) return {};
+  try{
+    const chave = await crypto.subtle.importKey("raw", b64urlBytes(chaveB64), {name: "AES-GCM"}, false, ["decrypt"]);
+    const pt = await crypto.subtle.decrypt({name: "AES-GCM", iv: b64urlBytes(env.iv),
+      additionalData: new TextEncoder().encode("blr-premium|1|" + env.kid + "|" + env.ts), tagLength: 128}, chave, b64urlBytes(env.ciphertext));
+    let doc = JSON.parse(new TextDecoder().decode(pt));
+    if(doc && doc.z) doc = await new Response(new Blob([Uint8Array.from(atob(doc.z), c => c.charCodeAt(0))]).stream()
+      .pipeThrough(new DecompressionStream("gzip"))).json();
+    return doc && typeof doc === "object" && !Array.isArray(doc) ? doc : {};
+  }catch(e){ return {}; }
+}
 function criaMapa(){
   const Lf = window.L, box = $("#mapaBox");
   const est = topojson.feature(EUA, EUA.objects.states).features;
@@ -3330,19 +3645,29 @@ function criaMapa(){
     if(zz < Z_POL) return;
     const loc = location.hostname === "127.0.0.1" || location.hostname === "localhost";
     if(loc && Array.isArray(window.__contornoTeste)) poePol("", window.__contornoTeste, zz);
+    if(!podePol()) return;
     const vis = [];
     for(const [l, ll] of vivos){ if(HIST(l)) continue; vis.push(l); const p = EXATO[l.i]; if(p && p.pol && p.pol.length > 2) poePol(l.i, p.pol, zz); }
-    if(!(MEMBRO || DB || loc)) return;
     const celulas = new Map();
     for(const l of vis){ const p = EXATO[l.i]; if(p && p.pol && p.pol.length > 2) continue; if(l.la == null || l.ln == null) continue;
       const k = celPol(l.la, l.ln); let a = celulas.get(k); if(!a) celulas.set(k, a = []); a.push(l.i); }
-    const chaves = [...celulas.keys()].slice(0, 12);
-    Promise.all(chaves.map(k => { if(!POLC[k]) POLC[k] = fetch("pol/" + k + ".json").then(r => r.ok ? r.json() : {}).catch(() => ({})); return POLC[k]; })).then(async () => {
+    const chaves = [...celulas.keys()].slice(0, 12).slice(0, window.innerWidth <= 480 ? 4 : 12);
+    const pedePol = () => Promise.all(chaves.map(k => {
+      if(!POLC[k]){
+        const chave = SITE && MEMBRO && MEMBRO.pol && MEMBRO.pol.chaves ? MEMBRO.pol.chaves[k] : "";
+        if(SITE && !chave) POLC[k] = Promise.resolve({});
+        else if(SITE) POLC[k] = fetch("pol/" + k + ".enc.json").then(r => r.ok ? r.json() : null).then(env => abrePolEnc(env, chave)).catch(() => ({}));
+        else POLC[k] = fetch("pol/" + k + ".json").then(r => r.ok ? r.json() : {}).catch(() => ({}));
+      }
+      return POLC[k];
+    })).then(async () => {
       if(tk !== POLTOK.n || z() < Z_POL) return;
       const ainda = new Set(vis.map(l => l.i));
       for(const k of chaves){ const d = await POLC[k]; if(tk !== POLTOK.n) return;
         for(const i of celulas.get(k) || []){ if(ainda.has(i) && d && d[i]) poePol(i, d[i], z()); } }
     });
+    if(window.innerWidth <= 480 && typeof requestIdleCallback === "function") requestIdleCallback(() => pedePol(), {timeout: 700});
+    else pedePol();
   }
   function desenha(){
     camL.clearLayers(); camClu.clearLayers(); camPol.clearLayers(); MARK.clear();
@@ -3359,8 +3684,8 @@ function criaMapa(){
         if(o){ const n1 = o.ls.length, n2 = c.ls.length; o.x = (o.x * n1 + c.x * n2) / (n1 + n2); o.y = (o.y * n1 + c.y * n2) / (n1 + n2); o.ls.push(...c.ls); } else fim.push(c); }
       for(const c of fim) c.ls.length === 1 ? solto(c.ls[0][0], c.ls[0][1]) : grupo(c, zz);
     }
-    // de perto: foto aérea do USGS (grátis) e o contorno. O polígono que já veio no privado desenha na hora;
-    // o resto pede só as células dos lotes visíveis (vitrine/pol, vitrine_contornos.py --compacta). Longe, não pede.
+    // de perto: foto aérea do USGS (grátis, todo mundo) e o contorno (só Pro+).
+    // O polígono do privado desenha na hora; o resto pede pol/<célula>.enc.json. Visitante e Básico não pedem. Longe, não pede.
     aereoPerto(zz); contornosDoZoom(vivos, zz);
     onda(); rotulosARV(); if(ON.sat && !SITE) satLotes();
     regiao();
@@ -3376,8 +3701,13 @@ function criaMapa(){
     return `<div class="mos" style="left:calc(50% - ${px.toFixed(0)}px);top:calc(50% - ${py.toFixed(0)}px);transform-origin:${px.toFixed(0)}px ${py.toFixed(0)}px;transform:scale(${s.toFixed(2)})">${h}</div>`;
   }
   function fotoCard(l){
+    if(window.innerWidth <= 480){
+      const ll = posDe(l); if(!ll) return `<span class="ftag">Sem posição</span>`;
+      const zt = 14, n = 2 ** zt, [xt, yt] = tileXY(ll[0], ll[1], n), x = Math.floor(xt), y = Math.floor(yt);
+      return `<img class="fpr" alt="" loading="lazy" decoding="async" src="${TILE}${zt}/${y}/${x}"><span class="alvo larga"></span><span class="ftag">Região (~1 km)${ASSIN ? "" : " · exato no Pro"}</span>`;
+    }
     const p = EXATO[l.i];
-    if(p && p.pol && p.pol.length > 2){ const la = p.pol.reduce((s, q) => s + q[0], 0) / p.pol.length, ln = p.pol.reduce((s, q) => s + q[1], 0) / p.pol.length;
+    if(podePol() && p && p.pol && p.pol.length > 2){ const la = p.pol.reduce((s, q) => s + q[0], 0) / p.pol.length, ln = p.pol.reduce((s, q) => s + q[1], 0) / p.pol.length;
       const n = 2 ** 16, xy = p.pol.map(([a, b]) => tileXY(a, b, n)), lado = Math.max(Math.max(...xy.map(q => q[0])) - Math.min(...xy.map(q => q[0])), Math.max(...xy.map(q => q[1])) - Math.min(...xy.map(q => q[1]))) * 256;
       return mosaico(la, ln, 16, Math.max(1, Math.min(3, 150 / (lado || 1))), p.pol) + `<span class="ftag">Contorno do lote</span>`; }
     const f = fotoDe(l); if(f && !f.sat) return `<img class="fpr" alt="" loading="lazy" src="${f.src}"><span class="ftag">Foto</span>`;
@@ -3394,7 +3724,8 @@ function criaMapa(){
     const ab = RG_ABERTO === l.i, fz = forcaDe(l);
     return `<article class="grc${ab ? " ab" : ""}" data-rc="${l.i}"><div class="grf">${fotoCard(l)}</div>
       <div class="grt"><div class="grp num">${usd(l.ab)} <small>${esc(rotLance(l).toLowerCase())}</small></div>
-        <div class="grs">${esc(l.ci || l.co)}, ${esc(l.uf)} · ${esc(tipoLeilao(l).nome)}${l.d ? " · leilão " + dm(l.d) : ""}</div>
+        <div class="grs">${esc(l.ci || l.co)}, ${esc(l.uf)}${l.d ? " · leilão " + dm(l.d) : ""}</div>
+        ${notaTipoHTML(l)}
         <div class="grv">${forcaHTML(l)} ${noCrit(l) ? "Nos critérios BLR" : LIST(l) ? (l.desc != null ? `−${l.desc}% do cadastro` : "Listado") : esc(ETAPA[l.et] || "")}</div></div>
       ${ab ? `<div class="grx"><table>
         ${l.jv ? `<tr><td>Cadastro</td><td>${k(l.jv)}${l.desc != null ? ` · lance −${l.desc}%` : ""}</td></tr>` : ""}
@@ -4091,7 +4422,11 @@ function secAlterna(h){
   h.setAttribute("aria-expanded", !f); f ? SEC_FECH.add(t) : SEC_FECH.delete(t);
   try{ localStorage.setItem("vitrine_sec_fech", JSON.stringify([...SEC_FECH])); }catch(e){}
 }
-$("#fBody").addEventListener("click", e => { const h = e.target.closest(".sec>h4"); if(h && !e.target.closest("button,a")) secAlterna(h); });
+$("#fBody").addEventListener("click", e => {
+  const th = e.target.closest(".selo-tipo-h");
+  if(th && window.matchMedia("(max-width:480px)").matches){ th.parentElement.classList.toggle("aberta"); return; }
+  const h = e.target.closest(".sec>h4"); if(h && !e.target.closest("button,a")) secAlterna(h);
+});
 $("#fBody").addEventListener("keydown", e => { const h = e.target.closest && e.target.closest(".sec>h4"); if(h && (e.key === "Enter" || e.key === " ")){ e.preventDefault(); secAlterna(h); } });
 $("#fBody").addEventListener("input", e => {
   const box = e.target.closest && e.target.closest("#calcLivre"); if(!box) return;
