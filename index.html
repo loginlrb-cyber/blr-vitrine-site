@@ -474,8 +474,20 @@ body.prel #relPdf{display:block;background:#fff;color:#111;min-height:100vh}
 .mapa-box .leaflet-bar a{background:var(--surf2);color:var(--tx);border-color:var(--line2)}
 .mapa-box .leaflet-bar a:hover{background:var(--line2)}
 /* 02/11 (Cris): nomes de estados e cidades no mapa + "ir para", para navegar sem conhecer a geografia dos EUA */
-.irpara{position:absolute;left:50%;top:12px;transform:translateX(-50%);z-index:510;width:min(300px,calc(100% - 120px))}
-.irpara input{width:100%;box-sizing:border-box;font:13px var(--f-b);color:var(--tx);background:rgba(12,14,18,.92);border:1px solid var(--line2);border-radius:999px;padding:7px 14px;outline:none}
+.irpara{position:absolute;left:50%;top:12px;transform:translateX(-50%);z-index:510;width:min(560px,calc(100% - 120px))}
+/* 11/11 (plano pós-Checkmate, item 1): busca como entrada principal + contadores por tipo, clicáveis */
+.irpara form{position:relative;margin:0}
+.irpara form button{all:unset;cursor:pointer;position:absolute;right:5px;top:50%;transform:translateY(-50%);width:34px;height:34px;display:grid;place-items:center;border-radius:50%;background:var(--acc);color:var(--ink);font-size:17px;font-weight:700}
+.irpara form button:focus-visible{outline:2px solid var(--tx);outline-offset:2px}
+.contTop{display:flex;gap:6px;margin-top:8px;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;padding-bottom:2px}
+.contTop::-webkit-scrollbar{display:none}
+.contTop button{all:unset;cursor:pointer;box-sizing:border-box;flex:0 0 auto;display:inline-flex;align-items:center;gap:6px;padding:6px 11px;border-radius:999px;background:rgba(12,14,18,.9);border:1px solid var(--line2);font:600 12px var(--f-b);color:var(--tx);white-space:nowrap}
+.contTop button b{font:500 11.5px var(--f-m);color:var(--acc)}
+.contTop button[aria-pressed=true]{background:var(--acc);color:var(--ink);border-color:var(--acc)}.contTop button[aria-pressed=true] b{color:var(--ink)}
+.contTop button.zero:not([aria-pressed=true]){opacity:.5}
+.contTop button:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
+@media (min-width:761px){.irpara{left:390px;right:auto;transform:none;width:clamp(260px,calc(100% - 840px),560px)}}   /* entre o painel da esquerda e o zoom */
+.irpara input{width:100%;box-sizing:border-box;font:14.5px var(--f-b);color:var(--tx);background:rgba(12,14,18,.94);border:1px solid var(--line2);border-radius:999px;padding:11px 46px 11px 18px;outline:none;box-shadow:0 10px 30px rgba(0,0,0,.35)}
 .irpara input:focus{border-color:var(--acc)}
 .rgeo{pointer-events:none;white-space:nowrap;transform:translate(-50%,-50%);font:600 11px/1 var(--f-b);letter-spacing:.06em;text-transform:uppercase;color:rgba(238,240,243,.62);text-shadow:0 0 3px #0C0E12,0 0 3px #0C0E12,0 0 6px #0C0E12}
 .rgeo.uf{font-size:10px}
@@ -483,7 +495,7 @@ body.prel #relPdf{display:block;background:#fff;color:#111;min-height:100vh}
 .rgeo.ci i{width:5px;height:5px;border-radius:50%;background:#EEF0F3;box-shadow:0 0 0 1.5px #0C0E12;flex:none}
 .rgeo.ci.t1{font-weight:700;font-size:12.5px}
 .rgeo.co{font-size:10.5px;font-weight:500;letter-spacing:.03em;text-transform:none;font-style:italic;color:rgba(200,210,225,.55)}
-.zdica{position:absolute;left:50%;top:52px;transform:translateX(-50%);z-index:500;font-size:12px;color:var(--tx2);background:rgba(12,14,18,.85);border:1px solid var(--line);border-radius:999px;padding:5px 12px;pointer-events:none;white-space:nowrap}
+.zdica{position:absolute;left:50%;top:auto;bottom:16px;transform:translateX(-50%);z-index:500;font-size:12px;color:var(--tx2);background:rgba(12,14,18,.85);border:1px solid var(--line);border-radius:999px;padding:5px 12px;pointer-events:none;white-space:nowrap}
 .camadas button[disabled]{opacity:.45;cursor:default}
 .camadas .cad{font-size:10.5px;color:var(--acc);margin-left:4px}
 .hbt{all:unset;cursor:pointer;font-size:13px;font-weight:600;padding:8px 12px;border-radius:9px;white-space:nowrap}
@@ -558,7 +570,7 @@ body.prel #relPdf{display:block;background:#fff;color:#111;min-height:100vh}
   .top .acoes-top{gap:5px;margin-left:auto}
   .facoes{grid-template-columns:1fr}
   .fcad .chks{grid-template-columns:1fr}
-  .zdica{font-size:11px;top:46px}
+  .zdica{font-size:11px;top:auto;bottom:12px}
 }
 @media (max-width:640px){   /* o selo do teste cabe no topo: logo curto e texto curto do botão */
   .logo .lg-full{display:none}
@@ -658,7 +670,7 @@ body.vmapa{overflow:hidden}
   #v-mapa .mapa-box .leg{right:8px;bottom:auto;top:48px;max-width:62%}
   .zdica{display:none}
   .irpara{left:8px;top:48px;transform:none;width:calc(100% - 200px);min-width:150px}
-  .irpara input{font-size:16px;padding:6px 12px}
+  .irpara input{font-size:16px;padding:9px 44px 9px 14px}
   .camadas{top:92px!important;bottom:auto;right:8px}
   .camadas:not(.aberta)>button,.camadas:not(.aberta)>small{display:none}
   .camadas>b{cursor:pointer}.camadas>b::after{content:" ▾"}.camadas.aberta>b::after{content:" ▴"}
@@ -1132,7 +1144,8 @@ body{transition:padding-right .5s var(--mola)}
     <div class="mapa-wrap">
       <div class="mapa-box" id="mapaBox">
         <div id="mapa"></div>
-        <div class="irpara"><input id="irPara" list="irLista" type="search" placeholder="Estado ou cidade…" aria-label="Ir para estado ou cidade" autocomplete="off"><datalist id="irLista"></datalist></div>
+        <div class="irpara"><form id="irForm" role="search"><input id="irPara" list="irLista" type="search" placeholder="Endereço, CEP, cidade, condado ou estado" aria-label="Buscar endereço, CEP, cidade, condado ou estado" autocomplete="off" enterkeyhint="search"><button type="submit" aria-label="Buscar">⌕</button></form><datalist id="irLista"></datalist>
+          <div class="contTop" id="contTop" role="group" aria-label="Tipos de leilão nesta área"></div></div>
         <div class="zdica" id="zdica">Aproxime para entrar · afaste para sair</div>
         <div class="leg" id="leg"></div>
       </div>
@@ -1784,6 +1797,12 @@ const REGRAS_TIPO = [
   ["foreclosure", /foreclos|trustee/i]
 ];
 let TLF = "";
+const TGRUPOS = [   // 11/11: contadores do topo do mapa (agrupam os tipos do TIPOS_LEILAO)
+  {id: "g:exec", nome: "Execução", ids: ["foreclosure", "sheriff_judicial"]},
+  {id: "g:imposto", nome: "Imposto", ids: ["tax_deed", "tax_lien", "upset"]},
+  {id: "g:gov", nome: "Governo / REO", ids: ["governo_federal", "reo"]},
+  {id: "g:lb", nome: "Land bank", ids: ["land_bank"]}];
+const tlOk = l => { if(!TLF) return true; const id = tipoLeilao(l).id; if(TLF.startsWith("g:")){ const g = TGRUPOS.find(x => x.id === TLF); return !!g && g.ids.includes(id); } return id === TLF; };
 function tipoPorId(id){ return TIPOS_LEILAO.find(t => t.id === id) || TIPOS_LEILAO[TIPOS_LEILAO.length - 1]; }
 function tipoLeilao(l){
   const tp = String(l && l.tp || "").trim().toLowerCase();
@@ -1818,8 +1837,18 @@ function pintaTipoBar(){
     return `<button type="button" data-tl="${t.id}" aria-pressed="${on}" class="${cor}${q ? "" : " zero"}">${t.id ? `<i class="tlp" aria-hidden="true"></i>` : ""}${esc(t.nome)} <b>${q.toLocaleString("pt-BR")}</b></button>`;
   }).join("");
   box.scrollLeft = sc;
+  pintaContTop(xs, n);
   const leg = $("#tipoLeg");
   if(leg) leg.innerHTML = TIPOS_LEILAO.map(t => `<article class="tl-${t.id}"><b>${esc(t.nome)} <span class="num">${n[t.id].toLocaleString("pt-BR")}</span></b><p>${esc(t.legenda)}</p></article>`).join("");
+}
+function pintaContTop(xs, n){
+  const box = $("#contTop"); if(!box) return;
+  const crit = xs.filter(noCrit).length;
+  const itens = [{id: "", nome: "Todos", q: xs.length}].concat(TGRUPOS.map(g => ({id: g.id, nome: g.nome, q: g.ids.reduce((a, i) => a + (n[i] || 0), 0)})));
+  const sc = box.scrollLeft;
+  box.innerHTML = itens.map(t => `<button type="button" data-ct="${t.id}" aria-pressed="${(TLF || "") === t.id}" class="${t.q ? "" : "zero"}">${esc(t.nome)} <b>${t.q.toLocaleString("pt-BR")}</b></button>`).join("")
+    + `<button type="button" data-ctcrit aria-pressed="${!!CRITM}">Nos critérios BLR <b>${crit.toLocaleString("pt-BR")}</b></button>`;
+  box.scrollLeft = sc;
 }
 /* TIPO_LEILAO_FIM */
 function filtrados(paraMapa, semSel){
@@ -1829,7 +1858,7 @@ function filtrados(paraMapa, semSel){
   const cr = paraMapa ? CRITM : CRIT;
   let r = L.filter(l => (!cr || noCrit(l)) && (sit === "todos" || (sit === "vend" ? HIST(l) && l.rs && l.rs.s === "vendido" : (sit === "hist") === HIST(l))) && (!sg || (paraMapa ? naSeg(l.i) : segue(l.i))) &&
     (!q || [l.ci, l.co, l.zip].some(x => (x||"").toLowerCase().includes(q))) && (!uf || l.uf === uf) &&
-    (!tp || l.u === tp) && (!md || modLeilao(l) === md) && (!TLF || tipoLeilao(l).id === TLF) && naData(l.d) && (!paraMapa || semSel || !LSEL || (l.f === LSEL.f && l.d === LSEL.d)) &&
+    (!tp || l.u === tp) && (!md || modLeilao(l) === md) && tlOk(l) && naData(l.d) && (!paraMapa || semSel || !LSEL || (l.f === LSEL.f && l.d === LSEL.d)) &&
     (!mx || (l.ab || 0) * tx() <= mx) && (!tip || (l.et === "final" && l.ft === "tipico")) && (!on || (l.on && l.on !== "nao_consultado")) &&
     (!mn || (l.ab || 0) * tx() >= mn) && (!fz || forcaDe(l) >= fz) && (!dsc || (l.desc ?? -1) >= dsc) &&
     (!cta || (!HIST(l) && l.ab > 0 && l.teto >= l.ab)));
@@ -4139,7 +4168,8 @@ function criaMapa(){
   }
   // "ir para": estado (nome em português ou sigla) ou cidade da lista
   $("#irLista").innerHTML = [...ROT.filter(r => r.tipo === "uf").map(r => r.nome).sort((a, b) => a.localeCompare(b, "pt")),
-    ...ROT.filter(r => r.tipo === "ci").map(r => `${r.nome} (${r.uf})`).sort((a, b) => a.localeCompare(b, "pt"))].map(x => `<option value="${esc(x)}">`).join("");
+    ...ROT.filter(r => r.tipo === "ci").map(r => `${r.nome} (${r.uf})`).sort((a, b) => a.localeCompare(b, "pt")),
+    ...ROT.filter(r => r.tipo === "co").map(r => `${r.nome} County`).sort((a, b) => a.localeCompare(b, "pt"))].map(x => `<option value="${esc(x)}">`).join("");
   const semAc = s => s.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().trim();
   function irPara(){
     const v = semAc($("#irPara").value); if(!v) return false;
@@ -4148,10 +4178,34 @@ function criaMapa(){
     if(e){ abreUF(e.uf); return true; }
     const c = ROT.find(r => r.tipo === "ci" && semAc(`${r.nome} (${r.uf})`) === v) || ROT.find(r => r.tipo === "ci" && semAc(r.nome) === v);
     if(c){ M.flyTo([c.la, c.ln], Math.max(z(), 9), {duration: VOO}); return true; }
+    // 11/11: condado ("Lee County", "lee"), CEP (5 dígitos), cidade dos lotes e, para assinante, endereço
+    const vc = v.replace(/\s+(county|parish|borough)$/, "");
+    const vivos = L.filter(l => !HIST(l) && posDe(l));
+    { const onde = MAPA && MAPA.onde ? MAPA.onde() : {}, porUf = {};   // condado com o mesmo nome em vários estados: o do estado aberto, senão o com mais lotes
+      for(const l of vivos) if(semAc(l.co || "").replace(/\s+(county|parish|borough)$/, "") === vc) (porUf[l.uf] = porUf[l.uf] || []).push(l);
+      const ufs = Object.keys(porUf).sort((a, b) => (b === onde.uf) - (a === onde.uf) || porUf[b].length - porUf[a].length);
+      if(ufs.length){ M.flyToBounds(Lf.latLngBounds(porUf[ufs[0]].map(posDe)).pad(.1), {duration: VOO, maxZoom: 11}); return true; } }
+    const co = ROT.find(r => r.tipo === "co" && semAc(r.nome).replace(/\s+(county|parish|borough)$/, "") === vc);
+    if(co){ M.flyTo([co.la, co.ln], Math.max(z(), 9), {duration: VOO}); return true; }
+    const voaLotes = xs => { if(!xs.length) return false;
+      if(xs.length === 1){ const ll = posDe(xs[0]); M.flyTo(ll, Math.max(z(), 16), {duration: VOO}); setTimeout(() => abre(xs[0].i), VOO * 1000 + 200); return true; }
+      M.flyToBounds(Lf.latLngBounds(xs.map(posDe)).pad(.15), {duration: VOO, maxZoom: 15}); return true; };
+    if(/^\d{5}$/.test(v)) return voaLotes(vivos.filter(l => String(l.zip || "") === v)) || (aviso("Nenhum lote à venda com o CEP " + v + " agora."), true);
+    const porCi = vivos.filter(l => semAc(l.ci || "") === v || semAc(`${l.ci || ""} (${l.uf})`) === v);
+    if(porCi.length) return voaLotes(porCi);
+    if(/\d/.test(v) && /[a-z]/.test(v)){   // parece endereço: só o assinante tem o endereço (privado)
+      const toks = v.split(/[\s,]+/).filter(t => t.length > 1);
+      const achou = vivos.filter(l => { const e = EXATO[l.i] && EXATO[l.i].e; return e && toks.every(t => semAc(e).includes(t)); });
+      if(achou.length) return voaLotes(achou.slice(0, 50));
+      aviso(ASSIN ? "Não achei esse endereço entre os lotes à venda. Tente o CEP ou a cidade." : "A busca por endereço é dos assinantes. Tente o CEP, a cidade ou o condado.");
+      return true;
+    }
     return false;
   }
-  $("#irPara").addEventListener("change", () => { if(irPara()){ $("#irPara").value = ""; $("#irPara").blur(); } });
-  $("#irPara").addEventListener("keydown", e => { if(e.key === "Enter" && !irPara()){ $("#irPara").setCustomValidity("Não achei: escolha um estado ou cidade da lista"); $("#irPara").reportValidity(); } });
+  function aviso(t){ const i = $("#irPara"); i.setCustomValidity(t); i.reportValidity(); setTimeout(() => i.setCustomValidity(""), 2600); }
+  $("#irPara").addEventListener("change", () => { const v = $("#irPara").value; if(v && [...$("#irLista").options].some(o => o.value === v) && irPara()){ $("#irPara").value = ""; $("#irPara").blur(); } });   // só ao escolher da lista; o Enter vai pelo submit
+  $("#irForm").addEventListener("submit", e => { e.preventDefault(); if(!$("#irPara").value.trim()) return; if(irPara()){ if(!$("#irPara").validationMessage){ $("#irPara").value = ""; $("#irPara").blur(); } }
+    else { $("#irPara").setCustomValidity("Não achei. Tente um estado, cidade, condado, CEP (5 dígitos) ou, para assinante, o endereço."); $("#irPara").reportValidity(); } });
   $("#irPara").addEventListener("input", () => $("#irPara").setCustomValidity(""));
   let zAnt = null;
   function aoMover(){
@@ -4396,6 +4450,10 @@ document.querySelectorAll(".segCrit button").forEach(b => b.onclick = () => { co
   if(m) CRITM = v; else CRIT = v;
   b.parentElement.querySelectorAll("button").forEach(x => x.setAttribute("aria-pressed", (x.dataset.crit === "1") === v)); critTexto(); mostrar = PAG; render(); });
 $("#btFiltros").onclick = () => { const a = $(".filtros").classList.toggle("aberta"); $("#btFiltros").setAttribute("aria-expanded", a); $("#btFiltros").textContent = a ? "Menos filtros ▴" : "Mais filtros ▾"; };
+$("#contTop").addEventListener("click", e => {
+  if(e.target.closest("[data-ctcrit]")){ const bt = document.querySelector('#segCritM [data-crit="' + (CRITM ? "0" : "1") + '"]'); if(bt) bt.click(); else { CRITM = !CRITM; render(); } return; }
+  const b = e.target.closest("[data-ct]"); if(!b) return;
+  const id = b.dataset.ct || ""; TLF = !id || id === TLF ? "" : id; mostrar = PAG; render(); });
 $("#tipoChips").addEventListener("click", e => { const b = e.target.closest("[data-tl]"); if(!b) return;
   const id = b.dataset.tl || ""; TLF = !id || id === TLF ? "" : id; mostrar = PAG; render(); });
 $("#tipoLegBt").onclick = () => { const leg = $("#tipoLeg"), a = leg.hidden; leg.hidden = !a;
