@@ -3305,7 +3305,22 @@ function linhaTempoHTML(l, p){
   return `<div class="sec sec-xt"><h4>Linha do tempo</h4><ol class="ltempo">${ev.map(e => `<li class="lt-${e.c}${e.d > hoje ? " futuro" : ""}"><b>${esc(e.t)}</b><span>${esc(e.s)}</span></li>`).join("")}</ol>
     ${p ? (nal ? "" : `<div class="nota">Vendas anteriores: o cadastro deste condado ainda não traz o histórico na vitrine.</div>`) : `<div class="nota">Vendas anteriores registradas aparecem para assinantes.</div>`}</div>`;
 }
+function cadastroGisHTML(c){   // 11/11: fora da FL, campos da camada pública de parcelas (vitrine_cad_gis.py)
+  const lin = [];
+  if(c.lote_ft2) lin.push(["Área do lote", c.lote_ft2.toLocaleString("pt-BR") + " ft² (" + Math.round(c.lote_ft2 * .0929).toLocaleString("pt-BR") + " m²)" + (c.acres ? " · " + String(c.acres).replace(".", ",") + " acre" : "")]);
+  if(c.frente_ft || c.fundo_ft) lin.push(["Frente × fundo", (c.frente_ft ? Math.round(c.frente_ft) + " ft" : "?") + " × " + (c.fundo_ft ? Math.round(c.fundo_ft) + " ft" : "?")]);
+  if(c.zoneamento) lin.push(["Zoneamento", c.zoneamento]);
+  if(c.uso) lin.push(["Uso no cadastro", c.uso]);
+  if(c.ano) lin.push(["Ano de construção", String(c.ano)]);
+  if(c.andares) lin.push(["Andares", String(c.andares)]);
+  if(c.area_ft2) lin.push(["Área construída (cadastro)", Math.round(c.area_ft2).toLocaleString("pt-BR") + " ft²"]);
+  if(c.garagem) lin.push(["Garagem", c.garagem]);
+  if(!lin.length) return "";
+  return `<div class="sec sec-xt"><h4>Cadastro do condado</h4><table class="tab2">${lin.map(([x, y]) => `<tr><td>${esc(x)}</td><td>${/[a-zà-ú]{3}/i.test(String(y).replace(/ft²|m²|acre|ft/g, "")) ? `<span class="txt">${esc(y)}</span>` : esc(y)}</td></tr>`).join("")}</table>
+    <div class="nota">Fonte: ${esc(c.fonte || "camada pública de parcelas")} (registro público). Confirme o zoneamento na prefeitura antes de planejar obra.</div></div>`;
+}
 function cadastroHTML(p){
+  if(p && !p.nal && p.cad) return cadastroGisHTML(p.cad);
   const n = p && p.nal; if(!n) return "";
   const lin = [];
   if(n.lote_ft2) lin.push(["Área do lote", n.lote_ft2.toLocaleString("pt-BR") + " ft² (" + Math.round(n.lote_ft2 * .0929).toLocaleString("pt-BR") + " m²)"]);
