@@ -488,7 +488,7 @@ body.prel #relPdf{display:block;background:#fff;color:#111;min-height:100vh}
 .contTop button[aria-pressed=true]{background:var(--acc);color:var(--ink);border-color:var(--acc)}.contTop button[aria-pressed=true] b{color:var(--ink)}
 .contTop button.zero:not([aria-pressed=true]){opacity:.5}
 .contTop button:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
-@media (min-width:761px){.irpara{left:390px;right:auto;transform:none;width:clamp(260px,calc(100% - 840px),560px)}}   /* entre o painel da esquerda e o zoom */
+@media (min-width:761px){.irpara{left:466px;right:auto;transform:none;width:clamp(240px,calc(100% - 920px),560px)}}   /* entre o painel da esquerda e o zoom */
 .irpara input{width:100%;box-sizing:border-box;font:14.5px var(--f-b);color:var(--tx);background:rgba(12,14,18,.94);border:1px solid var(--line2);border-radius:999px;padding:11px 46px 11px 18px;outline:none;box-shadow:0 10px 30px rgba(0,0,0,.35)}
 .irpara input:focus{border-color:var(--acc)}
 .rgeo{pointer-events:none;white-space:nowrap;transform:translate(-50%,-50%);font:600 11px/1 var(--f-b);letter-spacing:.06em;text-transform:uppercase;color:rgba(238,240,243,.62);text-shadow:0 0 3px #0C0E12,0 0 3px #0C0E12,0 0 6px #0C0E12}
@@ -919,6 +919,8 @@ body{transition:padding-right .5s var(--mola)}
 .lnova{display:flex;gap:8px;flex-wrap:wrap}.lnova input{flex:1 1 200px;padding:7px 10px}
 .pbar .pmin.cal{width:auto;padding:0 10px;font-size:12.5px;color:var(--tx);border-color:var(--acc)}
 #v-mapa .painel.min .pbar{flex-wrap:wrap;row-gap:6px}
+/* 11/11 (redesign 2): no computador o painel cabe numa linha só (mais largo, botões mais justos) */
+@media (min-width:761px){#v-mapa .painel{width:440px}#v-mapa .painel .pbar,#v-mapa .painel.min .pbar{flex-wrap:nowrap;gap:4px;padding:8px 10px}.pbar .tg{padding:5px 7px}.pbar .seg button{padding:5px 8px}.pbar .pmin.cal{padding:0 9px;white-space:nowrap;flex:none}}
 #v-mapa .painel.min .truf{display:none}
 @media (max-width:760px){#v-mapa .painel.min .pbar{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none}#v-mapa .painel.min .pbar>*{flex:0 0 auto}}
 /* 07/11: tour de primeiro acesso (anel + balão, sem bloquear cliques) e link de planos no bloco Pro */
