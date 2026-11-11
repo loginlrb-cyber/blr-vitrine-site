@@ -671,7 +671,7 @@ body.vmapa{overflow:hidden}
   #v-mapa .painel{left:0;right:0;top:auto;bottom:calc(56px + env(safe-area-inset-bottom,0px));width:auto;max-height:46%;border-radius:16px 16px 0 0}
   #v-mapa .painel.min{bottom:0}
   #v-mapa .trilha{left:8px;top:8px;max-width:calc(100% - 16px);font-size:12px;padding:4px 10px}
-  #v-mapa .mapa-box .leg{right:8px;bottom:auto;top:48px;max-width:62%}
+  #v-mapa .mapa-box .leg{right:8px;bottom:auto;top:132px;max-width:62%}   /* 11/11 (redesign 5): abaixo da busca e dos contadores, não por cima do "Estados Unidos" */
   .zdica{display:none}
   .irpara{left:8px;top:48px;transform:none;width:calc(100% - 200px);min-width:150px}
   .irpara input{font-size:16px;padding:9px 44px 9px 14px}
@@ -862,6 +862,7 @@ body{transition:padding-right .5s var(--mola)}
 .regiao .rmin{all:unset;cursor:pointer;width:44px;height:44px;display:grid;place-items:center;border-radius:12px;color:var(--tx2)}.regiao .rmin:hover{background:rgba(255,255,255,.06)}
 .regiao .grl{overflow:auto;padding:10px;display:flex;flex-direction:column;gap:10px;flex:1 1 auto;min-height:0}.regiao .grc,.regiao .pro{flex:0 0 auto}
 .regiao.min{bottom:auto}.regiao.min .grl{display:none}
+@media (max-width:760px){.regiao.min{top:auto!important;bottom:calc(60px + env(safe-area-inset-bottom,0px))!important}#v-mapa .mapa-box .leg{top:138px!important;bottom:auto!important;right:auto!important;left:8px!important}}   /* 11/11 (redesign 5): no celular a região recolhida fica como uma aba no pé do mapa e a legenda sai de cima da trilha */
 .grc{border:1px solid var(--fio,var(--line));border-radius:14px;overflow:hidden;background:rgba(255,255,255,.02);cursor:pointer;transition:border-color .15s,transform .15s}
 .grc:hover{border-color:var(--acc);transform:translateY(-1px)}.grc.ab{border-color:var(--acc);cursor:default}
 .grc .grf{position:relative;height:148px;overflow:hidden;background:#161b22}
@@ -3851,7 +3852,7 @@ function criaMapa(){
   }
   const RG = document.createElement("aside"); RG.className = "regiao"; RG.id = "regiao"; RG.setAttribute("aria-label", "Oportunidades nesta área do mapa");
   box.appendChild(RG); Lf.DomEvent.disableClickPropagation(RG); Lf.DomEvent.disableScrollPropagation(RG);
-  let RG_ABERTO = null, RG_MIN = false;
+  let RG_ABERTO = null, RG_MIN = window.innerWidth < 760;   // 11/11 (redesign 5): no celular a lista da região começa recolhida (o mapa aparece inteiro; um toque abre)
   const BENEF = () => ASSIN ? "" : `<div class="pro"><b>O que o Pro libera · US$ 49,90/mês</b><ul><li>Posição exata e o contorno de cada lote</li><li>Street View, endereço e parcela</li><li>Teto BLR, ARV e a conta ao vivo</li><li>Várias listas de acompanhamento</li><li>Assistente de IA da BLR</li></ul>
     <button type="button" class="cta" data-teste>Testar 7 dias grátis</button><button type="button" class="lnk" data-assina>${TRIAL_BOTAO}</button><a class="lnk" href="planos/">ver todos os planos</a></div>`;
   function cartaoRG(l){
