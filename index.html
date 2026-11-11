@@ -81,6 +81,7 @@ a{color:var(--info)}
 .iasug{display:flex;flex-wrap:wrap;gap:6px;margin:2px 0 4px}.iasug button{font:inherit;font-size:12.5px;padding:6px 10px;border-radius:999px;border:1px solid var(--line2);background:transparent;color:var(--tx2);cursor:pointer;text-align:left}.iasug button:hover,.iasug button:focus-visible{border-color:var(--acc);color:var(--tx)}   /* 09/11: perguntas prontas */
 .fcad label.aceite{display:block;font-size:12.5px;line-height:1.45;color:var(--tx2);font-weight:400;text-transform:none;letter-spacing:0}.fcad label.aceite input{display:inline-block;width:auto;padding:0;margin:0 7px 0 0;vertical-align:-2px;accent-color:var(--acc)}.fcad label.aceite a{color:var(--acc)}   /* 11/11: aceite dos termos (texto corrido, sem maiúsculas) */
 .ltempo{list-style:none;margin:4px 0 6px;padding:0 0 0 14px;border-left:2px solid var(--line2)}.ltempo li{position:relative;margin:0 0 10px;padding-left:6px}.ltempo li::before{content:"";position:absolute;left:-21px;top:5px;width:10px;height:10px;border-radius:50%;background:var(--line2);border:2px solid var(--bg)}.ltempo li b{display:block;font-size:13.5px}.ltempo li span{font-size:12.5px;color:var(--mute)}.ltempo .lt-leilao::before{background:var(--acc)}.ltempo .lt-venda::before{background:#7fd6a4}.ltempo .lt-res::before{background:#e8857a}.ltempo li.futuro b{color:var(--acc)}   /* 11/11 linha do tempo */
+.projB{grid-column:1/-1;margin:0 0 14px}.projB h3 .num{font-size:12px;color:var(--acc);margin-left:6px}.projs{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px;margin-top:10px}.proj{border:1px solid var(--line2);border-radius:14px;padding:12px;background:var(--bg2);display:flex;flex-direction:column;gap:10px}.proj header{display:flex;flex-direction:column;gap:2px}.proj header .lnk{font-weight:700;font-size:15px;text-align:left}.proj header small{color:var(--mute);font-size:12px}.pr-g{display:grid;grid-template-columns:1fr 1fr;gap:8px}.proj label{display:flex;flex-direction:column;gap:3px;font-size:11px;color:var(--mute);text-transform:uppercase;letter-spacing:.05em}.proj input,.proj select,.proj textarea{font:14px var(--f-b);color:var(--tx);background:var(--surf);border:1px solid var(--line2);border-radius:9px;padding:8px;text-transform:none;letter-spacing:0;width:100%;box-sizing:border-box}.proj footer{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between}.pr-res{font-size:13px;color:var(--mute)}.pr-res.pos{color:#7fd6a4}.pr-res.neg{color:#e8857a}.pr-ac{display:flex;gap:12px}   /* 11/11 meus projetos */
 .iab.esp{color:var(--mute);font-style:italic}.iab.erro{color:var(--mute)}
 .iab.cortada{-webkit-mask-image:linear-gradient(#000 45%,transparent);mask-image:linear-gradient(#000 45%,transparent)}
 .iacta{align-self:stretch;display:flex;flex-direction:column;gap:6px;padding:12px;border:1px solid var(--ok-ln);border-radius:12px;background:var(--ok-bg);font-size:13px;color:var(--tx2)}
@@ -3016,6 +3017,7 @@ async function abre(i){
     <button type="button" class="bfi" data-info="${l.i}">Solicitar informações sobre esta parcela</button>`}
     <button type="button" class="bfi ${segue(l.i) ? "on" : ""}" data-seg="${l.i}">${segue(l.i) ? "★ Acompanhando" : "☆ Acompanhar"}</button>
     <button type="button" class="bfi fcmp ${CMP.includes(l.i) ? "on2" : ""}" data-cmp="${l.i}">${CMP.includes(l.i) ? "⇄ Comparando" : "⇄ Comparar"}</button>
+    <button type="button" class="bfi ${PROJ.some(x => x.i === l.i) ? "on" : ""}" data-proj="${l.i}">${PROJ.some(x => x.i === l.i) ? "▤ No meu projeto" : "▤ Salvar como projeto"}</button>
     <button type="button" class="fpdf-fim" id="fPdfFim">Relatório em PDF</button></div>`;
   const r = l.rs || {};
   const resultado = !HIST(l) ? "" : r.s === "vendido" && r.v ? `<div class="resultado vend"><span>Resultado do leilão de ${dm(l.d)}/${l.d.slice(0,4)}</span>
@@ -4400,6 +4402,50 @@ function cobertura(){
 /* ---------- Meu portfólio (07/11, Rodrigo: story map v3, etapa 10) ----------
    Ambiente do assinante. Ainda sem arremates registrados: mostra o painel vazio e o que cada parte vai ter. */
 const ARREMATES = [];   // entra quando o servidor da Clauds tiver /api/portfolio
+/* 11/11 (plano pós-Checkmate item 6): "Meus projetos" = o funil de negócios do assinante. Cada projeto guarda o lote,
+   a etapa, o lance e a reforma planejados e uma nota; a conta usa a mesma calculadora grátis (calcLivre), com o ARV que
+   a pessoa digitar (o ARV BLR só aparece para quem já o vê). Fica neste navegador (chave por conta), sem servidor. */
+const PROJ_ETAPAS = ["Analisando", "Inscrito no leilão", "Lance dado", "Arrematado", "Descartado"];
+const projChave = () => "blr_projetos_v1";
+let PROJ = [];
+function carregaProj(){ try{ PROJ = JSON.parse(localStorage.getItem(projChave()) || "[]").filter(x => x && x.i); }catch(e){ PROJ = []; } }
+function salvaProj(){ try{ localStorage.setItem(projChave(), JSON.stringify(PROJ)); }catch(e){} }
+carregaProj();
+function alternaProj(i){
+  const l = L.find(x => x.i === i); if(!l) return;
+  if(PROJ.some(x => x.i === i)) PROJ = PROJ.filter(x => x.i !== i);
+  else PROJ.unshift({i, nm: refLote(l), uf: l.uf, d: l.d || "", ab: l.ab || null, etapa: PROJ_ETAPAS[0], lance: l.ab || null, reforma: null, arv: null, nota: "", em: HOJE_L});
+  salvaProj();
+  document.querySelectorAll(`[data-proj="${CSS.escape(i)}"]`).forEach(b => { const on = PROJ.some(x => x.i === i); b.classList.toggle("on", on); b.textContent = on ? "▤ No meu projeto" : "▤ Salvar como projeto"; });
+  if(!$("#v-portfolio").hidden) portfolio();
+}
+document.addEventListener("click", e => { const b = e.target.closest("[data-proj]"); if(!b) return; e.preventDefault(); alternaProj(b.dataset.proj); });
+function projHTML(){
+  if(!PROJ.length) return `<p class="vazio">Nenhum projeto ainda. Na ficha de um lote, toque em <b>▤ Salvar como projeto</b>.</p>`;
+  return `<div class="projs">${PROJ.map((x, n) => {
+    const l = L.find(y => y.i === x.i), arv = x.arv || (l && l.am) || null;
+    const c = arv && x.lance ? calcLivre(arv, x.lance, x.reforma || 0, {}) : null;
+    const res = c ? `<span class="pr-res ${c.lucro >= 0 ? "pos" : "neg"}">Lucro estimado ${k(c.lucro)} · retorno ${Math.round(c.roi * 100)}%</span>` : `<span class="pr-res">Informe ARV, lance e reforma para ver a conta</span>`;
+    return `<article class="proj" data-pn="${n}">
+      <header><button type="button" class="lnk" data-pabre="${esc(x.i)}">${esc(l ? (l.ci && l.ci !== l.co ? l.ci + " · " : "") + l.co + " County, " + l.uf : x.nm)}</button><small>${esc(x.uf)}${x.d ? " · leilão " + dm(x.d) : ""}${x.ab ? " · abertura " + k(x.ab) : ""}</small></header>
+      <div class="pr-g">
+        <label>Etapa<select data-pc="etapa">${PROJ_ETAPAS.map(t => `<option ${t === x.etapa ? "selected" : ""}>${t}</option>`).join("")}</select></label>
+        <label>ARV (US$)<input data-pc="arv" type="number" min="0" step="1000" inputmode="numeric" value="${x.arv || ""}" placeholder="${l && l.am ? "ARV BLR " + Math.round(l.am).toLocaleString("pt-BR") : "o seu ARV"}"></label>
+        <label>Lance (US$)<input data-pc="lance" type="number" min="0" step="100" inputmode="numeric" value="${x.lance || ""}"></label>
+        <label>Reforma (US$)<input data-pc="reforma" type="number" min="0" step="100" inputmode="numeric" value="${x.reforma || ""}"></label>
+      </div>
+      <label class="pr-nota">Nota<textarea data-pc="nota" rows="2" maxlength="600" placeholder="O que falta conferir, visita, título…">${esc(x.nota || "")}</textarea></label>
+      <footer>${res}<span class="pr-ac"><button type="button" class="lnk" data-ppdf="${esc(x.i)}">Relatório PDF</button><button type="button" class="lnk" data-prm="${n}">Remover</button></span></footer>
+    </article>`; }).join("")}</div>
+    <p class="nota">Os projetos ficam neste navegador. A conta usa os custos padrão da calculadora grátis (custos fixos, venda) e é estimativa, não garantia.</p>`;
+}
+document.addEventListener("change", e => { const c = e.target.closest("[data-pc]"), a = c && c.closest("[data-pn]"); if(!a) return;
+  const x = PROJ[+a.dataset.pn]; if(!x) return; const f = c.dataset.pc;
+  x[f] = f === "etapa" || f === "nota" ? c.value : (c.value === "" ? null : Math.max(0, Math.round(+c.value) || 0)); salvaProj(); if(f !== "nota") portfolio(); });
+document.addEventListener("click", e => {
+  const ab = e.target.closest("[data-pabre]"); if(ab){ abre(ab.dataset.pabre); return; }
+  const pd = e.target.closest("[data-ppdf]"); if(pd){ abre(pd.dataset.ppdf); setTimeout(() => { const b = $("#fPdf"); if(b) b.click(); }, 900); return; }
+  const rm = e.target.closest("[data-prm]"); if(rm){ PROJ.splice(+rm.dataset.prm, 1); salvaProj(); portfolio(); } });
 function portfolio(){
   const a = ARREMATES, soma = k => a.reduce((t, x) => t + (x[k] || 0), 0);
   const arv = soma("arv"), des = soma("desembolso"), lucro = soma("lucro");
@@ -4415,6 +4461,7 @@ function portfolio(){
     ["Comparativo", "Sua carteira contra investimentos tradicionais (Treasury, S&P 500, CDI) no mesmo período.", "Aparece com o primeiro resultado."]];
   $("#port").innerHTML = `<div class="pactopo"><h2>Meu portfólio</h2><p class="nota">Tudo o que você arrematar, sozinho (self) ou com a BLR (partner), fica aqui. Valores são estimativas, não garantia de resultado.</p></div>
     ${ASSIN ? "" : `<div class="portAv"><b>Área do assinante.</b> Assine para acompanhar seus arremates aqui. <button type="button" class="cta" data-assina>Ver planos</button></div>`}
+    <section class="portB projB"><h3>Meus projetos <span class="num">${PROJ.length}</span></h3><p>Os negócios que você está estudando, da análise ao arremate.</p>${projHTML()}</section>
     <div class="portK">${kp.map(([v, t]) => `<div class="kpi"><b class="num">${v}</b><span>${t}</span></div>`).join("")}</div>
     <div class="portG">${blocos.map(([t, d, v]) => `<section class="portB"><h3>${t}</h3><p>${d}</p><p class="vazio">${v}</p></section>`).join("")}</div>`;
   const b = $("#port").querySelector("[data-assina]"); if(b) b.onclick = () => abreAssina();
