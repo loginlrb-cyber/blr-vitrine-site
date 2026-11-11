@@ -80,6 +80,7 @@ a{color:var(--info)}
 .ia-r{background:var(--surf);color:var(--tx2);align-self:flex-start}.ia-u{background:var(--ok-bg);color:var(--tx);align-self:flex-end}
 .iasug{display:flex;flex-wrap:wrap;gap:6px;margin:2px 0 4px}.iasug button{font:inherit;font-size:12.5px;padding:6px 10px;border-radius:999px;border:1px solid var(--line2);background:transparent;color:var(--tx2);cursor:pointer;text-align:left}.iasug button:hover,.iasug button:focus-visible{border-color:var(--acc);color:var(--tx)}   /* 09/11: perguntas prontas */
 .fcad label.aceite{display:block;font-size:12.5px;line-height:1.45;color:var(--tx2);font-weight:400;text-transform:none;letter-spacing:0}.fcad label.aceite input{display:inline-block;width:auto;padding:0;margin:0 7px 0 0;vertical-align:-2px;accent-color:var(--acc)}.fcad label.aceite a{color:var(--acc)}   /* 11/11: aceite dos termos (texto corrido, sem maiúsculas) */
+.ltempo{list-style:none;margin:4px 0 6px;padding:0 0 0 14px;border-left:2px solid var(--line2)}.ltempo li{position:relative;margin:0 0 10px;padding-left:6px}.ltempo li::before{content:"";position:absolute;left:-21px;top:5px;width:10px;height:10px;border-radius:50%;background:var(--line2);border:2px solid var(--bg)}.ltempo li b{display:block;font-size:13.5px}.ltempo li span{font-size:12.5px;color:var(--mute)}.ltempo .lt-leilao::before{background:var(--acc)}.ltempo .lt-venda::before{background:#7fd6a4}.ltempo .lt-res::before{background:#e8857a}.ltempo li.futuro b{color:var(--acc)}   /* 11/11 linha do tempo */
 .iab.esp{color:var(--mute);font-style:italic}.iab.erro{color:var(--mute)}
 .iab.cortada{-webkit-mask-image:linear-gradient(#000 45%,transparent);mask-image:linear-gradient(#000 45%,transparent)}
 .iacta{align-self:stretch;display:flex;flex-direction:column;gap:6px;padding:12px;border:1px solid var(--ok-ln);border-radius:12px;background:var(--ok-bg);font-size:13px;color:var(--tx2)}
@@ -3118,6 +3119,7 @@ async function abre(i){
       ${p.rg ? `<a href="${esc(p.rg)}" target="_blank" rel="noopener">Regrid (parcela)</a>` : ""}
       ${p.lk ? `<a href="${esc(p.lk)}" target="_blank" rel="noopener">Página do leilão</a>` : ""}</div>`;
     $("#online").insertAdjacentHTML("afterbegin", linksPrivados(l, p));
+    document.querySelectorAll("#fBody .sec-xt").forEach(x => x.remove()); $("#secPriv").insertAdjacentHTML("afterend", cadastroHTML(p) + linhaTempoHTML(l, p));
     const fo = $("#fOnus");   // 05/11: resumo do processo (credores, o que cai e o que sobrevive), só membro
     if(fo && p.ons) fo.insertAdjacentHTML("beforeend", `<div class="nota" style="margin:4px 0 0">${esc(p.ons)}${p.ond ? ` (consultado em ${dm(p.ond)}/${p.ond.slice(0, 4)})` : ""}</div>`);
     // 28/10: "Ficha no cadastro" e "Cadastro do condado" iam ao mesmo Property Appraiser; fica só a ficha (direto na parcela)
@@ -3125,6 +3127,7 @@ async function abre(i){
     hs.forEach((a, n) => { if(hs.some((b, m) => m < n && (b.href === a.href || (host(b) === host(a) && /cadastro/i.test(a.textContent + b.textContent))))) a.remove(); });
     const bc = $("#btCopia"); if(bc) bc.onclick = async () => { try{ await navigator.clipboard.writeText(p.parcela); bc.querySelector("small").textContent = "copiado ✓"; }catch(e){ bc.querySelector("small").textContent = p.parcela; } };
   } else {
+    document.querySelectorAll("#fBody .sec-xt").forEach(x => x.remove()); $("#secPriv").insertAdjacentHTML("afterend", linhaTempoHTML(l, null));
     $("#secPriv").innerHTML = CARREGA_CONTA ? `<h4>Endereço e links</h4><div class="trava"><span>⏳</span><div><b>Carregando os dados da sua conta…</b><br>Endereço, parcela e Street View aparecem aqui em alguns segundos.</div></div>`
       : MEMBRO ? `<h4>Endereço e links</h4><div class="trava"><span>—</span><div><b>Este lote ainda não tem endereço nem parcela nos dados da BLR.</b><br><button type="button" class="lnk" data-info="${l.i}">Peça as informações deste lote</button>.</div></div>`
       : `<h4>Endereço e links</h4><div class="trava"><span>🔒</span><div><b>Endereço, parcela, Street View e a página do leilão ficam com os assinantes.</b><br>
@@ -3222,6 +3225,39 @@ function bairroHTML(l){
     <tr><td>ARV BLR (faixa)</td><td>${sel(l, fx(l.arv))}</td></tr></table>${leitura}
     <div class="nota">"Casa típica" é o valor do meio entre as casas próprias do setor, como os donos declaram ao Censo (ACS 5 anos, setor de 2020); costuma ficar abaixo do preço de venda atual. ARV: revenda estimada pela BLR com comparáveis.</div></div>`;
 }
+/* 11/11 (plano pós-Checkmate itens 4 e 5): linha do tempo do lote e cadastro do condado.
+   Datas do leilão e da coleta são públicas; vendas e sinais do cadastro (NAL da FL) vêm do privado, só assinante. */
+function linhaTempoHTML(l, p){
+  const ev = [], dt = s => s ? s.slice(8, 10) + "/" + s.slice(5, 7) + "/" + s.slice(0, 4) : "";
+  const nal = p && p.nal;
+  if(nal && nal.vendas) for(const v of nal.vendas) ev.push({d: `${v.a}-${String(v.m || 1).padStart(2, "0")}-01`, t: v.v < 1000 ? `Transferência nominal · ${k(v.v)}` : `Venda registrada · ${k(v.v)}`,
+    s: (v.m ? String(v.m).padStart(2, "0") + "/" : "") + v.a + (v.q ? " · venda qualificada (entre partes independentes)" : " · não qualificada (família, banco, etc.)"), c: "venda"});
+  const col = l.pa || (DADOS.meta && DADOS.meta.gerado);
+  if(col) ev.push({d: col, t: "Lote lido na fonte oficial", s: dt(col), c: "fonte"});
+  const lei = l.d && LEI.find(a => a.f === l.f && a.d === l.d);
+  if(lei && lei.pi) ev.push({d: lei.pi, t: "Prazo de inscrição", s: dt(lei.pi), c: "insc"});
+  if(l.d) ev.push({d: l.d, t: HIST(l) ? "Leilão" : "Leilão marcado", s: dt(l.d), c: "leilao"});
+  if(HIST(l)) ev.push({d: (l.rs && l.rs.d) || l.d, t: "Resultado", s: resTxt(l), c: "res"});
+  if(ev.length < 2) return "";
+  ev.sort((a, b) => a.d.localeCompare(b.d));
+  const hoje = new Date().toISOString().slice(0, 10);
+  return `<div class="sec sec-xt"><h4>Linha do tempo</h4><ol class="ltempo">${ev.map(e => `<li class="lt-${e.c}${e.d > hoje ? " futuro" : ""}"><b>${esc(e.t)}</b><span>${esc(e.s)}</span></li>`).join("")}</ol>
+    ${p ? (nal ? "" : `<div class="nota">Vendas anteriores: o cadastro deste condado ainda não traz o histórico na vitrine.</div>`) : `<div class="nota">Vendas anteriores registradas aparecem para assinantes.</div>`}</div>`;
+}
+function cadastroHTML(p){
+  const n = p && p.nal; if(!n) return "";
+  const lin = [];
+  if(n.lote_ft2) lin.push(["Área do lote", n.lote_ft2.toLocaleString("pt-BR") + " ft² (" + Math.round(n.lote_ft2 * .0929).toLocaleString("pt-BR") + " m²)"]);
+  if(n.area_ft2) lin.push(["Área construída (cadastro)", n.area_ft2.toLocaleString("pt-BR") + " ft²"]);
+  if(n.construcoes != null) lin.push(["Construções no lote", String(n.construcoes)]);
+  if(n.unidades) lin.push(["Unidades residenciais", String(n.unidades)]);
+  if(n.ano_efetivo) lin.push(["Ano efetivo (reformas consideradas)", String(n.ano_efetivo)]);
+  if(n.classe) lin.push(["Construção", n.classe]);
+  lin.push(["Moradia própria do dono (isenção homestead)", n.moradia_propria ? "Sim: o dono morava no imóvel" : "Não"]);
+  if(n.dono_fora_fl != null) lin.push(["Dono com endereço fora da Flórida", n.dono_fora_fl ? "Sim (dono ausente)" : "Não"]);
+  return `<div class="sec sec-xt"><h4>Cadastro do condado</h4><table class="tab2">${lin.map(([a, b]) => `<tr><td>${esc(a)}</td><td>${esc(b)}</td></tr>`).join("")}</table>
+    <div class="nota">Fonte: ${esc(n.fonte || "Florida Department of Revenue")} (registro público). Moradia própria e dono ausente ajudam a prever ocupação; confirme na visita.</div></div>`;
+}
 function mercadoHTML(l){
   const m = l.mc; if(!m) return "";
   const de = m.de === "CEP" ? "do CEP" + (l.zip ? " " + esc(l.zip) : "") : "do condado";
@@ -3257,7 +3293,9 @@ function linksPrivados(l, p){
   return [
     PA_FICHA[l.co] && p.parcela && lk(PA_FICHA[l.co](p.parcela), "Ficha no cadastro", "Property Appraiser, direto na parcela"),
     p.parcela && `<button id="btCopia" type="button">Copiar parcela<small>${esc(p.parcela)}</small></button>`,
-    lk(`https://www.zillow.com/homes/${e}_rb/`, "Zillow", "histórico e vizinhos à venda"),
+    lk(`https://www.zillow.com/homes/${e}_rb/`, "Fotos antigas · Zillow", "fotos de quando esteve à venda, histórico e vizinhos"),
+    lk(`https://www.google.com/search?q=${e}+site%3Aredfin.com`, "Fotos antigas · Redfin", "busca do endereço no Redfin"),
+    lk(`https://www.google.com/search?q=${e}+site%3Arealtor.com`, "Fotos antigas · Realtor.com", "busca do endereço no Realtor.com"),
     l.zip && lk(`https://www.realtor.com/realestateandhomes-search/${encodeURIComponent(l.zip)}`, "Realtor.com", "à venda no CEP"),
     lk(`https://msc.fema.gov/portal/search?AddressQuery=${e}`, "Confirmar enchente", "FEMA, pelo endereço"),
   ].filter(Boolean).join("");
