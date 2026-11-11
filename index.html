@@ -83,6 +83,7 @@ a{color:var(--info)}
 .tab2 td .txt{font-family:var(--f-b);font-size:13.5px}
 .ltempo{list-style:none;margin:4px 0 6px;padding:0 0 0 14px;border-left:2px solid var(--line2)}.ltempo li{position:relative;margin:0 0 10px;padding-left:6px}.ltempo li::before{content:"";position:absolute;left:-21px;top:5px;width:10px;height:10px;border-radius:50%;background:var(--line2);border:2px solid var(--bg)}.ltempo li b{display:block;font-size:13.5px}.ltempo li span{font-size:12.5px;color:var(--mute)}.ltempo .lt-leilao::before{background:var(--acc)}.ltempo .lt-venda::before{background:#7fd6a4}.ltempo .lt-res::before{background:#e8857a}.ltempo li.futuro b{color:var(--acc)}   /* 11/11 linha do tempo */
 .projB{grid-column:1/-1;margin:0 0 14px}.projB h3 .num{font-size:12px;color:var(--acc);margin-left:6px}.projs{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px;margin-top:10px}.proj{border:1px solid var(--line2);border-radius:14px;padding:12px;background:var(--bg2);display:flex;flex-direction:column;gap:10px}.proj header{display:flex;flex-direction:column;gap:2px}.proj header .lnk{font-weight:700;font-size:15px;text-align:left}.proj header small{color:var(--mute);font-size:12px}.pr-g{display:grid;grid-template-columns:1fr 1fr;gap:8px}.proj label{display:flex;flex-direction:column;gap:3px;font-size:11px;color:var(--mute);text-transform:uppercase;letter-spacing:.05em}.proj input,.proj select,.proj textarea{font:14px var(--f-b);color:var(--tx);background:var(--surf);border:1px solid var(--line2);border-radius:9px;padding:8px;text-transform:none;letter-spacing:0;width:100%;box-sizing:border-box}.proj footer{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between}.pr-res{font-size:13px;color:var(--mute)}.pr-res.pos{color:#7fd6a4}.pr-res.neg{color:#e8857a}.pr-ac{display:flex;gap:12px}   /* 11/11 meus projetos */
+.br .cl-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px;margin:6px 0 8px}.br label{display:flex;flex-direction:column;gap:3px;font-size:11px;color:var(--mute);text-transform:uppercase;letter-spacing:.05em}.br input{font:14px var(--f-b);color:var(--tx);background:var(--surf);border:1px solid var(--line2);border-radius:9px;padding:8px;text-transform:none;letter-spacing:0;width:100%;box-sizing:border-box}.br b.pos{color:#7fd6a4}.br b.neg{color:#e8857a}   /* 11/11 BRRRR */
 .iab.esp{color:var(--mute);font-style:italic}.iab.erro{color:var(--mute)}
 .iab.cortada{-webkit-mask-image:linear-gradient(#000 45%,transparent);mask-image:linear-gradient(#000 45%,transparent)}
 .iacta{align-self:stretch;display:flex;flex-direction:column;gap:6px;padding:12px;border:1px solid var(--ok-ln);border-radius:12px;background:var(--ok-bg);font-size:13px;color:var(--tx2)}
@@ -2612,6 +2613,53 @@ function calcLivrePreenche(box){
   out.innerHTML = calcLivreResultado(c, tEl ? clNum(tEl.value) : null);
 }
 // CALC_LIVRE_FIM
+/* 11/11 (plano pós-Checkmate item 7; Cris: "coloca como aceita a proposta, se o Rodrigo responder depois, alteramos"):
+   analisador BRRRR (comprar, reformar, alugar, refinanciar). Parâmetros = BRRRR_PROPOSTA.md, todos editáveis.
+   Não mexe no teto. O aluguel é digitado (sem fonte automática grátis aberta a robôs hoje). Pro e UltraPro. */
+const BR_P = {vac: .05, adm: .08, man: .08, seg: .006, imp: .015, ltv: .80, juros: .075, anos: 30, custoRefi: .03, dscr: 1.20};
+function brrrr(x){
+  const n = k => { const v = +x[k]; return isFinite(v) && v >= 0 ? v : null; };
+  const lance = n("lance"), reforma = n("reforma") || 0, compra = n("compra") || 0, arv = n("arv"), aluguel = n("aluguel");
+  if(!lance || !arv || !aluguel) return null;
+  const P = Object.assign({}, BR_P, x.p || {});
+  const posto = lance + reforma + compra, emprestimo = P.ltv * arv, volta = emprestimo * (1 - P.custoRefi), fica = posto - volta;
+  const i = P.juros / 12, nmes = P.anos * 12, parcela = i ? emprestimo * i / (1 - Math.pow(1 + i, -nmes)) : emprestimo / nmes;
+  const despesas = aluguel * (P.vac + P.adm + P.man) + arv * (P.seg + P.imp) / 12;
+  const noi = aluguel - despesas, fluxo = noi - parcela, dscr = parcela ? noi / parcela : null;
+  return {posto, emprestimo, volta, fica, parcela, despesas, noi, fluxo, anual: fluxo * 12, coc: fica > 0 ? fluxo * 12 / fica : null, dscr, P};
+}
+function brrrrHTML(l){
+  if(!ASSIN) return `<div class="sec br"><h4>Alugar e refinanciar (BRRRR)</h4><p class="nota">No Pro e no UltraPro: aluguel, refinanciamento a 80% do ARV, parcela, fluxo mensal, dinheiro que fica no negócio e DSCR. <button type="button" class="lnk" data-assina>Ver planos</button></p></div>`;
+  const ref = l.am ? Math.round(l.am) : "";
+  return `<div class="sec br" data-br="${esc(l.i)}"><h4>Alugar e refinanciar (BRRRR)</h4>
+    <div class="cl-grid">
+      <label>ARV (US$)<input data-brc="arv" type="number" min="0" step="1000" inputmode="numeric" value="${ref}"></label>
+      <label>Lance (US$)<input data-brc="lance" type="number" min="0" step="100" inputmode="numeric" value="${l.ab || ""}"></label>
+      <label>Reforma (US$)<input data-brc="reforma" type="number" min="0" step="100" inputmode="numeric" placeholder="0"></label>
+      <label>Compra e título (US$)<input data-brc="compra" type="number" min="0" step="50" inputmode="numeric" value="${CL_FIXOS + clQuietPadrao(l)}"></label>
+      <label>Aluguel mensal (US$)<input data-brc="aluguel" type="number" min="0" step="25" inputmode="numeric" placeholder="o aluguel do bairro"></label>
+    </div>
+    <div class="br-out" data-brout><p class="nota">Digite o aluguel mensal para ver a conta.</p></div>
+    <p class="nota">Padrões: vacância 5%, administração 8%, manutenção 8% do aluguel; seguro 0,6% e imposto 1,5% do ARV ao ano; refinanciamento a 80% do ARV, 30 anos, 7,5% a.a., custo de 3%. Estimativa, não é proposta de banco. Dica: o aluguel de referência do Section 8 está no site do HUD (Fair Market Rents).</p></div>`;
+}
+function brrrrPinta(box){
+  const v = k => { const e = box.querySelector(`[data-brc="${k}"]`); return e && e.value !== "" ? +e.value : null; };
+  const r = brrrr({arv: v("arv"), lance: v("lance"), reforma: v("reforma"), compra: v("compra"), aluguel: v("aluguel")});
+  const o = box.querySelector("[data-brout]"); if(!o) return;
+  if(!r){ o.innerHTML = `<p class="nota">Digite ARV, lance e aluguel mensal para ver a conta.</p>`; return; }
+  const sinal = x => `<b class="${x >= 0 ? "pos" : "neg"}">${k(Math.round(x))}</b>`;
+  o.innerHTML = `<table class="tab2">
+    <tr><td>Dinheiro posto (lance + reforma + compra)</td><td>${k(Math.round(r.posto))}</td></tr>
+    <tr><td>Empréstimo do refinanciamento (80% do ARV)</td><td>${k(Math.round(r.emprestimo))}</td></tr>
+    <tr><td>Dinheiro que volta (menos o custo do refi)</td><td>${k(Math.round(r.volta))}</td></tr>
+    <tr class="dest"><td>Dinheiro que fica no negócio</td><td>${r.fica <= 0 ? `<b class="pos">nada: sai com ${k(Math.round(-r.fica))}</b>` : k(Math.round(r.fica))}</td></tr>
+    <tr><td>Parcela mensal (30 anos)</td><td>${k(Math.round(r.parcela))}</td></tr>
+    <tr><td>Despesas mensais (vacância, adm., manutenção, seguro, imposto)</td><td>${k(Math.round(r.despesas))}</td></tr>
+    <tr class="dest"><td>Fluxo de caixa mensal</td><td>${sinal(r.fluxo)}</td></tr>
+    <tr><td>Retorno sobre o dinheiro que fica (ano)</td><td>${r.coc == null ? "infinito: o refi devolveu tudo" : Math.round(r.coc * 100) + "%"}</td></tr>
+    <tr><td>DSCR (cobertura da parcela)</td><td>${r.dscr == null ? "—" : r.dscr.toFixed(2).replace(".", ",") + (r.dscr < BR_P.dscr ? " · abaixo de 1,20: banco de DSCR pode recusar" : " · ok para bancos de DSCR")}</td></tr></table>`;
+}
+document.addEventListener("input", e => { const b = e.target.closest("[data-br]"); if(b && e.target.matches("[data-brc]")) brrrrPinta(b); });
 // PARTNER_FAIXA_INICIO
 /* Faixa do Partner Bidder, ao lado da calculadora.
    O texto nasce aqui: não lê o lote, não mostra teto nem ARV deste imóvel.
@@ -3074,6 +3122,7 @@ async function abre(i){
     <div class="sec"><h4>Calculadora</h4>
     ${faixaPartnerHTML(planoFaixa(SESSAO, ASSIN))}
     ${calcLivreHTML(l, ASSIN)}</div>
+    ${HIST(l) ? "" : brrrrHTML(l)}
     ${HIST(l) ? "" : resumoHTML(l, gap)}
     ${resultado}
     ${acoes}
