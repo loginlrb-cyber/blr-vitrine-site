@@ -3627,7 +3627,7 @@ function criaMapa(){
   const maxN = d3.max([...porUF.values()], v => v.length) || 1;
   /* 28/10: estados em 4 classes de cinza-azulado com degraus bem separados (antes marrom→dourado contínuo, tons colados e
      disputando com as bolas); classes por quartil de leilões; estado com lote mas sem leilão datado fica na 1ª classe */
-  const RAMPA = ["#2E3542","#465166","#66758F","#93A2BC"];
+  const RAMPA = ["#263042","#34476A","#4B6896","#7593C4"];   // 11/11 (redesign 3): azul mais saturado, degraus mais visíveis, sem competir com as bolas
   const qN = d3.scaleQuantile().domain([...POR_UF.values()].map(x => x.lei.length).filter(Boolean)).range([0, 1, 2, 3]);
   const corN = uf => { const x = POR_UF.get(uf); return !x ? "#171B22" : RAMPA[x.lei.length ? qN(x.lei.length) : 0]; };
   const Z_EST = 5.5, Z_CO = 8.5, Z_RUA = 10.5;
