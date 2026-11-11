@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0b0d11">
+<meta name="robots" content="noindex,nofollow">
+<title>Tutoriais BLR</title>
+<meta name="description" content="Passo a passo do primeiro lance em cada tipo de leilão de imóvel nos EUA, em português.">
+<link rel="icon" type="image/svg+xml" href="/blr-icon-small.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,500&family=Sora:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* 11/11 (Cris, plano de melhoria item 9): tutoriais do primeiro lance, um por tipo de leilão. Regras gerais; o edital manda. */
+:root{--bg:#0b0d11;--card:rgba(255,255,255,.055);--card2:rgba(255,255,255,.09);--ink:#f3f1ec;--mute:#a7abb3;--line:rgba(255,255,255,.12);
+  --gold:#e2b75e;--ok:#7fd6a4;--warn:#f0b36b;--sh:0 18px 50px rgba(0,0,0,.45);--r:20px}
+*{box-sizing:border-box}html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font:15px/1.6 Sora,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+a{color:inherit}.serif{font-family:Fraunces,Georgia,serif;font-weight:500;letter-spacing:-.01em}
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:16px clamp(16px,4vw,40px);border-bottom:1px solid var(--line)}
+.top a{text-decoration:none;font-weight:600}.top .vol{color:var(--mute);font-weight:500}
+main{max-width:900px;margin:0 auto;padding:34px clamp(16px,4vw,40px) 70px}
+.kick{color:var(--gold);font-weight:600;letter-spacing:.08em;text-transform:uppercase;font-size:12px;margin:0}
+h1{font-size:clamp(28px,4.6vw,46px);margin:8px 0 10px;line-height:1.1}
+.sub{color:var(--mute);margin:0 0 22px;font-size:16px}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 26px}
+.chips a{text-decoration:none;padding:8px 13px;border-radius:99px;border:1px solid var(--line);background:var(--card);font-size:13.5px;font-weight:600}
+.chips a:hover,.chips a:focus-visible{border-color:var(--gold);outline:none}
+details{background:var(--card);border:1px solid var(--line);border-radius:var(--r);margin:0 0 12px;box-shadow:var(--sh)}
+details[open]{border-color:rgba(226,183,94,.6)}
+summary{cursor:pointer;list-style:none;padding:16px 18px;display:flex;align-items:center;gap:12px}
+summary::-webkit-details-marker{display:none}
+summary .t{font-weight:700;font-size:17px}summary .d{color:var(--mute);font-size:13px;display:block;font-weight:400}
+summary::after{content:"+";margin-left:auto;font-size:22px;color:var(--gold)}details[open] summary::after{content:"–"}
+.c{padding:0 18px 18px}
+ol.p{margin:0;padding-left:22px}ol.p li{margin:0 0 8px}
+.al{margin:12px 0 0;padding:12px 14px;border-radius:12px;background:rgba(240,179,107,.1);border:1px solid rgba(240,179,107,.35);font-size:13.5px}
+.al b{color:var(--warn)}
+.ok{margin:10px 0 0;font-size:13.5px;color:var(--mute)}.ok b{color:var(--ok)}
+.fim{margin-top:30px;padding:20px;border-radius:var(--r);border:1px solid var(--gold);background:linear-gradient(180deg,rgba(226,183,94,.16),var(--card) 60%)}
+.fim p{margin:4px 0 12px;color:var(--mute);font-size:14px}
+.cta{all:unset;box-sizing:border-box;display:inline-block;cursor:pointer;padding:12px 16px;border-radius:12px;font-weight:600;background:var(--gold);color:#1a1408;margin:4px 8px 0 0}
+.cta.s{background:var(--card2);color:var(--ink);border:1px solid var(--line)}
+.nota{color:var(--mute);font-size:12.5px;margin-top:22px}
+footer{border-top:1px solid var(--line);padding:20px clamp(16px,4vw,40px);color:var(--mute);font-size:12.5px;text-align:center}
+footer a{color:var(--mute)}
+</style>
+</head>
+<body>
+<header class="top">
+  <a href="/">← BLR Developments</a>
+  <a class="vol" href="/por-que-blr/">Por que BLR</a>
+</header>
+<main>
+  <p class="kick">Tutoriais</p>
+  <h1 class="serif">O seu primeiro lance, passo a passo</h1>
+  <p class="sub">Um roteiro por tipo de leilão. São as regras gerais; cada estado e condado tem as suas, e o edital oficial é o que vale. Ficou dúvida? Pergunte ao assistente ✦ no mapa.</p>
+  <nav class="chips" aria-label="Tipos de leilão">
+    <a href="#base">Antes de tudo</a><a href="#taxdeed">Tax deed</a><a href="#taxlien">Tax lien</a><a href="#pa">Upset e Judicial (PA)</a>
+    <a href="#exec">Execução de hipoteca</a><a href="#gov">Governo e REO</a><a href="#landbank">Land bank</a><a href="#depois">Depois de ganhar</a>
+  </nav>
+
+  <details id="base" open><summary><span><span class="t">Antes de tudo: os 7 cuidados</span><span class="d">Vale para qualquer leilão</span></span></summary><div class="c">
+    <ol class="p">
+      <li><b>Leia o edital inteiro</b> (o link “Lista oficial do leilão” na ficha): data, forma de pagamento, caução, taxas e o que acontece com as dívidas.</li>
+      <li><b>Confirme o imóvel pela parcela</b>, não só pelo endereço. Na ficha, use o contorno no satélite e o Street View.</li>
+      <li><b>Veja o tipo de leilão</b> no selo da ficha: ele diz o que sobrevive à venda (hipoteca, lien de governo, IRS).</li>
+      <li><b>Defina o seu teto antes</b> e não passe dele no calor da disputa. O teto BLR já desconta reforma, título, impostos e venda.</li>
+      <li><b>Separe o dinheiro</b>: muitos leilões pedem pagamento no mesmo dia ou em 24–48 horas, por transferência.</li>
+      <li><b>Imóvel “as is”</b>: quase nunca dá para entrar antes. Conte com reforma e, às vezes, com ocupante.</li>
+      <li><b>Peça uma busca de título</b> (title search) e fale com um advogado local antes de lances altos.</li>
+    </ol>
+  </div></details>
+
+  <details id="taxdeed"><summary><span><span class="t">Tax deed (imposto, você recebe a escritura)</span><span class="d">Ex.: Flórida, Texas, Califórnia, Arkansas</span></span></summary><div class="c">
+    <ol class="p">
+      <li>Ache o leilão no calendário do mapa e abra a lista oficial (na Flórida, em geral no site RealTaxDeed do condado).</li>
+      <li>Cadastre-se no site do leilão antes do prazo de inscrição e faça o depósito exigido (muitas vezes 5% a 10% do lance, ou um valor fixo).</li>
+      <li>No dia, acompanhe o lote. O lance começa na abertura (dívida + custos) e sobe em incrementos.</li>
+      <li>Ganhou: pague o saldo e as taxas no prazo do edital (na Flórida, em geral até o dia útil seguinte).</li>
+      <li>O condado emite a escritura (tax deed) em algumas semanas. Registre-a e faça o seguro.</li>
+    </ol>
+    <p class="al"><b>Atenção:</b> lien de governo pode continuar; o IRS, se tiver lien, pode resgatar o imóvel em até 120 dias. Muitas vezes a escritura não é segurável na hora e precisa de quiet title (a conta BLR já reserva esse custo).</p>
+  </div></details>
+
+  <details id="taxlien"><summary><span><span class="t">Tax lien (você compra a dívida, não o imóvel)</span><span class="d">Ex.: Nova Jersey, Illinois, Arizona, Flórida (certificados)</span></span></summary><div class="c">
+    <ol class="p">
+      <li>Leia no edital a taxa de juros máxima e como funciona o lance (em muitos lugares, quem aceita o menor juro ganha).</li>
+      <li>Inscreva-se no prazo; alguns leilões pedem formulário W-9 e depósito.</li>
+      <li>Ganhou: você paga a dívida e recebe o certificado.</li>
+      <li>O dono tem um prazo de resgate (meses a anos). Se pagar, você recebe o valor com os juros.</li>
+      <li>Se não pagar no prazo, você pode pedir a escritura seguindo o processo do estado (normalmente com advogado e custos).</li>
+    </ol>
+    <p class="ok"><b>Bom saber:</b> a maioria dos certificados é resgatada. É um investimento de juros, não um jeito garantido de ficar com o imóvel.</p>
+  </div></details>
+
+  <details id="pa"><summary><span><span class="t">Pensilvânia: Upset, Judicial e Repository</span><span class="d">Leilões dos Tax Claim Bureaus dos condados</span></span></summary><div class="c">
+    <ol class="p">
+      <li><b>Upset Sale</b> (em geral em setembro): por imposto atrasado. Hipoteca e alguns liens <b>continuam</b> com o comprador. Confira os ônus antes.</li>
+      <li><b>Judicial Sale</b>: o que não vendeu no Upset vai a uma venda autorizada pelo tribunal que <b>limpa</b> os gravames. Mais segura, mas com menos lotes.</li>
+      <li><b>Repository</b>: o que sobrou sem lance pode ser comprado por oferta, com aprovação do condado e da escola local.</li>
+      <li>Inscrição: muitos condados exigem cadastro e declaração prévia; alguns leilões são online (Bid4Assets), outros presenciais.</li>
+      <li>Pague no prazo do edital (às vezes no mesmo dia) e aguarde a escritura do condado.</li>
+    </ol>
+    <p class="al"><b>Atenção:</b> no Upset, uma hipoteca grande pode tornar o lote um mau negócio mesmo com lance baixo. A ficha mostra o ônus conferido quando a BLR já consultou.</p>
+  </div></details>
+
+  <details id="exec"><summary><span><span class="t">Execução de hipoteca (sheriff, trustee, judicial)</span><span class="d">Ex.: NJ, OH, IL, MD, PA (sheriff), TX e GA (trustee)</span></span></summary><div class="c">
+    <ol class="p">
+      <li>O banco executou a dívida. A abertura costuma ser o valor que ele quer recuperar.</li>
+      <li>Leia o aviso de venda: data (muitas são adiadas), caução (comum: 10% a 20%, muitas vezes em cheque administrativo) e prazo do saldo (de 10 a 30 dias, conforme o estado).</li>
+      <li>Confira se há dívidas anteriores à hipoteca executada: elas podem continuar.</li>
+      <li>Vá ao local (fórum ou escadaria do condado) ou ao site indicado, com a caução pronta.</li>
+      <li>Ganhou: pague o saldo no prazo e aguarde a escritura do xerife ou do trustee. Se houver ocupante, a desocupação é por sua conta.</li>
+    </ol>
+    <p class="ok"><b>Bom saber:</b> muitos lotes são adiados ou cancelados em cima da hora porque o dono negociou com o banco. Confira o status no dia.</p>
+  </div></details>
+
+  <details id="gov"><summary><span><span class="t">Imóveis do governo e REO</span><span class="d">HUD, VA, Fannie Mae, Freddie Mac, USDA, Tesouro</span></span></summary><div class="c">
+    <ol class="p">
+      <li>Não é leilão de lance ao vivo: em geral é oferta pelo site do programa, por meio de corretor credenciado.</li>
+      <li>Nas primeiras semanas, muitos programas só aceitam oferta de quem vai morar no imóvel. Investidor entra depois.</li>
+      <li>O imóvel costuma ter título limpo e pode ser financiado, mas o preço é mais perto do mercado.</li>
+      <li>Na Vitrine, esses lotes aparecem com o link do site oficial do programa.</li>
+    </ol>
+  </div></details>
+
+  <details id="landbank"><summary><span><span class="t">Land bank</span><span class="d">Órgãos de cidades e condados (ex.: Michigan, Ohio, Illinois)</span></span></summary><div class="c">
+    <ol class="p">
+      <li>É venda direta de imóveis abandonados, sem data de leilão.</li>
+      <li>Muitos land banks pedem cadastro, comprovação de recursos e um plano de reforma com prazo.</li>
+      <li>Alguns dão preferência a quem mora na cidade ou vai morar no imóvel.</li>
+      <li>O preço pode ser muito baixo, mas a obrigação de reformar entra no contrato. Leia antes.</li>
+    </ol>
+  </div></details>
+
+  <details id="depois"><summary><span><span class="t">Depois de ganhar</span><span class="d">Os primeiros 30 dias</span></span></summary><div class="c">
+    <ol class="p">
+      <li>Pague o saldo no prazo e guarde todos os recibos.</li>
+      <li>Faça o seguro de imóvel vazio assim que a escritura sair.</li>
+      <li>Registre a escritura no condado (Recorder of Deeds) e acompanhe o prazo de resgate, se houver.</li>
+      <li>Visite: confira ocupação, estado da casa, água, luz e gás.</li>
+      <li>Peça orçamentos de reforma e, se precisar, inicie o quiet title com um advogado local.</li>
+    </ol>
+  </div></details>
+
+  <div class="fim">
+    <b>Quer ajuda no lance?</b>
+    <p>No UltraPro, por convite, a BLR opera o lance com você (Partner Bidder). Em qualquer plano, o assistente responde suas dúvidas.</p>
+    <a class="cta" href="/?teste=1">Testar 7 dias grátis</a><a class="cta s" href="/planos/">Ver planos</a>
+  </div>
+  <p class="nota">Conteúdo educativo, não é consultoria jurídica nem de investimento. Prazos, taxas e regras variam por estado e condado; o edital oficial é o que vale. Veja os <a href="/termos/">Termos de Uso</a>.</p>
+</main>
+<script>/* abre o tutorial do atalho (chip ou link com #) */ function abreT(){ const d = location.hash && document.querySelector(location.hash); if(d && d.tagName === "DETAILS"){ d.open = true; d.scrollIntoView({block: "start"}); } } addEventListener("hashchange", abreT); abreT();</script>
+<footer>BLR Developments · <a href="/">Início</a> · <a href="/planos/">Planos</a> · <a href="/por-que-blr/">Por que BLR</a> · <a href="/termos/">Termos</a></footer>
+</body>
+</html>

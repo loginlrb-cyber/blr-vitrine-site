@@ -4,7 +4,9 @@ Allow: /checklist/
 Allow: /conta/
 Allow: /data-deletion/
 Allow: /planos/
+Allow: /por-que-blr/
 Allow: /privacy/
 Allow: /termos/
 Allow: /terms/
+Allow: /tutoriais/
 Disallow: /

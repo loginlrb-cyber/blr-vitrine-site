@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0b0d11">
+<meta name="robots" content="noindex,nofollow">
+<title>Por que BLR</title>
+<meta name="description" content="O que a Vitrine BLR faz diferente: leilões de fonte oficial em todo os EUA, ARV calculado, teto de lance e uma investidora que compra junto.">
+<link rel="icon" type="image/svg+xml" href="/blr-icon-small.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,500&family=Sora:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* 11/11 (Cris, plano de melhoria item 8): página "Por que BLR", no mesmo visual da página de planos. Sem nomear concorrente. */
+:root{--bg:#0b0d11;--bg2:#12151b;--card:rgba(255,255,255,.055);--card2:rgba(255,255,255,.09);--ink:#f3f1ec;--mute:#a7abb3;--line:rgba(255,255,255,.12);
+  --gold:#e2b75e;--gold2:#f4d58d;--ok:#7fd6a4;--no:#e8857a;--sh:0 18px 50px rgba(0,0,0,.45);--r:20px}
+*{box-sizing:border-box}html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font:15px/1.6 Sora,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+a{color:inherit}.serif{font-family:Fraunces,Georgia,serif;font-weight:500;letter-spacing:-.01em}
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:16px clamp(16px,4vw,40px);border-bottom:1px solid var(--line)}
+.top a{text-decoration:none;font-weight:600}.top .vol{color:var(--mute);font-weight:500}
+main{max-width:1080px;margin:0 auto;padding:34px clamp(16px,4vw,40px) 70px}
+.kick{color:var(--gold);font-weight:600;letter-spacing:.08em;text-transform:uppercase;font-size:12px;margin:0}
+h1{font-size:clamp(30px,5vw,52px);margin:8px 0 12px;line-height:1.08}
+.sub{color:var(--mute);max-width:680px;margin:0 0 28px;font-size:16px}
+.ctas{display:flex;flex-wrap:wrap;gap:10px;margin:0 0 40px}
+.cta{all:unset;box-sizing:border-box;text-align:center;cursor:pointer;padding:13px 18px;border-radius:12px;font-weight:600;background:var(--card2);border:1px solid var(--line)}
+.cta.ouro{background:var(--gold);color:#1a1408;border-color:var(--gold)}
+.cta:hover{border-color:var(--gold)}.cta:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+h2{font-size:clamp(22px,3vw,30px);margin:46px 0 14px;line-height:1.15}
+.grade{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+@media (max-width:900px){.grade{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:560px){.grade{grid-template-columns:1fr}}
+.cx{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:18px 18px 16px;box-shadow:var(--sh)}
+.cx .ic{font-size:22px;line-height:1;margin-bottom:10px;display:block}
+.cx h3{margin:0 0 6px;font-size:17px}.cx p{margin:0;color:var(--mute);font-size:14px}
+.tab{width:100%;border-collapse:separate;border-spacing:0;background:var(--card);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;font-size:14px}
+.tab th,.tab td{padding:12px 14px;text-align:left;vertical-align:top;border-bottom:1px solid var(--line)}
+.tab tr:last-child td{border-bottom:0}
+.tab th{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--mute);font-weight:600;background:rgba(255,255,255,.03)}
+.tab td:first-child{color:var(--mute);width:28%}
+.tab .s{color:var(--ok);font-weight:600}.tab .n{color:var(--no)}
+.tw{overflow-x:auto;-webkit-overflow-scrolling:touch;border-radius:var(--r)}
+@media (max-width:620px){.tab{font-size:13px}.tab th,.tab td{padding:10px}.tab td:first-child{width:auto}}
+.passos{counter-reset:p;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;list-style:none;padding:0;margin:0}
+@media (max-width:760px){.passos{grid-template-columns:1fr}}
+.passos li{counter-increment:p;background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:18px;position:relative}
+.passos li::before{content:counter(p);display:inline-grid;place-items:center;width:30px;height:30px;border-radius:50%;background:var(--gold);color:#1a1408;font-weight:700;margin-bottom:10px}
+.passos b{display:block;margin-bottom:4px}.passos span{color:var(--mute);font-size:14px}
+.nota{color:var(--mute);font-size:12.5px;margin-top:18px;max-width:760px}
+.fim{margin-top:46px;padding:22px;border-radius:var(--r);border:1px solid var(--gold);background:linear-gradient(180deg,rgba(226,183,94,.16),var(--card) 60%);display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:14px}
+.fim b{font-size:18px}.fim p{margin:4px 0 0;color:var(--mute);font-size:14px}
+footer{border-top:1px solid var(--line);padding:20px clamp(16px,4vw,40px);color:var(--mute);font-size:12.5px;text-align:center}
+footer a{color:var(--mute)}
+</style>
+</head>
+<body>
+<header class="top">
+  <a href="/">← BLR Developments</a>
+  <a class="vol" href="/planos/">Planos</a>
+</header>
+<main>
+  <p class="kick">Por que BLR</p>
+  <h1 class="serif">Outros te dão uma calculadora.<br>A BLR te dá o teto de lance e compra junto.</h1>
+  <p class="sub">A Vitrine BLR foi feita por uma investidora que compra em leilão. Ela junta os leilões públicos dos EUA lidos direto da fonte oficial, calcula quanto a casa vale depois de pronta e diz até quanto vale a pena dar de lance.</p>
+  <div class="ctas">
+    <a class="cta ouro" href="/?teste=1">Testar 7 dias grátis · sem cartão</a>
+    <a class="cta" href="/planos/">Ver os planos</a>
+  </div>
+
+  <h2 class="serif">O que muda na prática</h2>
+  <div class="grade">
+    <div class="cx"><span class="ic">◎</span><h3>Leilões de fonte oficial</h3><p>Editais de condados, xerifes, tribunais e órgãos públicos de todo o país: imposto, execução de hipoteca, Upset e Judicial, land bank e imóveis do governo. Cada dado com a fonte e a data da coleta.</p></div>
+    <div class="cx"><span class="ic">∑</span><h3>ARV calculado, não digitado</h3><p>O valor depois de pronto sai das vendas reais e do valor oficial do condado. Você não precisa adivinhar o número que decide o negócio.</p></div>
+    <div class="cx"><span class="ic">▲</span><h3>Teto de lance</h3><p>O maior lance que ainda deixa a margem depois de reforma, título, impostos e venda. Passou dele, não vale.</p></div>
+    <div class="cx"><span class="ic">◆</span><h3>Nota 0–100 com o porquê</h3><p>Margem até o teto, riscos do tipo de leilão (o que sobrevive à venda) e chance de fechar, explicados em palavras.</p></div>
+    <div class="cx"><span class="ic">✦</span><h3>Assistente que responde tudo</h3><p>Pergunte em português, por escrito ou por voz: como funciona cada leilão, os próximos de um estado, a conta de um lote.</p></div>
+    <div class="cx"><span class="ic">⇄</span><h3>Partner Bidder</h3><p>No UltraPro, por convite, a BLR opera o lance com você e divide o risco. Ninguém mais que só vende software faz isso.</p></div>
+  </div>
+
+  <h2 class="serif">Ferramenta comum de mercado × Vitrine BLR</h2>
+  <div class="tw"><table class="tab">
+    <thead><tr><th></th><th>Ferramenta comum</th><th>Vitrine BLR</th></tr></thead>
+    <tbody>
+      <tr><td>Origem dos imóveis</td><td>Anúncios do mercado comum e bases compradas</td><td class="s">Editais oficiais de leilão, com fonte e data</td></tr>
+      <tr><td>ARV (valor depois de pronto)</td><td class="n">Você digita</td><td class="s">Calculado pela BLR</td></tr>
+      <tr><td>Teto de lance de leilão</td><td class="n">Não tem</td><td class="s">Tem, lote a lote</td></tr>
+      <tr><td>O que sobrevive ao leilão</td><td>Pouco ou nada sobre o tipo de venda</td><td class="s">Selo por tipo de leilão e ônus conferidos</td></tr>
+      <tr><td>Imagem do imóvel</td><td>Foto de anúncio, quando existe</td><td class="s">Street View, foto aérea e contorno do lote, mesmo sem anúncio</td></tr>
+      <tr><td>Idioma e atendimento</td><td>Inglês</td><td class="s">Português, com assistente de IA</td></tr>
+      <tr><td>Teste grátis</td><td>Pede cartão e cobra no fim</td><td class="s">7 dias sem cartão, sem cobrança automática</td></tr>
+      <tr><td>Comprar junto</td><td class="n">Não</td><td class="s">Partner Bidder (UltraPro, por convite)</td></tr>
+    </tbody>
+  </table></div>
+
+  <h2 class="serif">Como funciona</h2>
+  <ol class="passos">
+    <li><b>Ache</b><span>Busque um estado, uma cidade ou um leilão no mapa. Os lotes vêm com tipo, data, lance de abertura e nota.</span></li>
+    <li><b>Entenda</b><span>Abra a ficha: ARV, teto, riscos, conta de lucro, fonte oficial e relatório em PDF.</span></li>
+    <li><b>Decida</b><span>Dê o lance por conta própria (Self Bidder) ou, no UltraPro, com a BLR ao lado (Partner Bidder).</span></li>
+  </ol>
+
+  <div class="fim">
+    <div><b>Comece pelo mapa, sem cartão.</b><p>7 dias com tudo o que o assinante vê. Depois, você decide.</p></div>
+    <a class="cta ouro" href="/?teste=1">Começar o teste</a>
+  </div>
+
+  <p class="nota">A análise completa da BLR (ARV pelas vendas reais e teto) existe hoje na Flórida; nos outros estados os lotes trazem ARV estimado pelo valor oficial do condado e pelo mercado do CEP. Nota, ARV e teto são estimativas, não avaliação nem recomendação de investimento; o edital oficial é o que vale. Veja os <a href="/termos/">Termos de Uso</a>.</p>
+</main>
+<footer>BLR Developments · <a href="/">Início</a> · <a href="/planos/">Planos</a> · <a href="/termos/">Termos</a> · <a href="/privacy/">Privacidade</a></footer>
+</body>
+</html>
