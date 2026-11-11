@@ -57,6 +57,14 @@ h1{font-size:clamp(28px,4.4vw,44px);margin:6px 0 6px;line-height:1.1}
 @media (max-width:700px){.bid{grid-template-columns:1fr}}
 .bid div{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:18px}
 .bid h3{margin:0 0 6px;font-size:18px}.bid p{margin:0;color:var(--mute);font-size:14px}
+.pb{margin:0 0 22px;padding:16px 16px 14px;border-radius:var(--r);border:1px solid var(--gold);background:linear-gradient(180deg,rgba(226,183,94,.16),var(--card) 46%);box-shadow:var(--sh)}
+.pb h2{margin:0 0 12px;font-size:clamp(20px,3vw,28px);line-height:1.2}
+.pb-cols{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:0 0 14px}
+@media (max-width:700px){.pb-cols{grid-template-columns:1fr}}
+.pb-cols div{background:var(--card2);border:1px solid var(--line);border-radius:14px;padding:12px 14px}
+.pb-cols h3{margin:0 0 4px;font-size:16px}
+.pb-cols p{margin:0;color:var(--mute);font-size:14px}
+.pb .cta{display:inline-block;text-decoration:none;background:var(--gold);color:#1a1408;border-color:var(--gold)}
 .nota{color:var(--mute);font-size:13px;margin-top:22px}
 [hidden]{display:none!important}
 </style>
@@ -67,6 +75,14 @@ h1{font-size:clamp(28px,4.4vw,44px);margin:6px 0 6px;line-height:1.1}
   <h1 class="serif">Escolha o seu plano</h1>
   <p class="sub">Comece grátis: o mapa dos EUA com todos os leilões e o valor da dívida. Teste o Pro por 7 dias, só com e-mail e telefone, sem cartão.</p>
   <div class="trial-banner" id="trialBanner"><b>7 dias grátis para testar o Pro</b><span>Vale para o Pro e o UltraPro. O Básico não tem. Sem cartão: se não assinar, você continua como visitante. Nada é cobrado nesta página.</span></div>
+  <section class="pb" id="pbDestaque" aria-labelledby="pbTit">
+    <h2 class="serif" id="pbTit">Eles te dão uma calculadora. A BLR te dá o teto de lance e compra junto.</h2>
+    <div class="pb-cols">
+      <div><h3>Ferramenta comum</h3><p>Só a calculadora. O lance fica por sua conta.</p></div>
+      <div><h3>BLR</h3><p>O analista marca o teto de lance, no Pro. No UltraPro, o Partner Bidder: a BLR compra junto com você.</p></div>
+    </div>
+    <a class="cta" id="pbUltra" href="../?plano=ultra">Ver o UltraPro</a>
+  </section>
   <div class="ciclo" role="group" aria-label="Forma de pagamento"><button type="button" data-ciclo="m" aria-pressed="true">Mensal</button><button type="button" data-ciclo="a" aria-pressed="false">Anual <small>2 meses grátis</small></button></div>
   <div class="grade" id="grade"></div>
   <div class="bid">

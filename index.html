@@ -8,7 +8,7 @@
 <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="manifest" href="/site.webmanifest">
 <style>*,*::before,*::after{box-sizing:border-box}html,body{margin:0}img{max-width:100%}[hidden]{display:none!important}
 :root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}</style>
-</head><body><link rel="preload" href="d_dados_45a0ac301c.json" as="fetch" crossorigin="anonymous"><link rel="preload" href="d_eua_145aaf5d14.json" as="fetch" crossorigin="anonymous"><title>BLR Developments</title>
+</head><body><link rel="preload" href="d_dados_f6af212a95.json" as="fetch" crossorigin="anonymous"><link rel="preload" href="d_eua_145aaf5d14.json" as="fetch" crossorigin="anonymous"><title>BLR Developments</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -338,21 +338,29 @@ body{transition:padding-right .25s ease}
 .fhT #fBadge{line-height:1}
 #fhTit{font:600 15px/1.25 var(--f-d);color:var(--tx);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 #fhSub{font-size:12px;color:var(--tx2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.fpdf{all:unset;cursor:pointer;flex:none;height:34px;padding:0 11px;border-radius:9px;border:1px solid var(--line2);color:var(--tx2);font:600 12px var(--f-b);display:grid;place-items:center}
+.fpdf{all:unset;cursor:pointer;flex:none;height:34px;padding:0 11px;border-radius:9px;border:1px solid var(--line2);color:var(--tx2);font:600 12px var(--f-b);display:grid;place-items:center;white-space:nowrap}
 .fpdf:hover,.fpdf:focus-visible{color:var(--acc);border-color:var(--acc)}
+#relPdf{display:none}
+body.prel{background:#fff!important;padding:0!important}
+body.prel>*:not(#relPdf){display:none!important}
+body.prel #relPdf{display:block;background:#fff;color:#111;min-height:100vh}
+.rel{max-width:720px;margin:0 auto;padding:16px 16px 28px;font:15px/1.45 var(--f-b),system-ui,sans-serif;color:#111}
+.rel h1{font:600 22px/1.2 var(--f-d),system-ui,sans-serif;margin:0 0 4px}
+.rel .rel-lugar{margin:0 0 8px;color:#333}
+.rel h2{font-size:12px;letter-spacing:.08em;text-transform:uppercase;margin:16px 0 6px;color:#333}
+.rel p{margin:6px 0}
+.rel table{width:100%;border-collapse:collapse;font-size:14px}
+.rel td,.rel th{padding:5px 8px 5px 0;border-bottom:1px solid #ddd;vertical-align:top;text-align:left}
+.rel .av{background:#fff8ee;border:1px solid #e2ac48;border-radius:8px;padding:8px 10px;margin:8px 0}
+.rel-bar{display:flex;gap:8px;margin:0 0 12px}
+.rel-bar button{font:600 13px system-ui,sans-serif;padding:8px 12px;border-radius:8px;border:1px solid #bbb;background:#fff;color:#111;cursor:pointer}
+.rel-rod{margin-top:16px;padding-top:8px;border-top:1px solid #ccc;font-size:12px;color:#333}
 @media print{
-  body.pfic>*:not(#ficha){display:none!important}
-  body.pfic{padding:0!important;background:#fff!important}
-  body.pfic #ficha{position:static!important;transform:none!important;width:100%!important;box-shadow:none!important;border:0!important;border-radius:0!important;display:block!important;
-    --tx:#111;--tx2:#333;--mute:#555;--nota:#444;--bg2:#fff;--bg:#fff;--surf:#f5f5f5;--surf2:#eee;--line:#ccc;--line2:#bbb;background:#fff!important;color:#111}
-  body.pfic #ficha .fb{overflow:visible!important;height:auto!important;max-height:none!important}
-  body.pfic #fX,body.pfic #fPdf,body.pfic .pega,body.pfic .facoes,body.pfic .iaL,body.pfic .fhero.sv,body.pfic [data-calc],body.pfic [data-info]{display:none!important}
-  body.pfic #fBody .sec.fech>:not(h4){display:revert!important}
-  body.pfic #fBody .sec>h4::after{display:none}
-  body.pfic .sec,body.pfic table,body.pfic figure{break-inside:avoid}
-  body.pfic a{color:#111}
-  body.pfic .nbar i,body.pfic .fnota,body.pfic .nfx,body.pfic .npills b{print-color-adjust:exact;-webkit-print-color-adjust:exact}
-  body.pfic #fBody::after{content:"BLR Developments · www.blrdevelopment.com · teto e ARV são estimativas da BLR; confira antes de dar lance. Não é oferta nem recomendação de investimento.";display:block;margin-top:18px;padding-top:8px;border-top:1px solid #ccc;font-size:10.5px;color:#555}
+  body.prel>*:not(#relPdf){display:none!important}
+  body.prel #relPdf,.rel{display:block!important;background:#fff!important;color:#111!important}
+  .rel-bar{display:none!important}
+  .rel table,.rel h2,.rel .av{break-inside:avoid}
+  .rel .av{print-color-adjust:exact;-webkit-print-color-adjust:exact}
   @page{margin:12mm}
 }
 .fh .x{all:unset;cursor:pointer;margin-left:auto;width:34px;height:34px;border-radius:9px;display:grid;place-items:center;color:var(--tx2);border:1px solid var(--line2);flex:none}
@@ -929,6 +937,13 @@ body{transition:padding-right .5s var(--mola)}
   .cl-grid,.cl-kpis{grid-template-columns:1fr}
   .cl-kpis b{font-size:22px}
 }
+/* faixa do Partner Bidder, junto da calculadora. O texto é da página, igual para todo lote. */
+.pb-faixa{margin:0 0 10px;padding:10px 12px;border-radius:12px;border:1px solid var(--acc);background:var(--ok-bg);color:var(--tx);font-size:13.5px;line-height:1.45}
+.pb-faixa p{margin:0 0 8px}
+.pb-faixa button{all:unset;box-sizing:border-box;cursor:pointer;display:inline-flex;align-items:center;min-height:40px;padding:8px 12px;border-radius:10px;background:var(--acc);color:var(--ink);font-weight:700;font-size:13.5px}
+.pb-faixa button:focus-visible{outline:2px solid var(--tx);outline-offset:2px}
+.pb-faixa.pb-ok{border-style:dashed;border-color:var(--line2);background:transparent}
+.pb-faixa.pb-ok button{background:transparent;color:var(--info);text-decoration:underline;text-underline-offset:3px;padding:8px 0}
 /* tipo de leilão: faixa de filtro (mapa e lista), legenda e selo na ficha */
 .tipoBar{flex:none;padding:8px 10px 10px;border-bottom:1px solid var(--line);background:transparent}
 .tipoBar-h{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:6px}
@@ -1076,20 +1091,21 @@ body{transition:padding-right .5s var(--mola)}
   <div class="fh">
     <div class="fhT"><div id="fBadge"></div><b id="fhTit"></b><small id="fhSub"></small></div>
     <div class="fnota n-sem" id="fNota" hidden aria-hidden="true"></div>
-    <button class="fpdf" id="fPdf" type="button" title="Salvar esta ficha em PDF (ou imprimir)">⤓ PDF</button>
+    <button class="fpdf" id="fPdf" type="button" title="Relatório do lote em PDF">Relatório</button>
     <button class="x" id="fX" aria-label="Fechar">✕</button>
   </div>
   <div class="fb" id="fBody"></div>
 </aside>
+<div id="relPdf"></div>
 <div class="cmpbar" id="cmpbar" hidden><span id="cmpTxt"></span><button class="cta" id="cmpVer" type="button">Comparar</button><button class="bfi" id="cmpLimpa" type="button">Limpar</button></div>
 <div class="modal" id="modal" hidden><div class="mbox" role="dialog" aria-modal="true" aria-labelledby="mTit">
   <button class="x" id="mX" type="button" aria-label="Fechar">✕</button><div id="mBody"></div></div></div>
 
-<script>(function(){var q=function(u){return fetch(u).then(function(r){if(!r.ok)throw new Error(u+' '+r.status);return r.json()})};Promise.all([q('d_dados_45a0ac301c.json'),q('d_eua_145aaf5d14.json')]).then(function(x){window.__DADOS=x[0];window.__EUA=x[1];var s=document.createElement('script');s.textContent=document.getElementById('app').textContent;document.body.appendChild(s)}).catch(function(e){var d=document.createElement('p');d.style.cssText='padding:24px;font:16px sans-serif';d.textContent='Não foi possível carregar os dados ('+e.message+'). Recarregue a página.';document.body.prepend(d)})})();</script>
+<script>(function(){var q=function(u){return fetch(u).then(function(r){if(!r.ok)throw new Error(u+' '+r.status);return r.json()})};Promise.all([q('d_dados_f6af212a95.json'),q('d_eua_145aaf5d14.json')]).then(function(x){window.__DADOS=x[0];window.__EUA=x[1];var s=document.createElement('script');s.textContent=document.getElementById('app').textContent;document.body.appendChild(s)}).catch(function(e){var d=document.createElement('p');d.style.cssText='padding:24px;font:16px sans-serif';d.textContent='Não foi possível carregar os dados ('+e.message+'). Recarregue a página.';document.body.prepend(d)})})();</script>
 <script type="text/plain" id="app">
 const DADOS = window.__DADOS;
 const EUA = window.__EUA;
-const SAT = {"12011":{"src":"sat/12011.jpg","b":[[25.93054,-80.35664],[26.36468,-80.02927]]},"12057":{"src":"sat/12057.jpg","b":[[27.64785,-82.62356],[28.11396,-82.1985]]},"12069":{"src":"sat/12069.jpg","b":[[28.48412,-82.0227],[29.24602,-81.34558]]},"12071":{"src":"sat/12071.jpg","b":[[26.2746,-82.13479],[26.79847,-81.51148]]},"12086":{"src":"sat/12086.jpg","b":[[25.59347,-80.59451],[25.84359,-80.16575]]},"12095":{"src":"sat/12095.jpg","b":[[28.30895,-81.71145],[28.68932,-81.18102]]},"12097":{"src":"sat/12097.jpg","b":[[27.96384,-81.5671],[28.39497,-80.90945]]},"12099":{"src":"sat/12099.jpg","b":[[26.25039,-80.75906],[27.00539,-79.95131]]},"12105":{"src":"sat/12105.jpg","b":[[27.63975,-82.10605],[28.41693,-81.25855]]},"12111":{"src":"sat/12111.jpg","b":[[27.21976,-80.41607],[27.51704,-80.27042]]}};
+const SAT = {"12011":{"src":"sat/12011.jpg","b":[[25.93054,-80.35664],[26.36468,-80.02927]]},"12057":{"src":"sat/12057.jpg","b":[[27.6538,-82.61684],[28.03394,-82.20522]]},"12069":{"src":"sat/12069.jpg","b":[[28.48412,-82.0227],[29.24602,-81.34558]]},"12071":{"src":"sat/12071.jpg","b":[[26.2746,-82.13479],[26.79847,-81.51148]]},"12086":{"src":"sat/12086.jpg","b":[[25.61679,-80.56866],[25.66538,-80.51476]]},"12095":{"src":"sat/12095.jpg","b":[[28.30895,-81.71145],[28.68932,-81.18102]]},"12099":{"src":"sat/12099.jpg","b":[[26.25039,-80.75906],[27.00539,-79.95131]]},"12105":{"src":"sat/12105.jpg","b":[[27.63975,-82.10605],[28.41693,-81.25855]]},"12111":{"src":"sat/12111.jpg","b":[[27.21976,-80.41607],[27.51704,-80.27042]]}};
 /* SITE = a mesma página servida como site (vitrine_site.py), fora do claude.ai: lá não existe db, então a área de membro abre
    com a senha do mês (pacote membros.bin cifrado, AES-GCM), o satélite vem ao vivo do USGS em qualquer condado e a ficha do
    membro abre com o Street View do Google ao vivo. No artifact o navegador bloqueia imagem e quadro de outros sites. */
@@ -1099,7 +1115,7 @@ const RUAS = new Set(["01001", "01003", "01005", "01009", "01011", "01013", "010
 /* Contato que aparece quando o pedido não pode ser gravado direto (visitante por link público não grava dados no artifact). */
 const CONTATO = {"email": "loginlrb@gmail.com", "whats": "+55 51 99135-7544"};
 /* Cotação do dia em que a página foi montada (vitrine_cambio.py); o leilão é sempre em dólar. */
-const CAMBIO = {"data": "2026-11-09", "fonte": "ExchangeRate-API (open.er-api.com)", "r": {"BRL": 5.504608, "EUR": 0.896919, "GBP": 0.748366, "CAD": 1.411571, "MXN": 18.630883, "ARS": 1545.3974, "CLP": 977.409536, "COP": 3243.549, "PEN": 3.44483, "UYU": 40.323718, "PYG": 6239.966292, "CHF": 0.819677, "JPY": 158.326221, "CNY": 6.679814, "AUD": 1.455802, "INR": 94.047485, "AED": 3.6725, "ILS": 3.187869, "ZAR": 16.534264}};
+const CAMBIO = {"data": "2026-11-10", "fonte": "ExchangeRate-API (open.er-api.com)", "r": {"BRL": 5.512234, "EUR": 0.892449, "GBP": 0.744696, "CAD": 1.411275, "MXN": 18.57202, "ARS": 1545.3974, "CLP": 976.338452, "COP": 3242.125467, "PEN": 3.421491, "UYU": 40.303104, "PYG": 6266.410847, "CHF": 0.81965, "JPY": 158.023471, "CNY": 6.686583, "AUD": 1.448015, "INR": 93.929192, "AED": 3.6725, "ILS": 3.162314, "ZAR": 16.406164}};
 const HOJE = DADOS.meta.gerado;
 const L = DADOS.lotes;
 /* 04/11 (site leve): no site os lotes vêm por estado (vitrine_site.separa_dados). DADOS.partes = [{uf, a: arquivo, n}] e DADOS.idx =
@@ -1788,6 +1804,8 @@ function render(){
 let HISTON = true;   // histórico no mapa (transparente)
 document.addEventListener("click", e => {
   const t = e.target;
+  const pbU = t.closest("[data-pb-ultra]"); if(pbU){ e.preventDefault(); e.stopPropagation(); abreAssina("ultra"); return; }
+  const pbC = t.closest("[data-pb-como]"); if(pbC){ e.preventDefault(); e.stopPropagation(); abrePartner(); return; }
   const a = t.closest("[data-assina]"); if(a){ e.stopPropagation(); abreAssina(); return; }
   const c = t.closest("[data-carr]"); if(c){ e.stopPropagation(); alternaCarr(c.dataset.carr); return; }
   const sg = t.closest("[data-seg]"); if(sg){ e.stopPropagation(); alternaSeg(sg.dataset.seg); return; }
@@ -2449,6 +2467,162 @@ function calcLivrePreenche(box){
   out.innerHTML = calcLivreResultado(c, tEl ? clNum(tEl.value) : null);
 }
 // CALC_LIVRE_FIM
+// PARTNER_FAIXA_INICIO
+/* Faixa do Partner Bidder, ao lado da calculadora.
+   O texto nasce aqui: não lê o lote, não mostra teto nem ARV deste imóvel.
+   Pro tem o teto do analista. Partner Bidder (a BLR compra junto) é do UltraPro.
+   Sem plano explícito, a conta cadastrada continua UltraPro (regra de 07/11). */
+function planoFaixa(sessao, assin){
+  const p = sessao && typeof sessao.plano === "string" ? sessao.plano : "";
+  if(p === "gratuito" || p === "basico" || p === "pro" || p === "ultra") return p;
+  if(sessao || assin) return "ultra";
+  return "gratuito";
+}
+function faixaPartnerHTML(plano){
+  if(plano === "ultra") return `<aside class="pb-faixa pb-ok" data-pb="ultra"><p>Partner Bidder: neste plano a BLR compra junto com você.</p><button type="button" data-pb-como>Como funciona</button></aside>`;
+  if(plano === "pro" || plano === "basico") return `<aside class="pb-faixa" data-pb="membro"><p>O teto de lance do analista é do Pro. O Partner Bidder — a BLR compra junto — é do UltraPro.</p><button type="button" data-pb-ultra>Ver o Partner Bidder</button></aside>`;
+  return `<aside class="pb-faixa" data-pb="visita"><p>Eles te dão uma calculadora. A BLR te dá o teto de lance do analista e, no UltraPro, compra junto.</p><button type="button" data-assina>Ver planos</button></aside>`;
+}
+// PARTNER_FAIXA_FIM
+// RELATORIO_INICIO
+/* Relatório do lote, montado aqui na hora de imprimir (window.print). Nada novo no lote.
+   Não-membro: a conta usa o ARV digitado e a faixa pública. ARV e teto do lote não entram.
+   Campo sem valor: "sem dado". Sem rua, sem CEP. */
+function relEsc(s){ return String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
+function relData(s){ return typeof s === "string" && /^\d{4}-\d{2}-\d{2}/.test(s) ? s.slice(8, 10) + "/" + s.slice(5, 7) + "/" + s.slice(0, 4) : ""; }
+function relTxt(s){ const t = String(s ?? "").replace(/\s+/g, " ").trim(); return t || "sem dado"; }
+function relDin(v){ if(v == null || v === "" || !isFinite(+v)) return "sem dado"; return typeof clDin === "function" ? clDin(+v) : String(Math.round(+v)); }
+function relHost(u){ try{ const x = new URL(String(u || "")); return x.protocol === "http:" || x.protocol === "https:" ? x.hostname.replace(/^www\./i, "") : ""; }catch(e){ return ""; } }
+function relTab(linhas){ return `<table>${linhas.map(([a, b]) => `<tr><td>${relEsc(a)}</td><td>${relEsc(relTxt(b))}</td></tr>`).join("")}</table>`; }
+function relSelo(l, hoje, coleta){
+  const s = l && l.selo && typeof l.selo === "object" ? l.selo : null;
+  if(s) return s;
+  const fo = String(l && l.fo || "").trim(), lk = String(l && l.lk || "").trim();
+  if(!fo && !lk) return null;
+  const externo = /auction\.com|xome|hubzu/i.test(fo + " " + lk);
+  const fonte = externo ? "link externo (dados não conferidos pela BLR)" : fo.split("(")[0].trim().slice(0, 40);
+  const iso = typeof coleta === "string" && /^\d{4}-\d{2}-\d{2}/.test(coleta) ? coleta.slice(0, 10) : "";
+  const hj = typeof hoje === "string" && /^\d{4}-\d{2}-\d{2}/.test(hoje) ? hoje.slice(0, 10) : "";
+  let idade = null;
+  if(iso && hj){ const n = x => Date.UTC(+x.slice(0, 4), +x.slice(5, 7) - 1, +x.slice(8, 10)) / 864e5; idade = Math.max(0, n(hj) - n(iso)); }
+  const d = typeof l.d === "string" ? l.d.slice(0, 10) : "";
+  const passou = !!(hj && d && /^\d{4}-\d{2}-\d{2}/.test(d) && d < hj);
+  return {fonte, link: lk, externo, atualizado: iso || null, idade_dias: idade, velho: !iso || passou || (idade != null && idade > 14), texto: passou ? "leilão já passou" : ""};
+}
+function relAviso(s){
+  if(!s || !s.velho) return "";
+  if(s.passou || /passou/i.test(s.texto || "")) return "Dado velho: o leilão já passou.";
+  if(!s.atualizado) return "Dado velho: data de coleta sem dado.";
+  const idade = s.idade_dias != null && isFinite(+s.idade_dias) ? (+s.idade_dias <= 0 ? "hoje" : +s.idade_dias === 1 ? "há 1 dia" : "há " + (+s.idade_dias) + " dias") : "há mais de 14 dias";
+  return "Dado velho: atualizado " + idade + ".";
+}
+function relNota(l){
+  const tem = l.nota != null && l.nota !== "" && isFinite(+l.nota);
+  if(!tem) return {txt: "sem dado", itens: []};
+  const n = Math.round(+l.nota), nome = n >= 80 ? "alta" : n >= 60 ? "boa" : n >= 40 ? "média" : n >= 20 ? "fraca" : "baixa";
+  const itens = (Array.isArray(l.nota_porque) ? l.nota_porque : []).map(x => String(x ?? "").replace(/\s+/g, " ").trim()).filter(t => t && !/\d|teto|arv|\$/i.test(t));
+  return {txt: n + "/100 · " + nome, itens};
+}
+function relLugar(l){
+  const ci = String(l.ci || "").trim(), co = String(l.co || "").trim(), uf = String(l.uf || "").trim();
+  const ped = [];
+  if(ci && ci !== co) ped.push(ci);
+  if(co) ped.push(co + " County");
+  const esq = ped.join(", ");
+  return esq && uf ? esq + " · " + uf : (esq || uf);
+}
+function relFonte(dado, fonte, data){ return [dado, fonte, relData(data) || data || ""]; }
+function relatorioHTML(l, op){
+  l = l && typeof l === "object" ? l : {};
+  op = op || {};
+  const assin = !!op.assin;
+  const custos = op.custos || {};
+  const t = typeof tipoLeilao === "function" ? tipoLeilao(l) : null;
+  const nota = relNota(l);
+  const selo = relSelo(l, op.hoje, op.coleta);
+  const aviso = relAviso(selo);
+  const fonteSelo = selo ? [selo.fonte, relHost(selo.link)].filter(Boolean).join(" · ") : "";
+  const ficha = relTab([
+    ["Tipo de leilão", t && t.id && t.id !== "nao_informado" ? t.nome : ""],
+    ["Data", relData(l.d)],
+    ["Lance mínimo", l.ab != null && isFinite(+l.ab) && +l.ab > 0 ? relDin(l.ab) : ""],
+    ["Nota", nota.txt],
+    ["Selo", !selo ? "" : [selo.externo ? "não conferido" : "", selo.velho ? "dado velho" : (selo.fonte && selo.atualizado ? "em dia" : "")].filter(Boolean).join(" · ")]
+  ]);
+  const porque = nota.itens.length ? `<ul>${nota.itens.map(x => `<li>${relEsc(x)}</li>`).join("")}</ul>` : "";
+  const cp = l.cp && typeof l.cp === "object" && !Array.isArray(l.cp) ? l.cp : null;
+  const lista = assin && Array.isArray(op.lista) ? op.lista : null;
+  let comps = "<h2>Comparáveis</h2>";
+  if(!cp && !(lista && lista.length)) comps += "<p>sem dado</p>";
+  else {
+    if(cp) comps += relTab([
+      ["Quantidade", cp.n != null && cp.n !== "" ? String(cp.n) : ""],
+      ["US$/ft² mediano", cp.p != null && cp.p !== "" ? relDin(cp.p) : ""],
+      ["Confiança", cp.c],
+      ["Raio", cp.r != null && cp.r !== "" && isFinite(+cp.r) ? String(+cp.r).replace(".", ",") + (+cp.r === 1 ? " milha" : " milhas") : ""]
+    ]);
+    else comps += "<p>Resumo: sem dado</p>";
+    if(lista && lista.length) comps += `<table><tr><th>Data</th><th>Preço</th><th>Área</th><th>Distância</th></tr>${lista.map(it => {
+      const o = it && typeof it === "object" ? it : {};
+      const dist = o.dist != null && o.dist !== "" && isFinite(+o.dist) ? String(+o.dist).replace(".", ",") + " milha" : "";
+      const area = o.area != null && o.area !== "" && isFinite(+o.area) ? Math.round(+o.area).toLocaleString("pt-BR") + " ft²" : "";
+      return `<tr><td>${relEsc(relData(o.data) || "sem dado")}</td><td>${relEsc(relDin(o.preco))}</td><td>${relEsc(area || "sem dado")}</td><td>${relEsc(dist || "sem dado")}</td></tr>`;
+    }).join("")}</table>`;
+  }
+  const onus = l.on && typeof onusTxt === "function" ? onusTxt(l) : "";
+  const ench = !l.ent || l.ent.fz == null || l.ent.fz === "" ? "" : (l.ent.fz === "X" ? "Fora da área de risco" : "Zona " + l.ent.fz);
+  const lien = l.li ? "Leilão de lien: o retorno vem dos juros" : "";
+  const tipoR = t && t.id && t.id !== "nao_informado" ? t.legenda : "";
+  const contaLinhas = [
+    [assin ? "ARV na calculadora" : "ARV que você digitou", relDin(custos.arv)],
+    ["Lance", relDin(custos.lance)],
+    ["Reforma", relDin(custos.reforma)],
+    ["Custos fixos", relDin(custos.fixos)],
+    ["Quiet title", relDin(custos.quiet)],
+    ["Taxa da plataforma", relDin(custos.premio)],
+    ["Custo de venda", relDin(custos.venda)]
+  ];
+  if(assin){
+    const am = isFinite(+l.am) && +l.am > 0 ? Math.round(+l.am) : null;
+    const temT = l.teto != null && l.teto !== "" && isFinite(+l.teto);
+    const teto = temT ? Math.round(+l.teto) : null;
+    contaLinhas.push(["ARV do lote", am == null ? "" : relDin(am)]);
+    contaLinhas.push(["Teto do lote", teto == null ? "" : (teto > 0 ? relDin(teto) : "não fecha")]);
+  }
+  let resultado = "sem dado";
+  if(typeof calcLivre === "function"){
+    const c = calcLivre(custos.arv, custos.lance, custos.reforma, {fixos: custos.fixos, quiet: custos.quiet, premio: custos.premio, venda: custos.venda});
+    if(c) resultado = "Lucro " + relDin(c.lucro) + " · retorno " + (typeof clPct === "function" ? clPct(c.roi) : "sem dado");
+  }
+  const faixa = assin ? "" : `<p>Faixa pública do lugar, não deste lote: ${(() => { const f = typeof faixaAmpla === "function" ? faixaAmpla(l.mc) : null; return f ? relDin(f[0]) + " – " + relDin(f[1]) : "sem dado"; })()}</p>`;
+  const ent = l.ent && typeof l.ent === "object" ? l.ent : null;
+  const fontes = `<table><tr><th>Dado</th><th>Fonte oficial</th><th>Coletado em</th></tr>${[
+    relFonte("Ficha do leilão", fonteSelo, selo && selo.atualizado),
+    relFonte("Comparáveis", "", ""),
+    relFonte("Entorno", ent ? "FEMA, USDA, NCES e HIFLD" : "", ent && ent.em),
+    relFonte("Ônus", l.onf || (l.uf === "FL" && l.on ? "RealTDM" : ""), ""),
+    relFonte("Nota", "", ""),
+    relFonte("A conta", "", "")
+  ].map(([a, b, c]) => `<tr><td>${relEsc(a)}</td><td>${relEsc(relTxt(b))}</td><td>${relEsc(relTxt(c))}</td></tr>`).join("")}</table>`;
+  const quando = relData(op.gerado) || "sem dado";
+  return `<article class="rel" data-relatorio>
+    <div class="rel-bar"><button type="button" data-rel-pdf>Salvar PDF</button><button type="button" data-rel-fecha>Fechar</button></div>
+    <h1>Relatório do lote</h1>
+    <p class="rel-lugar">${relEsc(relLugar(l) || "sem dado")}</p>
+    ${aviso ? `<p class="av">${relEsc(aviso)}</p>` : ""}
+    <h2>Ficha</h2>${ficha}${porque}
+    ${comps}
+    <h2>Riscos</h2>${relTab([["Ônus", onus], ["Enchente", ench], ["Lien", lien], ["Tipo", tipoR]])}
+    <h2>A conta · estimativa</h2>
+    <p>Custos líquidos da calculadora. Dá para editar na ficha antes de gerar. Estimativa.</p>
+    ${relTab(contaLinhas)}
+    <p>Resultado: ${relEsc(resultado)}. Estimativa.</p>
+    ${faixa}
+    <h2>Fontes</h2>${fontes}
+    <footer class="rel-rod">Gerado em ${relEsc(quando)}. estimativa, não é recomendação</footer>
+  </article>`;
+}
+// RELATORIO_FIM
 /* Nota e selo na ficha. Só o que já veio no lote (nota, nota_porque, selo): número, faixa e palavras.
    Linha com dígito, teto, ARV ou $ não entra — a fórmula e o valor do teto ficam de fora. */
 const faixaNota = n => n >= 80 ? {id:"alta", nome:"alta"} : n >= 60 ? {id:"boa", nome:"boa"} : n >= 40 ? {id:"media", nome:"média"} : n >= 20 ? {id:"fraca", nome:"fraca"} : {id:"baixa", nome:"baixa"};
@@ -2580,6 +2754,7 @@ async function abre(i){
     <div class="ftit"><h2 id="fTit">${esc(lugar)}</h2><div class="loc" id="fSub">${esc(quando)}</div>${SITE ? `<button type="button" class="lnk iaL" data-ia>✦ Perguntar à IA sobre este lote</button>` : ""}</div>
     ${seloTipoHTML(l)}
     ${notaSeloHTML(l)}
+    ${faixaPartnerHTML(planoFaixa(SESSAO, ASSIN))}
     ${calcLivreHTML(l, ASSIN)}
     ${HIST(l) ? "" : resumoHTML(l, gap)}
     ${resultado}
@@ -2772,19 +2947,41 @@ function linksPrivados(l, p){
     lk(`https://msc.fema.gov/portal/search?AddressQuery=${e}`, "Confirmar enchente", "FEMA, pelo endereço"),
   ].filter(Boolean).join("");
 }
-function fecha(){ ABRE++; ABERTO = null; iaSobre(); $("#ficha").classList.remove("on"); $("#ficha").setAttribute("aria-hidden","true"); $("#vel").classList.remove("on");
+function fechaRel(){
+  if(!document.body.classList.contains("prel")) return;
+  document.body.classList.remove("prel");
+  if(document.body.dataset.relTit){ document.title = document.body.dataset.relTit; document.body.removeAttribute("data-rel-tit"); }
+  window.removeEventListener("afterprint", fechaRel);
+}
+function fecha(){ fechaRel(); ABRE++; ABERTO = null; iaSobre(); $("#ficha").classList.remove("on"); $("#ficha").setAttribute("aria-hidden","true"); $("#vel").classList.remove("on");
   if(document.body.classList.contains("fon")){ document.body.classList.remove("fon"); setTimeout(() => window.dispatchEvent(new Event("resize")), 300); }
   document.dispatchEvent(new CustomEvent("sel", {detail: null})); }
 $("#fX").onclick = fecha; $("#vel").onclick = fecha;
-/* 02/11 (Cris): ficha em PDF pelo "Salvar como PDF" do navegador (sem biblioteca): imprime só a ficha, com as seções abertas e
-   fundo branco; o nome sugerido do arquivo vem do título da página */
-$("#fPdf").onclick = () => {
-  const t0 = document.title;
-  document.title = "Ficha BLR - " + $("#fhTit").textContent.replace(/[\\/:*?"<>|]/g, "-");
-  document.body.classList.add("pfic");
-  const volta = () => { document.body.classList.remove("pfic"); document.title = t0; window.removeEventListener("afterprint", volta); };
-  window.addEventListener("afterprint", volta);
-  setTimeout(() => { window.print(); setTimeout(volta, 1500); }, 60);
+/* Relatório em PDF pelo navegador (window.print), sem servidor e sem biblioteca. Só cidade e condado. */
+$("#fPdf").onclick = async () => {
+  const i = ABERTO, l = L.find(x => x.i === i); if(!l) return;
+  let lista = null;
+  if(ASSIN){
+    try{
+      const p = await privado(l);
+      if(ABERTO !== i) return;
+      if(p && Array.isArray(p.cp)) lista = p.cp.map(x => x && typeof x === "object" ? {data: x.data, preco: x.preco, area: x.area, dist: x.dist} : {});
+    }catch(e){}
+  }
+  if(ABERTO !== i) return;
+  const box = document.querySelector("#calcLivre");
+  const ler = (nome, vazio) => { const el = box && box.querySelector(`[data-cl="${nome}"]`); if(!el) return null; const n = clNum(el.value); return n == null ? vazio : n; };
+  const custos = {arv: ler("arv", null), lance: ler("lance", null), reforma: ler("reforma", null), fixos: ler("fixos", 0), quiet: ler("quiet", 0), premio: ler("premio", 0), venda: ler("venda", 0)};
+  const el = $("#relPdf");
+  el.innerHTML = relatorioHTML(l, {assin: ASSIN, custos, lista, hoje: HOJE_L, coleta: typeof HOJE === "string" ? HOJE : "", gerado: HOJE_L});
+  const pdf = el.querySelector("[data-rel-pdf]"), fe = el.querySelector("[data-rel-fecha]");
+  if(pdf) pdf.onclick = () => window.print();
+  if(fe) fe.onclick = fechaRel;
+  document.body.dataset.relTit = document.title;
+  document.title = ("Relatorio BLR - " + relLugar(l)).replace(/[\\/:*?"<>|]/g, "-");
+  document.body.classList.add("prel");
+  window.addEventListener("afterprint", fechaRel);
+  setTimeout(() => window.print(), 60);
 };
 
 /* 02/11 (Cris): lista dos lotes acompanhados em Excel (.xlsx de verdade, montado aqui: zip sem compressão + planilha XML).
@@ -2840,7 +3037,7 @@ async function exportaSeg(li){
   const a = document.createElement("a"); a.href = URL.createObjectURL(b); a.download = `BLR ${li ? li.nome.replace(/[\/:*?"<>|]/g, "") : "acompanhados"} ${HOJE_L.split("-").reverse().join("-")}.xlsx`;
   document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 2000);
 }
-document.addEventListener("keydown", e => { if(e.key === "Escape"){ if(!$("#modal").hidden) fechaModal(); else fecha(); } });
+document.addEventListener("keydown", e => { if(e.key === "Escape"){ if(document.body.classList.contains("prel")) fechaRel(); else if(!$("#modal").hidden) fechaModal(); else fecha(); } });
 
 /* ---------- janelas: assinatura, pedido de informação, carrinho, cálculo ---------- */
 let CAD = {};

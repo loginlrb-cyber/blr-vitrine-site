@@ -293,6 +293,11 @@ async function membro() {
   } catch (e) { MEMBRO = false; }
 }
 const chavePriv = l => (l.uf + "_" + l.co).replace(/ /g, "_").replace(/\./g, "").replace(/'/g, "");
+function podePol(){
+  if (!MEMBRO) return false;
+  const p = (typeof EU === "object" && EU && typeof EU.plano === "string") ? EU.plano : "";
+  return p !== "basico" && p !== "gratuito";
+}
 const priv = l => MEMBRO ? ((PRIV[chavePriv(l)] || {})[l.i] || null) : null;
 const prem = l => MEMBRO ? ((PREM[l.uf] || {})[l.i] || null) : null;
 
@@ -511,8 +516,8 @@ function mosaico(la, ln, z, k, zoomCss, pol) {
 }
 function fotoDe(l) {
   const p = priv(l), pm = prem(l);
-  if (pm && pm.img && pm.img.s) return {src: "../" + pm.img.s, tag: "Satélite com o contorno do lote", exato: true, pronto: true};
-  if (p && p.pol && p.pol.length > 2) {
+  if (podePol() && pm && pm.img && pm.img.s) return {src: "../" + pm.img.s, tag: "Satélite com o contorno do lote", exato: true, pronto: true};
+  if (podePol() && p && p.pol && p.pol.length > 2) {
     // centro e zoom pelo contorno: o lote inteiro cabe no quadro (o bloco do USGS vai até o nível 16; o resto é ampliação)
     const la = p.pol.reduce((s, q) => s + q[0], 0) / p.pol.length, ln = p.pol.reduce((s, q) => s + q[1], 0) / p.pol.length;
     const n = 2 ** 16, xy = p.pol.map(([a, b]) => tileXY(a, b, n)), xs = xy.map(q => q[0]), ys = xy.map(q => q[1]);
