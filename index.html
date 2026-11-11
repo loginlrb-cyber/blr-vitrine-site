@@ -3237,7 +3237,7 @@ async function abre(i){
       ${p.rg ? `<a href="${esc(p.rg)}" target="_blank" rel="noopener">Regrid (parcela)</a>` : ""}
       ${p.lk ? `<a href="${esc(p.lk)}" target="_blank" rel="noopener">Página do leilão</a>` : ""}</div>`;
     $("#online").insertAdjacentHTML("afterbegin", linksPrivados(l, p));
-    document.querySelectorAll("#fBody .sec-xt").forEach(x => x.remove()); $("#secPriv").insertAdjacentHTML("afterend", cadastroHTML(p) + linhaTempoHTML(l, p));
+    document.querySelectorAll("#fBody .sec-xt").forEach(x => x.remove()); $("#secPriv").insertAdjacentHTML("afterend", cadastroHTML(p) + impostoHTML(p) + linhaTempoHTML(l, p));
     const fo = $("#fOnus");   // 05/11: resumo do processo (credores, o que cai e o que sobrevive), só membro
     if(fo && p.ons) fo.insertAdjacentHTML("beforeend", `<div class="nota" style="margin:4px 0 0">${esc(p.ons)}${p.ond ? ` (consultado em ${dm(p.ond)}/${p.ond.slice(0, 4)})` : ""}</div>`);
     // 28/10: "Ficha no cadastro" e "Cadastro do condado" iam ao mesmo Property Appraiser; fica só a ficha (direto na parcela)
@@ -3345,6 +3345,25 @@ function bairroHTML(l){
 }
 /* 11/11 (plano pós-Checkmate itens 4 e 5): linha do tempo do lote e cadastro do condado.
    Datas do leilão e da coleta são públicas; vendas e sinais do cadastro (NAL da FL) vêm do privado, só assinante. */
+/* 11/11 (item 3): imposto atrasado e liens do lote, só onde a fonte oficial libera leitura automática (vitrine_impostos.py):
+   Allegheny (WPRDC, ano a ano) e Palm Beach (certificados com o condado). Só assinante (vem no privado cifrado). */
+function impostoHTML(p){
+  const m = p && p.imp; if(!m) return "";
+  const din = v => usd(Math.round(+v || 0));
+  const lin = [];
+  if(m.anos && m.anos.length){
+    const a0 = m.anos[0][0], a1 = m.anos[m.anos.length - 1][0];
+    lin.push(["Imposto do condado em atraso", `${din(m.tot)} · ${m.anos.length} ${m.anos.length === 1 ? "ano" : "anos"} (${a0 === a1 ? a0 : a0 + "–" + a1})`]);
+    m.anos.slice(-6).reverse().forEach(([ano, v]) => lin.push([`  ${ano}`, din(v)]));
+  }
+  if(m.cidade) lin.push(["Imposto da cidade (ano corrente)", din(m.cidade)]);
+  if(m.liens) lin.push(["Liens registrados em aberto", `${m.liens.n} · ${din(m.liens.v)}`]);
+  const ult = m.liens && m.liens.ult ? `<ul class="ltempo">${m.liens.ult.map(x => `<li><b>${esc(String(x.ano || ""))}</b> ${esc(x.d || "lien")} · ${din(x.v)}</li>`).join("")}</ul>` : "";
+  const corpo = m.limpo ? `<p class="nota" style="margin:0">Sem ano em atraso no imposto do condado nem lien em aberto na base oficial.</p>`
+    : `<table class="tab2">${lin.map(([x, y]) => `<tr><td>${esc(x)}</td><td>${esc(y)}</td></tr>`).join("")}</table>${ult}`;
+  return `<div class="sec sec-xt"><h4>Imposto atrasado e liens</h4>${corpo}
+    <div class="nota">Fonte: ${esc(m.fonte || "fonte oficial")} · consulta de ${esc(dm(m.data || ""))}. Valor com multa e juros até a data da base; quem paga esse atraso depende do tipo de venda e do edital (lien municipal e de escola pode sobreviver); confirme no condado antes do lance.</div></div>`;
+}
 function linhaTempoHTML(l, p){
   const ev = [], dt = s => s ? s.slice(8, 10) + "/" + s.slice(5, 7) + "/" + s.slice(0, 4) : "";
   const nal = p && p.nal;
