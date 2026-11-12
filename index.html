@@ -503,6 +503,9 @@ body.prel .rel-marca{display:flex}
 .irpara form button{all:unset;cursor:pointer;position:absolute;right:5px;top:50%;transform:translateY(-50%);width:34px;height:34px;display:grid;place-items:center;border-radius:50%;background:var(--acc);color:var(--ink);font-size:17px;font-weight:700}
 .irpara form button:focus-visible{outline:2px solid var(--tx);outline-offset:2px}
 .contTop{display:flex;gap:6px;margin-top:8px;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;padding-bottom:2px}
+/* 12/11 (Cris: "a lista de tipos de leilão corta"): no computador quebra em linhas (todos os tipos à vista); no celular rola com esmaecido na borda */
+@media (min-width:761px){.contTop{flex-wrap:wrap;overflow:visible}}
+@media (max-width:760px){.contTop{-webkit-mask-image:linear-gradient(90deg,#000 85%,transparent);mask-image:linear-gradient(90deg,#000 85%,transparent);padding-right:24px}}
 .contTop::-webkit-scrollbar{display:none}
 .contTop button{all:unset;cursor:pointer;box-sizing:border-box;flex:0 0 auto;display:inline-flex;align-items:center;gap:6px;padding:6px 11px;border-radius:999px;background:rgba(12,14,18,.9);border:1px solid var(--line2);font:600 12px var(--f-b);color:var(--tx);white-space:nowrap}
 .contTop button b{font:500 11.5px var(--f-m);color:var(--acc)}
