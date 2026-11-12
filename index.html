@@ -3704,9 +3704,10 @@ const PLANOS = {
 /* 12/11 (Cris aprovou os planos e a conta Stripe da Gallery "por enquanto"): links de pagamento do Stripe por plano e ciclo.
    Pagar ainda não muda o plano no servidor: o admin libera à mão. O e-mail da conta vai em prefilled_email para casar o pagamento. */
 const STRIPE = {
-  basico: {m: "https://buy.stripe.com/6oUbJ1brjfLygLddMbdIA00", a: "https://buy.stripe.com/6oU5kDgLDfLyfH9eQfdIA01"},
-  pro:    {m: "https://buy.stripe.com/bJe3cvfHz7f2fH923tdIA02", a: "https://buy.stripe.com/8x27sL3YR9na8eHazZdIA03"},
-  ultra:  {m: "https://buy.stripe.com/fZubJ1anfczm1Qj9vVdIA04", a: "https://buy.stripe.com/28E14n1QJbvibqTfUjdIA05"}
+  // 12/11 (tarde): conta Stripe própria da BLR ("BLR Development"), conferida link a link (plano e valor); os da Gallery saíram
+  basico: {m: "https://buy.stripe.com/28EfZh5YKgub2fY40I8ww00", a: "https://buy.stripe.com/bJe14ncn8b9R8Emap68ww01"},
+  pro:    {m: "https://buy.stripe.com/14AcN5af0cdV07Qbta8ww04", a: "https://buy.stripe.com/dRm4gzaf05PxbQy0Ow8ww05"},
+  ultra:  {m: "https://buy.stripe.com/bJeeVd9aW7XFaMu9l28ww03", a: "https://buy.stripe.com/fZubJ14UGfq74o61SA8ww02"}
 };
 function linkPagamento(plano, email){
   const u = STRIPE[plano] && STRIPE[plano][CICLO === "a" ? "a" : "m"]; if(!u) return "";
@@ -3744,7 +3745,7 @@ function abreAssina(plano, ciclo){
     <form class="fcad" id="fAss">${campos(`<label>Você é<select name="perfil"><option>Investidor</option><option>Corretor / agente</option><option>Construtor</option><option>Outro</option></select></label>`)}
       <label class="aceite"><input type="checkbox" name="termos" required> Li e aceito os <a href="termos/" target="_blank" rel="noopener">Termos de Uso</a> e a <a href="privacy/" target="_blank" rel="noopener">Política de Privacidade</a>.</label>
       <button class="cta" type="submit">Ir para o pagamento · US$ ${CICLO === "a" ? P.a + "/ano" : P.p + "/mês"}</button>
-      <div class="nota">O pagamento abre em outra aba, no Stripe (pagamento seguro; por enquanto o vendedor aparece como Waltham Auto Gallery, parceira da BLR). Assim que o pagamento cair, a BLR libera o seu acesso, em até 1 dia útil. <button type="button" class="lnk" data-assina-outro>Ver os outros planos</button>${CONTATO.whats ? ` · Dúvidas: WhatsApp ${esc(CONTATO.whats)}${CONTATO.email ? " · " + esc(CONTATO.email) : ""}.` : ""}</div></form>`);
+      <div class="nota">O pagamento abre em outra aba, no Stripe (pagamento seguro, em nome de BLR Development; o Stripe pode mostrar o valor convertido para a sua moeda). Assim que o pagamento cair, a BLR libera o seu acesso, em até 1 dia útil. <button type="button" class="lnk" data-assina-outro>Ver os outros planos</button>${CONTATO.whats ? ` · Dúvidas: WhatsApp ${esc(CONTATO.whats)}${CONTATO.email ? " · " + esc(CONTATO.email) : ""}.` : ""}</div></form>`);
   const o = document.querySelector("[data-assina-outro]"); if(o) o.onclick = () => abreAssina();
   cicloEventos(() => abreAssina(plano));
   formDe("fAss", d => {
@@ -4808,7 +4809,8 @@ $("#tipoLegBt").onclick = () => { const leg = $("#tipoLeg"), a = leg.hidden; leg
 /* 07/11: atalhos de outras páginas (planos/, conta/): ?teste=1 cadastro de 7 dias · ?plano=basico|pro|ultra pedido do plano ·
    ?entrar=1 · ?senha=1 · ?listas=1 · ?tour=1. Cada um só abre uma janela; se der erro, a vitrine segue normal. */
 { const q = new URLSearchParams(location.search);
-  try{ if(q.get("teste")) abreCadastro(); else if(q.get("plano")) abreAssina(q.get("plano"), q.get("ciclo")); else if(q.get("entrar")) abreEntrar();
+  try{ if(q.get("assinatura") === "ok") abreModal(`<h3 id="mTit">Obrigado pela assinatura ✓</h3><p class="ok-msg">Recebemos o seu pagamento${PLANO_NOME[q.get("plano")] ? " do plano " + esc(PLANO_NOME[q.get("plano")]) + (q.get("ciclo") === "anual" ? " anual" : q.get("ciclo") === "mensal" ? " mensal" : "") : ""}. A BLR libera o seu acesso em até 1 dia útil, no mesmo e-mail usado no pagamento.</p><p>Enquanto isso, o mapa e as notas já estão abertos para você. Dúvidas: <button type="button" class="lnk" onclick="abreFalar('')">falar com a BLR</button>.</p><button class="cta" type="button" onclick="fechaModal()">Ver o mapa</button>`);
+    else if(q.get("teste")) abreCadastro(); else if(q.get("plano")) abreAssina(q.get("plano"), q.get("ciclo")); else if(q.get("entrar")) abreEntrar();
     else if(q.get("senha")) abreEsqueci(""); else if(q.get("listas")) abreSeg(); else if(q.get("falar")) abreFalar(q.get("falar") === "ultra" ? "Quero o UltraPro / comprar junto com a BLR (Partner Bidder)" : ""); else if(q.get("tour")) setTimeout(() => tour(true), 1200); }catch(e){ console.warn("atalho", e); } }
 $("#tgSeg").onclick = () => { FSEG = FSEG ? false : true; $("#tgSeg").setAttribute("aria-pressed", !!FSEG); render(); };
 /* 02/11 (Cris): o botão alterna Histórico junto → Só vendidos → sem histórico */
