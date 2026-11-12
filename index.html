@@ -3607,7 +3607,7 @@ async function envia(p, ok){
 function formDe(id, onSubmit){ const f = $("#" + id); f.addEventListener("submit", e => { e.preventDefault();
   onSubmit({...Object.fromEntries(new FormData(f)), quer: [...f.querySelectorAll("input[name=quer]:checked")].map(x => x.value)}); }); }
 /* 07/11 (Cris): os planos do Miro com preço: Básico US$ 9,90 · Pro US$ 49,90 · UltraPro US$ 249,90 por mês (planos/ usa os mesmos).
-   Sem plano escolhido (botão "Assinar"), abre a escolha; com plano, o pedido. Pagamento: a BLR manda o link (nada é cobrado aqui).
+   Sem plano escolhido (botão "Assinar"), abre a escolha; com plano, o pedido. Pagamento: link do Stripe por plano e ciclo (STRIPE, 12/11).
    10/11: o teste de 7 dias é do Pro e do UltraPro. O Básico não tem. Não há cobrança automática nesta página. */
 const TRIAL_SELO = "7 dias grátis";
 const TRIAL_NOTA = "7 dias grátis para testar o Pro";
@@ -3618,6 +3618,18 @@ const PLANOS = {
   basico: {n: "Básico", p: "9,90", a: "99", am: "8,25", ec: "19,80", ben: ["Ficha completa e filtros avançados", "1 estado à sua escolha (troca 1× por mês)", "Self Bidder: você opera por conta própria", "Assistente de IA: 10 consultas por mês"]},
   pro: {n: "Pro", p: "49,90", a: "499", am: "41,58", ec: "99,80", ben: ["Tudo do Básico, em até 3 estados", "Teto de lance BLR, ARV e a conta ao vivo de cada lote", "Posição exata, contorno do lote, Street View, endereço e parcela", "Várias listas e alertas de oportunidades", "Self Bidder com suporte a dúvidas · IA: 40 consultas por mês"]},
   ultra: {n: "UltraPro", p: "249,90", a: "2.499", am: "208,25", ec: "499,80", ben: ["Tudo do Pro, em todos os estados", "Partner Bidder: a BLR opera com você e divide o risco", "Comunidade, mentoria e oferta de lotes já arrematados", "Sala de leilão ao vivo, consultoria de engenharia e o curso completo", "Assistente de IA ilimitado"]}};
+/* 12/11 (Cris aprovou os planos e a conta Stripe da Gallery "por enquanto"): links de pagamento do Stripe por plano e ciclo.
+   Pagar ainda não muda o plano no servidor: o admin libera à mão. O e-mail da conta vai em prefilled_email para casar o pagamento. */
+const STRIPE = {
+  basico: {m: "https://buy.stripe.com/6oUbJ1brjfLygLddMbdIA00", a: "https://buy.stripe.com/6oU5kDgLDfLyfH9eQfdIA01"},
+  pro:    {m: "https://buy.stripe.com/bJe3cvfHz7f2fH923tdIA02", a: "https://buy.stripe.com/8x27sL3YR9na8eHazZdIA03"},
+  ultra:  {m: "https://buy.stripe.com/fZubJ1anfczm1Qj9vVdIA04", a: "https://buy.stripe.com/28E14n1QJbvibqTfUjdIA05"}
+};
+function linkPagamento(plano, email){
+  const u = STRIPE[plano] && STRIPE[plano][CICLO === "a" ? "a" : "m"]; if(!u) return "";
+  const e = String(email || "").trim();
+  return /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(e) ? u + "?prefilled_email=" + encodeURIComponent(e) : u;
+}
 const PLANO_NOME = Object.fromEntries(Object.entries(PLANOS).map(([k, v]) => [k, v.n]));
 /* 07/11 (Rodrigo): mensal ou anual; o anual sai por 10 meses (2 grátis) e dá 20% de desconto na taxa de sucesso do self bider */
 let CICLO = "m";
@@ -3647,12 +3659,19 @@ function abreAssina(plano, ciclo){
     <ul class="ben">${P.ben.map(x => `<li>${esc(x)}</li>`).join("")}</ul>
     <form class="fcad" id="fAss">${campos(`<label>Você é<select name="perfil"><option>Investidor</option><option>Corretor / agente</option><option>Construtor</option><option>Outro</option></select></label>`)}
       <label class="aceite"><input type="checkbox" name="termos" required> Li e aceito os <a href="termos/" target="_blank" rel="noopener">Termos de Uso</a> e a <a href="privacy/" target="_blank" rel="noopener">Política de Privacidade</a>.</label>
-      <button class="cta" type="submit">Quero o ${P.n}</button>
-      <div class="nota">Depois do cadastro, a BLR manda o link de pagamento seguro e libera o seu acesso. Nada é cobrado nesta página. <button type="button" class="lnk" data-assina-outro>Ver os outros planos</button>${CONTATO.whats ? ` · Dúvidas: WhatsApp ${esc(CONTATO.whats)}${CONTATO.email ? " · " + esc(CONTATO.email) : ""}.` : ""}</div></form>`);
+      <button class="cta" type="submit">Ir para o pagamento · US$ ${CICLO === "a" ? P.a + "/ano" : P.p + "/mês"}</button>
+      <div class="nota">O pagamento abre em outra aba, no Stripe (pagamento seguro; por enquanto o vendedor aparece como Waltham Auto Gallery, parceira da BLR). Assim que o pagamento cair, a BLR libera o seu acesso, em até 1 dia útil. <button type="button" class="lnk" data-assina-outro>Ver os outros planos</button>${CONTATO.whats ? ` · Dúvidas: WhatsApp ${esc(CONTATO.whats)}${CONTATO.email ? " · " + esc(CONTATO.email) : ""}.` : ""}</div></form>`);
   const o = document.querySelector("[data-assina-outro]"); if(o) o.onclick = () => abreAssina();
   cicloEventos(() => abreAssina(plano));
-  formDe("fAss", d => envia({tipo: "assinatura " + P.n + (CICLO === "a" ? " anual" : " mensal"), plano: plano, ciclo: CICLO === "a" ? "anual" : "mensal",
-    preco: CICLO === "a" ? "US$ " + P.a + "/ano" : "US$ " + P.p + "/mês", ...d}, `Pedido do plano ${P.n} recebido. Você recebe o link de pagamento e o acesso em seguida.`));
+  formDe("fAss", d => {
+    // a aba do Stripe abre no próprio clique (antes de qualquer espera), senão o navegador bloqueia como pop-up
+    const u = linkPagamento(plano, (SESSAO && SESSAO.email) || d.email);
+    if(u) window.open(u, "_blank", "noopener");
+    envia({tipo: "assinatura " + P.n + (CICLO === "a" ? " anual" : " mensal"), plano: plano, ciclo: CICLO === "a" ? "anual" : "mensal",
+      preco: CICLO === "a" ? "US$ " + P.a + "/ano" : "US$ " + P.p + "/mês", pagamento: u ? "stripe aberto" : "sem link", ...d},
+      u ? `O pagamento do ${P.n} abriu em outra aba. Assim que ele cair, a BLR libera o seu acesso (em até 1 dia útil). Se a aba não abriu, <a href="${u}" target="_blank" rel="noopener">clique aqui para pagar</a>.`
+        : `Pedido do plano ${P.n} recebido. Você recebe o link de pagamento e o acesso em seguida.`);
+  });
 }
 function abreInfo(i){
   const l = L.find(x => x.i === i); if(!l) return;
