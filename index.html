@@ -1995,10 +1995,71 @@ let SESSAO = null, CARREGA_CONTA = false;
 // aviso no topo da página (07/11): sem alert(), some sozinho em 20 s
 function avisoTopo(t){ let d = $("#avTopo"); if(!d){ d = document.createElement("div"); d.id = "avTopo"; d.className = "avTopo"; d.setAttribute("role", "status"); document.body.appendChild(d); }
   d.textContent = t; d.hidden = false; clearTimeout(avisoTopo.t); avisoTopo.t = setTimeout(() => d.hidden = true, 20000); d.onclick = () => d.hidden = true; }   // 07/11: enquanto o pacote da conta chega, a ficha diz "carregando" em vez do cadeado
+/* 12/11: junta os pacotes por estado (dados/premium_<UF>.enc.json, servidor GET /api/premium?uf=XX) num só, no formato do inteiro */
+async function descompactaPac(pac){
+  if(pac && pac.z) pac = await new Response(new Blob([Uint8Array.from(atob(pac.z), c => c.charCodeAt(0))]).stream()
+    .pipeThrough(new DecompressionStream("gzip"))).json();
+  return pac || {};
+}
+async function juntaPacotes(ufs){
+  const todos = await Promise.all(ufs.map(u => Promise.race([api("/api/premium?uf=" + encodeURIComponent(u)),
+    new Promise((_, n) => setTimeout(() => n(Object.assign(new Error("o servidor demorou mais de 60 s"), {st: "tempo"})), 60000))]).then(descompactaPac)));
+  const pac = {premium: {}, privado: {}, pol: null, gerado: ""};
+  for(const p of todos){
+    Object.assign(pac.premium, p.premium || {}); Object.assign(pac.privado, p.privado || {});
+    if(p.pol && p.pol.chaves){ pac.pol = pac.pol || {kid: p.pol.kid, chaves: {}}; Object.assign(pac.pol.chaves, p.pol.chaves); }
+    if((p.gerado || "") > pac.gerado) pac.gerado = p.gerado;
+  }
+  if(!pac.pol) delete pac.pol;
+  return pac;
+}
+/* 12/11: escolha dos estados do plano (Básico 1, Pro 3; troca 1x a cada 30 dias). Quem confere tudo é o servidor (POST /api/estados). */
+function abreEstados(primeira){
+  if(!SESSAO || !Array.isArray(SESSAO.estados)) return;
+  const lim = +SESSAO.estados_limite || 0, atuais = new Set(SESSAO.estados || []);
+  const ufs = [...new Set(L.map(l => l.uf))].filter(u => UFN[u]).sort((a, b) => (UFN[a] || a).localeCompare(UFN[b] || b));
+  const nLot = u => L.filter(l => l.uf === u && !HIST(l)).length;
+  const troca = SESSAO.estados_troca_em && new Date(SESSAO.estados_troca_em) > new Date() ? SESSAO.estados_troca_em.slice(0, 10).split("-").reverse().join("/") : "";
+  abreModal(`<h3 id="mTit">${primeira ? "Escolha os seus estados" : "Meus estados"}</h3>
+    <p>O plano ${esc(PLANO_NOME[SESSAO.plano] || "")} mostra endereço, ARV, teto e contorno em <b>${plural(lim, "estado", "estados")}</b>. ${troca ? `Próxima troca liberada em ${troca}.` : "Você pode trocar 1 vez a cada 30 dias."}</p>
+    <form class="fcad" id="fEst"><div class="chks estChks">${ufs.map(u => `<label><input type="checkbox" name="uf" value="${u}" ${atuais.has(u) ? "checked" : ""} ${troca ? "disabled" : ""}> ${esc(UFN[u])} <span class="nota">(${nLot(u).toLocaleString("pt-BR")})</span></label>`).join("")}</div>
+      <div class="nota" id="estMsg">${atuais.size}/${lim} escolhidos</div>
+      <button class="cta" type="submit" ${troca ? "disabled" : ""}>Salvar estados</button>
+      <div class="nota">Quer mais estados? <a class="lnk" href="planos/">Veja os planos</a>.</div></form>`);
+  const f = $("#fEst"), msg = $("#estMsg");
+  f.addEventListener("change", () => { const ms = f.querySelectorAll("input[name=uf]:checked");
+    f.querySelectorAll("input[name=uf]").forEach(x => { if(!x.checked) x.disabled = !!troca || ms.length >= lim; });
+    msg.textContent = `${ms.length}/${lim} escolhidos`; });
+  f.dispatchEvent(new Event("change"));
+  f.addEventListener("submit", async e => { e.preventDefault();
+    const est = [...f.querySelectorAll("input[name=uf]:checked")].map(x => x.value);
+    if(!est.length){ msg.textContent = "Escolha pelo menos 1 estado."; return; }
+    const bt = f.querySelector("button[type=submit]"); bt.disabled = true; bt.textContent = "Salvando…";
+    try{ await api("/api/estados", {estados: est}); msg.textContent = "Salvo ✓ Recarregando…"; setTimeout(() => location.reload(), 600); }
+    catch(er){ bt.disabled = false; bt.textContent = "Salvar estados";
+      msg.textContent = er.erro === "troca_cedo" ? "Você já trocou nos últimos 30 dias." : er.erro === "acima_do_limite" ? `O seu plano permite ${plural(lim, "estado", "estados")}.`
+        : er.erro === "plano_sem_estados" ? "O plano gratuito não tem estados com dados completos." : er.message !== "falha" ? er.message : "Não salvou agora. Tente de novo."; } });
+}
 async function entraConta(eu){
   CSRF = eu.csrf || CSRF;
   // papel "cliente" (cadastro aberto / teste) não recebe o pacote premium (403 so_membro): entra logado, sem os dados de membro
   let pac = null;
+  // 12/11 (Gallery, limites-plano): conta com lista de estados (Básico/Pro) pede só os pacotes desses estados; "todos" ou
+  // servidor antigo (sem o campo) seguem com o pacote inteiro. Conta paga sem estado escolhido entra e escolhe (abreEstados).
+  const ufsConta = Array.isArray(eu.estados) ? eu.estados.filter(u => /^[A-Z]{2}$/.test(u)) : null;
+  if(ufsConta && eu.premium === true){
+    SESSAO = eu;
+    if(!ufsConta.length){ MEMBRO = null; carregaListasServidor(); $("#whoTxt").textContent = String(eu.nome || eu.email || "Membro").split(" ")[0];
+      logado($("#whoTxt").textContent, eu.email); render(); setTimeout(() => abreEstados(true), 600); return; }
+    try{ pac = await juntaPacotes(ufsConta); }catch(er){ if(er.st !== 403) throw er; pac = null; }
+    MEMBRO = pac; carregaListasServidor();
+    if(!pac){ $("#whoTxt").textContent = String(eu.nome || eu.email || "Cliente").split(" ")[0]; logado($("#whoTxt").textContent, eu.email); render(); return; }
+    await carregaPremium();
+    $("#dot").classList.toggle("on", ASSIN); $("#whoTxt").textContent = String(eu.nome || eu.email || "Membro").split(" ")[0];
+    logado($("#whoTxt").textContent, eu.email); render();
+    if(ABERTO && $("#ficha").classList.contains("on")) abre(ABERTO);
+    return;
+  }
   try{ pac = await Promise.race([api("/api/premium"), new Promise((_, n) => setTimeout(() => n(Object.assign(new Error("o servidor demorou mais de 60 s"), {st: "tempo"})), 60000))]);   // só em memória (nunca no localStorage)
     if(pac.z) pac = await new Response(new Blob([Uint8Array.from(atob(pac.z), c => c.charCodeAt(0))]).stream()
       .pipeThrough(new DecompressionStream("gzip"))).json(); }   // pacote compactado (vitrine_site.py, 28/10)
@@ -2025,6 +2086,8 @@ function menuUsuario(e){
   m = document.createElement("div"); m.id = "uMenu"; m.className = "umenu"; m.setAttribute("role", "menu");
   m.innerHTML = `<div>Conectado como <b>${esc($("#whoTxt").textContent)}</b>${b.dataset.email ? `<br><span class="nota">${esc(b.dataset.email)}</span>` : ""}</div>
     ${SESSAO && SESSAO.teste && SESSAO.teste_ate ? `<div class="nota">Teste grátis: ${(d => d > 0 ? plural(d, "dia", "dias") + " restantes" : "termina hoje")(Math.ceil((new Date(SESSAO.teste_ate) - new Date()) / 864e5))} · <button type="button" class="lnk" data-assina>Assinar</button></div>` : ""}
+    ${SESSAO && Array.isArray(SESSAO.estados) && SESSAO.estados_limite ? `<button type="button" class="lnk" role="menuitem" data-estados>◆ Meus estados (${esc(SESSAO.estados.join(", ") || "escolher")})</button>` : ""}
+    ${SESSAO && SESSAO.ia_limite ? `<div class="nota">Assistente: ${+SESSAO.ia_usadas || 0} de ${+SESSAO.ia_limite} perguntas este mês</div>` : ""}
     <button type="button" class="lnk" role="menuitem" data-listas>★ Meus pacotes</button>
     <button type="button" class="lnk" role="menuitem" data-port>◈ Meu portfólio</button>
     ${ASSIN ? `<button type="button" class="lnk" role="menuitem" data-mconta>🧮 Parâmetros da conta</button>` : ""}
@@ -2044,6 +2107,7 @@ function menuUsuario(e){
   b.setAttribute("aria-expanded", "true");
   m.querySelector(".sair").onclick = sair;
   const bl = m.querySelector("[data-listas]"); if(bl) bl.onclick = () => { m.remove(); abreSeg(); };
+  const be = m.querySelector("[data-estados]"); if(be) be.onclick = () => { m.remove(); abreEstados(false); };
   const bp = m.querySelector("[data-port]"); if(bp) bp.onclick = () => { m.remove(); mostraVista("portfolio"); };
   const bc = m.querySelector("[data-mconta]"); if(bc) bc.onclick = () => { m.remove(); mostraVista("pacotes"); abreConta(); };
   const bo = m.querySelector("[data-cob]"); if(bo) bo.onclick = () => { m.remove(); mostraVista("cobertura"); };
@@ -2409,6 +2473,7 @@ async function iaEnvia(){
     // 07/11 (Miro "uso da IA"): conta as consultas do mês neste navegador; aparece em conta/. O limite de verdade fica no servidor.
     try{ const mes = new Date().toISOString().slice(0, 7), u = JSON.parse(localStorage.getItem("blr_ia_uso") || "{}");
       localStorage.setItem("blr_ia_uso", JSON.stringify({mes, n: (u.mes === mes ? u.n || 0 : 0) + 1})); }catch(e){}
+    if(SESSAO && SESSAO.ia_limite) SESSAO.ia_usadas = (+SESSAO.ia_usadas || 0) + 1;   // 12/11: contador do menu (quem barra é o servidor)
     w.innerHTML = mdBasico(resp + (r.cortada ? " …" : "")); w.classList.remove("esp"); iaEstado();
     if(r.cortada){ try{ localStorage.setItem("vitrine_ia_amostra", hoje()); }catch(e){} iaCorte(w); }
     else IA.hist.push({role: "user", content: t}, {role: "assistant", content: resp});
@@ -2416,7 +2481,8 @@ async function iaEnvia(){
   catch(er){ w.classList.remove("esp"); w.classList.add("erro"); iaEstado();
     if(er.st === 401 && !SESSAO){ w.textContent = "O assistente é dos assinantes da BLR."; iaCorte(w); }
     else w.textContent = er.st === 404 ? "O assistente ainda está sendo ligado no servidor da BLR. Tente de novo mais tarde."
-      : er.st === 401 ? "A sua sessão expirou. Entre de novo." : er.st === 429 ? (er.message !== "falha" ? er.message : "Você chegou ao limite de perguntas de hoje.")
+      : er.st === 401 ? "A sua sessão expirou. Entre de novo." : er.st === 429 && er.erro === "limite_mes" ? `Você usou as ${SESSAO && SESSAO.ia_limite ? SESSAO.ia_limite + " " : ""}perguntas do mês do seu plano. Elas voltam no dia 1º; para mais, veja os planos (o UltraPro não tem limite mensal).`
+      : er.st === 429 ? (er.message !== "falha" ? er.message : "Você chegou ao limite de perguntas de hoje.")
       : er.message && er.message !== "falha" ? er.message : "O assistente não respondeu agora. Tente de novo em instantes."; }
   IA.ocupado = false;
 }
@@ -2459,7 +2525,7 @@ async function carregaPremium(){
   if(ASSIN && PODE && UID){ try{ const c = (await DB.doc(`interesses/${UID}/prefs/cores`).get()).data(); if(c && c.p) CORES = c; }catch(e){} }
   aplicaCores();
   $("#btAssina").hidden = ASSIN; $("#btConta").hidden = !ASSIN;
-  { const pl = SESSAO && PLANO_NOME[SESSAO.plano || "ultra"];   /* 07/11 (Rodrigo): todos os cadastrados no UltraPro */ $("#plSelo").hidden = !ASSIN; $("#plSelo").textContent = "◆ " + (pl || (SESSAO && SESSAO.teste ? "Teste grátis" : "Assinante")); } $("#fFechaC").hidden = ASSIN; $("#guiaC").hidden = ASSIN; guia();   // a conta ao vivo é do assinante (precisa do ARV exato)
+  { const pl = SESSAO && PLANO_NOME[planoFaixa(SESSAO, ASSIN)];   /* 12/11: plano do servidor; sem o campo, vale planoFaixa (sem premium = gratuito) */ $("#plSelo").hidden = !ASSIN; $("#plSelo").textContent = "◆ " + (pl || (SESSAO && SESSAO.teste ? "Teste grátis" : "Assinante")); } $("#fFechaC").hidden = ASSIN; $("#guiaC").hidden = ASSIN; guia();   // a conta ao vivo é do assinante (precisa do ARV exato)
   if(ASSIN){ render(); }
 }
 const chavePriv = l => (l.uf + "_" + l.co).replace(/ /g,"_").replace(/\./g,"").replace(/'/g,"");
