@@ -2063,7 +2063,9 @@ async function entraConta(eu){
   try{ pac = await Promise.race([api("/api/premium"), new Promise((_, n) => setTimeout(() => n(Object.assign(new Error("o servidor demorou mais de 60 s"), {st: "tempo"})), 60000))]);   // só em memória (nunca no localStorage)
     if(pac.z) pac = await new Response(new Blob([Uint8Array.from(atob(pac.z), c => c.charCodeAt(0))]).stream()
       .pipeThrough(new DecompressionStream("gzip"))).json(); }   // pacote compactado (vitrine_site.py, 28/10)
-  catch(er){ if(er.st !== 403) throw er; pac = null; }
+  catch(er){ if(er.st !== 403) throw er; pac = null;
+    // 12/11 (Gallery, PREMIUM_POR_ESTADO=1): Básico/Pro/teste sem ?uf leva 403 "escolha_estado"; abre a escolha em vez de ficar sem dados
+    if(er.erro === "escolha_estado" && eu.premium === true){ if(!Array.isArray(eu.estados)) eu.estados = []; if(!eu.estados_limite) eu.estados_limite = eu.plano === "basico" ? 1 : 3; setTimeout(() => abreEstados(true), 600); } }
   SESSAO = eu; MEMBRO = pac;
   carregaListasServidor();
   if(!pac){ $("#whoTxt").textContent = String(eu.nome || eu.email || "Cliente").split(" ")[0]; logado($("#whoTxt").textContent, eu.email); render(); return; }
