@@ -47,6 +47,16 @@ h2{font-size:clamp(22px,3vw,30px);margin:46px 0 14px;line-height:1.15}
 .passos li{counter-increment:p;background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:18px;position:relative}
 .passos li::before{content:counter(p);display:inline-grid;place-items:center;width:30px;height:30px;border-radius:50%;background:var(--gold);color:#1a1408;font-weight:700;margin-bottom:10px}
 .passos b{display:block;margin-bottom:4px}.passos span{color:var(--mute);font-size:14px}
+/* 12/11: jornada em 4 passos e trilha do edital à venda */
+.passos.p4{grid-template-columns:repeat(4,minmax(0,1fr))}
+@media (max-width:900px){.passos.p4{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:560px){.passos.p4{grid-template-columns:1fr}}
+.trilha{display:flex;align-items:center;gap:8px;margin:18px 0 0;flex-wrap:wrap;font-size:13px;color:var(--mute)}
+.trilha span{padding:6px 12px;border:1px solid var(--line);border-radius:999px;background:var(--card)}
+.trilha span:last-child{border-color:var(--gold);color:var(--gold2)}
+.trilha i{flex:1 1 18px;min-width:18px;height:2px;background:linear-gradient(90deg,var(--gold),transparent)}
+@media (max-width:560px){.trilha i{display:none}}
+.tab td:first-child{width:22%}
 .nota{color:var(--mute);font-size:12.5px;margin-top:18px;max-width:760px}
 .fim{margin-top:46px;padding:22px;border-radius:var(--r);border:1px solid var(--gold);background:linear-gradient(180deg,rgba(226,183,94,.16),var(--card) 60%);display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:14px}
 .fim b{font-size:18px}.fim p{margin:4px 0 0;color:var(--mute);font-size:14px}
@@ -78,31 +88,35 @@ footer a{color:var(--mute)}
     <div class="cx"><span class="ic">⇄</span><h3>Partner Bidder</h3><p>No UltraPro, por convite, a BLR opera o lance com você e divide o risco. Ninguém mais que só vende software faz isso.</p></div>
   </div>
 
-  <h2 class="serif">Ferramenta comum de mercado × Vitrine BLR</h2>
+  <h2 class="serif">Comprar um imóvel nos EUA, como quem compra online</h2>
+  <p class="sub" style="margin-bottom:16px">Do leilão ao lucro em quatro passos. Você faz do Brasil; a BLR mostra o caminho e, no UltraPro, vai junto.</p>
+  <ol class="passos p4">
+    <li><b>Achar</b><span>Mapa com os leilões oficiais do país, busca por endereço, cidade ou CEP, nota de 0 a 100 e o tipo de cada venda.</span></li>
+    <li><b>Arrematar</b><span>Teto de lance lote a lote, o que sobrevive ao leilão e o passo a passo da inscrição. No UltraPro, a BLR dá o lance com você.</span></li>
+    <li><b>Reformar</b><span>Conta da reforma na ficha, foto aérea e de rua do imóvel, cadastro do condado e o relatório em PDF para levar ao empreiteiro.</span></li>
+    <li><b>Lucrar</b><span>Vender pelo ARV ou alugar e refinanciar (BRRRR): a ficha mostra o aluguel do bairro e a conta de cada saída.</span></li>
+  </ol>
+  <div class="trilha" aria-hidden="true"><span>Edital</span><i></i><span>Lance</span><i></i><span>Escritura</span><i></i><span>Obra</span><i></i><span>Venda ou aluguel</span></div>
+  <p class="nota" style="margin-top:8px">O prazo de cada etapa depende do estado e do tipo de leilão (por exemplo, prazo de resgate do antigo dono e quiet title). A ficha de cada lote diz o que vale para ele.</p>
+
+  <h2 class="serif">Fazer sozinho × ferramenta comum × Vitrine BLR</h2>
   <div class="tw"><table class="tab">
-    <thead><tr><th></th><th>Ferramenta comum</th><th>Vitrine BLR</th></tr></thead>
+    <thead><tr><th></th><th>Fazer sozinho</th><th>Ferramenta comum</th><th>Vitrine BLR</th></tr></thead>
     <tbody>
-      <tr><td>Origem dos imóveis</td><td>Anúncios do mercado comum e bases compradas</td><td class="s">Editais oficiais de leilão, com fonte e data</td></tr>
-      <tr><td>ARV (valor depois de pronto)</td><td class="n">Você digita</td><td class="s">Calculado pela BLR</td></tr>
-      <tr><td>Teto de lance de leilão</td><td class="n">Não tem</td><td class="s">Tem, lote a lote</td></tr>
-      <tr><td>O que sobrevive ao leilão</td><td>Pouco ou nada sobre o tipo de venda</td><td class="s">Selo por tipo de leilão e ônus conferidos</td></tr>
-      <tr><td>Imagem do imóvel</td><td>Foto de anúncio, quando existe</td><td class="s">Street View, foto aérea e contorno do lote, mesmo sem anúncio</td></tr>
-      <tr><td>Idioma e atendimento</td><td>Inglês</td><td class="s">Português, com assistente de IA</td></tr>
-      <tr><td>Teste grátis</td><td>Pede cartão e cobra no fim</td><td class="s">7 dias sem cartão, sem cobrança automática</td></tr>
-      <tr><td>Comprar junto</td><td class="n">Não</td><td class="s">Partner Bidder (UltraPro, por convite)</td></tr>
+      <tr><td>Origem dos imóveis</td><td>Garimpar o site de cada condado, um por um</td><td>Anúncios do mercado comum e bases compradas</td><td class="s">Editais oficiais de leilão, com fonte e data</td></tr>
+      <tr><td>ARV (valor depois de pronto)</td><td class="n">Pesquisar vendas no braço</td><td class="n">Você digita</td><td class="s">Calculado pela BLR</td></tr>
+      <tr><td>Teto de lance de leilão</td><td class="n">Conta própria, sem padrão</td><td class="n">Não tem</td><td class="s">Tem, lote a lote</td></tr>
+      <tr><td>O que sobrevive ao leilão</td><td>Ler cada edital e a lei do estado</td><td>Pouco ou nada sobre o tipo de venda</td><td class="s">Selo por tipo de leilão e ônus conferidos</td></tr>
+      <tr><td>Imagem do imóvel</td><td>Viajar até lá ou procurar no Google</td><td>Foto de anúncio, quando existe</td><td class="s">Street View, foto aérea e contorno do lote, mesmo sem anúncio</td></tr>
+      <tr><td>Idioma e atendimento</td><td>Inglês, por telefone com o condado</td><td>Inglês</td><td class="s">Português, com assistente de IA</td></tr>
+      <tr><td>Custo</td><td>Grátis, mas custa semanas do seu tempo</td><td>Pede cartão e cobra no fim do teste</td><td class="s">7 dias sem cartão, sem cobrança automática</td></tr>
+      <tr><td>Comprar junto</td><td class="n">Sozinho</td><td class="n">Não</td><td class="s">Partner Bidder (UltraPro, por convite)</td></tr>
     </tbody>
   </table></div>
 
-  <h2 class="serif">Como funciona</h2>
-  <ol class="passos">
-    <li><b>Ache</b><span>Busque um estado, uma cidade ou um leilão no mapa. Os lotes vêm com tipo, data, lance de abertura e nota.</span></li>
-    <li><b>Entenda</b><span>Abra a ficha: ARV, teto, riscos, conta de lucro, fonte oficial e relatório em PDF.</span></li>
-    <li><b>Decida</b><span>Dê o lance por conta própria (Self Bidder) ou, no UltraPro, com a BLR ao lado (Partner Bidder).</span></li>
-  </ol>
-
   <div class="fim">
-    <div><b>Comece pelo mapa, sem cartão.</b><p>7 dias com tudo o que o assinante vê. Depois, você decide.</p></div>
-    <a class="cta ouro" href="/?teste=1">Começar o teste</a>
+    <div><b>Comece pelo mapa, sem cartão.</b><p>7 dias com tudo o que o assinante vê. Quer comprar junto com a BLR? Fale com a gente.</p></div>
+    <div class="ctas" style="margin:0"><a class="cta ouro" href="/?teste=1">Começar o teste</a><a class="cta" href="/?falar=ultra">Falar com a BLR</a></div>
   </div>
 
   <p class="nota">A análise completa da BLR (ARV pelas vendas reais e teto) existe hoje na Flórida; nos outros estados os lotes trazem ARV estimado pelo valor oficial do condado e pelo mercado do CEP. Nota, ARV e teto são estimativas, não avaliação nem recomendação de investimento; o edital oficial é o que vale. Veja os <a href="/termos/">Termos de Uso</a>.</p>

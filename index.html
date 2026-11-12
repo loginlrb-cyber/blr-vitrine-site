@@ -2093,6 +2093,7 @@ function menuUsuario(e){
     ${ASSIN ? `<button type="button" class="lnk" role="menuitem" data-mconta>🧮 Parâmetros da conta</button>` : ""}
     <button type="button" class="lnk" role="menuitem" data-cob>🗺 Cobertura por estado</button>
     <button type="button" class="lnk" role="menuitem" data-partner>◆ Tornar-se partner</button>
+    <button type="button" class="lnk" role="menuitem" data-falar>✉ Falar com a BLR</button>
     <a class="lnk" role="menuitem" href="para-voce/">✦ Questionário Para você</a>
     <a class="lnk" role="menuitem" href="conta/">👤 Minha conta</a>
     <a class="lnk" role="menuitem" href="conta/#sPref">⚙ Configurações (moeda, idioma)</a>
@@ -2108,6 +2109,7 @@ function menuUsuario(e){
   m.querySelector(".sair").onclick = sair;
   const bl = m.querySelector("[data-listas]"); if(bl) bl.onclick = () => { m.remove(); abreSeg(); };
   const be = m.querySelector("[data-estados]"); if(be) be.onclick = () => { m.remove(); abreEstados(false); };
+  const bf = m.querySelector("[data-falar]"); if(bf) bf.onclick = () => { m.remove(); abreFalar(""); };
   const bp = m.querySelector("[data-port]"); if(bp) bp.onclick = () => { m.remove(); mostraVista("portfolio"); };
   const bc = m.querySelector("[data-mconta]"); if(bc) bc.onclick = () => { m.remove(); mostraVista("pacotes"); abreConta(); };
   const bo = m.querySelector("[data-cob]"); if(bo) bo.onclick = () => { m.remove(); mostraVista("cobertura"); };
@@ -3642,6 +3644,19 @@ const campos = (extra) => `
   <label>E-mail<input name="email" type="email" required autocomplete="email" value="${esc(CAD.email || "")}"></label>
   <label>WhatsApp (com o código do país)<input name="whats" autocomplete="tel" placeholder="+1 617 000 0000" value="${esc(CAD.whats || "")}"></label>
   ${extra || ""}`;
+/* 12/11 (Cris, ideias InvestorIQ item 4): "Falar com a BLR" — formulário curto para quem quer o UltraPro / Partner Bidder ou tirar
+   dúvida antes de assinar. Vai pelo mesmo envia() (POST /api/interesse, aparece no /admin e avisa a BLR por e-mail). */
+function abreFalar(assunto){
+  const ops = ["Quero o UltraPro / comprar junto com a BLR (Partner Bidder)", "Dúvida sobre um leilão ou um lote", "Quero investir com a BLR", "Parceria (corretor, obra, financiamento)", "Outro assunto"];
+  abreModal(`<h3 id="mTit">Falar com a BLR</h3>
+    <p>Conte o que você procura. Uma pessoa da BLR responde pelo e-mail ou WhatsApp que você deixar, em português ou inglês.</p>
+    <form class="fcad" id="fFalar">${campos(`<label>Assunto<select name="assunto">${ops.map(o => `<option ${o === assunto ? "selected" : ""}>${esc(o)}</option>`).join("")}</select></label>
+      <label>Mensagem (opcional)<textarea name="msg" placeholder="Ex.: tenho US$ 50 mil, quero imóveis na Flórida para alugar"></textarea></label>
+      <label class="aceite"><input type="checkbox" name="termos" required> Li e aceito os <a href="termos/" target="_blank" rel="noopener">Termos de Uso</a> e a <a href="privacy/" target="_blank" rel="noopener">Política de Privacidade</a>.</label>`)}
+      <button class="cta" type="submit">Enviar para a BLR</button>
+      <div class="nota">Não é cobrado nada aqui. A BLR não pede senha nem dados de cartão por mensagem.</div></form>`);
+  formDe("fFalar", d => envia({tipo: "contato · " + (d.assunto || "falar com a BLR"), ...d}, "Mensagem recebida. A BLR responde em breve."));
+}
 const refLote = l => `${l.ci && l.ci !== l.co ? l.ci + ", " : ""}${l.co} County (${l.uf}) · ${qd(l)} · ${rotLance(l).toLowerCase()} ${usd(l.ab)} · código ${l.i}`;
 function textoPedido(p){
   const linhas = [`Pedido pela BLR Developments (${p.tipo})`, `Nome: ${p.nome}`, `E-mail: ${p.email}`, p.whats ? `WhatsApp: ${p.whats}` : "", p.perfil ? `Perfil: ${p.perfil}` : ""];
@@ -3715,7 +3730,8 @@ function abreAssina(plano, ciclo){
   if(!P){
     abreModal(`<h3 id="mTit">Escolha o seu plano</h3>${faixa}${cicloSeg()}
       <div class="plEsc">${Object.entries(PLANOS).map(([k, v]) => htmlPlanoOp(k, v)).join("")}</div>
-      <div class="nota"><button type="button" class="lnk" data-teste>Testar o Pro por 7 dias grátis</button> · <a class="lnk" href="planos/">comparar tudo</a></div>`);
+      <div class="nota"><button type="button" class="lnk" data-teste>Testar o Pro por 7 dias grátis</button> · <a class="lnk" href="planos/">comparar tudo</a> · <button type="button" class="lnk" data-falar-m>falar com a BLR</button></div>`);
+    { const fm = document.querySelector("[data-falar-m]"); if(fm) fm.onclick = () => abreFalar(""); }
     document.querySelectorAll("[data-plano]").forEach(b => b.onclick = () => abreAssina(b.dataset.plano));
     cicloEventos(() => abreAssina());
     return;
@@ -4791,7 +4807,7 @@ $("#tipoLegBt").onclick = () => { const leg = $("#tipoLeg"), a = leg.hidden; leg
    ?entrar=1 · ?senha=1 · ?listas=1 · ?tour=1. Cada um só abre uma janela; se der erro, a vitrine segue normal. */
 { const q = new URLSearchParams(location.search);
   try{ if(q.get("teste")) abreCadastro(); else if(q.get("plano")) abreAssina(q.get("plano"), q.get("ciclo")); else if(q.get("entrar")) abreEntrar();
-    else if(q.get("senha")) abreEsqueci(""); else if(q.get("listas")) abreSeg(); else if(q.get("tour")) setTimeout(() => tour(true), 1200); }catch(e){ console.warn("atalho", e); } }
+    else if(q.get("senha")) abreEsqueci(""); else if(q.get("listas")) abreSeg(); else if(q.get("falar")) abreFalar(q.get("falar") === "ultra" ? "Quero o UltraPro / comprar junto com a BLR (Partner Bidder)" : ""); else if(q.get("tour")) setTimeout(() => tour(true), 1200); }catch(e){ console.warn("atalho", e); } }
 $("#tgSeg").onclick = () => { FSEG = FSEG ? false : true; $("#tgSeg").setAttribute("aria-pressed", !!FSEG); render(); };
 /* 02/11 (Cris): o botão alterna Histórico junto → Só vendidos → sem histórico */
 const tgHistPinta = () => { const b = $("#tgHist"); b.textContent = HISTON === "vend" ? "Só vendidos" : "Histórico"; b.setAttribute("aria-pressed", !!HISTON);
