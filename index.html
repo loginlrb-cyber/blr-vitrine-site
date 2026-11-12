@@ -642,6 +642,13 @@ body.vmapa{overflow:hidden}
 #v-mapa .camadas{top:84px}
 .leg .lt{all:unset;cursor:pointer;font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--mute);font-weight:600}
 .leg.fech>*:not(.lt):not(.lbar){display:none}
+/* 12/11 (Cris): legenda = botão no canto inferior esquerdo, em todas as telas; aberta, cresce para cima */
+#v-mapa .mapa-box .leg{left:12px!important;right:auto!important;top:auto!important;bottom:26px!important;max-width:min(320px,calc(100vw - 24px))!important}
+#v-mapa:not(.pmin) .mapa-box .leg{left:12px!important}
+@media (min-width:761px){#v-mapa:not(.pmin) .mapa-box .leg{left:384px!important}}
+@media (max-width:760px){#v-mapa .mapa-box .leg{left:8px!important;bottom:calc(68px + env(safe-area-inset-bottom,0px))!important}}
+#v-mapa .mapa-box .leg.fech{padding:4px 6px}
+.leg.pisca .lbar [data-leg]{box-shadow:0 0 0 2px var(--acc);border-radius:8px}
 .rampa{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--mute)}
 .rampa span.r{display:flex;gap:2px}.rampa span.r i{width:14px!important;height:10px!important;margin:0!important;border-radius:2px}
 .forca{display:inline-flex;gap:2px;vertical-align:middle}
@@ -1054,6 +1061,11 @@ body{transition:padding-right .5s var(--mola)}
 /* Novos desde a última visita: a lista nasce na página. Sem e-mail. */
 .novosSlot{margin:0 0 14px}
 .novosSlot:empty{display:none}
+/* 12/11 (Cris): a faixa de novidades sai de cima do mapa e vira o sininho do topo */
+#novos{display:none!important}
+.hbt.sino{position:relative;font-size:15px}
+.hbt.sino b{position:absolute;top:-4px;right:-4px;min-width:17px;height:17px;padding:0 4px;border-radius:9px;background:var(--acc);color:var(--ink);font:700 10.5px/17px var(--f-b);text-align:center}
+#mBody .novos{border:0;background:none;padding:0}
 .novos{border:1px solid var(--line);border-radius:var(--r);background:var(--surf);padding:12px 14px}
 .novos .novosTit{font-family:var(--f-d);font-size:16px;font-weight:600;margin:0 0 6px}
 .novos p{margin:0;color:var(--tx2);font-size:13.5px;line-height:1.45}
@@ -1126,6 +1138,7 @@ body{transition:padding-right .5s var(--mola)}
   <div class="who"><span class="dot" id="dot"></span><span id="whoTxt">Visitante</span></div>
   <div class="acoes-top">
     <select class="moeda" id="moeda" aria-label="Moeda dos valores" hidden></select>
+    <button class="hbt sino" id="btSino" type="button" title="Novidades desde a sua última visita" aria-label="Novidades">🔔<b id="nSino" hidden>0</b></button>
     <a class="hbt cfg" id="btCfg" href="conta/#sPref" title="Configurações: moeda, idioma, tema" aria-label="Configurações">⚙</a>
     <span class="plSelo" id="plSelo" hidden></span>
     <button class="hbt ass" id="btAssina" type="button" data-trial="1" aria-label="Assinar — 7 dias grátis no Pro" title="Assinar — 7 dias grátis no Pro">Assinar<span class="selo-trial"><span class="t-longo">7 dias grátis no Pro</span><span class="t-curto">7 dias grátis</span></span></button>
@@ -2915,6 +2928,19 @@ function pintaNovos(){
   if(!rec.ve){ el.innerHTML = novosConviteHTML(); return; }
   const espera = typeof faltam === "function" && faltam() > 0 && (rec.todos || rec.ufs.some(u => !UF_OK.has(u)));
   el.innerHTML = novosHTML({sessao: SESSAO, assin: ASSIN, recorte: rec, visita: leVisitaConta(SESSAO, ASSIN), lotes: L, nomes: UFN, espera, gerado: HOJE});
+  sinoConta();
+}
+/* 12/11: o sininho mostra quantos lotes novos há (soma dos estados); clicar abre a lista num quadro, em vez da faixa sobre o mapa */
+function sinoConta(){
+  const el = $("#novos"), b = $("#nSino"); if(!el || !b) return;
+  const n = [...el.querySelectorAll(".novosUf .num")].reduce((t, x) => t + (parseInt(x.textContent, 10) || 0), 0);
+  b.hidden = !n; b.textContent = n > 99 ? "99+" : String(n);
+  $("#btSino").title = n ? `${n} ${n === 1 ? "lote novo" : "lotes novos"} desde a sua última visita` : "Novidades desde a sua última visita";
+}
+function abreSino(){
+  const el = $("#novos"); if(!el) return;
+  abreModal(`<h3 id="mTit">Novidades</h3>${el.innerHTML || "<p>Nada novo por enquanto.</p>"}`);
+  $("#mBody").addEventListener("click", e => { if(e.target.closest("[data-novos]")) fechaModal(); });
 }
 // NOVOS_FIM
 // RELATORIO_INICIO
@@ -3820,7 +3846,8 @@ $("#btCarr").onclick = abreCarr;
 
 /* ---------- mapa único em vetor: EUA → estado → condado → bairro e ruas. Zoom aproxima = entra, afasta = sai ---------- */
 let MAPA = null;
-let LEGF = window.innerWidth < 760;   // 11/11: no computador a legenda começa aberta (Cris: "não tem mais a tabelinha no canto"); no celular recolhida, abre no botão e sozinha ao ligar renda/valor
+let LEGF = true;   // 12/11 (Cris): a legenda é um botão no canto inferior esquerdo; abre quando a pessoa clica (antes: aberta no computador)
+const _LEGF_ANT = window.innerWidth < 760;   // 11/11: no computador a legenda começa aberta (Cris: "não tem mais a tabelinha no canto"); no celular recolhida, abre no botão e sozinha ao ligar renda/valor
 const urg = d => dias(d) <= 10;
 const MES = ["jan","fev","mar","abr","mai","jun","jul","ago","set","out","nov","dez"];
 const chipData = d => `<div class="dt ${urg(d) ? "u" : ""}"><b>${d.slice(8,10)}</b><span>${MES[+d.slice(5,7)-1]}</span></div>`;
@@ -3892,7 +3919,7 @@ function criaMapa(){
   M.createPane("lotes").style.zIndex = 620;
   M.createPane("comp").style.zIndex = 640;
   // 28/10: tolerance amplia o alvo de clique/toque de cada bola para ≥ 24 px (raio 2–5 px + 10 px de folga), sem mudar o desenho
-  const rBase = Lf.canvas({padding: .3}), rSet = Lf.canvas({pane: "setores", padding: .3}), rRuas = Lf.canvas({pane: "ruas", padding: .3}), rLotes = Lf.canvas({pane: "lotes", padding: .3, tolerance: 10});
+  const rBase = Lf.canvas({padding: .1}), rSet = Lf.canvas({pane: "setores", padding: .1}), rRuas = Lf.canvas({pane: "ruas", padding: .1}),   /* 12/11: sobra de .3 → .1 = tela de desenho ~2,4× menor */ rLotes = Lf.canvas({pane: "lotes", padding: .3, tolerance: 10});
   let nivel = {uf: null, f: null};
   const z = () => M.getZoom();
   // estados
@@ -4173,6 +4200,8 @@ function criaMapa(){
   }
   function pintaSet(){
     const bairro = ON.renda || ON.valor;
+    // 12/11 (leveza): com renda e valor desligados os ~400 setores do condado ficavam no mapa transparentes, redesenhados a cada zoom
+    if(camSet){ if(bairro){ if(!M.hasLayer(camSet)) camSet.addTo(M); } else if(M.hasLayer(camSet)) M.removeLayer(camSet); }
     if(camSet) camSet.setStyle(ft => { const c = bairro ? corSet(ft.properties) : null;
       return c ? {fillColor: c, fillOpacity: AEREO ? .48 : .62, weight: .5, color: "#0C0E12"} : {fillOpacity: 0, weight: .5, color: "rgba(255,255,255,.14)", dashArray: bairro ? "2 3" : null}; });
     if(camSat) camSat.setOpacity(bairro ? .5 : 1);
@@ -4213,7 +4242,7 @@ function criaMapa(){
     l: {renderer: rRuas, color: "#5B6474", weight: zz < 13 ? .8 : zz < 15 ? 1.4 : 2.4, opacity: .9, interactive: false}}; };
   const linhasDe = arr => arr.map(a => { const o = []; for(let i = 0; i < a.length; i += 2) o.push([a[i + 1], a[i]]); return o; });
   let RT = 0;
-  const BCO = {};
+  const BCO = {}, RUAP = {};
   async function ruas(){
     const tk = ++RT, zz = z();
     if(zz < Z_CO){ camRuasS.clearLayers(); camRuasL.clearLayers(); return; }
@@ -4224,11 +4253,17 @@ function criaMapa(){
       if(!RUAC[f]) RUAC[f] = RUAE[e].then(d => d[f] || null); }
     const ds = await Promise.all(fs.map(f => RUAC[f]));
     if(tk !== RT) return;   // o mapa mexeu de novo enquanto baixava
-    const st = estRua();
-    camRuasS.clearLayers(); camRuasL.clearLayers();
-    for(const d of ds){ if(!d) continue;
-      if(d.s.length) Lf.polyline(linhasDe(d.s), st.s).addTo(camRuasS);
-      if(zz >= Z_RUA && d.l.length) Lf.polyline(linhasDe(d.l), st.l).addTo(camRuasL); }
+    // 12/11 (Cris: "no zoom in trava"): antes apagava e recriava todas as ruas do condado a cada parada do mapa.
+    // Agora cada condado vira 2 linhas uma vez só (RUAP); a cada parada só entra/sai do mapa e troca a espessura quando muda a faixa de zoom.
+    // Do zoom 15 em diante a foto aérea já mostra as ruas: as locais saem (as principais ficam por cima, finas).
+    const st = estRua(), faixa = String(st.s.weight) + "/" + st.l.weight, querS = new Set(), querL = new Set();
+    fs.forEach((f, n) => { const d = ds[n]; if(!d) return;
+      const r = RUAP[f] = RUAP[f] || {s: d.s.length ? Lf.polyline(linhasDe(d.s), st.s) : null, l: d.l.length ? Lf.polyline(linhasDe(d.l), st.l) : null, faixa};
+      if(r.faixa !== faixa){ if(r.s) r.s.setStyle(st.s); if(r.l) r.l.setStyle(st.l); r.faixa = faixa; }
+      if(r.s && zz < 15) querS.add(r.s);
+      if(r.l && zz >= Z_RUA && zz < 15) querL.add(r.l); });
+    camRuasS.eachLayer(x => { if(!querS.has(x)) camRuasS.removeLayer(x); }); querS.forEach(x => { if(!camRuasS.hasLayer(x)) camRuasS.addLayer(x); });
+    camRuasL.eachLayer(x => { if(!querL.has(x)) camRuasL.removeLayer(x); }); querL.forEach(x => { if(!camRuasL.hasLayer(x)) camRuasL.addLayer(x); });
   }
   let rotARV = [];
   function rotulosARV(){
@@ -4253,7 +4288,7 @@ function criaMapa(){
   cam.addEventListener("click", e => { const b = e.target.closest("button"); if(!b || b.disabled) return; const c = b.dataset.c;
     if(c === "arv" && !ASSIN){ abreAssina(); return; }
     ON[c] = !ON[c]; b.setAttribute("aria-pressed", ON[c]);
-    if((c === "renda" || c === "valor") && ON[c]) LEGF = false;   // ligou renda/valor: abre a tabelinha com as faixas
+    if((c === "renda" || c === "valor") && ON[c]) $("#leg").classList.add("pisca");   // 12/11: só chama a atenção para o botão da legenda
     if(c === "sat") satDe(nivel.f); else if(c === "arv") rotulosARV(); pintaSet(); });
   cam.querySelector("b").onclick = () => cam.classList.toggle("aberta");   // celular: a caixa abre e fecha no título
   Lf.DomEvent.disableClickPropagation(cam); Lf.DomEvent.disableScrollPropagation(cam); box.appendChild(cam);
@@ -4433,14 +4468,14 @@ function criaMapa(){
   const ROT = [];
   for(const d of est){ const uf = ufDe(d); if(!uf || uf === "AK" || uf === "HI") continue;
     const c = POS_UF[uf] || (([ln, la]) => [la, ln])(d3.geoCentroid(d)), b = boundsDe(d), nome = UFN[uf] || d.properties.name;
-    const el = Lf.marker(c, {pane: "rot", interactive: false, keyboard: false, icon: Lf.divIcon({className: "", html: `<div class="rgeo"></div>`, iconSize: [0, 0]})}).addTo(M);
+    const el = Lf.marker(c, {pane: "rot", interactive: false, keyboard: false, icon: Lf.divIcon({className: "", html: `<div class="rgeo"></div>`, iconSize: [0, 0]})});
     ROT.push({tipo: "uf", uf, nome, b, m: el}); }
   for(const [nome, uf, la, ln, t] of CIDADES){
-    const el = Lf.marker([la, ln], {pane: "rot", interactive: false, keyboard: false, icon: Lf.divIcon({className: "", html: `<div class="rgeo ci t${t}"><i></i><span>${esc(nome)}</span></div>`, iconSize: [0, 0]})}).addTo(M);
+    const el = Lf.marker([la, ln], {pane: "rot", interactive: false, keyboard: false, icon: Lf.divIcon({className: "", html: `<div class="rgeo ci t${t}"><i></i><span>${esc(nome)}</span></div>`, iconSize: [0, 0]})});
     ROT.push({tipo: "ci", nome, uf, t, la, ln, m: el}); }
   // condados com lote ou leilão: nome a partir do zoom 7 (ajuda a achar o condado que a lista do estado cita)
   for(const c of ctys){ if(!(porCo0.has(c.id) || FCOM.has(c.id))) continue;
-    const [ln, la] = d3.geoCentroid(c), el = Lf.marker([la, ln], {pane: "rot", interactive: false, keyboard: false, icon: Lf.divIcon({className: "", html: `<div class="rgeo co">${esc(c.properties.name)}</div>`, iconSize: [0, 0]})}).addTo(M);
+    const [ln, la] = d3.geoCentroid(c), el = Lf.marker([la, ln], {pane: "rot", interactive: false, keyboard: false, icon: Lf.divIcon({className: "", html: `<div class="rgeo co">${esc(c.properties.name)}</div>`, iconSize: [0, 0]})});
     ROT.push({tipo: "co", nome: c.properties.name, t: 4, la, ln, m: el}); }
   const ZCI = {1: 0, 2: 5.4, 3: 6.8};
   ROT.sort((a, b) => (a.tipo === "uf" ? 1.5 : a.t) - (b.tipo === "uf" ? 1.5 : b.t));   // grande cidade > estado > cidade menor
@@ -4448,15 +4483,18 @@ function criaMapa(){
   function rotulosGeo(){
     const zz = z(), tela = M.getBounds().pad(.1), ocup = [];
     const bate = r => ocup.some(o => r[0] < o[2] && r[2] > o[0] && r[1] < o[3] && r[3] > o[1]);
+    // 12/11 (Cris: "no zoom in trava"): os ~1.400 rótulos ficavam todos no mapa (escondidos com display:none) e o Leaflet
+    // os movia a cada quadro do zoom. Agora só entra no mapa o rótulo que aparece; o resto sai.
+    const vivos = new Set(zz < 4.5 ? ROT_LONGE : ROT);
+    for(const r of ROT) if(!vivos.has(r) && M.hasLayer(r.m)) M.removeLayer(r.m);
     for(const r of zz < 4.5 ? ROT_LONGE : ROT){
-      const div = r.m.getElement() && r.m.getElement().firstChild; if(!div) continue;
-      let mostra = false;
+      let txtUF = null, mostra = false;
       if(r.tipo === "uf"){
         if(zz < Z_CO && tela.intersects(r.b)){
           const p1 = M.latLngToContainerPoint(r.b.getNorthWest()), p2 = M.latLngToContainerPoint(r.b.getSouthEast()), larg = (p2.x - p1.x) * .8;
           const txt = larg > 16 ? r.uf : null;   // 02/11 (Cris): só a sigla
           if(txt){ const p = M.latLngToContainerPoint(r.m.getLatLng()), w = txt.length * (txt === r.uf ? 7.5 : 7.4), q = [p.x - w / 2, p.y - 8, p.x + w / 2, p.y + 8];
-            if(!bate(q)){ ocup.push(q); mostra = true; if(div.textContent !== txt){ div.textContent = txt; div.classList.toggle("uf", txt === r.uf); } } }
+            if(!bate(q)){ ocup.push(q); mostra = true; txtUF = txt; } }
         }
       } else if(r.tipo === "co"){
         if(zz >= 7 && tela.contains([r.la, r.ln])){ const p = M.latLngToContainerPoint([r.la, r.ln]), w = r.nome.length * 6.2 + 4, q = [p.x - w / 2, p.y - 7, p.x + w / 2, p.y + 7];
@@ -4465,7 +4503,10 @@ function criaMapa(){
         const p = M.latLngToContainerPoint([r.la, r.ln]), q = [p.x - 6, p.y - 8, p.x + 12 + r.nome.length * 6.6, p.y + 8];
         if(!bate(q)){ ocup.push(q); mostra = true; }
       }
-      div.style.display = mostra ? "" : "none";
+      if(!mostra){ if(M.hasLayer(r.m)) M.removeLayer(r.m); continue; }
+      if(!M.hasLayer(r.m)) r.m.addTo(M);
+      if(txtUF){ const div = r.m.getElement() && r.m.getElement().firstChild;
+        if(div && div.textContent !== txtUF){ div.textContent = txtUF; div.classList.toggle("uf", txtUF === r.uf); } }
     }
   }
   // "ir para": estado (nome em português ou sigla) ou cidade da lista
@@ -4512,10 +4553,17 @@ function criaMapa(){
   let zAnt = null;
   function aoMover(){
     const zz = z();
-    if(zAnt == null || (zAnt < Z_EST) !== (zz < Z_EST) || (zAnt < Z_CO) !== (zz < Z_CO)){
-      camEst.setStyle(estilEst);
-      if(zz >= Z_EST){ if(!M.hasLayer(camCo)) camCo.addTo(M); } else if(M.hasLayer(camCo)) M.removeLayer(camCo);
-      camCo.setStyle(estilCo);
+    // 12/11 (Cris: "no zoom in trava"): perto do chão os contornos do país inteiro (estados + ~3 mil condados) só pesavam —
+    // o Leaflet reprojetava todos a cada passo de zoom. A partir do zoom 12 saem do mapa; voltam ao afastar.
+    const Z_LEVE = 12;
+    if(zAnt == null || (zAnt < Z_EST) !== (zz < Z_EST) || (zAnt < Z_CO) !== (zz < Z_CO) || (zAnt < Z_LEVE) !== (zz < Z_LEVE)){
+      if(zz >= Z_LEVE){ if(M.hasLayer(camEst)) M.removeLayer(camEst); if(M.hasLayer(camCo)) M.removeLayer(camCo); }
+      else {
+        if(!M.hasLayer(camEst)) camEst.addTo(M);
+        camEst.setStyle(estilEst);
+        if(zz >= Z_EST){ if(!M.hasLayer(camCo)) camCo.addTo(M); } else if(M.hasLayer(camCo)) M.removeLayer(camCo);
+        camCo.setStyle(estilCo);
+      }
     }
     zAnt = zz;
     desenha();   // 07/11: grupos refeitos a cada parada do mapa (zoom divide, afastar junta)
@@ -4539,7 +4587,7 @@ function criaMapa(){
   aoMover(); painelUS(); trilha(); legenda();
   pontos(filtrados(true)); comprados();
   if(!QUIETO){ const z0 = z(); M.setView(M.getCenter(), z0 - .7, {animate: false}); setTimeout(() => M.flyTo(M.getCenter(), z0, {duration: 1.2, easeLinearity: .1}), 120); }
-  $("#leg").addEventListener("click", e => { if(e.target.closest("[data-leg]")){ LEGF = !LEGF; legenda(); } if(e.target.closest("[data-cores]")) abreCores();
+  $("#leg").addEventListener("click", e => { if(e.target.closest("[data-leg]")){ LEGF = !LEGF; $("#leg").classList.remove("pisca"); legenda(); } if(e.target.closest("[data-cores]")) abreCores();
     if(e.target.closest("[data-comp]")){ COMPON = !COMPON; comprados(); legenda(); }
     if(e.target.closest("[data-sd]")){ SEMON = !SEMON; pontos(ULT); legenda(); } });
   return {atualiza: r => { pontos(r); if(nivel.f) painelCo(nivel.f); else if(nivel.uf) painelUF(nivel.uf); else painelUS(); legenda(); },
@@ -4812,6 +4860,7 @@ $("#tipoLegBt").onclick = () => { const leg = $("#tipoLeg"), a = leg.hidden; leg
   try{ if(q.get("assinatura") === "ok") abreModal(`<h3 id="mTit">Obrigado pela assinatura ✓</h3><p class="ok-msg">Recebemos o seu pagamento${PLANO_NOME[q.get("plano")] ? " do plano " + esc(PLANO_NOME[q.get("plano")]) + (q.get("ciclo") === "anual" ? " anual" : q.get("ciclo") === "mensal" ? " mensal" : "") : ""}. A BLR libera o seu acesso em até 1 dia útil, no mesmo e-mail usado no pagamento.</p><p>Enquanto isso, o mapa e as notas já estão abertos para você. Dúvidas: <button type="button" class="lnk" onclick="abreFalar('')">falar com a BLR</button>.</p><button class="cta" type="button" onclick="fechaModal()">Ver o mapa</button>`);
     else if(q.get("teste")) abreCadastro(); else if(q.get("plano")) abreAssina(q.get("plano"), q.get("ciclo")); else if(q.get("entrar")) abreEntrar();
     else if(q.get("senha")) abreEsqueci(""); else if(q.get("listas")) abreSeg(); else if(q.get("falar")) abreFalar(q.get("falar") === "ultra" ? "Quero o UltraPro / comprar junto com a BLR (Partner Bidder)" : ""); else if(q.get("tour")) setTimeout(() => tour(true), 1200); }catch(e){ console.warn("atalho", e); } }
+{ const bs = $("#btSino"); if(bs) bs.onclick = abreSino; }
 $("#tgSeg").onclick = () => { FSEG = FSEG ? false : true; $("#tgSeg").setAttribute("aria-pressed", !!FSEG); render(); };
 /* 02/11 (Cris): o botão alterna Histórico junto → Só vendidos → sem histórico */
 const tgHistPinta = () => { const b = $("#tgHist"); b.textContent = HISTON === "vend" ? "Só vendidos" : "Histórico"; b.setAttribute("aria-pressed", !!HISTON);
