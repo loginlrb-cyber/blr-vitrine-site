@@ -73,9 +73,16 @@ h1{font-size:clamp(28px,4.4vw,44px);margin:6px 0 6px;line-height:1.1}
 <header class="top"><a href="../">BLR <span class="serif">Developments</span></a><a class="vol" href="../">← voltar ao mapa</a></header>
 <main>
   <h1 class="serif">Escolha o seu plano</h1>
-  <p class="sub">Comece grátis: o mapa dos EUA com todos os leilões e o valor da dívida. Teste o Pro por 7 dias, só com e-mail e telefone, sem cartão.</p>
+  <p class="sub">Comece grátis: o mapa dos EUA com todos os leilões e o valor da dívida.</p>
   <p style="margin:0 0 12px;font-size:14px"><a href="../por-que-blr/" style="color:var(--gold);font-weight:600">Por que BLR? Veja o que muda em relação a uma ferramenta comum →</a> · <a href="../tutoriais/" style="color:var(--mute)">Tutoriais: o primeiro lance</a></p>
-  <div class="trial-banner" id="trialBanner"><b>7 dias grátis para testar o Pro</b><span>Vale para o Pro e o UltraPro. O Básico não tem. Sem cartão: se não assinar, você continua como visitante. Nada é cobrado nesta página.</span></div>
+  <div class="trial-banner" id="trialBanner"><b>Teste o Pro 7 dias grátis</b><span>Só com e-mail e telefone, sem cartão. Vale para o Pro e o UltraPro. O Básico não tem. Se não assinar, você continua como visitante. Nada é cobrado nesta página.</span></div>
+  <div class="ciclo" role="group" aria-label="Forma de pagamento"><button type="button" data-ciclo="m" aria-pressed="true">Mensal</button><button type="button" data-ciclo="a" aria-pressed="false">Anual <small>2 meses grátis</small></button></div>
+  <div class="grade" id="grade"></div>
+  <div class="bid">
+    <div><h3>Self Bidder</h3><p>Você dá o lance por conta própria, com os dados e a análise da BLR. Nos planos Básico e Pro.</p></div>
+    <div><h3>Partner Bidder</h3><p>A BLR opera junto com você e divide o risco, no leilão online ou presencial. No UltraPro.</p></div>
+  </div>
+  <!-- 13/11 (Gallery, proposta f): planos primeiro, comparativo logo abaixo -->
   <section class="pb" id="pbDestaque" aria-labelledby="pbTit">
     <h2 class="serif" id="pbTit">Eles te dão uma calculadora. A BLR te dá o teto de lance e compra junto.</h2>
     <div class="pb-cols">
@@ -85,12 +92,6 @@ h1{font-size:clamp(28px,4.4vw,44px);margin:6px 0 6px;line-height:1.1}
     <a class="cta" id="pbUltra" href="../?plano=ultra">Ver o UltraPro</a>
     <a class="cta" href="../?falar=ultra" style="margin-left:8px">Falar com a BLR</a>
   </section>
-  <div class="ciclo" role="group" aria-label="Forma de pagamento"><button type="button" data-ciclo="m" aria-pressed="true">Mensal</button><button type="button" data-ciclo="a" aria-pressed="false">Anual <small>2 meses grátis</small></button></div>
-  <div class="grade" id="grade"></div>
-  <div class="bid">
-    <div><h3>Self Bidder</h3><p>Você dá o lance por conta própria, com os dados e a análise da BLR. Nos planos Básico e Pro.</p></div>
-    <div><h3>Partner Bidder</h3><p>A BLR opera junto com você e divide o risco, no leilão online ou presencial. No UltraPro.</p></div>
-  </div>
   <p class="nota" id="nota">Preços em dólar. Mensal: cancele quando quiser. Anual: paga 10 meses e usa 12, com 20% de desconto na taxa por arremate do self bider. Depois do pedido a BLR manda o link de pagamento seguro e libera o acesso. Nada é cobrado nesta página. Ao pedir um plano você aceita os <a href="../termos/">Termos de Uso</a> e a <a href="../privacy/">Política de Privacidade</a>.</p>
 </main>
 <script>
@@ -132,7 +133,7 @@ function cartaoPlano(p, atual){
     ${tags ? `<div class="pl-tags">${tags}</div>` : ""}
     <h2 class="serif">${esc(p.nome)}</h2><p class="qm">${esc(p.quem)}</p>
     <div class="pr ${p.preco == null ? "breve" : ""}">${p.preco == null ? "Preço de lançamento em breve" : precoDe(p)}</div>
-    ${trial ? `<p class="trial-linha">${TRIAL_NOTA}</p>` : ""}
+    ${""/* 13/11 (Gallery, proposta e): o selo "7 dias grátis" do cartão basta; a faixa do topo explica */}
     <ul>${p.itens.map(i => `<li class="${i.startsWith("Tudo do") ? "mais" : ""}">${esc(i)}</li>`).join("")}</ul>
     <a class="cta" href="${atual === p.id ? "../" : hrefDe(p)}">${atual === p.id ? "Voltar ao mapa" : esc(ctaDe(p))}</a></section>`;
 }

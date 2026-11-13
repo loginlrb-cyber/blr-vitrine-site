@@ -210,6 +210,8 @@ body:has(#cmpbar:not([hidden])) .iafab{bottom:calc(84px + env(safe-area-inset-bo
   .mapa-box .leg .lt{min-height:30px;padding-block:6px}
   body.vmapa .iafab{width:50px;height:50px;bottom:calc(118px + env(safe-area-inset-bottom,0px));right:12px}
   body.vmapa:has(#v-mapa .painel:not(.min)) .iafab{bottom:calc(50% + 12px)}
+  /* 13/11: com o cabeçalho cabendo em 390 px, o botão da IA ficou em cima do ▾ da região recolhida; a região abre espaço à direita */
+  body.vmapa #regiao.min{padding-right:68px}
   body.vmapa .iafab svg{width:28px;height:28px}
 }
 html,body{overflow-x:clip}
@@ -1068,6 +1070,8 @@ body{transition:padding-right .5s var(--mola)}
 #novos{display:none!important}
 .hbt.sino{position:relative;font-size:15px}
 .hbt.sino b{position:absolute;top:-4px;right:-4px;min-width:17px;height:17px;padding:0 4px;border-radius:9px;background:var(--acc);color:var(--ink);font:700 10.5px/17px var(--f-b);text-align:center}
+/* 13/11: no celular o Entrar passava da borda (368–430 px numa tela de 390). Abaixo de 430 px o selo "7 dias grátis" sai do botão Assinar (a mensagem segue no quadro de planos) */
+@media (max-width:430px){.hbt.ass .selo-trial{display:none}.hbt.cfg{padding:6px 8px}}
 #mBody .novos{border:0;background:none;padding:0}
 .novos{border:1px solid var(--line);border-radius:var(--r);background:var(--surf);padding:12px 14px}
 .novos .novosTit{font-family:var(--f-d);font-size:16px;font-weight:600;margin:0 0 6px}
@@ -1144,7 +1148,7 @@ body{transition:padding-right .5s var(--mola)}
     <button class="hbt sino" id="btSino" type="button" title="Novidades desde a sua última visita" aria-label="Novidades">🔔<b id="nSino" hidden>0</b></button>
     <a class="hbt cfg" id="btCfg" href="conta/#sPref" title="Configurações: moeda, idioma, tema" aria-label="Configurações">⚙</a>
     <span class="plSelo" id="plSelo" hidden></span>
-    <button class="hbt ass" id="btAssina" type="button" data-trial="1" aria-label="Assinar — 7 dias grátis no Pro" title="Assinar — 7 dias grátis no Pro">Assinar<span class="selo-trial"><span class="t-longo">7 dias grátis no Pro</span><span class="t-curto">7 dias grátis</span></span></button>
+    <button class="hbt ass" id="btAssina" type="button" data-trial="1" aria-label="Assinar (o Pro tem 7 dias grátis)" title="Assinar (o Pro tem 7 dias grátis)">Assinar<span class="selo-trial">7 dias grátis</span></button>
     <button class="hbt carr" id="btCarr" type="button" aria-label="Carrinho de encomenda" title="Carrinho de encomenda">🛒 <b id="nCarr">0</b></button>
     <!-- 28/10: Entrar fica no fim; logado vira menu do usuário (o "Sair" ao lado da Conta deslogou o testador num clique errado) -->
     <button class="hbt ent" id="btEntrar" type="button" hidden aria-haspopup="true" aria-expanded="false">Entrar</button>
@@ -2142,7 +2146,7 @@ function abreEntrar(){
       <label>Senha<input name="senha" type="password" autocomplete="current-password" required></label>
       <button class="cta" type="submit">Entrar</button><div class="nota" id="entErro"></div></form>
     <div class="nota">Esqueceu a senha? <button type="button" class="lnk" id="btEsq">Receber um link para criar uma senha nova</button></div>
-    <div class="nota">Ainda não tem acesso? <button type="button" class="lnk" data-teste>Teste grátis por 7 dias</button> (só e-mail e telefone) ou <button type="button" class="lnk" data-assina>Assinar — 7 dias grátis no Pro</button>. <a class="lnk" href="planos/">Ver todos os planos</a> · <button type="button" class="lnk" data-tour>Como usar a plataforma</button></div>`);
+    <div class="nota">Ainda não tem acesso? <button type="button" class="lnk" data-teste>Testar 7 dias grátis</button> (só e-mail e telefone) ou <button type="button" class="lnk" data-assina>assinar</button>. <a class="lnk" href="planos/">Ver todos os planos</a> · <button type="button" class="lnk" data-tour>Como usar a plataforma</button></div>`);
   $("#fConta").onsubmit = async e => { e.preventDefault(); const f = new FormData(e.target), bt = e.target.querySelector("button[type=submit]");
     bt.disabled = true; bt.textContent = "Entrando…";
     // o autopreenchimento do Chrome guardou o e-mail em MAIÚSCULAS e o servidor compara exato (28/10): sempre minúsculo e sem espaço
@@ -3722,8 +3726,8 @@ function formDe(id, onSubmit){ const f = $("#" + id); f.addEventListener("submit
    Sem plano escolhido (botão "Assinar"), abre a escolha; com plano, o pedido. Pagamento: link do Stripe por plano e ciclo (STRIPE, 12/11).
    10/11: o teste de 7 dias é do Pro e do UltraPro. O Básico não tem. Não há cobrança automática nesta página. */
 const TRIAL_SELO = "7 dias grátis";
-const TRIAL_NOTA = "7 dias grátis para testar o Pro";
-const TRIAL_BOTAO = "Assinar — 7 dias grátis no Pro";
+const TRIAL_NOTA = "para testar o Pro";   // 13/11: uma mensagem só (Gallery, proposta e)
+const TRIAL_BOTAO = "Assinar";
 function temTrial(id){ return id === "pro" || id === "ultra"; }
 function seloTrialHTML(id){ return temTrial(id) ? `<span class="selo-trial">${TRIAL_SELO}</span>` : ""; }
 const PLANOS = {
@@ -3751,7 +3755,7 @@ const cicloSeg = () => `<div class="ciclo seg" role="group" aria-label="Forma de
 const precoPl = v => CICLO === "a" ? `US$ ${v.a}<small>/ano</small>` : `US$ ${v.p}<small>/mês</small>`;
 function htmlPlanoOp(k, v){
   return `<button type="button" class="plOp ${k === "pro" ? "dest" : ""}" data-plano="${k}" data-trial="${temTrial(k) ? "1" : "0"}">
-        <b>${v.n}${seloTrialHTML(k)}</b><span class="num">${precoPl(v)}</span><em>${CICLO === "a" ? `equivale a US$ ${v.am}/mês · economia de US$ ${v.ec}` : esc(v.ben[k === "basico" ? 0 : 1])}</em>${temTrial(k) ? `<span class="trial-linha">${TRIAL_NOTA}</span>` : ""}</button>`;
+        <b>${v.n}${seloTrialHTML(k)}</b><span class="num">${precoPl(v)}</span><em>${CICLO === "a" ? `equivale a US$ ${v.am}/mês · economia de US$ ${v.ec}` : esc(v.ben[k === "basico" ? 0 : 1])}</em></button>`;
 }
 function cicloEventos(f){ document.querySelectorAll("#mBody [data-ciclo]").forEach(b => b.onclick = () => { CICLO = b.dataset.ciclo; try{ localStorage.setItem("blr_ciclo", CICLO); }catch(e){} f(); }); }
 function abreAssina(plano, ciclo){
@@ -3762,7 +3766,7 @@ function abreAssina(plano, ciclo){
   if(!P){
     abreModal(`<h3 id="mTit">Escolha o seu plano</h3>${faixa}${cicloSeg()}
       <div class="plEsc">${Object.entries(PLANOS).map(([k, v]) => htmlPlanoOp(k, v)).join("")}</div>
-      <div class="nota"><button type="button" class="lnk" data-teste>Testar o Pro por 7 dias grátis</button> · <a class="lnk" href="planos/">comparar tudo</a> · <button type="button" class="lnk" data-falar-m>falar com a BLR</button></div>`);
+      <div class="nota"><button type="button" class="lnk" data-teste>Testar 7 dias grátis</button> · <a class="lnk" href="planos/">comparar tudo</a> · <button type="button" class="lnk" data-falar-m>falar com a BLR</button></div>`);
     { const fm = document.querySelector("[data-falar-m]"); if(fm) fm.onclick = () => abreFalar(""); }
     document.querySelectorAll("[data-plano]").forEach(b => b.onclick = () => abreAssina(b.dataset.plano));
     cicloEventos(() => abreAssina());
