@@ -1,5 +1,6 @@
 User-agent: *
 Disallow: /admin/
+Disallow: /classico/
 Disallow: /conta/
 Disallow: /novo/
 Disallow: /para-voce/

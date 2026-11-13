@@ -258,7 +258,7 @@ button{font:inherit;color:inherit}
   <div class="dir">
     <button class="pill" id="xpChip" type="button" title="Meu progresso"><span class="anel" id="xpAnel"><b id="xpNiv">1</b></span><span id="xpTxt">Curioso · 0 XP</span></button>
     <button class="pill ic" id="btTema" type="button" aria-label="Tema claro ou escuro"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z" fill="none" stroke="currentColor" stroke-width="2"/></svg></button>
-    <a class="pill" id="btEntrar" href="../?entrar=1">Entrar</a>
+    <a class="pill" id="btEntrar" href="/classico/?entrar=1">Entrar</a>
   </div>
 </div></header>
 <nav class="inferior" id="navInf"></nav>
@@ -285,7 +285,7 @@ const CONTEUDO = {
         ["aprender", "Aprender", "M2 9l10-5 10 5-10 5z M6 11v5c3 2 9 2 12 0v-5"], ["planos", "Planos", "M3 6h18v12H3z M3 10h18"]],
   hero: {eyebrow: "BLR Developments", titulo: "Leilões de imóveis por dívida nos EUA, com o teto de lance já calculado.",
          texto: "A BLR junta num mapa só os leilões de imposto atrasado, execução de hipoteca e imóveis de banco e de governo dos EUA. Você abre o lote e vê quanto vale, quanto deve e até quanto vale a pena dar de lance.",
-         principal: "Testar 7 dias grátis", secundario: "Explorar o mapa", testeHref: "../?teste=1"},
+         principal: "Testar 7 dias grátis", secundario: "Explorar o mapa", testeHref: "/classico/?teste=1"},
   grupos: [
     {id: "imposto", nome: "Imposto atrasado", ids: ["tax_deed", "tax_lien", "upset"], sigla: "Tax deed, tax lien e upset sale"},
     {id: "execucao", nome: "Execução de hipoteca", ids: ["foreclosure", "sheriff_judicial"], sigla: "Foreclosure e sheriff sale"},
@@ -322,7 +322,7 @@ const CONTEUDO = {
   selos: [["primeiro", "Primeiro lote", "🏠", "Abriu o primeiro lote"], ["explorador", "Explorador", "🧭", "3 estados explorados"], ["calculista", "Calculista", "🧮", "3 tetos de lance vistos"],
           ["colecao", "Colecionador", "⭐", "5 lotes acompanhados"], ["aluno", "Aluno", "🎓", "3 guias lidos"], ["semana", "Semana firme", "🔥", "7 dias seguidos"]],
   ia: {sugestoes: ["Quais os próximos leilões?", "Como funciona um tax deed?", "Qual plano é melhor para mim?"]},
-  classicoHref: "../"
+  classicoHref: "/classico/"
 };
 
 /* ---------- utilidades ---------- */
@@ -630,7 +630,7 @@ function meusLotes(){
   const s = LS.get(SEG, []), xs = L.filter(l => s.includes(l.i));
   $("#app").innerHTML = `<section class="pag"><h1>Meus lotes</h1><p class="sub">Os lotes que você acompanha. Toque em "Acompanhar" na ficha de um lote para ele aparecer aqui.</p>
     <div class="painel"><header><h2>Acompanhando</h2><small>${n0(xs.length)}</small></header><div class="lista">${CARREGADO ? xs.map(linhaHTML).join("") || `<div class="vazio">Nenhum lote ainda. <a href="#explorar">Explorar o mapa</a></div>` : `<div class="carr">Carregando…</div>`}</div></div>
-    <div class="cartao" style="margin-top:var(--s4)"><h3>Portfólio</h3><p>Os imóveis que você arrematou com a BLR aparecem aqui. Por enquanto ficam na <a href="../">versão clássica</a>, em Meu portfólio.</p></div></section>`;
+    <div class="cartao" style="margin-top:var(--s4)"><h3>Portfólio</h3><p>Os imóveis que você arrematou com a BLR aparecem aqui. Por enquanto ficam na <a href="/classico/">versão clássica</a>, em Meu portfólio.</p></div></section>`;
   entra(document.querySelectorAll(".linha"));
 }
 function aprender(){
@@ -702,11 +702,19 @@ $("#xpChip").onclick = () => { location.hash = "progresso"; };
 const L_ = window.L;
 
 /* ---------- início ---------- */
+/* 13/11: a nova é a raiz. Links antigos (?teste, ?entrar, ?plano, volta do Stripe ?assinatura...) abrem as telas da clássica;
+   quem escolheu a clássica (neste navegador ou na conta) vai para ela. */
+const PARAMS_CLASSICO = ["assinatura", "teste", "entrar", "plano", "ciclo", "falar", "senha", "listas", "tour"];
+const UI_LOCAL = (() => { try{ return localStorage.getItem("blr_ui"); }catch(e){ return null; } })();
+if(PARAMS_CLASSICO.some(k => new URLSearchParams(location.search).has(k)) || UI_LOCAL === "classico") location.replace("/classico/" + location.search + location.hash);
 (async function inicio(){
-  try{ localStorage.setItem("blr_ui", "novo"); }catch(e){}
+  if(UI_LOCAL === "classico") return;
   try{ await carregaDadosIndice(); }catch(e){ $("#app").innerHTML = `<p class="vazio">Não foi possível carregar os dados (${esc(e.message)}). Recarregue a página.</p>`; return; }
   PROG = progressoLocal(); pintaXP(); rota();
-  conta_().then(async () => { await carregaProgresso(); evento("visita", undefined); const h = location.hash; if(ASSIN && CARREGADO){ pintaMapa(); lista(); } if(h.startsWith("#lote-")) abreFicha(h.slice(6)); else if(!h || h === "#explorar"){ const pb = $("#passosBox"); if(pb){ pb.innerHTML = passosHTML(); ligaPassos(); } } });
+  conta_().then(async () => {
+    if(EU && EU.preferencia_ui === "classico" && UI_LOCAL !== "novo"){ location.replace("/classico/"); return; }
+    if(EU && UI_LOCAL === "novo" && EU.preferencia_ui === "classico") api("/api/preferencias", {preferencia_ui: "novo"}).catch(() => {});
+    await carregaProgresso(); evento("visita", undefined); const h = location.hash; if(ASSIN && CARREGADO){ pintaMapa(); lista(); } if(h.startsWith("#lote-")) abreFicha(h.slice(6)); else if(!h || h === "#explorar"){ const pb = $("#passosBox"); if(pb){ pb.innerHTML = passosHTML(); ligaPassos(); } } });
   carregaResto().then(() => { if($("#explorarPag")){ chips(); pintaMapa(); lista(); } else rota(); if(location.hash.startsWith("#lote-")) abreFicha(location.hash.slice(6)); });
 })();
 async function carregaDadosIndice(){
