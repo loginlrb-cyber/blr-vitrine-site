@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<meta name="theme-color" content="#F4F6F7">
+<title>Vitrine BLR</title>
+<meta name="description" content="Leilões de imóveis por dívida nos EUA, com o teto de lance calculado pela BLR Developments.">
+<link rel="icon" type="image/svg+xml" href="/blr-icon-small.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@500;600;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="../vendor/topojson.min.js"></script>
+<script src="../vendor/leaflet.min.js"></script>
+<script>try{ const t = localStorage.getItem("blr_novo_tema"); if(t === "dark" || t === "light") document.documentElement.dataset.theme = t;
+  else if(matchMedia("(prefers-color-scheme: dark)").matches) document.documentElement.dataset.theme = "dark"; }catch(e){}</script>
+<style>
+/* Vitrine nova (13/11/2026): guia de design da Gallery (GUIA-DESIGN.md), aprovado pelo Cris. Tokens só aqui; nenhum componente usa cor literal. */
+.leaflet-pane,.leaflet-tile,.leaflet-marker-icon,.leaflet-marker-shadow,.leaflet-tile-container,.leaflet-pane>svg,.leaflet-pane>canvas,.leaflet-zoom-box,.leaflet-image-layer,.leaflet-layer{position:absolute;left:0;top:0}
+.leaflet-container{overflow:hidden;-webkit-tap-highlight-color:transparent;outline-offset:1px;font:inherit}
+.leaflet-pane{z-index:400}.leaflet-overlay-pane{z-index:400}.leaflet-marker-pane{z-index:600}.leaflet-tooltip-pane{z-index:650}.leaflet-popup-pane{z-index:700}
+.leaflet-control-container .leaflet-top,.leaflet-control-container .leaflet-bottom{position:absolute;z-index:800;pointer-events:none}
+.leaflet-top{top:0}.leaflet-right{right:0}.leaflet-bottom{bottom:0}.leaflet-left{left:0}
+.leaflet-control{float:left;clear:both;pointer-events:auto;position:relative;z-index:800}
+.leaflet-right .leaflet-control{float:right}.leaflet-top .leaflet-control{margin-top:10px}.leaflet-right .leaflet-control{margin-right:10px}
+.leaflet-tooltip{position:absolute;padding:6px 10px;background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:10px;white-space:nowrap;pointer-events:none;font-size:13px;box-shadow:0 6px 18px rgba(0,0,0,.12)}
+.leaflet-interactive{cursor:pointer}.leaflet-zoom-animated{transform-origin:0 0}
+.leaflet-zoom-anim .leaflet-zoom-animated{transition:transform .25s cubic-bezier(0,0,.25,1)}
+.leaflet-control-zoom a{display:grid;place-items:center;width:34px;height:34px;background:var(--surface);color:var(--ink);text-decoration:none;font:600 18px var(--f-b);border:1px solid var(--line)}
+.leaflet-control-zoom a:first-child{border-radius:10px 10px 0 0}.leaflet-control-zoom a:last-child{border-radius:0 0 10px 10px;border-top:0}
+
+:root{
+  --bg:#F4F6F7; --surface:#FFFFFF; --sunk:#EBEFF1; --ink:#13212B; --muted:#5B6B76; --line:#DDE3E7;
+  --accent:#0E7A64; --accent-ink:#FFFFFF; --accent-soft:rgba(14,122,100,.1); --amber:#B8741E; --amber-soft:rgba(184,116,30,.12); --bad:#B4413A; --bad-soft:rgba(180,65,58,.1);
+  --m0:#E6ECEE; --m1:#C5DDD5; --m2:#8CC3B1; --m3:#46A189; --m4:#0E7A64;
+  --f-d:'Schibsted Grotesk',system-ui,sans-serif; --f-b:'Inter',system-ui,sans-serif; --f-m:'JetBrains Mono',ui-monospace,monospace;
+  --s1:4px; --s2:8px; --s3:12px; --s4:16px; --s5:24px; --s6:32px; --s7:48px; --s8:72px;
+  --ease:cubic-bezier(.2,.7,.2,1); --sombra:0 10px 30px rgba(19,33,43,.12);
+  color-scheme:light;
+}
+:root[data-theme="dark"]{
+  --bg:#0E151A; --surface:#151F26; --sunk:#1B262E; --ink:#E6EDF0; --muted:#93A3AD; --line:#26333C;
+  --accent:#3CC29F; --accent-ink:#06261E; --accent-soft:rgba(60,194,159,.13); --amber:#E2A650; --amber-soft:rgba(226,166,80,.14); --bad:#E57F76; --bad-soft:rgba(229,127,118,.12);
+  --m0:#1B262E; --m1:#1E3B37; --m2:#246052; --m3:#2E8D74; --m4:#3CC29F; --sombra:0 10px 30px rgba(0,0,0,.4);
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font:400 15px/1.55 var(--f-b);-webkit-font-smoothing:antialiased}
+h1,h2,h3{font-family:var(--f-d);letter-spacing:-.015em;text-wrap:balance;margin:0}
+a{color:var(--accent)}
+button{font:inherit;color:inherit}
+.num,.mono{font-variant-numeric:tabular-nums}
+.mono{font-family:var(--f-m)}
+[hidden]{display:none!important}
+.wrap{max-width:1240px;margin:0 auto;padding:0 max(16px,env(safe-area-inset-left))}
+
+/* cabeçalho */
+.top{position:sticky;top:0;z-index:1000;background:var(--surface);border-bottom:1px solid var(--line)}
+.top .wrap{display:flex;align-items:center;gap:var(--s4);height:64px}
+.marca{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--ink);font:800 20px var(--f-d)}
+.marca i{width:32px;height:32px;border-radius:9px;background:var(--accent);display:grid;place-items:center}
+.marca small{font:500 13px var(--f-b);color:var(--muted)}
+.nav{display:flex;gap:4px;margin-left:var(--s4)}
+.nav a{padding:8px 14px;border-radius:999px;text-decoration:none;color:var(--muted);font-weight:500}
+.nav a[aria-current="page"]{background:var(--sunk);color:var(--ink)}
+.nav a:hover{color:var(--ink)}
+.dir{margin-left:auto;display:flex;align-items:center;gap:var(--s2)}
+.pill{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:6px 14px;cursor:pointer;font-weight:600;font-size:14px;text-decoration:none;color:var(--ink);white-space:nowrap}
+.pill.ic{padding:0;width:38px;height:38px;justify-content:center}
+.anel{--p:0;width:24px;height:24px;border-radius:50%;background:conic-gradient(var(--accent) calc(var(--p)*1%),var(--sunk) 0);display:grid;place-items:center;font:600 11px var(--f-b);transition:--p .9s var(--ease)}
+.anel b{width:18px;height:18px;border-radius:50%;background:var(--surface);display:grid;place-items:center;font-size:10.5px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border-radius:999px;padding:12px 20px;font-weight:600;cursor:pointer;border:1px solid var(--line);background:var(--surface);color:var(--ink);text-decoration:none;transition:transform .2s var(--ease),background .2s}
+.btn:active{transform:scale(.97)}
+.btn.pri{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn.peq{padding:8px 14px;font-size:14px}
+.inferior{display:none}
+@media (max-width:820px){
+  .nav,.top .marca small,.top .so-desk{display:none}
+  #xpTxt{display:none}.pill#xpChip{padding:6px}.top .wrap{gap:var(--s2)}
+  .inferior{display:grid;grid-template-columns:repeat(4,1fr);position:fixed;left:0;right:0;bottom:0;z-index:1000;background:var(--surface);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom)}
+  .inferior a{display:grid;justify-items:center;gap:2px;padding:9px 0 8px;text-decoration:none;color:var(--muted);font-size:12px;font-weight:500}
+  .inferior a[aria-current="page"]{color:var(--accent);font-weight:600}
+  .inferior svg{width:22px;height:22px}
+  body{padding-bottom:76px}
+}
+
+/* hero */
+.hero{display:grid;grid-template-columns:1.15fr 1fr;gap:var(--s6);align-items:center;padding:var(--s7) 0 var(--s6)}
+.eyebrow{font:600 12px var(--f-b);letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.hero h1{font-size:clamp(28px,4.2vw,44px);line-height:1.12;margin:12px 0 14px}
+.hero p{color:var(--muted);font-size:17px;max-width:560px;margin:0 0 22px}
+.hero .acoes{display:flex;gap:var(--s3);flex-wrap:wrap}
+.hero .viz{position:relative;border:1px solid var(--line);border-radius:18px;background:var(--surface);aspect-ratio:4/3;overflow:hidden}
+.hero .viz svg{position:absolute;inset:0;width:100%;height:100%}
+.hero .viz .nota-t{position:absolute;left:16px;bottom:16px;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px 14px;box-shadow:var(--sombra)}
+.hero .viz .nota-t small{display:block;color:var(--muted);font-size:13px}
+.hero .viz .nota-t b{font:700 22px var(--f-d)}
+.hero .fecha{position:absolute;right:12px;top:12px}
+@media (max-width:820px){.hero{grid-template-columns:1fr;padding-top:var(--s5)}.hero .viz{aspect-ratio:16/9}}
+.kpis{display:flex;gap:var(--s5);flex-wrap:wrap;margin-top:var(--s5);color:var(--muted);font-size:14px}
+.kpis b{display:block;font:700 24px var(--f-d);color:var(--ink)}
+
+/* passos */
+.passos{display:flex;align-items:center;gap:var(--s4);border:1px solid var(--line);background:var(--surface);border-radius:18px;padding:12px 16px;margin:var(--s4) 0}
+.passos .barras{display:flex;gap:4px}.passos .barras i{width:22px;height:5px;border-radius:3px;background:var(--sunk)}.passos .barras i.ok{background:var(--accent)}
+.passos .txt{flex:1;font-size:14px}.passos .txt b{font-weight:600}
+@media (max-width:820px){.passos{padding:8px 8px 8px 14px;gap:8px}.passos .barras,.passos .btn{display:none}.passos .txt{font-size:13.5px}#mapaInfo{display:none}}
+
+/* filtros */
+.filtros{display:flex;align-items:center;gap:var(--s2);flex-wrap:wrap;margin:var(--s4) 0}
+.chip{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:7px 14px;cursor:pointer;font-size:14px;font-weight:500;white-space:nowrap}
+.chip b{font:500 12.5px var(--f-m);color:var(--muted);margin-left:4px}
+.chip[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:var(--surface)}
+.chip[aria-pressed="true"] b{color:var(--surface);opacity:.75}
+.filtros .esp{flex:1}
+.troca{display:inline-flex;align-items:center;gap:10px;cursor:pointer;font-size:14px}
+.troca input{appearance:none;width:38px;height:22px;border-radius:999px;background:var(--sunk);border:1px solid var(--line);position:relative;margin:0;cursor:pointer;transition:background .2s}
+.troca input::after{content:"";position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:50%;background:var(--surface);box-shadow:0 1px 3px rgba(0,0,0,.25);transition:transform .26s var(--ease)}
+.troca input:checked{background:var(--accent);border-color:var(--accent)}.troca input:checked::after{transform:translateX(16px)}
+.escopo{font-size:13px;color:var(--muted);margin:-6px 0 var(--s3)}
+@media (max-width:820px){.filtros{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;margin-inline:-16px;padding-inline:16px}.filtros::-webkit-scrollbar{display:none}.filtros .esp{display:none}}
+
+/* explorar */
+.explorar{display:grid;grid-template-columns:1.2fr 1fr;gap:var(--s4);margin-bottom:var(--s7)}
+.painel{border:1px solid var(--line);background:var(--surface);border-radius:18px;overflow:hidden;min-width:0}
+.painel>header{display:flex;align-items:center;justify-content:space-between;gap:var(--s3);padding:14px 18px;border-bottom:1px solid var(--line)}
+.painel>header h2{font-size:19px}
+.painel>header small{color:var(--muted)}
+#mapa{height:min(68vh,620px);background:var(--bg)}
+.lista{max-height:min(68vh,620px);overflow:auto}
+@media (max-width:820px){.explorar{grid-template-columns:1fr}#mapa{height:52vh}.lista{max-height:none}}
+.linha{display:grid;grid-template-columns:56px 1fr auto;gap:12px;align-items:center;padding:12px 18px;border-bottom:1px solid var(--line);cursor:pointer;text-decoration:none;color:var(--ink);transition:background .15s}
+.linha:hover{background:var(--sunk)}
+.mini{width:56px;height:56px;border-radius:8px;background:var(--sunk);display:grid;place-items:center;overflow:hidden}
+.mini svg{width:44px;height:44px}
+.linha h3{font:600 15px var(--f-b);margin:0 0 2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.linha .sub{color:var(--muted);font-size:13px}
+.tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:5px}
+.tag{font-size:11.5px;font-weight:600;border-radius:999px;padding:2px 8px;background:var(--sunk);color:var(--muted)}
+.tag.breve{background:var(--amber-soft);color:var(--amber)}
+.tag.ok{background:var(--accent-soft);color:var(--accent)}
+.tag.acima{background:var(--bad-soft);color:var(--bad)}
+.linha .val{text-align:right}
+.linha .val small{display:block;color:var(--muted);font-size:12px}
+.linha .val b{font:700 16px var(--f-d)}
+.linha .val .teto{color:var(--amber);font-size:12.5px;font-weight:600}
+.vazio{padding:var(--s6) var(--s5);color:var(--muted);text-align:center}
+.mais{display:block;width:100%;padding:14px;border:0;background:none;color:var(--accent);font-weight:600;cursor:pointer}
+.carr{padding:var(--s6);text-align:center;color:var(--muted)}
+.uf-rot{display:inline-block;transform:translateX(-50%);margin-left:30px;font:700 11px var(--f-b);color:var(--ink);text-align:center;line-height:1.15;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:2px 6px;white-space:nowrap}
+.uf-rot small{display:block;font:500 10.5px var(--f-m);color:var(--muted)}
+
+/* drawer de filtros */
+.veu{position:fixed;inset:0;background:rgba(19,33,43,.32);z-index:1500;opacity:0;pointer-events:none;transition:opacity .26s}
+.veu.on{opacity:1;pointer-events:auto}
+.drawer{position:fixed;top:0;right:0;bottom:0;width:min(400px,100%);background:var(--surface);z-index:1600;transform:translateX(100%);transition:transform .26s var(--ease);padding:var(--s5);overflow:auto;border-left:1px solid var(--line)}
+.drawer.on{transform:none}
+.drawer h2{font-size:22px;margin-bottom:var(--s4)}
+.campo{display:grid;gap:6px;margin-bottom:var(--s4);font-size:14px;font-weight:500}
+.campo select,.campo input[type=number]{font:inherit;padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:var(--bg);color:var(--ink)}
+.drawer .rod{display:flex;gap:var(--s2);margin-top:var(--s5)}
+
+/* ficha */
+.ficha{position:fixed;top:0;right:0;bottom:0;width:min(560px,100%);background:var(--bg);z-index:1600;transform:translateX(100%);transition:transform .26s var(--ease);overflow:auto;border-left:1px solid var(--line)}
+.ficha.on{transform:none}
+.ficha header{position:sticky;top:0;background:var(--surface);border-bottom:1px solid var(--line);padding:14px 18px;display:flex;gap:var(--s3);align-items:flex-start;z-index:2}
+.ficha header h2{font-size:21px;line-height:1.2}
+.ficha header small{color:var(--muted)}
+.ficha header .x{margin-left:auto}
+.ficha .corpo{padding:var(--s4) 18px var(--s7)}
+.k4{display:grid;grid-template-columns:repeat(2,1fr);gap:var(--s3)}
+.k{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 14px}
+.k small{display:block;color:var(--muted);font-size:12.5px}
+.k b{font:700 22px var(--f-d)}
+.k.amber b{color:var(--amber)}
+.k .barra{height:6px;border-radius:3px;background:var(--sunk);margin-top:8px;overflow:hidden}
+.k .barra i{display:block;height:100%;width:0;background:var(--accent);transition:width .9s var(--ease)}
+.k .tr{font-size:13px;color:var(--muted)}
+.bloco{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:var(--s4);margin-top:var(--s4)}
+.bloco h3{font-size:17px;margin-bottom:var(--s2)}
+.bloco p{margin:0 0 8px;color:var(--muted)}
+.det{display:grid;grid-template-columns:auto 1fr;gap:6px 16px;font-size:14px}
+.det dt{color:var(--muted)}.det dd{margin:0;font-weight:500}
+.contorno{display:grid;place-items:center;background:var(--sunk);border-radius:12px;height:220px;overflow:hidden;position:relative}
+.contorno svg{width:70%;height:80%}
+.contorno svg polygon{fill:var(--accent-soft);stroke:var(--accent);stroke-width:2.2;stroke-dasharray:var(--len,800);stroke-dashoffset:var(--len,800);animation:desenha 1.2s var(--ease) forwards}
+@keyframes desenha{to{stroke-dashoffset:0}}
+.contorno img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.trava{display:flex;gap:12px;align-items:center;background:var(--amber-soft);border-radius:12px;padding:12px 14px;margin-top:var(--s3);font-size:14px}
+.trava .btn{margin-left:auto}
+.facoes{display:flex;gap:var(--s2);flex-wrap:wrap;margin-top:var(--s4)}
+
+/* páginas */
+.pag{padding:var(--s6) 0 var(--s7)}
+.pag>h1{font-size:clamp(28px,4vw,40px);margin-bottom:8px}
+.pag>.sub{color:var(--muted);margin:0 0 var(--s5);max-width:640px}
+.ciclo{display:inline-flex;border:1px solid var(--line);border-radius:999px;padding:3px;background:var(--surface);margin-bottom:var(--s5)}
+.ciclo button{border:0;background:none;border-radius:999px;padding:8px 16px;cursor:pointer;font-weight:600}
+.ciclo button[aria-pressed="true"]{background:var(--ink);color:var(--surface)}
+.planos{display:grid;grid-template-columns:repeat(4,1fr);gap:var(--s4)}
+@media (max-width:980px){.planos{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:560px){.planos{grid-template-columns:1fr}}
+.plano{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:var(--s5);display:flex;flex-direction:column;gap:10px;position:relative;transition:box-shadow .2s,transform .2s var(--ease)}
+.plano:hover{box-shadow:var(--sombra);transform:translateY(-2px)}
+.plano.dest{border:2px solid var(--accent)}
+.plano .selo{position:absolute;top:-12px;left:18px;background:var(--accent);color:var(--accent-ink);font-size:12px;font-weight:700;border-radius:999px;padding:3px 10px}
+.plano h2{font-size:22px}
+.plano .quem{color:var(--muted);font-size:14px;margin-top:-6px}
+.plano .preco{font:800 30px var(--f-d)}.plano .preco small{font:500 14px var(--f-b);color:var(--muted)}
+.plano ul{list-style:none;padding:0;margin:0;display:grid;gap:8px;font-size:14px}
+.plano li{display:grid;grid-template-columns:18px 1fr;gap:6px}.plano li::before{content:"✓";color:var(--accent);font-weight:700}
+.plano .btn{margin-top:auto}
+.compara{margin-top:var(--s6);display:grid;grid-template-columns:1fr 1fr;gap:var(--s4)}
+@media (max-width:700px){.compara{grid-template-columns:1fr}}
+.cartao{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:var(--s5)}
+.cartao h3{margin-bottom:6px}
+.cartao p{color:var(--muted);margin:0}
+.grade2{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:var(--s4)}
+.nivel{display:flex;align-items:center;gap:var(--s5);flex-wrap:wrap}
+.nivel .grande{--p:0;width:120px;height:120px;border-radius:50%;background:conic-gradient(var(--accent) calc(var(--p)*1%),var(--sunk) 0);display:grid;place-items:center;transition:--p .9s var(--ease)}
+.nivel .grande div{width:96px;height:96px;border-radius:50%;background:var(--surface);display:grid;place-items:center;text-align:center;font:700 26px var(--f-d)}
+.nivel .grande small{display:block;font:500 12px var(--f-b);color:var(--muted)}
+.selos{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:var(--s3)}
+.selo-c{border:1px solid var(--line);background:var(--surface);border-radius:12px;padding:14px;text-align:center;opacity:.55}
+.selo-c.ganho{opacity:1;border-color:var(--accent)}
+.selo-c i{font-size:26px;font-style:normal;display:block}
+.selo-c b{display:block;font-size:14px;margin-top:4px}.selo-c small{color:var(--muted);font-size:12px}
+.dias{display:flex;gap:6px;margin-top:var(--s3)}.dias i{width:18px;height:18px;border-radius:5px;background:var(--sunk)}.dias i.on{background:var(--accent)}
+.rodape{border-top:1px solid var(--line);padding:var(--s5) 0 var(--s6);color:var(--muted);font-size:13px}
+.rodape .wrap{display:flex;gap:var(--s4);flex-wrap:wrap;align-items:center}
+.rodape a{color:var(--muted)}
+.rodape .classico{margin-left:auto}
+
+/* IA e toast */
+.fab{position:fixed;right:20px;bottom:calc(20px + env(safe-area-inset-bottom));z-index:1200;display:inline-flex;align-items:center;gap:8px;background:var(--ink);color:var(--surface);border:0;border-radius:999px;padding:13px 18px;font-weight:600;cursor:pointer;box-shadow:var(--sombra)}
+@media (max-width:820px){.fab{bottom:calc(86px + env(safe-area-inset-bottom));padding:12px}.fab span{display:none}}
+.ia{position:fixed;right:20px;bottom:90px;width:min(400px,calc(100% - 32px));max-height:min(560px,70vh);z-index:1700;background:var(--surface);border:1px solid var(--line);border-radius:18px;box-shadow:var(--sombra);display:flex;flex-direction:column;overflow:hidden}
+.ia header{display:flex;align-items:center;padding:12px 14px;border-bottom:1px solid var(--line);font-weight:600}
+.ia header button{margin-left:auto}
+.ia .msgs{flex:1;overflow:auto;padding:12px 14px;display:grid;gap:10px;align-content:start;font-size:14px}
+.ia .m{padding:9px 12px;border-radius:12px;background:var(--sunk);max-width:90%;white-space:pre-wrap}
+.ia .m.u{justify-self:end;background:var(--accent);color:var(--accent-ink)}
+.ia .sug{display:flex;gap:6px;flex-wrap:wrap}
+.ia form{display:flex;gap:8px;padding:10px;border-top:1px solid var(--line)}
+.ia input{flex:1;font:inherit;padding:10px 12px;border:1px solid var(--line);border-radius:999px;background:var(--bg);color:var(--ink)}
+@media (max-width:820px){.ia{bottom:calc(140px + env(safe-area-inset-bottom));right:16px}}
+.toast{position:fixed;left:50%;bottom:calc(28px + env(safe-area-inset-bottom));transform:translate(-50%,20px);opacity:0;pointer-events:none;z-index:1800;background:var(--ink);color:var(--surface);padding:10px 18px;border-radius:999px;font-weight:600;font-size:14px;transition:opacity .26s,transform .26s var(--ease)}
+.toast.on{opacity:1;transform:translate(-50%,0)}
+.toast:empty{display:none}
+@media (max-width:820px){.toast{bottom:calc(90px + env(safe-area-inset-bottom))}}
+@media (prefers-reduced-motion: reduce){*,*::before,*::after{animation-duration:0s!important;transition-duration:0s!important}}
+</style>
+</head>
+<body>
+<header class="top"><div class="wrap">
+  <a class="marca" href="#explorar" aria-label="BLR Developments, início"><i><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M5 6l11-2 3 13-12 3z" fill="none" stroke="#fff" stroke-width="2.2" stroke-linejoin="round"/></svg></i>BLR <small>Vitrine de leilões</small></a>
+  <nav class="nav" id="nav"></nav>
+  <div class="dir">
+    <button class="pill" id="xpChip" type="button" title="Meu progresso"><span class="anel" id="xpAnel"><b id="xpNiv">1</b></span><span id="xpTxt">Curioso · 0 XP</span></button>
+    <button class="pill ic" id="btTema" type="button" aria-label="Tema claro ou escuro"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z" fill="none" stroke="currentColor" stroke-width="2"/></svg></button>
+    <a class="pill" id="btEntrar" href="../?entrar=1">Entrar</a>
+  </div>
+</div></header>
+<nav class="inferior" id="navInf"></nav>
+<main id="app" class="wrap"></main>
+<footer class="rodape"><div class="wrap">
+  <span>© BLR Developments · dados de editais e cadastros oficiais</span>
+  <a href="../termos/">Termos</a><a href="../privacy/">Privacidade</a><a href="../por-que-blr/">Por que BLR</a>
+  <a href="#" class="classico" id="btClassico">Voltar à versão clássica</a>
+</div></footer>
+<button class="fab" id="fab" type="button"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z" fill="currentColor"/></svg><span>Perguntar</span></button>
+<section class="ia" id="ia" hidden aria-label="Assistente BLR"></section>
+<div class="veu" id="veu"></div>
+<aside class="drawer" id="drawer" aria-label="Filtros"></aside>
+<aside class="ficha" id="ficha" aria-label="Ficha do lote"></aside>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+"use strict";
+/* ====================================================================================================================
+   CONTEUDO: todo texto, preço, plano, link e regra de XP da página fica aqui (Cris 13/11: "mexer fácil").
+   ==================================================================================================================== */
+const CONTEUDO = {
+  nav: [["explorar", "Explorar", "M3 6l6-2 6 2 6-2v14l-6 2-6-2-6 2z M9 4v14 M15 6v14"], ["meus-lotes", "Meus lotes", "M6 3h12v18l-6-4-6 4z"],
+        ["aprender", "Aprender", "M2 9l10-5 10 5-10 5z M6 11v5c3 2 9 2 12 0v-5"], ["planos", "Planos", "M3 6h18v12H3z M3 10h18"]],
+  hero: {eyebrow: "BLR Developments", titulo: "Leilões de imóveis por dívida nos EUA, com o teto de lance já calculado.",
+         texto: "A BLR junta num mapa só os leilões de imposto atrasado, execução de hipoteca e imóveis de banco e de governo dos EUA. Você abre o lote e vê quanto vale, quanto deve e até quanto vale a pena dar de lance.",
+         principal: "Testar 7 dias grátis", secundario: "Explorar o mapa", testeHref: "../?teste=1"},
+  grupos: [
+    {id: "imposto", nome: "Imposto atrasado", ids: ["tax_deed", "tax_lien", "upset"], sigla: "Tax deed, tax lien e upset sale"},
+    {id: "execucao", nome: "Execução de hipoteca", ids: ["foreclosure", "sheriff_judicial"], sigla: "Foreclosure e sheriff sale"},
+    {id: "gov", nome: "Banco ou governo", ids: ["reo", "governo_federal"], sigla: "REO e imóveis de agência federal"},
+    {id: "terras", nome: "Banco de terras", ids: ["land_bank"], sigla: "Land bank do condado ou da cidade"},
+    {id: "outros", nome: "Outros", ids: ["nao_informado"], sigla: "Tipo não informado no edital"}],
+  tipos: {
+    tax_deed: ["Tax deed", "O condado vende o imóvel por imposto atrasado e quem arremata recebe a escritura."],
+    tax_lien: ["Tax lien", "Você compra o certificado da dívida de imposto, não o imóvel. O retorno vem dos juros do resgate."],
+    upset: ["Upset sale", "Venda por imposto em que a hipoteca e alguns ônus podem sobreviver ao leilão."],
+    foreclosure: ["Foreclosure", "Execução da hipoteca, no tribunal ou em trustee sale: o credor cobra a dívida vendendo o imóvel."],
+    sheriff_judicial: ["Sheriff sale", "Leilão do xerife, por imposto ou por execução, com regras do tribunal do condado."],
+    land_bank: ["Land bank", "Venda direta do banco de terras do condado ou da cidade, em geral com exigência de uso."],
+    reo: ["REO", "Imóvel que ficou com o banco e é vendido do estoque dele."],
+    governo_federal: ["Governo federal", "Imóvel de agência federal (HUD, VA e outras), vendido direto, não em leilão."],
+    nao_informado: ["Tipo não informado", "O edital não trouxe um tipo de venda reconhecível. Confira no edital oficial."]},
+  passos: [["estado", "Escolha um estado"], ["lote", "Abra um lote"], ["teto", "Veja um teto de lance"], ["salvar", "Acompanhe um lote"], ["guia", "Leia um guia"]],
+  planos: [
+    {id: "gratuito", nome: "Gratuito", quem: "para conhecer", m: 0, a: 0, itens: ["Mapa dos EUA com todos os leilões", "Lista de oportunidades", "Lance de abertura de cada lote", "Calendário dos próximos leilões"], cta: "Começar grátis", href: "#explorar"},
+    {id: "basico", nome: "Básico", quem: "para quem foca em 1 estado", m: 9.9, a: 99, itens: ["Tudo do Gratuito", "Ficha completa e filtros", "1 estado à sua escolha (troca 1× por mês)", "Assistente de IA: 10 consultas por mês"]},
+    {id: "pro", nome: "Pro", quem: "o mais escolhido", m: 49.9, a: 499, dest: true, selo: "7 dias grátis", itens: ["Tudo do Básico", "Teto de lance BLR, ARV e a conta de cada lote", "Endereço, posição exata, contorno e Street View", "Até 3 estados (troca 1× por mês)", "Assistente de IA: 40 consultas por mês"]},
+    {id: "ultra", nome: "UltraPro", quem: "para operar com a BLR", m: 249.9, a: 2499, itens: ["Tudo do Pro", "Os 50 estados, DC e territórios", "Partner Bidder: a BLR opera e divide o risco", "Sala de leilão online em tempo real", "Assistente de IA ilimitado"]}],
+  stripe: {basico: {m: "https://buy.stripe.com/28EfZh5YKgub2fY40I8ww00", a: "https://buy.stripe.com/bJe14ncn8b9R8Emap68ww01"},
+           pro:    {m: "https://buy.stripe.com/14AcN5af0cdV07Qbta8ww04", a: "https://buy.stripe.com/dRm4gzaf05PxbQy0Ow8ww05"},
+           ultra:  {m: "https://buy.stripe.com/bJeeVd9aW7XFaMu9l28ww03", a: "https://buy.stripe.com/fZubJ14UGfq74o61SA8ww02"}},
+  compara: [["Ferramenta comum", "Uma calculadora. O lance e o risco ficam por sua conta."], ["BLR", "O teto de lance já calculado no Pro e, no UltraPro, a BLR comprando junto com você."]],
+  aprender: [["../tutoriais/", "O primeiro lance, passo a passo", "Do edital ao arremate em cada tipo de leilão."], ["../por-que-blr/", "Por que BLR", "A jornada em 4 passos: achar, arrematar, reformar e lucrar."],
+             ["../checklist/", "Checklist de terrenos", "Os pontos que separam um bom negócio de um prejuízo."]],
+  glossario: [["Abertura", "O lance mínimo do leilão, em geral a dívida mais as custas."], ["Teto de lance BLR", "Até quanto vale a pena dar de lance para o negócio fechar com margem, pela conta da BLR."],
+              ["ARV", "After Repair Value: quanto o imóvel vale depois de reformado, pelas vendas reais do entorno."], ["Cadastro", "O valor do imóvel no cadastro do condado (assessed/just value)."],
+              ["Resgate", "Prazo em que o dono ainda pode pagar a dívida e ficar com o imóvel."]],
+  xp: {lote_aberto: 10, estado_explorado: 15, teto_calculado: 25, lote_acompanhado: 5, guia_lido: 20},
+  niveis: [["Curioso", 0], ["Estudante", 100], ["Investidor", 250], ["Arrematador", 500], ["Sócio BLR", 900]],
+  selos: [["primeiro", "Primeiro lote", "🏠", "Abriu o primeiro lote"], ["explorador", "Explorador", "🧭", "3 estados explorados"], ["calculista", "Calculista", "🧮", "3 tetos de lance vistos"],
+          ["colecao", "Colecionador", "⭐", "5 lotes acompanhados"], ["aluno", "Aluno", "🎓", "3 guias lidos"], ["semana", "Semana firme", "🔥", "7 dias seguidos"]],
+  ia: {sugestoes: ["Quais os próximos leilões?", "Como funciona um tax deed?", "Qual plano é melhor para mim?"]},
+  classicoHref: "../"
+};
+
+/* ---------- utilidades ---------- */
+const API = "https://api.blrdevelopment.com";
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"}[c]));
+const USD = new Intl.NumberFormat("pt-BR", {style: "currency", currency: "USD", maximumFractionDigits: 0});
+const usd = v => v == null || isNaN(v) ? "—" : USD.format(v);
+const n0 = v => Number(v || 0).toLocaleString("pt-BR");
+const LS = {get(k, d){ try{ const v = localStorage.getItem(k); return v == null ? d : JSON.parse(v); }catch(e){ return d; } },
+            set(k, v){ try{ localStorage.setItem(k, JSON.stringify(v)); }catch(e){} }};
+const REDUZ = matchMedia("(prefers-reduced-motion: reduce)").matches;
+function conta(el, ate, fmt){ if(!el) return; fmt = fmt || n0; if(REDUZ){ el.textContent = fmt(ate); return; }
+  const t0 = performance.now(), de = 0; const f = t => { const x = Math.min(1, (t - t0) / 800), v = de + (ate - de) * (1 - Math.pow(1 - x, 3)); el.textContent = fmt(Math.round(v)); if(x < 1) requestAnimationFrame(f); }; requestAnimationFrame(f); }
+function entra(els){ if(REDUZ || !els.length) return; [...els].slice(0, 14).forEach((e, i) => e.animate([{transform: "translateY(10px)", opacity: .001}, {transform: "none", opacity: 1}], {duration: 380, delay: i * 40, easing: "cubic-bezier(.2,.7,.2,1)", fill: "backwards"})); }
+let tToast = 0;
+function toast(t){ if(!t || ESTADO.prefs.avisos_xp === false) return; const el = $("#toast"); el.textContent = t; el.classList.add("on"); clearTimeout(tToast); tToast = setTimeout(() => { el.classList.remove("on"); setTimeout(() => { if(!el.classList.contains("on")) el.textContent = ""; }, 300); }, 2600); }
+async function busca(u, o){ const r = await fetch(u, o); if(!r.ok) throw Object.assign(new Error(u + " " + r.status), {st: r.status}); return r.json(); }
+const api = (r, corpo) => fetch(API + r, corpo ? {method: "POST", credentials: "include", headers: {"Content-Type": "application/json", ...(EU && EU.csrf ? {"X-CSRF": EU.csrf} : {})}, body: JSON.stringify(corpo)} : {credentials: "include"})
+  .then(async x => { const j = await x.json().catch(() => ({})); if(!x.ok) throw Object.assign(new Error(j.mensagem || "falha"), {st: x.status, erro: j.erro}); return j; });
+
+/* ---------- dados (os mesmos arquivos da versão clássica) ---------- */
+let DADOS = null, EUA = null, HOJE = "", L = [], CARREGADO = false, EU = null, ASSIN = false, PREM = {}, PRIV = {};
+const ESTADO = {grupo: "", crit: false, uf: "", max: 0, dias: 0, mostrar: 40, prefs: {avisos_xp: true}};
+const TXT_CAMPOS = ["nt", "fo", "jvq", "tp", "u", "mc", "pa"];
+const REGRAS_TIPO = [["upset", /upset/i], ["reo", /\breo\b|real estate owned|bank-owned|bank owned|homepath|homesteps|fannie|freddie/i], ["sheriff_judicial", /sheriff|(?<!non-)judicial/i],
+  ["governo_federal", /\bhud\b|\bva\b|usda|\bgsa\b|marshals|tesouro|treasury/i], ["land_bank", /land\s*bank|repositor|adjudicat/i], ["tax_lien", /\bliens?\b|certificate|certificado/i],
+  ["tax_deed", /tax\s*deed|tax\s*foreclos|tax\s*forfeit/i], ["foreclosure", /foreclos|trustee/i]];
+function tipoId(l){ const tp = String(l.tp || "").toLowerCase(), md = String(l.md || "").toLowerCase();
+  for(const [id, re] of REGRAS_TIPO) if(re.test(tp)) return id;
+  if(md === "governo") return "governo_federal"; if(!tp && l.uf === "FL") return "tax_deed"; return "nao_informado"; }
+const grupoDe = l => (CONTEUDO.grupos.find(g => g.ids.includes(l._t)) || CONTEUDO.grupos[CONTEUDO.grupos.length - 1]).id;
+const HIST = l => !!l.h, LIST = l => l.et === "listado", CRIT = l => l.et === "final";
+const SEMDADO = l => LIST(l) && (!!l.li || (l.desc == null && !(l.ab && l.jv)));
+const chavePriv = l => (l.uf + "_" + l.co).replace(/ /g, "_").replace(/\./g, "").replace(/'/g, "");
+const prem = l => (PREM[l.uf] || {})[l.i] || null;
+const priv = l => (PRIV[chavePriv(l)] || {})[l.i] || null;
+const diasAte = d => d ? Math.round((new Date(d + "T12:00:00") - new Date(HOJE + "T12:00:00")) / 864e5) : null;
+const quando = l => { const n = diasAte(l.d); return n == null ? "data a confirmar" : n < 0 ? "já leiloado" : n === 0 ? "leilão hoje" : n === 1 ? "leilão amanhã" : `leilão em ${n} dias`; };
+const titulo = l => { const p = ASSIN && priv(l); return p && p.e ? p.e.replace(/\s+\d{5}$/, "") : `Lote em ${l.ci || l.co}`; };
+const lugar = l => `${l.ci ? l.ci + ", " : ""}${l.uf} · condado de ${l.co}`;
+const teto = l => { const p = ASSIN && prem(l); return p && p.t != null ? p.t : null; };
+
+function prepara(x){ for(const l of x.lotes || []){ for(const c of TXT_CAMPOS) if(Number.isInteger(l[c])) l[c] = x.txt[l[c]]; l._t = tipoId(l); l._g = grupoDe(l); L.push(l); } }
+/* ---------- conta, assinatura e progresso ---------- */
+async function descompacta(p){ if(p && p.z) p = await new Response(new Blob([Uint8Array.from(atob(p.z), c => c.charCodeAt(0))]).stream().pipeThrough(new DecompressionStream("gzip"))).json(); return p || {}; }
+async function conta_(){
+  try{ EU = await api("/api/me"); }catch(e){ EU = null; }
+  if(!EU || !EU.email){ EU = null; return; }
+  ESTADO.prefs = {avisos_xp: EU.avisos_xp !== false, preferencia_ui: EU.preferencia_ui || "novo"};
+  $("#btEntrar").textContent = String(EU.nome || EU.email).split(" ")[0]; $("#btEntrar").href = "../conta/";
+  if(EU.premium === true){
+    try{
+      const ufs = Array.isArray(EU.estados) ? EU.estados.filter(u => /^[A-Z]{2}$/.test(u)) : null;
+      const pacs = ufs ? await Promise.all(ufs.map(u => api("/api/premium?uf=" + u).then(descompacta))) : [await api("/api/premium").then(descompacta)];
+      for(const p of pacs){ Object.assign(PREM, p.premium || {}); Object.assign(PRIV, p.privado || {}); }
+      ASSIN = Object.keys(PREM).length > 0;
+    }catch(e){ ASSIN = false; }
+  }
+  await importaVisitante();
+}
+/* XP: no servidor para quem tem conta (POST /api/progresso/evento); no navegador para visitante, levado para a conta no 1º login */
+const PROG_LOCAL = "blr_novo_eventos";
+let PROG = null;
+function progressoLocal(){
+  const ev = LS.get(PROG_LOCAL, []), vistos = new Set(), xp = ev.reduce((s, e) => { const k = e.tipo + ":" + (e.alvo || ""); if(vistos.has(k)) return s; vistos.add(k); return s + (CONTEUDO.xp[e.tipo] || 0); }, 0);
+  const tem = t => ev.some(e => e.tipo === t), qt = t => new Set(ev.filter(e => e.tipo === t).map(e => e.alvo)).size;
+  const dias = new Set(ev.filter(e => e.tipo === "visita").map(e => e.alvo));
+  const ni = CONTEUDO.niveis.reduce((a, n, i) => xp >= n[1] ? i : a, 0);
+  let seq = 0; for(let i = 0; i < 60; i++){ const d = new Date(Date.now() - i * 864e5).toISOString().slice(0, 10); if(dias.has(d)) seq++; else if(i) break; }
+  const sg = []; if(tem("lote_aberto")) sg.push({id: "primeiro"}); if(qt("estado_explorado") >= 3) sg.push({id: "explorador"}); if(qt("teto_calculado") >= 3) sg.push({id: "calculista"});
+  if(qt("lote_acompanhado") >= 5) sg.push({id: "colecao"}); if(qt("guia_lido") >= 3) sg.push({id: "aluno"}); if(seq >= 7) sg.push({id: "semana"});
+  const passos = {estado: tem("estado_explorado"), lote: tem("lote_aberto"), teto: tem("teto_calculado"), salvar: tem("lote_acompanhado"), guia: tem("guia_lido"),
+                  faixa_dispensada: tem("faixa_dispensada"), hero_dispensado: tem("hero_dispensado")};
+  passos.feitos = ["estado", "lote", "teto", "salvar", "guia"].filter(k => passos[k]).length; passos.total = 5;
+  return {xp, nivel: {indice: ni, nome: CONTEUDO.niveis[ni][0], min: CONTEUDO.niveis[ni][1]}, xp_proximo: (CONTEUDO.niveis[ni + 1] || [0, null])[1], selos_ganhos: sg, passos,
+          sequencia: {atual: seq, dias: Array.from({length: 14}, (_, i) => { const d = new Date(Date.now() - (13 - i) * 864e5).toISOString().slice(0, 10); return {dia: d, ativo: dias.has(d)}; })}};
+}
+async function carregaProgresso(){ if(EU){ try{ PROG = await api("/api/progresso"); }catch(e){ PROG = progressoLocal(); } } else PROG = progressoLocal(); pintaXP(); }
+async function evento(tipo, alvo){
+  const ev = LS.get(PROG_LOCAL, []), envia = alvo;
+  if(tipo === "visita") alvo = new Date().toISOString().slice(0, 10);   // 1 por dia; o servidor conta o dia no fuso ET
+  if(ev.some(e => e.tipo === tipo && (e.alvo || "") === (alvo || ""))) return;
+  if(!EU){ ev.push({tipo, alvo, ts: new Date().toISOString().slice(0, 10)}); LS.set(PROG_LOCAL, ev.slice(-200));
+    const antes = PROG ? PROG.xp : 0; PROG = progressoLocal(); pintaXP(); const g = PROG.xp - antes; if(g > 0) toast(`+${g} XP`); return; }
+  ev.push({tipo, alvo}); LS.set(PROG_LOCAL, ev.slice(-200));
+  try{ const r = await api("/api/progresso/evento", envia ? {tipo, alvo: envia} : {tipo}); PROG = {...PROG, ...r}; pintaXP();
+    if(r.ganho > 0) toast(`+${r.ganho} XP`); for(const s of r.novos_selos || []) toast(`Novo selo: ${s.nome}`); }catch(e){}
+}
+async function importaVisitante(){
+  if(LS.get("blr_novo_importado", false)) return;
+  const ev = LS.get(PROG_LOCAL, []); if(!ev.length){ LS.set("blr_novo_importado", true); return; }
+  try{ await api("/api/progresso/importar", {eventos: ev.slice(-200)}); LS.set("blr_novo_importado", true); }catch(e){ if(e.st === 409) LS.set("blr_novo_importado", true); }
+}
+function pintaXP(){
+  if(!PROG) return;
+  const p = PROG.xp_proximo ? Math.min(100, Math.round((PROG.xp - PROG.nivel.min) / (PROG.xp_proximo - PROG.nivel.min) * 100)) : 100;
+  $("#xpAnel").style.setProperty("--p", p); $("#xpNiv").textContent = PROG.nivel.indice + 1; $("#xpTxt").textContent = `${PROG.nivel.nome} · ${n0(PROG.xp)} XP`;
+}
+
+/* ---------- navegação por hash ---------- */
+function nav(){
+  const h = (location.hash || "#explorar").slice(1), base = h.startsWith("lote-") ? "explorar" : h.startsWith("assinar-") ? "planos" : h;
+  const item = ([id, nome]) => `<a href="#${id}" ${base === id ? 'aria-current="page"' : ""}>${nome}</a>`;
+  $("#nav").innerHTML = CONTEUDO.nav.map(item).join("");
+  $("#navInf").innerHTML = CONTEUDO.nav.map(([id, nome, d]) => `<a href="#${id}" ${base === id ? 'aria-current="page"' : ""}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="${d}" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"/></svg>${nome}</a>`).join("");
+  return {h, base};
+}
+let MAPA = null;
+function rota(){
+  const {h, base} = nav();
+  const troca = () => {
+    if(base === "explorar"){ if(!$("#explorarPag")) explorar(); else lista(); }
+    else { MAPA = null; const f = {"meus-lotes": meusLotes, aprender, planos, progresso}[base] || explorar; f(); window.scrollTo(0, 0); }
+    if(h.startsWith("lote-")) abreFicha(h.slice(5)); else fechaFicha(true);
+  };
+  if(document.startViewTransition && !REDUZ && !h.startsWith("lote-") && base !== (rota.ult || "")) document.startViewTransition(troca); else troca();
+  rota.ult = base;
+}
+addEventListener("hashchange", rota);
+
+/* ---------- Explorar ---------- */
+function visiveis(){
+  return L.filter(l => !HIST(l) && !SEMDADO(l) && (!ESTADO.grupo || l._g === ESTADO.grupo) && (!ESTADO.crit || CRIT(l)) && (!ESTADO.uf || l.uf === ESTADO.uf)
+    && (!ESTADO.max || (l.ab || 0) <= ESTADO.max) && (!ESTADO.dias || (diasAte(l.d) != null && diasAte(l.d) >= 0 && diasAte(l.d) <= ESTADO.dias)));
+}
+function heroHTML(){
+  const c = CONTEUDO.hero, k = DADOS.idx.k;
+  return `<section class="hero" id="hero"><div>
+      <div class="eyebrow">${esc(c.eyebrow)}</div><h1>${esc(c.titulo)}</h1><p>${esc(c.texto)}</p>
+      <div class="acoes"><a class="btn pri" href="${c.testeHref}">${esc(c.principal)}</a><button class="btn" type="button" id="btExpl">${esc(c.secundario)}</button></div>
+      <div class="kpis"><div><b class="num" data-conta="${k.cos}">0</b>condados</div><div><b class="num" data-conta="${k.cr}">0</b>nos critérios BLR</div><div><b class="num">${esc(proxTxt(k.prox))}</b>próximo leilão</div></div></div>
+    <div class="viz" aria-hidden="true"><svg viewBox="0 0 400 300"><defs><pattern id="gr" width="26" height="26" patternUnits="userSpaceOnUse" patternTransform="rotate(-8)"><path d="M26 0H0V26" fill="none" stroke="var(--line)" stroke-width="1"/></pattern></defs>
+      <rect width="400" height="300" fill="url(#gr)"/><path d="M-10 205 L410 160 L410 185 L-10 230Z" fill="var(--sunk)"/>
+      <polygon points="150,70 270,58 285,150 160,165" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="2.5" style="--len:420" class="hpol"/>
+      <circle cx="215" cy="110" r="13" fill="var(--amber)"/><circle cx="215" cy="110" r="5" fill="var(--surface)"/></svg>
+      <div class="nota-t"><small>Teto de lance BLR · exemplo</small><b class="num">${usd(79600)}</b><small>Abertura ${usd(6200)}</small></div>
+      <button class="pill ic fecha" type="button" id="heroX" aria-label="Fechar apresentação">✕</button></div></section>`;
+}
+const proxTxt = d => { if(!d) return "—"; const [a, m, dd] = d.split("-"); return `${dd}/${m}`; };
+function passosHTML(){
+  const p = (PROG && PROG.passos) || {}; if(p.faixa_dispensada || p.feitos >= 5) return "";
+  const prox = CONTEUDO.passos.find(([k]) => !p[k]);
+  return `<div class="passos" id="passos"><span class="barras">${CONTEUDO.passos.map(([k]) => `<i class="${p[k] ? "ok" : ""}"></i>`).join("")}</span>
+    <span class="txt"><b>${p.feitos || 0} de 5 feitos</b>${prox ? " · Próximo: " + esc(prox[1]) : ""}</span><a class="btn peq" href="#progresso">Ver progresso</a>
+    <button class="pill ic" type="button" id="passosX" aria-label="Dispensar">✕</button></div>`;
+}
+function explorar(){
+  const verHero = !LS.get("blr_novo_hero_ok", false) && !(PROG && PROG.passos && PROG.passos.hero_dispensado);
+  $("#app").innerHTML = `<div id="explorarPag">${verHero ? heroHTML() : ""}<div id="passosBox">${passosHTML()}</div>
+    <div class="filtros" id="chips" role="group" aria-label="Tipo de leilão"></div><div class="escopo" id="escopo"></div>
+    <div class="explorar"><section class="painel"><header><h2>Leilões no mapa</h2><small id="mapaInfo">${CARREGADO ? "" : "Carregando os leilões…"}</small></header><div id="mapa"></div></section>
+      <section class="painel"><header><h2>Próximos leilões</h2><small id="nLista"></small></header><div class="lista" id="lista"><div class="carr">Carregando os leilões…</div></div></section></div></div>`;
+  document.querySelectorAll("[data-conta]").forEach(e => conta(e, +e.dataset.conta));
+  const fx = () => { LS.set("blr_novo_hero_ok", true); evento("hero_dispensado"); const h = $("#hero"); if(h) h.remove(); };
+  if($("#btExpl")) $("#btExpl").onclick = () => { fx(); $("#chips").scrollIntoView({behavior: REDUZ ? "auto" : "smooth"}); };
+  if($("#heroX")) $("#heroX").onclick = fx;
+  ligaPassos(); chips(); fazMapa(); lista();
+}
+function ligaPassos(){ const x = $("#passosX"); if(x) x.onclick = () => { evento("faixa_dispensada"); $("#passos").remove(); }; }
+function chips(){
+  const box = $("#chips"); if(!box) return;
+  const base = L.filter(l => !HIST(l) && !SEMDADO(l) && (!ESTADO.crit || CRIT(l)) && (!ESTADO.uf || l.uf === ESTADO.uf));
+  const n = {}; for(const l of base) n[l._g] = (n[l._g] || 0) + 1;
+  const nf = (ESTADO.max ? 1 : 0) + (ESTADO.dias ? 1 : 0) + (ESTADO.uf ? 1 : 0);
+  box.innerHTML = [{id: "", nome: "Todos", q: base.length}].concat(CONTEUDO.grupos.map(g => ({...g, q: n[g.id] || 0}))).filter(g => g.q || g.id !== "outros")
+    .map(g => `<button type="button" class="chip" data-g="${g.id}" aria-pressed="${ESTADO.grupo === g.id}" title="${esc(g.sigla || "Todos os tipos")}">${esc(g.nome)}${CARREGADO ? `<b class="num">${n0(g.q)}</b>` : ""}</button>`).join("")
+    + `<span class="esp"></span><label class="troca"><input type="checkbox" id="crit" ${ESTADO.crit ? "checked" : ""}> Só os que passam no critério BLR</label>
+       <button type="button" class="chip" id="btFiltros">Filtros${nf ? ` <b>${nf}</b>` : ""}</button>`;
+  $("#escopo").textContent = CARREGADO ? (ESTADO.uf ? `Em ${DADOS.estados_nome[ESTADO.uf] || ESTADO.uf}` : "Nos EUA") + " · sem leilões já realizados e sem lotes sem dado para a conta" : "";
+  box.querySelectorAll("[data-g]").forEach(b => b.onclick = () => { ESTADO.grupo = b.dataset.g; ESTADO.mostrar = 40; chips(); pintaMapa(); lista(); });
+  $("#crit").onchange = e => { ESTADO.crit = e.target.checked; ESTADO.mostrar = 40; chips(); pintaMapa(); lista(); };
+  $("#btFiltros").onclick = abreFiltros;
+}
+const FIPS_UF = {"01":"AL","02":"AK","04":"AZ","05":"AR","06":"CA","08":"CO","09":"CT","10":"DE","11":"DC","12":"FL","13":"GA","15":"HI","16":"ID","17":"IL","18":"IN","19":"IA","20":"KS","21":"KY","22":"LA","23":"ME","24":"MD","25":"MA","26":"MI","27":"MN","28":"MS","29":"MO","30":"MT","31":"NE","32":"NV","33":"NH","34":"NJ","35":"NM","36":"NY","37":"NC","38":"ND","39":"OH","40":"OK","41":"OR","42":"PA","44":"RI","45":"SC","46":"SD","47":"TN","48":"TX","49":"UT","50":"VT","51":"VA","53":"WA","54":"WV","55":"WI","56":"WY","66":"GU","72":"PR"};
+let CAM_UF = null, CAM_L = null, CAM_ROT = null, R_L = null, CAM_CO = null;
+function fazMapa(){
+  const css = getComputedStyle(document.documentElement);
+  MAPA = L_.map("mapa", {zoomControl: true, attributionControl: false, preferCanvas: true, minZoom: 3, maxZoom: 17, zoomSnap: .5, worldCopyJump: false}).setView([38.5, -96.5], 4);
+  if(innerWidth < 820) MAPA.setView([39, -96], 3);
+  R_L = L_.canvas({padding: .1});
+  const geo = topojson.feature(EUA, EUA.objects.states);
+  CAM_UF = L_.geoJSON(geo, {style: () => ({weight: 1, color: css.getPropertyValue("--surface").trim(), fillOpacity: 1, fillColor: css.getPropertyValue("--m0").trim()}),
+    onEachFeature: (f, ly) => { const uf = FIPS_UF[String(f.id).padStart(2, "0")]; ly._uf = uf;
+      ly.on("click", () => { if(!uf) return; MAPA.fitBounds(ly.getBounds(), {padding: [20, 20]}); evento("estado_explorado", uf); });
+      ly.on("mouseover", () => ly.setStyle({weight: 2.2, color: css.getPropertyValue("--accent").trim()})); ly.on("mouseout", () => ly.setStyle({weight: 1, color: css.getPropertyValue("--surface").trim()})); }}).addTo(MAPA);
+  CAM_ROT = L_.layerGroup().addTo(MAPA); CAM_L = L_.layerGroup().addTo(MAPA); CAM_CO = null;
+  MAPA.on("moveend zoomend", () => { pintaMapa(); lista(); });
+  pintaMapa();
+}
+function pintaMapa(){
+  if(!MAPA || !CAM_UF) return;
+  const css = getComputedStyle(document.documentElement), m = [0, 1, 2, 3, 4].map(i => css.getPropertyValue("--m" + i).trim());
+  const xs = visiveis(), por = {}; for(const l of xs) por[l.uf] = (por[l.uf] || 0) + 1;
+  const z = MAPA.getZoom(), perto = z >= 6;
+  CAM_UF.eachLayer(ly => { const q = por[ly._uf] || 0; ly.setStyle({fillColor: perto || !CARREGADO ? m[0] : q >= 300 ? m[4] : q >= 150 ? m[3] : q >= 60 ? m[2] : q >= 15 ? m[1] : m[0], fillOpacity: 1}); });
+  // de perto: as divisas dos condados (mesmo desenho do Censo da versão clássica), só linha, no canvas
+  if(perto && !CAM_CO) CAM_CO = L_.geoJSON(topojson.feature(EUA, EUA.objects.counties), {renderer: L_.canvas({padding: .1}), interactive: false,
+    style: () => ({weight: .7, color: css.getPropertyValue("--line").trim(), fill: false})});
+  if(CAM_CO){ if(perto && !MAPA.hasLayer(CAM_CO)) CAM_CO.addTo(MAPA); else if(!perto && MAPA.hasLayer(CAM_CO)) MAPA.removeLayer(CAM_CO); }
+  CAM_ROT.clearLayers(); CAM_L.clearLayers();
+  $("#mapaInfo") && ($("#mapaInfo").textContent = !CARREGADO ? "Carregando os leilões…" : perto ? "Toque num ponto para abrir o lote" : "Toque num estado para aproximar");
+  if(!CARREGADO) return;
+  if(!perto){
+    CAM_UF.eachLayer(ly => { const q = por[ly._uf]; if(!q || !ly._uf) return; const c = ly.getBounds().getCenter();
+      L_.marker(c, {interactive: false, icon: L_.divIcon({className: "", iconSize: [60, 30], iconAnchor: [30, 15], html: `<div class="uf-rot">${ly._uf}<small>${n0(q)}</small></div>`})}).addTo(CAM_ROT); });
+    return;
+  }
+  const b = MAPA.getBounds(), ac = css.getPropertyValue("--accent").trim(), mu = css.getPropertyValue("--muted").trim(), sf = css.getPropertyValue("--surface").trim();
+  let n = 0;
+  for(const l of xs){ const p = posDe(l); if(!p || !b.contains(p)) continue; if(++n > 4000) break;
+    L_.circleMarker(p, {renderer: R_L, radius: z >= 12 ? 8 : z >= 9 ? 6 : 4.5, weight: 1.5, color: sf, fillColor: CRIT(l) ? ac : mu, fillOpacity: .95})
+      .bindTooltip(() => `<b>${esc(titulo(l))}</b><br>${esc(l.ci || l.co)} · abertura ${usd(l.ab)}`, {direction: "top"}).on("click", () => { location.hash = "lote-" + l.i; }).addTo(CAM_L); }
+}
+const posDe = l => { const p = ASSIN && priv(l); return p && p.la != null ? [p.la, p.ln] : l.la != null ? [l.la, l.ln] : null; };
+function lista(){
+  const el = $("#lista"); if(!el) return;
+  if(!CARREGADO){ el.innerHTML = `<div class="carr">Carregando os leilões…</div>`; return; }
+  let xs = visiveis().filter(l => diasAte(l.d) == null || diasAte(l.d) >= 0);
+  if(MAPA && MAPA.getZoom() >= 5){ const b = MAPA.getBounds(); xs = xs.filter(l => { const p = posDe(l); return p && b.contains(p); }); }
+  xs.sort((a, b) => (a.d || "9999").localeCompare(b.d || "9999") || CRIT(b) - CRIT(a));
+  $("#nLista").textContent = `${n0(xs.length)} ${xs.length === 1 ? "lote" : "lotes"}${MAPA && MAPA.getZoom() >= 5 ? " no mapa visível" : ""}`;
+  if(!xs.length){ el.innerHTML = `<div class="vazio">Nenhum leilão com esses filtros nesta área.<br><button class="btn peq" type="button" id="verTodos" style="margin-top:12px">Ver todos os estados</button></div>`;
+    $("#verTodos").onclick = () => { Object.assign(ESTADO, {grupo: "", crit: false, uf: "", max: 0, dias: 0}); chips(); if(MAPA) MAPA.setView([38.5, -96.5], 4); }; return; }
+  el.innerHTML = xs.slice(0, ESTADO.mostrar).map(linhaHTML).join("") + (xs.length > ESTADO.mostrar ? `<button class="mais" type="button" id="mais">Mostrar mais ${n0(Math.min(40, xs.length - ESTADO.mostrar))}</button>` : "");
+  entra(el.querySelectorAll(".linha"));
+  const m = $("#mais"); if(m) m.onclick = () => { ESTADO.mostrar += 40; lista(); };
+}
+function formaSVG(l){ const p = ASSIN && prem(l), s = p && p.shp;
+  if(s && s.length > 2) return `<svg viewBox="-6 -6 112 112" aria-hidden="true"><polygon points="${s.map(q => q.join(",")).join(" ")}" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="2.5" vector-effect="non-scaling-stroke" stroke-linejoin="round"/></svg>`;
+  return `<svg viewBox="0 0 44 44" aria-hidden="true"><path d="M10 30V18l12-9 12 9v12z" fill="none" stroke="var(--muted)" stroke-width="2" stroke-linejoin="round"/></svg>`; }
+function linhaHTML(l){
+  const t = teto(l), n = diasAte(l.d), ti = CONTEUDO.tipos[l._t] || CONTEUDO.tipos.nao_informado;
+  const crit = CRIT(l) ? `<span class="tag ok">no critério BLR</span>` : "";
+  const acima = t != null && l.ab > t ? `<span class="tag acima">acima do teto</span>` : "";
+  return `<a class="linha" href="#lote-${l.i}"><div class="mini">${formaSVG(l)}</div>
+    <div style="min-width:0"><h3>${esc(titulo(l))}</h3><div class="sub">${esc((l.ci || l.co) + ", " + l.uf)} · ${esc(ti[0])}</div>
+      <div class="tags"><span class="tag ${n != null && n <= 14 ? "breve" : ""}">${esc(quando(l))}</span>${crit}${acima}</div></div>
+    <div class="val"><small>abertura</small><b class="num">${usd(l.ab)}</b><div class="teto">${t != null ? (t > 0 ? "teto " + usd(t) : "não fecha") : CRIT(l) ? "teto no Pro" : ""}</div></div></a>`;
+}
+
+/* ---------- filtros ---------- */
+function abreFiltros(){
+  const ufs = Object.entries(DADOS.estados_nome || {}).sort((a, b) => a[1].localeCompare(b[1]));
+  $("#drawer").innerHTML = `<h2>Filtros</h2>
+    <label class="campo">Estado<select id="fUf"><option value="">Todos os estados</option>${ufs.map(([u, n]) => `<option value="${u}" ${ESTADO.uf === u ? "selected" : ""}>${esc(n)}</option>`).join("")}</select></label>
+    <label class="campo">Abertura até (US$)<input type="number" id="fMax" min="0" step="1000" value="${ESTADO.max || ""}" placeholder="sem limite"></label>
+    <label class="campo">Leilão nos próximos<select id="fDias">${[[0, "qualquer data"], [7, "7 dias"], [30, "30 dias"], [90, "90 dias"]].map(([v, t]) => `<option value="${v}" ${ESTADO.dias === v ? "selected" : ""}>${t}</option>`).join("")}</select></label>
+    <div class="rod"><button class="btn pri" type="button" id="fOk">Aplicar</button><button class="btn" type="button" id="fLimpa">Limpar</button></div>`;
+  $("#drawer").classList.add("on"); $("#veu").classList.add("on");
+  $("#fOk").onclick = () => { ESTADO.uf = $("#fUf").value; ESTADO.max = +$("#fMax").value || 0; ESTADO.dias = +$("#fDias").value || 0; ESTADO.mostrar = 40; fechaDrawer();
+    chips(); if(ESTADO.uf){ evento("estado_explorado", ESTADO.uf); const ly = []; CAM_UF && CAM_UF.eachLayer(x => { if(x._uf === ESTADO.uf) ly.push(x); }); if(ly[0]) MAPA.fitBounds(ly[0].getBounds()); } pintaMapa(); lista(); };
+  $("#fLimpa").onclick = () => { Object.assign(ESTADO, {uf: "", max: 0, dias: 0}); fechaDrawer(); chips(); pintaMapa(); lista(); };
+}
+function fechaDrawer(){ $("#drawer").classList.remove("on"); if(!$("#ficha").classList.contains("on")) $("#veu").classList.remove("on"); }
+$("#veu").onclick = () => { fechaDrawer(); if($("#ficha").classList.contains("on")) history.back(); };
+
+/* ---------- ficha do lote ---------- */
+function abreFicha(id){
+  const l = L.find(x => x.i === id);
+  if(!l){ if(!CARREGADO){ setTimeout(() => abreFicha(id), 400); } return; }
+  const p = ASSIN ? prem(l) : null, pv = ASSIN ? priv(l) : null, t = p ? p.t : null, arv = p ? (p.am || (Array.isArray(p.a) ? (p.a[0] + p.a[1]) / 2 : null)) : null;
+  const ti = CONTEUDO.tipos[l._t] || CONTEUDO.tipos.nao_informado, folga = t != null && l.ab != null ? t - l.ab : null;
+  const jv = (p && p.jv) || l.jv;   // assinante: valor de cadastro exato (o público é arredondado), como na versão clássica
+  const pos = posDe(l);
+  const trava = !ASSIN ? `<div class="trava"><span>${CRIT(l) ? "Este lote passa no critério BLR. " : ""}Teto de lance, ARV, endereço e contorno ficam no Pro.</span><a class="btn pri peq" href="#planos">Ver planos</a></div>` : "";
+  const cont = p && p.shp && p.shp.length > 2 ? `<svg viewBox="-6 -6 112 112" aria-hidden="true"><polygon points="${p.shp.map(q => q.join(",")).join(" ")}" vector-effect="non-scaling-stroke" stroke-linejoin="round" style="--len:600"/></svg>`
+    : `<svg viewBox="0 0 44 44" aria-hidden="true" style="width:30%"><path d="M10 30V18l12-9 12 9v12z" fill="none" stroke="var(--muted)" stroke-width="1.6"/></svg>`;
+  $("#ficha").innerHTML = `<header><div><h2>${esc(titulo(l))}</h2><small>${esc(lugar(l))}</small></div><button class="pill ic x" type="button" id="fichaX" aria-label="Fechar">✕</button></header>
+    <div class="corpo">
+      <div class="k4">
+        <div class="k"><small>Abertura</small><b class="num" id="kAb">${usd(l.ab)}</b><div class="tr">${esc(quando(l))}</div></div>
+        <div class="k amber"><small>Teto de lance BLR</small><b class="num" id="kT">${t != null ? (t > 0 ? usd(t) : "não fecha") : "🔒 Pro"}</b><div class="tr">${CRIT(l) ? "no critério BLR" : "fora do critério"}</div></div>
+        <div class="k"><small>ARV (valor depois da reforma)</small><b class="num" id="kA">${arv ? usd(arv) : ASSIN ? "—" : "🔒 Pro"}</b><div class="tr">${jv ? "cadastro " + usd(jv) : ""}</div></div>
+        ${ASSIN ? `<div class="k"><small>Folga até o teto</small><b class="num">${folga != null ? usd(folga) : "—"}</b><div class="barra"><i id="kBar"></i></div></div>`
+          : `<div class="k"><small>Abertura sobre o cadastro</small><b class="num">${l.desc != null ? "−" + l.desc + "%" : "—"}</b><div class="tr">quanto menor a abertura, maior o desconto</div></div>`}
+      </div>${trava}
+      <div class="bloco"><h3>Contorno do lote</h3>${ASSIN ? `<div class="contorno">${cont}</div>` : `<p>O contorno, o endereço e o Street View deste lote ficam no Pro.</p>`}
+        ${ASSIN && pos ? `<p style="margin-top:10px"><a href="https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=${pos[0]},${pos[1]}" target="_blank" rel="noopener">Abrir o Street View ↗</a> · <a href="https://www.google.com/maps/search/?api=1&query=${pos[0]},${pos[1]}" target="_blank" rel="noopener">Ver no mapa ↗</a></p>` : ""}</div>
+      <div class="bloco"><h3>${esc(ti[0])}</h3><p>${esc(ti[1])}</p>
+        <dl class="det"><dt>Condado</dt><dd>${esc(l.co)}, ${esc(l.uf)}</dd><dt>Data do leilão</dt><dd>${l.d ? l.d.split("-").reverse().join("/") : "a confirmar"}</dd>
+          ${jv ? `<dt>Valor de cadastro</dt><dd>${usd(jv)}</dd>` : ""}${l.desc != null ? `<dt>Abertura sobre o cadastro</dt><dd>−${l.desc}%</dd>` : ""}
+          ${l.u ? `<dt>Uso</dt><dd>${esc(l.u)}</dd>` : ""}${l.a ? `<dt>Área construída</dt><dd>${n0(l.a)} pé²${l.y ? " · " + esc(l.y) : ""}</dd>` : ""}
+          ${pv && pv.parcela ? `<dt>Parcela</dt><dd class="mono">${esc(pv.parcela)}</dd>` : ""}</dl>
+        ${pv && pv.lk ? `<p style="margin-top:10px"><a href="${esc(pv.lk)}" target="_blank" rel="noopener">Edital oficial ↗</a></p>` : `<p style="margin-top:10px">Confira sempre o edital oficial do condado antes do lance.</p>`}</div>
+      <div class="facoes"><button class="btn pri" type="button" id="btSeg">${seguindo(l.i) ? "Acompanhando ✓" : "Acompanhar"}</button><button class="btn" type="button" id="btIaL">Perguntar à IA</button></div>
+    </div>`;
+  $("#ficha").classList.add("on"); $("#veu").classList.add("on"); $("#ficha").scrollTop = 0;
+  if(t != null){ conta($("#kT"), t > 0 ? t : 0, v => t > 0 ? usd(v) : "não fecha"); evento("teto_calculado", l.i); }
+  conta($("#kAb"), l.ab || 0, usd);
+  if(folga != null) requestAnimationFrame(() => { $("#kBar").style.width = Math.max(0, Math.min(100, folga / Math.max(1, t) * 100)) + "%"; });
+  $("#fichaX").onclick = () => history.back();
+  $("#btSeg").onclick = () => { segue(l.i); $("#btSeg").textContent = seguindo(l.i) ? "Acompanhando ✓" : "Acompanhar"; if(seguindo(l.i)) evento("lote_acompanhado", l.i); };
+  $("#btIaL").onclick = () => abreIA(l);
+  evento("lote_aberto", l.i);
+}
+function fechaFicha(silencio){ $("#ficha").classList.remove("on"); if(!$("#drawer").classList.contains("on")) $("#veu").classList.remove("on"); }
+addEventListener("keydown", e => { if(e.key === "Escape"){ if($("#ficha").classList.contains("on")) history.back(); fechaDrawer(); } });
+const SEG = "blr_novo_seguindo";
+const seguindo = i => LS.get(SEG, []).includes(i);
+const segue = i => { const s = LS.get(SEG, []); LS.set(SEG, s.includes(i) ? s.filter(x => x !== i) : [...s, i]); };
+
+/* ---------- Meus lotes, Aprender, Planos, Progresso ---------- */
+function meusLotes(){
+  const s = LS.get(SEG, []), xs = L.filter(l => s.includes(l.i));
+  $("#app").innerHTML = `<section class="pag"><h1>Meus lotes</h1><p class="sub">Os lotes que você acompanha. Toque em "Acompanhar" na ficha de um lote para ele aparecer aqui.</p>
+    <div class="painel"><header><h2>Acompanhando</h2><small>${n0(xs.length)}</small></header><div class="lista">${CARREGADO ? xs.map(linhaHTML).join("") || `<div class="vazio">Nenhum lote ainda. <a href="#explorar">Explorar o mapa</a></div>` : `<div class="carr">Carregando…</div>`}</div></div>
+    <div class="cartao" style="margin-top:var(--s4)"><h3>Portfólio</h3><p>Os imóveis que você arrematou com a BLR aparecem aqui. Por enquanto ficam na <a href="../">versão clássica</a>, em Meu portfólio.</p></div></section>`;
+  entra(document.querySelectorAll(".linha"));
+}
+function aprender(){
+  $("#app").innerHTML = `<section class="pag"><h1>Aprender</h1><p class="sub">Guias curtos para ir do edital ao arremate, e as palavras que aparecem nos leilões.</p>
+    <div class="grade2">${CONTEUDO.aprender.map(([h, t, d]) => `<a class="cartao" href="${h}" data-guia="${esc(h)}" style="text-decoration:none;color:inherit"><h3>${esc(t)}</h3><p>${esc(d)}</p></a>`).join("")}</div>
+    <h2 style="margin:var(--s6) 0 var(--s3);font-size:24px">Glossário</h2><div class="cartao"><dl class="det">${CONTEUDO.glossario.map(([a, b]) => `<dt><b>${esc(a)}</b></dt><dd style="font-weight:400">${esc(b)}</dd>`).join("")}</dl></div></section>`;
+  document.querySelectorAll("[data-guia]").forEach(a => a.addEventListener("click", () => evento("guia_lido", a.dataset.guia.replace(/\W+/g, "")), {once: true}));
+  entra(document.querySelectorAll(".cartao"));
+}
+let CICLO = "m";
+function planos(){
+  const pr = p => CICLO === "m" ? `${usd(p.m).replace(/,00$/, "")}<small> /mês</small>` : `${usd(p.a)}<small> /ano</small>`;
+  const pm = v => v ? (CICLO === "m" ? "US$ " + v.toFixed(2).replace(".", ",") : usd(v)) : "Grátis";
+  const em = EU && EU.email ? "?prefilled_email=" + encodeURIComponent(EU.email) : "";
+  $("#app").innerHTML = `<section class="pag"><h1>Escolha o seu plano</h1><p class="sub">Comece grátis: o mapa dos EUA com todos os leilões e o lance de abertura. O Pro tem 7 dias grátis, só com e-mail e telefone, sem cartão.</p>
+    <div class="ciclo" role="group" aria-label="Forma de pagamento"><button type="button" data-c="m" aria-pressed="${CICLO === "m"}">Mensal</button><button type="button" data-c="a" aria-pressed="${CICLO === "a"}">Anual · 2 meses grátis</button></div>
+    <div class="planos">${CONTEUDO.planos.map(p => `<article class="plano ${p.dest ? "dest" : ""}">${p.selo ? `<span class="selo">${esc(p.selo)}</span>` : ""}
+      <h2>${esc(p.nome)}</h2><div class="quem">${esc(p.quem)}</div><div class="preco num">${p.m ? (CICLO === "m" ? pm(p.m) + "<small> /mês</small>" : usd(p.a) + "<small> /ano</small>") : "Grátis"}</div>
+      <ul>${p.itens.map(i => `<li>${esc(i)}</li>`).join("")}</ul>
+      ${p.id === "gratuito" ? `<a class="btn" href="#explorar">${esc(p.cta)}</a>` : `<a class="btn ${p.dest ? "pri" : ""}" href="${CONTEUDO.stripe[p.id][CICLO]}${em}" target="_blank" rel="noopener">Assinar o ${esc(p.nome)}</a>${p.selo ? `<a class="btn" href="${CONTEUDO.hero.testeHref}">Testar 7 dias grátis</a>` : ""}`}</article>`).join("")}</div>
+    <div class="compara">${CONTEUDO.compara.map(([t, d]) => `<div class="cartao"><h3>${esc(t)}</h3><p>${esc(d)}</p></div>`).join("")}</div>
+    <p class="sub" style="margin-top:var(--s5);font-size:13px">Preços em dólar. Pagamento seguro pelo Stripe, em nome de BLR Development. Mensal: cancele quando quiser. Depois do pagamento, a BLR libera o seu acesso em até 1 dia útil.</p></section>`;
+  document.querySelectorAll("[data-c]").forEach(b => b.onclick = () => { CICLO = b.dataset.c; planos(); });
+  entra(document.querySelectorAll(".plano"));
+}
+function progresso(){
+  const P = PROG || progressoLocal(), ganhos = new Set((P.selos_ganhos || []).map(s => s.id));
+  const pct = P.xp_proximo ? Math.min(100, Math.round((P.xp - P.nivel.min) / (P.xp_proximo - P.nivel.min) * 100)) : 100;
+  $("#app").innerHTML = `<section class="pag"><h1>Meu progresso</h1><p class="sub">${EU ? "O seu progresso fica na sua conta e vale em qualquer aparelho." : "Você está como visitante: o progresso fica neste navegador e passa para a sua conta quando você entrar."}</p>
+    <div class="cartao nivel"><div class="grande" id="anelG"><div><span class="num" id="xpG">0</span><small>XP</small></div></div>
+      <div><h2 style="font-size:26px">${esc(P.nivel.nome)}</h2><p>${P.xp_proximo ? `Faltam <b class="num">${n0(P.xp_proximo - P.xp)}</b> XP para ${esc((CONTEUDO.niveis[P.nivel.indice + 1] || [""])[0])}` : "Nível máximo"}</p>
+        <div class="dias" title="Últimos 14 dias">${(P.sequencia && P.sequencia.dias || []).map(d => `<i class="${d.ativo ? "on" : ""}" title="${d.dia}"></i>`).join("")}</div>
+        <p style="margin-top:6px;color:var(--muted);font-size:14px">Sequência: <b>${(P.sequencia && P.sequencia.atual) || 0}</b> ${((P.sequencia && P.sequencia.atual) || 0) === 1 ? "dia" : "dias"}</p></div></div>
+    <h2 style="margin:var(--s6) 0 var(--s3);font-size:22px">Primeiros passos</h2>
+    <div class="cartao"><ol style="margin:0;padding-left:20px;display:grid;gap:6px">${CONTEUDO.passos.map(([k, t]) => `<li style="${P.passos && P.passos[k] ? "color:var(--accent);font-weight:600" : ""}">${esc(t)}${P.passos && P.passos[k] ? " ✓" : ""}</li>`).join("")}</ol></div>
+    <h2 style="margin:var(--s6) 0 var(--s3);font-size:22px">Selos</h2>
+    <div class="selos">${CONTEUDO.selos.map(([id, n, ic, d]) => `<div class="selo-c ${ganhos.has(id) ? "ganho" : ""}"><i>${ic}</i><b>${esc(n)}</b><small>${esc(d)}</small></div>`).join("")}</div>
+    <p style="margin-top:var(--s5)"><label class="troca"><input type="checkbox" id="avisos" ${ESTADO.prefs.avisos_xp !== false ? "checked" : ""}> Mostrar os avisos de XP</label></p>
+    <p style="color:var(--muted);font-size:13px">XP: abrir lote +10 · estado novo +15 · teto de lance visto +25 · acompanhar lote +5 · guia lido +20. Cada coisa conta uma vez.</p></section>`;
+  conta($("#xpG"), P.xp); requestAnimationFrame(() => $("#anelG").style.setProperty("--p", pct));
+  entra(document.querySelectorAll(".selo-c"));
+  $("#avisos").onchange = e => { ESTADO.prefs.avisos_xp = e.target.checked; if(EU) api("/api/preferencias", {avisos_xp: e.target.checked}).catch(() => {}); };
+}
+
+/* ---------- assistente de IA (mesma rota da versão clássica) ---------- */
+let IA_L = null, IA_H = [];
+function abreIA(l){
+  IA_L = l || null; const box = $("#ia"); box.hidden = false;
+  if(!box.innerHTML) box.innerHTML = `<header>Assistente BLR<button class="pill ic" type="button" id="iaX" aria-label="Fechar">✕</button></header><div class="msgs" id="iaMsgs"><div class="m">Pergunte sobre um lote, um tipo de leilão ou os planos.</div><div class="sug">${CONTEUDO.ia.sugestoes.map(s => `<button class="chip" type="button" data-s="${esc(s)}">${esc(s)}</button>`).join("")}</div></div>
+    <form id="iaF"><input id="iaT" autocomplete="off" placeholder="Escreva a sua pergunta"><button class="btn pri peq" type="submit">Enviar</button></form>`;
+  $("#iaX").onclick = () => { box.hidden = true; };
+  box.querySelectorAll("[data-s]").forEach(b => b.onclick = () => { $("#iaT").value = b.dataset.s; $("#iaF").requestSubmit(); });
+  $("#iaF").onsubmit = async e => { e.preventDefault(); const t = $("#iaT").value.trim(); if(!t) return; $("#iaT").value = "";
+    const msgs = $("#iaMsgs"), u = document.createElement("div"); u.className = "m u"; u.textContent = t; msgs.append(u);
+    const r = document.createElement("div"); r.className = "m"; r.textContent = "Pensando…"; msgs.append(r); msgs.scrollTop = 1e9;
+    const lote = IA_L ? Object.fromEntries(["uf", "co", "ci", "zip", "d", "ab", "jv", "desc", "u", "a", "y", "et"].filter(c => IA_L[c] != null).map(c => [c, IA_L[c]])) : null;
+    try{ const j = await api("/api/assistente", {pergunta: t, contexto: {tela: IA_L ? "ficha do lote (versão nova)" : "mapa (versão nova)", canal: "texto", ...(lote ? {lote} : {})}, historico: IA_H.slice(-6)});
+      r.textContent = j.resposta || "Sem resposta."; IA_H.push({p: t, r: r.textContent}); }
+    catch(er){ r.textContent = er.st === 401 ? "Entre na sua conta para usar o assistente." : er.st === 429 ? "Você chegou ao limite de perguntas do seu plano." : "O assistente não respondeu agora. Tente de novo."; }
+    msgs.scrollTop = 1e9; };
+  $("#iaT").focus();
+}
+$("#fab").onclick = () => { const b = $("#ia"); if(!b.hidden) b.hidden = true; else abreIA(null); };
+
+/* ---------- tema, versão clássica, XP ---------- */
+$("#btTema").onclick = () => { const d = document.documentElement.dataset.theme === "dark" ? "light" : "dark"; document.documentElement.dataset.theme = d; try{ localStorage.setItem("blr_novo_tema", d); }catch(e){} if(MAPA){ if(CAM_CO && MAPA.hasLayer(CAM_CO)) MAPA.removeLayer(CAM_CO); CAM_CO = null; pintaMapa(); } };
+$("#btClassico").onclick = async e => { e.preventDefault(); try{ localStorage.setItem("blr_ui", "classico"); }catch(er){} if(EU) await api("/api/preferencias", {preferencia_ui: "classico"}).catch(() => {}); location.href = CONTEUDO.classicoHref; };
+$("#xpChip").onclick = () => { location.hash = "progresso"; };
+const L_ = window.L;
+
+/* ---------- início ---------- */
+(async function inicio(){
+  try{ localStorage.setItem("blr_ui", "novo"); }catch(e){}
+  try{ await carregaDadosIndice(); }catch(e){ $("#app").innerHTML = `<p class="vazio">Não foi possível carregar os dados (${esc(e.message)}). Recarregue a página.</p>`; return; }
+  PROG = progressoLocal(); pintaXP(); rota();
+  conta_().then(async () => { await carregaProgresso(); evento("visita", undefined); const h = location.hash; if(ASSIN && CARREGADO){ pintaMapa(); lista(); } if(h.startsWith("#lote-")) abreFicha(h.slice(6)); else if(!h || h === "#explorar"){ const pb = $("#passosBox"); if(pb){ pb.innerHTML = passosHTML(); ligaPassos(); } } });
+  carregaResto().then(() => { if($("#explorarPag")){ chips(); pintaMapa(); lista(); } else rota(); if(location.hash.startsWith("#lote-")) abreFicha(location.hash.slice(6)); });
+})();
+async function carregaDadosIndice(){
+  const a = await busca("../atual.json");
+  [DADOS, EUA] = await Promise.all([busca("../" + a.DADOS), busca("../" + a.EUA)]);
+  try{ HOJE = new Date().toLocaleDateString("en-CA", {timeZone: "America/New_York"}); }catch(e){ HOJE = new Date().toISOString().slice(0, 10); }
+}
+async function carregaResto(){
+  const fila = [...(DADOS.partes || [])];
+  const um = async () => { while(fila.length){ const p = fila.shift(); try{ prepara(await busca("../" + p.a)); }catch(e){ console.warn(e); } } };
+  await Promise.all([um(), um(), um(), um()]);
+  CARREGADO = true;
+}
+</script>
+</body>
+</html>

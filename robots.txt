@@ -1,6 +1,7 @@
 User-agent: *
 Disallow: /admin/
 Disallow: /conta/
+Disallow: /novo/
 Disallow: /para-voce/
 Disallow: /dados/
 Disallow: /pol/
