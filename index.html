@@ -509,6 +509,7 @@ body.prel .rel-marca{display:flex}
 @media (min-width:761px){.contTop{flex-wrap:wrap;overflow:visible}}
 @media (max-width:760px){.contTop{-webkit-mask-image:linear-gradient(90deg,#000 85%,transparent);mask-image:linear-gradient(90deg,#000 85%,transparent);padding-right:24px}}
 .contTop::-webkit-scrollbar{display:none}
+.contTop .ct-esc{align-self:center;flex:0 0 auto;font:600 11px var(--f-b);color:var(--mute);text-transform:uppercase;letter-spacing:.06em;padding:0 2px}
 .contTop button{all:unset;cursor:pointer;box-sizing:border-box;flex:0 0 auto;display:inline-flex;align-items:center;gap:6px;padding:6px 11px;border-radius:999px;background:rgba(12,14,18,.9);border:1px solid var(--line2);font:600 12px var(--f-b);color:var(--tx);white-space:nowrap}
 .contTop button b{font:500 11.5px var(--f-m);color:var(--acc)}
 .contTop button[aria-pressed=true]{background:var(--acc);color:var(--ink);border-color:var(--acc)}.contTop button[aria-pressed=true] b{color:var(--ink)}
@@ -1136,8 +1137,8 @@ body{transition:padding-right .5s var(--mola)}
 <header class="top"><div class="wrap">
   <div class="logo" title="BLR Developments"><i class="ico" aria-hidden="true"><svg viewBox="0 0 64 64" width="26" height="26"><rect width="64" height="64" rx="14" fill="#0C0E12"/><path d="M32 59C25 50 11 39 11 26A21 21 0 1 1 53 26C53 39 39 50 32 59Z" fill="#E8B04B"/><path d="M32 13L45 24H41V36H23V24H19Z" fill="#0C0E12"/><rect x="29" y="27" width="6" height="9" rx="1" fill="#E8B04B"/></svg></i><span class="lg-full">BLR Developments</span><span class="lg-curto">BLR</span></div>
   <nav class="tabs" role="tablist">
-    <button role="tab" data-v="mapa" aria-selected="true" title="Mapa dos leilões"><i class="tbi" aria-hidden="true">◎</i><span>BIDMAP</span></button>
-    <button role="tab" data-v="negocios" aria-selected="false" title="Lista dos lotes"><i class="tbi" aria-hidden="true">☰</i><span>BIDLIST</span></button>
+    <button role="tab" data-v="mapa" aria-selected="true" title="Mapa dos leilões"><i class="tbi" aria-hidden="true">◎</i><span>Mapa</span></button>
+    <button role="tab" data-v="negocios" aria-selected="false" title="Lista dos lotes"><i class="tbi" aria-hidden="true">☰</i><span>Lista</span></button>
     <button role="tab" data-v="pacotes" aria-selected="false" id="btSeg" title="Seus pacotes de parcels (listas ★)"><i class="tbi" aria-hidden="true">★</i><span>Pacotes</span><b class="tbn" id="nSeg">0</b></button>
     <button role="tab" data-v="portfolio" aria-selected="false" title="Seus parcels arrematados"><i class="tbi" aria-hidden="true">◈</i><span class="lg-full">Meu portfólio</span><span class="tb-curto">Portfólio</span></button>
     <button role="tab" data-v="guia" aria-selected="false" title="Explicação de cada item (assinantes)"><i class="tbi" aria-hidden="true">?</i><span>Guia</span><span class="cad" id="guiaC"> 🔒</span></button>
@@ -1234,7 +1235,7 @@ body{transition:padding-right .5s var(--mola)}
   <section id="v-portfolio" hidden><div class="port" id="port"></div></section>
 
   <section id="v-cobertura" hidden>
-    <div class="cobvolta"><button type="button" class="lnk" id="cobVolta">← Voltar ao BIDMAP</button></div>
+    <div class="cobvolta"><button type="button" class="lnk" id="cobVolta">← Voltar ao mapa</button></div>
     <div class="cob" id="cob"></div>
   </section>
 
@@ -1606,7 +1607,7 @@ function abreSeg(id){
   const crit = li.crit ? `<div class="lcrit"><b>Critérios do questionário:</b> ${esc(li.crit)} · <a href="para-voce/?lista=${encodeURIComponent(li.id)}">Refazer o questionário</a></div>` : "";
   const corpo = !li.itens.length ? `<p class="vazio">Lista vazia. Toque em <b>☆ Acompanhar</b> num lote para guardar aqui. Aqui aparece o que mudou desde que você marcou: lance, data, se saiu da lista e, depois do leilão, por quanto foi vendido.</p>`
     : "";   // 07/11: os lotes aparecem na tabela do pacote (colunas escolhíveis)
-  $("#pac").innerHTML = (`<div class="pactopo"><h2>Pacotes</h2><p class="nota">Cada lista ★ é um pacote de parcels. Marque ☆ Acompanhar num lote do BIDMAP ou da BIDLIST para guardar aqui.</p></div>${abas}
+  $("#pac").innerHTML = (`<div class="pactopo"><h2>Pacotes</h2><p class="nota">Cada lista ★ é um pacote de parcels. Marque ☆ Acompanhar num lote do maP ou da BIDLIST para guardar aqui.</p></div>${abas}
     <div class="lcab">${ASSIN ? `<input id="lNome" maxlength="40" value="${esc(li.nome)}" aria-label="Nome da lista"><span class="lcores">${LCORES.map(c => `<button type="button" data-lc="${c}" style="background:${c}" aria-label="Cor" aria-pressed="${c === li.cor}"></button>`).join("")}</span>` : `<b>${esc(li.nome)}</b>`}</div>
     ${crit}${corpo}${pacoteHTML(li)}
     <p class="nota">${PODE || SESSAO ? "Guardado neste navegador e na sua conta assim que o servidor permitir." : "Fica guardado neste navegador."} Os lotes são atualizados duas vezes por semana.</p>
@@ -1856,7 +1857,8 @@ const TGRUPOS = [   // 11/11: contadores do topo do mapa (agrupam os tipos do TI
   {id: "g:exec", nome: "Execução", ids: ["foreclosure", "sheriff_judicial"]},
   {id: "g:imposto", nome: "Imposto", ids: ["tax_deed", "tax_lien", "upset"]},
   {id: "g:gov", nome: "Governo / REO", ids: ["governo_federal", "reo"]},
-  {id: "g:lb", nome: "Land bank", ids: ["land_bank"]}];
+  {id: "g:lb", nome: "Land bank", ids: ["land_bank"]},
+  {id: "g:outros", nome: "Outros", ids: ["nao_informado"]}];   // 13/11 (Gallery, auditoria): sem este grupo as abas não somavam o Todos (faltavam 6)
 const tlOk = l => { if(!TLF) return true; const id = tipoLeilao(l).id; if(TLF.startsWith("g:")){ const g = TGRUPOS.find(x => x.id === TLF); return !!g && g.ids.includes(id); } return id === TLF; };
 function tipoPorId(id){ return TIPOS_LEILAO.find(t => t.id === id) || TIPOS_LEILAO[TIPOS_LEILAO.length - 1]; }
 function tipoLeilao(l){
@@ -1879,11 +1881,19 @@ function baseTipo(){
   TLF = salvo;
   return r.filter(l => !HIST(l));
 }
-function pintaTipoBar(){
-  const box = $("#tipoChips"); if(!box) return;
-  const xs = baseTipo(), n = {};
+/* 13/11 (Gallery, auditoria dos contadores): uma contagem só, de onde saem todos os números do topo e da lista.
+   No mapa conta o que o mapa desenha: sem histórico e, com os anéis "sem dado" escondidos (SEMON desligado), sem eles. */
+function contagem(){
+  const mapa = !$("#v-mapa").hidden;
+  const xs = baseTipo().filter(l => !mapa || SEMON || !SEMDADO(l)), n = {};
   for(const t of TIPOS_LEILAO) n[t.id] = 0;
   for(const l of xs) n[tipoLeilao(l).id]++;
+  return {xs, n, mapa};
+}
+const escopoTxt = () => { const uf = $("#fUf") && $("#fUf").value; return uf ? "em " + uf : "nos EUA"; };
+function pintaTipoBar(){
+  const box = $("#tipoChips"); if(!box) return;
+  const {xs, n} = contagem();
   const sc = box.scrollLeft;
   const chips = [{id:"", nome:"Todos"}].concat(TIPOS_LEILAO);
   box.innerHTML = chips.map(t => {
@@ -1898,10 +1908,12 @@ function pintaTipoBar(){
 }
 function pintaContTop(xs, n){
   const box = $("#contTop"); if(!box) return;
+  if(window.__PARTES_OK === false || (!xs.length && window.__PARTES_OK !== true)){ box.innerHTML = `<span class="ct-esc">Carregando os leilões…</span>`; return; }   // 13/11: nada de número parcial
   const crit = xs.filter(noCrit).length;
-  const itens = [{id: "", nome: "Todos", q: xs.length}].concat(TGRUPOS.map(g => ({id: g.id, nome: g.nome, q: g.ids.reduce((a, i) => a + (n[i] || 0), 0)})));
+  const itens = [{id: "", nome: "Todos", q: xs.length}].concat(TGRUPOS.map(g => ({id: g.id, nome: g.nome, q: g.ids.reduce((a, i) => a + (n[i] || 0), 0)})))
+    .filter(t => t.q || t.id !== "g:outros");
   const sc = box.scrollLeft;
-  box.innerHTML = itens.map(t => `<button type="button" data-ct="${t.id}" aria-pressed="${(TLF || "") === t.id}" class="${t.q ? "" : "zero"}">${esc(t.nome)} <b>${t.q.toLocaleString("pt-BR")}</b></button>`).join("")
+  box.innerHTML = `<span class="ct-esc">${escopoTxt()}</span>` + itens.map(t => `<button type="button" data-ct="${t.id}" aria-pressed="${(TLF || "") === t.id}" class="${t.q ? "" : "zero"}">${esc(t.nome)} <b>${t.q.toLocaleString("pt-BR")}</b></button>`).join("")
     + `<button type="button" data-ctcrit aria-pressed="${!!CRITM}">Nos critérios BLR <b>${crit.toLocaleString("pt-BR")}</b></button>`;
   box.scrollLeft = sc;
 }
@@ -2286,10 +2298,10 @@ function iaTela(){
    um estado, o resumo dele. Tudo sai do que esta página já tem para esta pessoa (nada além do que ela veria); endereço não vai. */
 const IA_SABER = [
   "## A BLR e a plataforma",
-  "- A BLR Developments é uma investidora imobiliária de Boston (EUA) que compra imóveis em leilão público e conhece o processo por dentro. A Vitrine BLR (BIDMAP) junta num mapa os leilões públicos dos EUA, lidos direto das fontes oficiais: editais dos condados, leiloeiros, tribunais e órgãos do governo.",
+  "- A BLR Developments é uma investidora imobiliária de Boston (EUA) que compra imóveis em leilão público e conhece o processo por dentro. A Vitrine BLR junta num mapa os leilões públicos dos EUA, lidos direto das fontes oficiais: editais dos condados, leiloeiros, tribunais e órgãos do governo.",
   "- Os dados são atualizados todo dia. Um lote sai quando o dono paga a dívida (resgate) ou o leilão é adiado ou cancelado; por isso o edital oficial é o que vale e deve ser conferido antes do lance.",
   "- A análise BLR completa (teto, ARV pelas vendas reais, Força) hoje existe para a Flórida. Nos outros estados o lote aparece com ARV estimado (valor oficial do condado ou preço por pé² do CEP) ou como \"listado\" (dado do edital, sem a conta completa). Alguns estados não têm leilão no calendário, só estoque de venda direta (land bank, imóveis do governo).",
-  "- Abas: BIDMAP (o mapa), BIDLIST (a lista dos lotes, com ordenação e colunas), Pacotes (listas ★ dos lotes que você acompanha), Meu portfólio (o que você arrematou) e Guia (cada item explicado). O questionário \"Para você\" monta uma lista com os lotes que combinam com o seu perfil.",
+  "- Abas: Mapa (antes BIDMAP), Lista (antes BIDLIST: a lista dos lotes, com ordenação e colunas), Pacotes (listas ★ dos lotes que você acompanha), Meu portfólio (o que você arrematou) e Guia (cada item explicado). O questionário \"Para você\" monta uma lista com os lotes que combinam com o seu perfil.",
   "- Novos desde a sua última visita: lista na página, por estado, para o Básico e acima, só nos estados do plano. A data da visita fica neste navegador, na conta. Sem e-mail e sem envio automático.",
   "- Como comprar: Self Bidder (planos Básico e Pro): você se inscreve no leilão e dá o lance por conta própria, com a análise da plataforma. Partner Bidder (UltraPro, por convite e depois de homologação): a BLR opera o lance com você e divide o risco. O botão \"Quero participar deste leilão\" pede à BLR para inscrever e dar o lance por você.",
   "- Teste grátis de 7 dias, só com e-mail e telefone, para testar o Pro. O UltraPro entra nesse teste; o Básico não tem. O plano anual sai pelo preço de 10 meses. O pagamento é por link enviado pela BLR; nada é cobrado dentro do site. Sem cartão: se não assinar, a pessoa continua como visitante.",
@@ -3733,7 +3745,7 @@ function seloTrialHTML(id){ return temTrial(id) ? `<span class="selo-trial">${TR
 const PLANOS = {
   basico: {n: "Básico", p: "9,90", a: "99", am: "8,25", ec: "19,80", ben: ["Ficha completa e filtros avançados", "1 estado à sua escolha (troca 1× por mês)", "Self Bidder: você opera por conta própria", "Assistente de IA: 10 consultas por mês"]},
   pro: {n: "Pro", p: "49,90", a: "499", am: "41,58", ec: "99,80", ben: ["Tudo do Básico, em até 3 estados", "Teto de lance BLR, ARV e a conta ao vivo de cada lote", "Posição exata, contorno do lote, Street View, endereço e parcela", "Várias listas e alertas de oportunidades", "Self Bidder com suporte a dúvidas · IA: 40 consultas por mês"]},
-  ultra: {n: "UltraPro", p: "249,90", a: "2.499", am: "208,25", ec: "499,80", ben: ["Tudo do Pro, em todos os estados", "Partner Bidder: a BLR opera com você e divide o risco", "Comunidade, mentoria e oferta de lotes já arrematados", "Sala de leilão ao vivo, consultoria de engenharia e o curso completo", "Assistente de IA ilimitado"]}};
+  ultra: {n: "UltraPro", p: "249,90", a: "2.499", am: "208,25", ec: "499,80", ben: ["Tudo do Pro, nos 50 estados, DC e territórios", "Partner Bidder: a BLR opera com você e divide o risco", "Comunidade, mentoria e oferta de lotes já arrematados", "Sala de leilão ao vivo, consultoria de engenharia e o curso completo", "Assistente de IA ilimitado"]}};
 /* 12/11 (Cris aprovou os planos e a conta Stripe da Gallery "por enquanto"): links de pagamento do Stripe por plano e ciclo.
    Pagar ainda não muda o plano no servidor: o admin libera à mão. O e-mail da conta vai em prefilled_email para casar o pagamento. */
 const STRIPE = {
@@ -4114,7 +4126,8 @@ function criaMapa(){
     const top = vis.slice(0, 9);
     if(RG_ABERTO && !top.some(l => l.i === RG_ABERTO)){ const x = vis.find(l => l.i === RG_ABERTO); if(x) top[top.length ? top.length - 1 : 0] = x; }
     RG.classList.toggle("min", RG_MIN);
-    RG.innerHTML = `<div class="grh"><div><b>${vis.length ? plural(vis.length, "oportunidade", "oportunidades").replace(/^\d+/, fmtN(vis.length)) : "Nenhuma oportunidade"}</b><small>${vis.length > 9 ? "nesta área · as 9 melhores" : "nesta área do mapa"} · <a href="para-voce/" class="pv">✦ achar as que combinam com você</a></small></div>
+    const carr = window.__PARTES_OK === false;   // 13/11: enquanto os estados carregam, nada de "Nenhuma oportunidade"
+    RG.innerHTML = `<div class="grh"><div><b>${carr ? "Carregando…" : vis.length ? plural(vis.length, "oportunidade", "oportunidades").replace(/^\d+/, fmtN(vis.length)) : "Nenhuma oportunidade"}</b><small>${vis.length > 9 ? "no mapa visível · as 9 melhores" : "no mapa visível"} · <a href="para-voce/" class="pv">✦ achar as que combinam com você</a></small></div>
       <button type="button" class="rmin" data-rmin aria-label="${RG_MIN ? "Abrir" : "Recolher"} as oportunidades">${RG_MIN ? "▴" : "▾"}</button></div>
       <div class="grl">${top.map(cartaoRG).join("") || `<p class="vazio">Afaste o mapa ou mude os filtros.</p>`}${BENEF()}</div>`;
   }
@@ -5164,8 +5177,9 @@ if(PARTES.length){
     const pm = MEMBRO && MEMBRO.premium ? MEMBRO.premium[uf] || {} : null;
     for(const l of x.lotes || []){ prepLote(l, x.txt || []); if(pm && pm[l.i]) poePremium(l, pm[l.i]); L.push(l); }
     UF_OK.add(uf); };
-  const refaz = () => { const t = performance.now(); kpis(); opcoes(); critTexto(); if(ASSIN) contaRefaz(true); render();
-    custo = performance.now() - t; if(!faltam()) window.__PARTES_OK = true; };
+  const refaz = () => { const t = performance.now(); if(!faltam()) window.__PARTES_OK = true;   // 13/11: antes do render, para os contadores saírem do "carregando"
+    kpis(); opcoes(); critTexto(); if(ASSIN) contaRefaz(true); render();
+    custo = performance.now() - t; };
   // celular lento: redesenhar o mapa a cada leva custa caro; o intervalo cresce com o custo do último redesenho
   const agenda = () => { if(!faltam()){ clearTimeout(tRef); tRef = 0; refaz(); } else if(!tRef) tRef = setTimeout(() => { tRef = 0; refaz(); }, Math.max(900, 4 * custo)); };
   const proxima = () => { while(ativos < 3 && fila.length){ const p = fila.shift(); ativos++;
