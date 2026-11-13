@@ -12,6 +12,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@500;600;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <script src="../vendor/topojson.min.js"></script>
 <script src="../vendor/leaflet.min.js"></script>
+<script src="/assinar/planos.js"></script>
 <script>try{ const t = localStorage.getItem("blr_novo_tema"); if(t === "dark" || t === "light") document.documentElement.dataset.theme = t;
   else if(matchMedia("(prefers-color-scheme: dark)").matches) document.documentElement.dataset.theme = "dark"; }catch(e){}</script>
 <style>
@@ -335,14 +336,9 @@ const CONTEUDO = {
     governo_federal: ["Governo federal", "Imóvel de agência federal (HUD, VA e outras), vendido direto, não em leilão."],
     nao_informado: ["Tipo não informado", "O edital não trouxe um tipo de venda reconhecível. Confira no edital oficial."]},
   passos: [["estado", "Escolha um estado"], ["lote", "Abra um lote"], ["teto", "Veja um teto de lance"], ["salvar", "Acompanhe um lote"], ["guia", "Leia um guia"]],
-  planos: [
-    {id: "gratuito", nome: "Gratuito", quem: "para conhecer", m: 0, a: 0, itens: ["Mapa dos EUA com todos os leilões", "Lista de oportunidades", "Lance de abertura de cada lote", "Calendário dos próximos leilões"], cta: "Começar grátis", href: "#explorar"},
-    {id: "basico", nome: "Básico", quem: "para quem foca em 1 estado", m: 9.9, a: 99, itens: ["Tudo do Gratuito", "Ficha completa e filtros", "1 estado à sua escolha (troca 1× por mês)", "Assistente de IA: 10 consultas por mês"]},
-    {id: "pro", nome: "Pro", quem: "o mais escolhido", m: 49.9, a: 499, dest: true, selo: "7 dias grátis", itens: ["Tudo do Básico", "Teto de lance BLR, ARV e a conta de cada lote", "Endereço, posição exata, contorno e Street View", "Até 3 estados (troca 1× por mês)", "Assistente de IA: 40 consultas por mês"]},
-    {id: "ultra", nome: "UltraPro", quem: "para operar com a BLR", m: 249.9, a: 2499, itens: ["Tudo do Pro", "Os 50 estados, DC e territórios", "Partner Bidder: a BLR opera e divide o risco", "Sala de leilão online em tempo real", "Assistente de IA ilimitado"]}],
-  stripe: {basico: {m: "https://buy.stripe.com/28EfZh5YKgub2fY40I8ww00", a: "https://buy.stripe.com/bJe14ncn8b9R8Emap68ww01"},
-           pro:    {m: "https://buy.stripe.com/14AcN5af0cdV07Qbta8ww04", a: "https://buy.stripe.com/dRm4gzaf05PxbQy0Ow8ww05"},
-           ultra:  {m: "https://buy.stripe.com/bJeeVd9aW7XFaMu9l28ww03", a: "https://buy.stripe.com/fZubJ14UGfq74o61SA8ww02"}},
+  /* planos, preços e payment links: fonte única em /assinar/planos.js (a mesma do checkout embutido) */
+  planos: window.BLR_PLANOS.planos,
+  stripe: window.BLR_PLANOS.stripe,
   compara: [["Ferramenta comum", "Uma calculadora. O lance e o risco ficam por sua conta."], ["BLR", "O teto de lance já calculado no Pro e, no UltraPro, a BLR comprando junto com você."]],
   aprender: [["../tutoriais/", "O primeiro lance, passo a passo", "Do edital ao arremate em cada tipo de leilão."], ["../por-que-blr/", "Por que BLR", "A jornada em 4 passos: achar, arrematar, reformar e lucrar."],
              ["../checklist/", "Checklist de terrenos", "Os pontos que separam um bom negócio de um prejuízo."]],
@@ -692,15 +688,15 @@ let CICLO = "m";
 function planos(){
   const pr = p => CICLO === "m" ? `${usd(p.m).replace(/,00$/, "")}<small> /mês</small>` : `${usd(p.a)}<small> /ano</small>`;
   const pm = v => v ? (CICLO === "m" ? "US$ " + v.toFixed(2).replace(".", ",") : usd(v)) : "Grátis";
-  const em = EU && EU.email ? "?prefilled_email=" + encodeURIComponent(EU.email) : "";
   $("#app").innerHTML = `<section class="pag"><h1>Escolha o seu plano</h1><p class="sub">Comece grátis: o mapa dos EUA com todos os leilões e o lance de abertura. O Pro tem 7 dias grátis, só com e-mail e telefone, sem cartão.</p>
     <div class="ciclo" role="group" aria-label="Forma de pagamento"><button type="button" data-c="m" aria-pressed="${CICLO === "m"}">Mensal</button><button type="button" data-c="a" aria-pressed="${CICLO === "a"}">Anual · 2 meses grátis</button></div>
     <div class="planos">${CONTEUDO.planos.map(p => `<article class="plano ${p.dest ? "dest" : ""}">${p.selo ? `<span class="selo">${esc(p.selo)}</span>` : ""}
       <h2>${esc(p.nome)}</h2><div class="quem">${esc(p.quem)}</div><div class="preco num">${p.m ? (CICLO === "m" ? pm(p.m) + "<small> /mês</small>" : usd(p.a) + "<small> /ano</small>") : "Grátis"}</div>
       <ul>${p.itens.map(i => `<li>${esc(i)}</li>`).join("")}</ul>
-      ${p.id === "gratuito" ? `<a class="btn" href="#explorar">${esc(p.cta)}</a>` : `<a class="btn ${p.dest ? "pri" : ""}" href="${CONTEUDO.stripe[p.id][CICLO]}${em}" target="_blank" rel="noopener">Assinar o ${esc(p.nome)}</a>${p.selo && !EU ? `<button class="btn" type="button" data-teste>Testar 7 dias grátis</button>` : ""}`}</article>`).join("")}</div>
+      ${p.id === "gratuito" ? `<a class="btn" href="#explorar">${esc(p.cta)}</a>` : EU && EU.plano === p.id ? `<span class="btn" aria-disabled="true">Seu plano atual</span>`
+        : `<a class="btn ${p.dest ? "pri" : ""}" href="${assinarHref(p.id)}" ${EU ? "" : `data-assina="${p.id}"`}>Assinar o ${esc(p.nome)}</a>${p.selo && !EU ? `<button class="btn" type="button" data-teste>Testar 7 dias grátis</button>` : ""}`}</article>`).join("")}</div>
     <div class="compara">${CONTEUDO.compara.map(([t, d]) => `<div class="cartao"><h3>${esc(t)}</h3><p>${esc(d)}</p></div>`).join("")}</div>
-    <p class="sub" style="margin-top:var(--s5);font-size:13px">Preços em dólar. Pagamento seguro pelo Stripe, em nome de BLR Development. Mensal: cancele quando quiser. Depois do pagamento, a BLR libera o seu acesso em até 1 dia útil.</p></section>`;
+    <p class="sub" style="margin-top:var(--s5);font-size:13px">Preços em dólar. Pagamento seguro pelo Stripe, aqui mesmo no site, em nome de BLR Development. Mensal: cancele quando quiser. O acesso é liberado assim que o pagamento é confirmado.</p></section>`;
   document.querySelectorAll("[data-c]").forEach(b => b.onclick = () => { CICLO = b.dataset.c; planos(); });
   entra(document.querySelectorAll(".plano"));
 }
@@ -754,15 +750,21 @@ function abreModal(html){
 function fechaModal(){ $("#modal").hidden = true; $("#modal .caixa").innerHTML = ""; }
 $("#modal").addEventListener("click", e => { if(e.target.id === "modal" || e.target.closest("[data-fm]")) fechaModal(); });
 const msgErro = (er, padrao) => er.message && er.message !== "falha" ? er.message : padrao;
-function abreEntrar(){
-  if(EU){ menuConta(); return; }
-  const c = CONTEUDO.conta;
-  abreModal(`<h2 id="mTit">Entrar</h2><p>${esc(c.entrarTxt)}</p>
+let VOLTA = "";   // 13/11: depois do login, volta para o checkout (/assinar/...); só caminhos do próprio site
+const voltaOk = v => typeof v === "string" && /^\/assinar\/(\?[\w=&%.-]*)?$/.test(v) ? v : "";
+const assinarHref = id => `/assinar/?plano=${id}&ciclo=${CICLO === "a" ? "anual" : "mensal"}`;
+function abreEntrar(volta){
+  VOLTA = voltaOk(volta) || "";
+  if(EU){ if(VOLTA){ location.href = VOLTA; return; } menuConta(); return; }
+  const c = CONTEUDO.conta, pv = VOLTA && new URLSearchParams(VOLTA.split("?")[1] || "");
+  const pp = pv && CONTEUDO.planos.find(p => p.id === pv.get("plano")), link = pp && CONTEUDO.stripe[pp.id] && CONTEUDO.stripe[pp.id][pv.get("ciclo") === "anual" ? "a" : "m"];
+  abreModal(`<h2 id="mTit">${pp ? "Entre para assinar o " + esc(pp.nome) : "Entrar"}</h2><p>${pp ? "O pagamento fica ligado à sua conta BLR. " : ""}${esc(c.entrarTxt)}</p>
     <form id="fEnt"><label class="campo">E-mail<input name="email" type="email" autocomplete="username" required></label>
       <label class="campo">Senha<input name="senha" type="password" autocomplete="current-password" required></label>
       <button class="btn pri" type="submit">Entrar</button><div class="erro" id="mErro" role="alert"></div></form>
     <div class="rodap"><span>Esqueceu a senha? <button type="button" class="lnk" id="btEsq">Receber um link para criar uma senha nova</button></span>
-      <span>Ainda não tem acesso? <button type="button" class="lnk" data-teste>Testar 7 dias grátis</button> ou <a href="#planos" data-fm>ver os planos</a>.</span></div>`);
+      <span>Ainda não tem acesso? <button type="button" class="lnk" data-teste>Testar 7 dias grátis</button> ou <a href="#planos" data-fm>ver os planos</a>.</span>
+      ${link ? `<span>Prefere pagar sem entrar? <a href="${esc(link)}">Pagar pelo Stripe</a> (a BLR cria o acesso com o e-mail do pagamento).</span>` : ""}</div>`);
   $("#btEsq").onclick = () => abreEsqueci($("#fEnt").email.value);
   $("#fEnt").onsubmit = async e => { e.preventDefault(); const f = new FormData(e.target), bt = e.target.querySelector("button[type=submit]");
     bt.disabled = true; bt.textContent = "Entrando…"; $("#mErro").textContent = "";
@@ -774,6 +776,7 @@ function abreEntrar(){
     fechaModal(); await posLogin(); };
 }
 async function posLogin(){
+  if(VOLTA){ location.href = VOLTA; return; }
   PREM = {}; PRIV = {}; ASSIN = false;
   await conta_();
   if(!EU){ toast("Você entrou, mas a conta não abriu agora. Atualize a página."); return; }
@@ -845,7 +848,9 @@ function abreCadastro(){
         : er.st && er.st < 500 ? msgErro(er, "Confira o e-mail e o telefone.") : "O cadastro não respondeu agora. Tente de novo em instantes."; } };
 }
 document.addEventListener("click", e => {
-  if(e.target.closest("[data-teste]")){ e.preventDefault(); abreCadastro(); }
+  const ass = e.target.closest("[data-assina]");
+  if(ass){ e.preventDefault(); abreEntrar(assinarHref(ass.dataset.assina)); }
+  else if(e.target.closest("[data-teste]")){ e.preventDefault(); abreCadastro(); }
   else if(e.target.closest("[data-entrar]")){ e.preventDefault(); e.stopPropagation(); abreEntrar(); }
 });
 
@@ -860,6 +865,7 @@ const L_ = window.L;
    quem escolheu a clássica (neste navegador ou na conta) vai para ela. ?entrar e ?teste agora abrem aqui (login próprio). */
 const PARAMS_CLASSICO = ["assinatura", "plano", "ciclo", "falar", "senha", "listas", "tour"];
 const PARAM_ABRE = (() => { const q = new URLSearchParams(location.search); return q.has("entrar") ? "entrar" : q.has("teste") ? "teste" : ""; })();
+const PARAM_VOLTA = voltaOk(new URLSearchParams(location.search).get("volta"));
 const UI_LOCAL = (() => { try{ return localStorage.getItem("blr_ui"); }catch(e){ return null; } })();
 if(PARAMS_CLASSICO.some(k => new URLSearchParams(location.search).has(k)) || UI_LOCAL === "classico") location.replace("/classico/" + location.search + location.hash);
 (async function inicio(){
@@ -871,7 +877,7 @@ if(PARAMS_CLASSICO.some(k => new URLSearchParams(location.search).has(k)) || UI_
     if(EU && UI_LOCAL === "novo" && EU.preferencia_ui === "classico") api("/api/preferencias", {preferencia_ui: "novo"}).catch(() => {});
     if(EU) document.querySelectorAll("#hero [data-teste]").forEach(x => x.remove());
     if(PARAM_ABRE){ try{ history.replaceState(null, "", location.pathname + location.hash); }catch(e){}
-      if(!EU) (PARAM_ABRE === "entrar" ? abreEntrar : abreCadastro)(); }
+      if(PARAM_ABRE === "entrar") abreEntrar(PARAM_VOLTA); else if(!EU) abreCadastro(); }
     await carregaProgresso(); evento("visita", undefined); const h = location.hash; if(ASSIN && CARREGADO){ pintaMapa(); lista(); } if(h.startsWith("#lote-")) abreFicha(h.slice(6)); else if(!h || h === "#explorar"){ const pb = $("#passosBox"); if(pb){ pb.innerHTML = passosHTML(); ligaPassos(); } } });
   carregaResto().then(() => { if($("#explorarPag")){ chips(); pintaMapa(); lista(); } else rota(); if(location.hash.startsWith("#lote-")) abreFicha(location.hash.slice(6)); });
 })();
