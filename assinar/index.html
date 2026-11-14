@@ -26,7 +26,7 @@
 <script>
 "use strict";
 /* Checkout embutido (13/11/2026). Rotas no servidor da Gallery (API-SERVIDOR.md §3):
-   POST /api/checkout {plano, ciclo} → {client_secret} · 401 login · 409 já assina · 502/503 → payment link de sempre.
+   POST /api/checkout {plano, ciclo} → {client_secret} · 401 login · 409 já assina (troca_de_plano traz plano_atual; ja_assinante traz plano) · sem teste grátis no Stripe · 502/503 → payment link de sempre.
    O Stripe volta para /assinar/ok/?session_id=...; quem libera o plano é o webhook. */
 const P = window.BLR_PLANOS, API = P.api, $ = s => document.querySelector(s);
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"}[c]));
@@ -40,12 +40,12 @@ const linkPag = () => P.stripe[plano][ciclo === "anual" ? "a" : "m"] + (EU && EU
 
 function resumo(){
   const p = pl(), v = ciclo === "anual" ? p.a : p.m;
-  $("#resumo").innerHTML = `${p.selo ? `<span class="selo">${esc(p.selo)}</span>` : ""}<h1>Plano ${esc(p.nome)}</h1><div class="quem">${esc(p.quem)}</div>
+  $("#resumo").innerHTML = `<h1>Plano ${esc(p.nome)}</h1><div class="quem">${esc(p.quem)}</div>
     <div class="preco num">${USD.format(v).replace(/,00$/, "")}<small> /${ciclo === "anual" ? "ano" : "mês"}</small></div>
     <div class="ciclo" role="group" aria-label="Forma de pagamento"><button type="button" data-c="mensal" aria-pressed="${ciclo === "mensal"}">Mensal</button><button type="button" data-c="anual" aria-pressed="${ciclo === "anual"}">Anual · 2 meses grátis</button></div>
     <ul>${p.itens.map(i => `<li>${esc(i)}</li>`).join("")}</ul>
     <div class="trocar" aria-label="Trocar de plano">${P.planos.filter(x => x.m).map(x => `<a href="?plano=${x.id}&ciclo=${ciclo}" data-p="${x.id}" aria-current="${x.id === plano}">${esc(x.nome)}</a>`).join("")}</div>
-    <p class="nota">O valor exato${p.selo ? ", o teste grátis" : ""} e a data da primeira cobrança aparecem no formulário do Stripe, antes de você confirmar. Pagamento em nome de BLR Development. Mensal: cancele quando quiser.</p>
+    <p class="nota">A cobrança é feita na hora, quando você confirma no formulário do Stripe, e o acesso é liberado logo em seguida. Pagamento em nome de BLR Development. Mensal: cancele quando quiser.${p.selo ? " O teste grátis de 7 dias é outro caminho: pelo cadastro do site, sem cartão." : ""}</p>
     ${EU && EU.email ? `<p class="nota">Conta: <b>${esc(EU.email)}</b></p>` : ""}`;
   document.querySelectorAll("[data-c]").forEach(b => b.onclick = () => { if(ciclo === b.dataset.c) return; ciclo = b.dataset.c; troca(); });
   document.querySelectorAll("[data-p]").forEach(a => a.onclick = e => { e.preventDefault(); if(plano === a.dataset.p) return; plano = a.dataset.p; troca(); });
@@ -72,7 +72,7 @@ async function monta(){
   if(minha !== vez) return;
   if(r.status === 401) return vaiEntrar();
   if(r.status === 409){
-    const atual = (P.planos.find(p => p.id === (j.plano || EU.plano)) || {}).nome || j.plano || EU.plano || "";
+    const atual = (P.planos.find(p => p.id === (j.plano_atual || j.plano || EU.plano)) || {}).nome || j.plano_atual || j.plano || EU.plano || "";
     tela(`<h2>Você já tem uma assinatura${atual ? ": " + esc(atual) : ""}</h2><p>${esc(j.mensagem || "Para trocar de plano, fale com a BLR ou ajuste em Minha conta.")}</p>
       <div class="acoes"><a class="btn pri" href="/conta/">Minha conta</a><a class="btn" href="/">Abrir a Vitrine</a></div>`); return; }
   if(!r.ok || !j.client_secret) return planoB(j.mensagem || (r.status === 503 ? "O pagamento embutido está em manutenção." : `Código ${r.status}.`));
