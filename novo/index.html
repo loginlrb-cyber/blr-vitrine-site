@@ -186,6 +186,12 @@ button{font:inherit;color:inherit}
 .contorno svg{width:70%;height:80%}
 .contorno svg polygon{fill:var(--accent-soft);stroke:var(--accent);stroke-width:2.2;stroke-dasharray:var(--len,800);stroke-dashoffset:var(--len,800);animation:desenha 1.2s var(--ease) forwards}
 @keyframes desenha{to{stroke-dashoffset:0}}
+.midia{margin:0 0 var(--s4)}
+.midia figure{margin:0 0 var(--s3)}
+.midia .q{position:relative;border-radius:12px;overflow:hidden;background:var(--sunk);aspect-ratio:16/9}
+.midia iframe,.midia img{display:block;width:100%;height:100%;border:0;object-fit:cover}
+.midia .q svg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.midia figcaption{color:var(--muted);font-size:12px;margin-top:6px}
 .contorno img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
 .trava{display:flex;gap:12px;align-items:center;background:var(--amber-soft);border-radius:12px;padding:12px 14px;margin-top:var(--s3);font-size:14px}
 .trava .btn{margin-left:auto}
@@ -542,7 +548,9 @@ function ligaSdSeVazio(uf){
   clearTimeout(tToast); tToast = setTimeout(() => el.classList.remove("on"), 3600);
 }
 const FIPS_UF = {"01":"AL","02":"AK","04":"AZ","05":"AR","06":"CA","08":"CO","09":"CT","10":"DE","11":"DC","12":"FL","13":"GA","15":"HI","16":"ID","17":"IL","18":"IN","19":"IA","20":"KS","21":"KY","22":"LA","23":"ME","24":"MD","25":"MA","26":"MI","27":"MN","28":"MS","29":"MO","30":"MT","31":"NE","32":"NV","33":"NH","34":"NJ","35":"NM","36":"NY","37":"NC","38":"ND","39":"OH","40":"OK","41":"OR","42":"PA","44":"RI","45":"SC","46":"SD","47":"TN","48":"TX","49":"UT","50":"VT","51":"VA","53":"WA","54":"WV","55":"WI","56":"WY","66":"GU","72":"PR"};
-let CAM_UF = null, CAM_L = null, CAM_ROT = null, R_L = null, CAM_CO = null;
+let CAM_UF = null, CAM_L = null, CAM_ROT = null, R_L = null, CAM_CO = null, CAM_AER = null;
+/* 14/11: foto aérea do USGS (domínio público) no zoom alto, a mesma da versão clássica; os estados ficam só com a divisa por cima */
+const TILE_AER = "https://basemap.nationalmap.gov/arcgis/rest/services/USGSImageryOnly/MapServer/tile/{z}/{y}/{x}", Z_AER = 13;
 function fazMapa(){
   const css = getComputedStyle(document.documentElement);
   MAPA = L_.map("mapa", {zoomControl: true, attributionControl: false, preferCanvas: true, minZoom: 3, maxZoom: 17, zoomSnap: .5, worldCopyJump: false}).setView([38.5, -96.5], 4);
@@ -561,8 +569,10 @@ function pintaMapa(){
   if(!MAPA || !CAM_UF) return;
   const css = getComputedStyle(document.documentElement), m = [0, 1, 2, 3, 4].map(i => css.getPropertyValue("--m" + i).trim());
   const xs = visiveis(), por = {}; for(const l of xs) por[l.uf] = (por[l.uf] || 0) + 1;
-  const z = MAPA.getZoom(), perto = z >= 6;
-  CAM_UF.eachLayer(ly => { const q = por[ly._uf] || 0; ly.setStyle({fillColor: perto || !CARREGADO ? m[0] : q >= 300 ? m[4] : q >= 150 ? m[3] : q >= 60 ? m[2] : q >= 15 ? m[1] : m[0], fillOpacity: 1}); });
+  const z = MAPA.getZoom(), perto = z >= 6, aer = z >= Z_AER;
+  if(aer && !CAM_AER) CAM_AER = L_.tileLayer(TILE_AER, {maxZoom: 19, maxNativeZoom: 16, opacity: .95});
+  if(CAM_AER){ if(aer && !MAPA.hasLayer(CAM_AER)) CAM_AER.addTo(MAPA); else if(!aer && MAPA.hasLayer(CAM_AER)) MAPA.removeLayer(CAM_AER); }
+  CAM_UF.eachLayer(ly => { const q = por[ly._uf] || 0; ly.setStyle({fillColor: perto || !CARREGADO ? m[0] : q >= 300 ? m[4] : q >= 150 ? m[3] : q >= 60 ? m[2] : q >= 15 ? m[1] : m[0], fillOpacity: aer ? 0 : 1}); });
   // de perto: as divisas dos condados (mesmo desenho do Censo da versão clássica), só linha, no canvas
   if(perto && !CAM_CO) CAM_CO = L_.geoJSON(topojson.feature(EUA, EUA.objects.counties), {renderer: R_L, interactive: false,
     style: () => ({weight: .7, color: css.getPropertyValue("--line").trim(), fill: false})});
@@ -644,8 +654,9 @@ function abreFicha(id){
         ${ASSIN ? `<div class="k"><small>Folga até o teto</small><b class="num">${folga != null ? usd(folga) : "—"}</b><div class="barra"><i id="kBar"></i></div></div>`
           : `<div class="k"><small>Abertura sobre o cadastro</small><b class="num">${l.desc != null ? "−" + l.desc + "%" : "—"}</b><div class="tr">quanto menor a abertura, maior o desconto</div></div>`}
       </div>${trava}
+      ${ASSIN ? midiaLote(l, p, pv, pos) : ""}
       <div class="bloco"><h3>Contorno do lote</h3>${ASSIN ? `<div class="contorno">${cont}</div>` : `<p>O contorno, o endereço e o Street View deste lote ficam no Pro.</p>`}
-        ${ASSIN && pos ? `<p style="margin-top:10px"><a href="https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=${pos[0]},${pos[1]}" target="_blank" rel="noopener">Abrir o Street View ↗</a> · <a href="https://www.google.com/maps/search/?api=1&query=${pos[0]},${pos[1]}" target="_blank" rel="noopener">Ver no mapa ↗</a></p>` : ""}</div>
+        ${ASSIN && pos ? `<p style="margin-top:10px"><a href="${pv && pv.sv ? `https://www.google.com/maps/@?api=1&map_action=pano&pano=${encodeURIComponent(pv.sv.p)}&heading=${pv.sv.h}` : `https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=${pos[0]},${pos[1]}`}" target="_blank" rel="noopener">Abrir o Street View ↗</a> · <a href="https://www.google.com/maps/search/?api=1&query=${pos[0]},${pos[1]}" target="_blank" rel="noopener">Ver no mapa ↗</a></p>` : ""}</div>
       <div class="bloco"><h3>${esc(ti[0])}</h3><p>${esc(ti[1])}</p>
         <dl class="det"><dt>Condado</dt><dd>${esc(l.co)}, ${esc(l.uf)}</dd><dt>Data do leilão</dt><dd>${l.d ? l.d.split("-").reverse().join("/") : "a confirmar"}</dd>
           ${jv ? `<dt>Valor de cadastro</dt><dd>${usd(jv)}</dd>` : ""}${l.desc != null ? `<dt>Abertura sobre o cadastro</dt><dd>−${l.desc}%</dd>` : ""}
@@ -662,6 +673,35 @@ function abreFicha(id){
   $("#btSeg").onclick = () => { segue(l.i); $("#btSeg").textContent = seguindo(l.i) ? "Acompanhando ✓" : "Acompanhar"; if(seguindo(l.i)) evento("lote_acompanhado", l.i); };
   $("#btIaL").onclick = () => abreIA(l);
   evento("lote_aberto", l.i);
+}
+/* 14/11: fotos do lote na ficha do assinante, como na versão clássica: Street View ao vivo (vitrine_sv.py) → foto de rua do
+   Mapillary (vitrine_mly.py) → fachada do cadastro → foto aérea do USGS com o contorno; mais o satélite do bairro, onde houver */
+function capaAerea(la, ln, pol){
+  const R = 6378137, X = g => R * g * Math.PI / 180, Y = g => R * Math.log(Math.tan(Math.PI / 4 + g * Math.PI / 360));
+  const W = 800, H = 450, temPol = Array.isArray(pol) && pol.length > 2;
+  let cx = X(ln), cy = Y(la), hx = 120 / Math.cos(la * Math.PI / 180), hy = hx * H / W;
+  if(temPol){ const xs = pol.map(q => X(q[1])), ys = pol.map(q => Y(q[0])), x0 = Math.min(...xs), x1 = Math.max(...xs), y0 = Math.min(...ys), y1 = Math.max(...ys);
+    cx = (x0 + x1) / 2; cy = (y0 + y1) / 2; hx = Math.max(hx, (x1 - x0) / 2 * 1.2, (y1 - y0) / 2 * 1.2 * W / H); hy = hx * H / W; }
+  const bb = `bbox=${cx - hx},${cy - hy},${cx + hx},${cy + hy}&bboxSR=3857&imageSR=3857&size=${W},${H}&format=jpg&f=image`;
+  const url = `https://basemap.nationalmap.gov/arcgis/rest/services/USGSImageryOnly/MapServer/export?${bb}`,
+        url2 = `https://imagery.nationalmap.gov/arcgis/rest/services/USGSNAIPImagery/ImageServer/exportImage?${bb}`;
+  const px = (a, o) => [((X(o) - (cx - hx)) / (2 * hx) * W).toFixed(1), (((cy + hy) - Y(a)) / (2 * hy) * H).toFixed(1)];
+  const forma = temPol ? `<polygon points="${pol.map(([a, o]) => px(a, o).join(",")).join(" ")}" fill="rgba(242,193,78,.18)" stroke="#F2C14E" stroke-width="3"/>`
+    : `<circle cx="${W / 2}" cy="${H / 2}" r="34" fill="none" stroke="#F2C14E" stroke-width="3" stroke-dasharray="8 6"/><circle cx="${W / 2}" cy="${H / 2}" r="5" fill="#F2C14E"/>`;
+  return `<figure><div class="q"><img src="${url}" data-alt2="${url2}" onerror="if(this.dataset.alt2){this.src=this.dataset.alt2;this.dataset.alt2=''}" alt="Foto aérea do lote" loading="lazy">
+    <svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid slice" aria-hidden="true">${forma}</svg></div>
+    <figcaption>Foto aérea (USGS, domínio público)${temPol ? " · contorno da parcela no cadastro" : " · círculo = posição do lote"}</figcaption></figure>`;
+}
+function midiaLote(l, p, pv, pos){
+  const sv = pv && pv.sv, mly = pv && pv.mly, img = (p && p.img) || {}, fs = [];
+  if(sv && sv.p) fs.push(`<figure><div class="q"><iframe src="https://www.google.com/maps/embed?pb=!4v1!6m8!1m7!1s${encodeURIComponent(sv.p)}!2m2!1d${sv.la}!2d${sv.ln}!3f${sv.h}!4f0!5f0.78" loading="lazy" allowfullscreen referrerpolicy="no-referrer-when-downgrade" title="Street View"></iframe></div>
+    <figcaption>Street View ao vivo (Google${sv.ano ? ", foto de " + esc(sv.ano) : ""})${sv.m != null ? " · a " + esc(sv.m) + " m do centro do lote" : ""} · arraste para girar</figcaption></figure>`);
+  else if(mly && mly.id) fs.push(`<figure><div class="q"><iframe src="https://www.mapillary.com/embed?image_key=${encodeURIComponent(mly.id)}&style=photo" loading="lazy" allowfullscreen referrerpolicy="no-referrer-when-downgrade" title="Foto de rua (Mapillary)"></iframe></div>
+    <figcaption>Foto de rua · © Mapillary contributors (CC-BY-SA 4.0)${mly.ano ? ", foto de " + esc(mly.ano) : ""}${mly.m != null ? " · a " + esc(mly.m) + " m do centro do lote" : ""}</figcaption></figure>`);
+  else if(img.f) fs.push(`<figure><div class="q"><img src="/${esc(String(img.f).replace(/^\/+/, ""))}" alt="Fachada" loading="lazy" onerror="this.closest('figure').remove()"></div><figcaption>Fachada · ${esc(img.ff || "cadastro do condado")}</figcaption></figure>`);
+  else if(pos) fs.push(capaAerea(pos[0], pos[1], pv && pv.pol));
+  if(img.s) fs.push(`<figure><div class="q"><img src="/${esc(String(img.s).replace(/^\/+/, ""))}" alt="Vista aérea do bairro com as ruas e o contorno do lote" loading="lazy" onerror="this.closest('figure').remove()"></div><figcaption>Satélite com as ruas, ~400 m de largura · USGS NAIP + Censo TIGER</figcaption></figure>`);
+  return fs.length ? `<div class="bloco midia"><h3>Fotos do lote</h3>${fs.join("")}</div>` : "";
 }
 function fechaFicha(silencio){ $("#ficha").classList.remove("on"); if(!$("#drawer").classList.contains("on")) $("#veu").classList.remove("on"); }
 addEventListener("keydown", e => { if(e.key === "Escape"){ if(!$("#modal").hidden){ fechaModal(); return; } if($("#ficha").classList.contains("on")) history.back(); fechaDrawer(); } });
