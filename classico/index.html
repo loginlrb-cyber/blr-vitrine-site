@@ -8,7 +8,7 @@
 <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="manifest" href="/site.webmanifest">
 <style>*,*::before,*::after{box-sizing:border-box}html,body{margin:0}img{max-width:100%}[hidden]{display:none!important}
 :root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}</style>
-</head><body><link rel="preload" href="d_dados_08af6b38fc.json" as="fetch" crossorigin="anonymous"><link rel="preload" href="d_eua_145aaf5d14.json" as="fetch" crossorigin="anonymous"><title>BLR Developments</title>
+</head><body><link rel="preload" href="d_dados_fce3dbcff7.json" as="fetch" crossorigin="anonymous"><link rel="preload" href="d_eua_145aaf5d14.json" as="fetch" crossorigin="anonymous"><title>BLR Developments</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -1258,7 +1258,7 @@ body{transition:padding-right .5s var(--mola)}
 <div class="modal" id="modal" hidden><div class="mbox" role="dialog" aria-modal="true" aria-labelledby="mTit">
   <button class="x" id="mX" type="button" aria-label="Fechar">✕</button><div id="mBody"></div></div></div>
 
-<script>(function(){var q=function(u){return fetch(u).then(function(r){if(!r.ok)throw new Error(u+' '+r.status);return r.json()})};Promise.all([q('d_dados_08af6b38fc.json'),q('d_eua_145aaf5d14.json')]).then(function(x){window.__DADOS=x[0];window.__EUA=x[1];var s=document.createElement('script');s.textContent=document.getElementById('app').textContent;document.body.appendChild(s)}).catch(function(e){var d=document.createElement('p');d.style.cssText='padding:24px;font:16px sans-serif';d.textContent='Não foi possível carregar os dados ('+e.message+'). Recarregue a página.';document.body.prepend(d)})})();</script>
+<script>(function(){var q=function(u){return fetch(u).then(function(r){if(!r.ok)throw new Error(u+' '+r.status);return r.json()})};Promise.all([q('d_dados_fce3dbcff7.json'),q('d_eua_145aaf5d14.json')]).then(function(x){window.__DADOS=x[0];window.__EUA=x[1];var s=document.createElement('script');s.textContent=document.getElementById('app').textContent;document.body.appendChild(s)}).catch(function(e){var d=document.createElement('p');d.style.cssText='padding:24px;font:16px sans-serif';d.textContent='Não foi possível carregar os dados ('+e.message+'). Recarregue a página.';document.body.prepend(d)})})();</script>
 <script type="text/plain" id="app">
 const DADOS = window.__DADOS;
 const EUA = window.__EUA;
@@ -1272,7 +1272,7 @@ const RUAS = new Set(["01001", "01003", "01005", "01009", "01011", "01013", "010
 /* Contato que aparece quando o pedido não pode ser gravado direto (visitante por link público não grava dados no artifact). */
 const CONTATO = {"email": "loginlrb@gmail.com", "whats": "+55 51 99135-7544"};
 /* Cotação do dia em que a página foi montada (vitrine_cambio.py); o leilão é sempre em dólar. */
-const CAMBIO = {"data": "2026-11-12", "fonte": "ExchangeRate-API (open.er-api.com)", "r": {"BRL": 5.572647, "EUR": 0.899865, "GBP": 0.752421, "CAD": 1.423964, "MXN": 18.62736, "ARS": 1547.9128, "CLP": 981.026703, "COP": 3301.604364, "PEN": 3.417777, "UYU": 40.585353, "PYG": 6187.782549, "CHF": 0.831838, "JPY": 159.51378, "CNY": 6.685797, "AUD": 1.45935, "INR": 93.851604, "AED": 3.6725, "ILS": 3.176048, "ZAR": 16.587428}};
+const CAMBIO = {"data": "2026-11-13", "fonte": "ExchangeRate-API (open.er-api.com)", "r": {"BRL": 5.610238, "EUR": 0.903491, "GBP": 0.755149, "CAD": 1.42563, "MXN": 18.620415, "ARS": 1544.432, "CLP": 983.702703, "COP": 3288.648844, "PEN": 3.41062, "UYU": 40.791442, "PYG": 6221.473933, "CHF": 0.83437, "JPY": 159.795417, "CNY": 6.685071, "AUD": 1.468309, "INR": 94.086126, "AED": 3.6725, "ILS": 3.195539, "ZAR": 16.735572}};
 const HOJE = DADOS.meta.gerado;
 const L = DADOS.lotes;
 /* 04/11 (site leve): no site os lotes vêm por estado (vitrine_site.separa_dados). DADOS.partes = [{uf, a: arquivo, n}] e DADOS.idx =
