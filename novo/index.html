@@ -707,9 +707,10 @@ function abreFicha(id){
         ${ASSIN ? `<div class="k"><small>Folga até o teto</small><b class="num">${folga != null ? usd(folga) : "—"}</b><div class="barra"><i id="kBar"></i></div></div>`
           : `<div class="k"><small>Abertura sobre o cadastro</small><b class="num">${l.desc != null ? "−" + l.desc + "%" : "—"}</b><div class="tr">quanto menor a abertura, maior o desconto</div></div>`}
       </div>${trava}
-      ${ASSIN ? midiaLote(l, p, pv, pos) : ""}
-      <div class="bloco"><h3>Contorno do lote</h3>${ASSIN ? `<div class="contorno">${cont}</div>` : `<p>O contorno, o endereço e o Street View deste lote ficam no Pro.</p>`}
+      <div class="bloco contLote${ASSIN && pol ? " midia" : ""}"><h3>Contorno do lote</h3>${!ASSIN ? `<p>O contorno, o endereço e o Street View deste lote ficam no Pro.</p>`
+        : pol ? capaAerea(pos ? pos[0] : pol[0][0], pos ? pos[1] : pol[0][1], pol) : `<div class="contorno">${cont}</div>`}
         ${ASSIN && pos ? `<p style="margin-top:10px"><a href="${pv && pv.sv ? `https://www.google.com/maps/@?api=1&map_action=pano&pano=${encodeURIComponent(pv.sv.p)}&heading=${pv.sv.h}` : `https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=${pos[0]},${pos[1]}`}" target="_blank" rel="noopener">Abrir o Street View ↗</a> · <a href="https://www.google.com/maps/search/?api=1&query=${pos[0]},${pos[1]}" target="_blank" rel="noopener">Ver no mapa ↗</a></p>` : ""}</div>
+      ${ASSIN ? midiaLote(l, p, pv, pos, pol) : ""}
       <div class="bloco"><h3>${esc(ti[0])}</h3><p>${esc(ti[1])}</p>
         <dl class="det"><dt>Condado</dt><dd>${esc(l.co)}, ${esc(l.uf)}</dd><dt>Data do leilão</dt><dd>${l.d ? l.d.split("-").reverse().join("/") : "a confirmar"}</dd>
           ${jv ? `<dt>Valor de cadastro</dt><dd>${usd(jv)}</dd>` : ""}${l.desc != null ? `<dt>Abertura sobre o cadastro</dt><dd>−${l.desc}%</dd>` : ""}
@@ -741,7 +742,7 @@ function capaAerea(la, ln, pol){
   const W = 800, H = 450, temPol = Array.isArray(pol) && pol.length > 2;
   let cx = X(ln), cy = Y(la), hx = 120 / Math.cos(la * Math.PI / 180), hy = hx * H / W;
   if(temPol){ const xs = pol.map(q => X(q[1])), ys = pol.map(q => Y(q[0])), x0 = Math.min(...xs), x1 = Math.max(...xs), y0 = Math.min(...ys), y1 = Math.max(...ys);
-    cx = (x0 + x1) / 2; cy = (y0 + y1) / 2; hx = Math.max(hx, (x1 - x0) / 2 * 1.2, (y1 - y0) / 2 * 1.2 * W / H); hy = hx * H / W; }
+    cx = (x0 + x1) / 2; cy = (y0 + y1) / 2; hx = Math.max(hx * 1.5, (x1 - x0) / 2 * 2.2, (y1 - y0) / 2 * 2.2 * W / H); hy = hx * H / W; }
   const bb = `bbox=${cx - hx},${cy - hy},${cx + hx},${cy + hy}&bboxSR=3857&imageSR=3857&size=${W},${H}&format=jpg&f=image`;
   const url = `https://basemap.nationalmap.gov/arcgis/rest/services/USGSImageryOnly/MapServer/export?${bb}`,
         url2 = `https://imagery.nationalmap.gov/arcgis/rest/services/USGSNAIPImagery/ImageServer/exportImage?${bb}`;
@@ -752,15 +753,17 @@ function capaAerea(la, ln, pol){
     <svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid slice" aria-hidden="true">${forma}</svg></div>
     <figcaption>Foto aérea (USGS, domínio público)${temPol ? " · contorno da parcela no cadastro" : " · círculo = posição do lote"}</figcaption></figure>`;
 }
-function midiaLote(l, p, pv, pos){
+/* 14/11 (Cris: "dois lugares que aparecem o contorno"): o contorno fica num lugar só, no topo da ficha, sobre a foto aérea.
+   Aqui vêm as fotos de rua; a aérea com círculo e o satélite do bairro (que já traz o contorno desenhado) só sem o contorno exato */
+function midiaLote(l, p, pv, pos, pol){
   const sv = pv && pv.sv, mly = pv && pv.mly, img = (p && p.img) || {}, fs = [];
   if(sv && sv.p) fs.push(`<figure><div class="q"><iframe src="https://www.google.com/maps/embed?pb=!4v1!6m8!1m7!1s${encodeURIComponent(sv.p)}!2m2!1d${sv.la}!2d${sv.ln}!3f${sv.h}!4f0!5f0.78" loading="lazy" allowfullscreen referrerpolicy="no-referrer-when-downgrade" title="Street View"></iframe></div>
     <figcaption>Street View ao vivo (Google${sv.ano ? ", foto de " + esc(sv.ano) : ""})${sv.m != null ? " · a " + esc(sv.m) + " m do centro do lote" : ""} · arraste para girar</figcaption></figure>`);
   else if(mly && mly.id) fs.push(`<figure><div class="q"><iframe src="https://www.mapillary.com/embed?image_key=${encodeURIComponent(mly.id)}&style=photo" loading="lazy" allowfullscreen referrerpolicy="no-referrer-when-downgrade" title="Foto de rua (Mapillary)"></iframe></div>
     <figcaption>Foto de rua · © Mapillary contributors (CC-BY-SA 4.0)${mly.ano ? ", foto de " + esc(mly.ano) : ""}${mly.m != null ? " · a " + esc(mly.m) + " m do centro do lote" : ""}</figcaption></figure>`);
   else if(img.f) fs.push(`<figure><div class="q"><img src="/${esc(String(img.f).replace(/^\/+/, ""))}" alt="Fachada" loading="lazy" onerror="this.closest('figure').remove()"></div><figcaption>Fachada · ${esc(img.ff || "cadastro do condado")}</figcaption></figure>`);
-  else if(pos) fs.push(capaAerea(pos[0], pos[1], polDe(l)));
-  if(img.s) fs.push(`<figure><div class="q"><img src="/${esc(String(img.s).replace(/^\/+/, ""))}" alt="Vista aérea do bairro com as ruas e o contorno do lote" loading="lazy" onerror="this.closest('figure').remove()"></div><figcaption>Satélite com as ruas, ~400 m de largura · USGS NAIP + Censo TIGER</figcaption></figure>`);
+  else if(pos && !pol) fs.push(capaAerea(pos[0], pos[1], null));
+  if(img.s && !pol) fs.push(`<figure><div class="q"><img src="/${esc(String(img.s).replace(/^\/+/, ""))}" alt="Vista aérea do bairro com as ruas e o contorno do lote" loading="lazy" onerror="this.closest('figure').remove()"></div><figcaption>Satélite com as ruas, ~400 m de largura · USGS NAIP + Censo TIGER</figcaption></figure>`);
   return fs.length ? `<div class="bloco midia"><h3>Fotos do lote</h3>${fs.join("")}</div>` : "";
 }
 function fechaFicha(silencio){ $("#ficha").classList.remove("on"); if(!$("#drawer").classList.contains("on")) $("#veu").classList.remove("on"); }
