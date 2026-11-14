@@ -379,7 +379,29 @@ const api = (r, corpo) => fetch(API + r, corpo ? {method: "POST", credentials: "
   .then(async x => { const j = await x.json().catch(() => ({})); if(!x.ok) throw Object.assign(new Error(j.mensagem || "falha"), {st: x.status, erro: j.erro}); return j; });
 
 /* ---------- dados (os mesmos arquivos da versão clássica) ---------- */
-let DADOS = null, EUA = null, HOJE = "", L = [], CARREGADO = false, EU = null, ASSIN = false, PREM = {}, PRIV = {};
+let DADOS = null, EUA = null, HOJE = "", L = [], CARREGADO = false, EU = null, ASSIN = false, PREM = {}, PRIV = {}, POLK = null;
+/* 14/11: contorno exato (lat/lng) em pol/<célula>.enc.json, cifrado como o premium; a chave AES de cada célula vem no pacote do
+   servidor (só Pro e UltraPro). Mesmo envelope e mesmas células de 0,1° da versão clássica. EXATO[i] = polígono já aberto. */
+const EXATO = {}, POLC = {}, Z_POL = 15;
+const celPol = (la, ln) => { const n = v => Math.floor(v * 10 + 1e-6); return n(la) + "_" + n(ln); };
+function b64urlBytes(s){ s = String(s || "").replace(/-/g, "+").replace(/_/g, "/"); while(s.length % 4) s += "="; const b = atob(s), o = new Uint8Array(b.length); for(let i = 0; i < b.length; i++) o[i] = b.charCodeAt(i); return o; }
+async function abrePolEnc(env, chaveB64){
+  if(!env || env.v !== 1 || env.alg !== "RSA-OAEP-256+A256GCM" || !env.kid || !env.ciphertext || !chaveB64) return {};
+  if(POLK && POLK.kid && env.kid !== POLK.kid) return {};
+  try{ const k = await crypto.subtle.importKey("raw", b64urlBytes(chaveB64), {name: "AES-GCM"}, false, ["decrypt"]);
+    const pt = await crypto.subtle.decrypt({name: "AES-GCM", iv: b64urlBytes(env.iv), additionalData: new TextEncoder().encode("blr-premium|1|" + env.kid + "|" + env.ts), tagLength: 128}, k, b64urlBytes(env.ciphertext));
+    let doc = JSON.parse(new TextDecoder().decode(pt));
+    if(doc && doc.z) doc = await new Response(new Blob([Uint8Array.from(atob(doc.z), c => c.charCodeAt(0))]).stream().pipeThrough(new DecompressionStream("gzip"))).json();
+    return doc && typeof doc === "object" && !Array.isArray(doc) ? doc : {}; }catch(e){ return {}; }
+}
+function celula(k){
+  if(!POLC[k]){ const ch = POLK && POLK.chaves ? POLK.chaves[k] : "";
+    POLC[k] = !ch ? Promise.resolve({}) : fetch("/pol/" + k + ".enc.json").then(r => r.ok ? r.json() : null).then(env => abrePolEnc(env, ch))
+      .then(d => { for(const i in d) if(Array.isArray(d[i]) && d[i].length > 2) EXATO[i] = d[i]; return d; }).catch(() => ({})); }
+  return POLC[k];
+}
+const polDe = l => { const pv = ASSIN && priv(l); return EXATO[l.i] || (pv && Array.isArray(pv.pol) && pv.pol.length > 2 ? pv.pol : null); };
+async function polDoLote(l){ if(polDe(l)) return polDe(l); if(!ASSIN || !POLK || l.la == null) return null; await celula(celPol(l.la, l.ln)); return EXATO[l.i] || null; }
 const ESTADO = {grupo: "", crit: false, sd: false, uf: "", max: 0, dias: 0, mostrar: 40, prefs: {avisos_xp: true}};
 const TXT_CAMPOS = ["nt", "fo", "jvq", "tp", "u", "mc", "pa"];
 const REGRAS_TIPO = [["upset", /upset/i], ["reo", /\breo\b|real estate owned|bank-owned|bank owned|homepath|homesteps|fannie|freddie/i], ["sheriff_judicial", /sheriff|(?<!non-)judicial/i],
@@ -412,7 +434,8 @@ async function conta_(){
     try{
       const ufs = Array.isArray(EU.estados) ? EU.estados.filter(u => /^[A-Z]{2}$/.test(u)) : null;
       const pacs = ufs ? await Promise.all(ufs.map(u => api("/api/premium?uf=" + u).then(descompacta))) : [await api("/api/premium").then(descompacta)];
-      for(const p of pacs){ Object.assign(PREM, p.premium || {}); Object.assign(PRIV, p.privado || {}); }
+      for(const p of pacs){ Object.assign(PREM, p.premium || {}); Object.assign(PRIV, p.privado || {});
+        if(p.pol && p.pol.chaves){ POLK = POLK || {kid: p.pol.kid, chaves: {}}; Object.assign(POLK.chaves, p.pol.chaves); } }
       ASSIN = Object.keys(PREM).length > 0;
     }catch(e){ ASSIN = false; }
   }
@@ -590,6 +613,19 @@ function pintaMapa(){
   for(const l of xs){ const p = posDe(l); if(!p || !b.contains(p)) continue; if(++n > 4000) break;
     L_.circleMarker(p, {renderer: R_L, radius: z >= 12 ? 8 : z >= 9 ? 6 : 4.5, weight: 1.5, color: sf, fillColor: CRIT(l) ? ac : mu, fillOpacity: .95})
       .bindTooltip(() => `<b>${esc(titulo(l))}</b><br>${esc(l.ci || l.co)} · abertura ${usd(l.ab)}`, {direction: "top"}).on("click", () => { location.hash = "lote-" + l.i; }).addTo(CAM_L); }
+  contornosMapa(xs, b, z);
+}
+let POLTOK = 0;
+function contornosMapa(xs, b, z){
+  const tk = ++POLTOK;
+  if(z < Z_POL || !ASSIN || !POLK) return;
+  const vis = xs.filter(l => !HIST(l) && l.la != null && b.contains(posDe(l) || [l.la, l.ln])).slice(0, 1500);
+  const poe = l => { const pol = polDe(l); if(!pol) return;
+    L_.polygon(pol, {renderer: R_L, color: "#F2C14E", weight: z >= 16 ? 2.6 : 1.8, fillColor: "#F2C14E", fillOpacity: .2}).on("click", () => { location.hash = "lote-" + l.i; }).addTo(CAM_L); };
+  vis.forEach(poe);
+  const cel = [...new Set(vis.filter(l => !polDe(l)).map(l => celPol(l.la, l.ln)))].slice(0, innerWidth <= 480 ? 4 : 12);
+  if(!cel.length) return;
+  Promise.all(cel.map(celula)).then(() => { if(tk !== POLTOK) return; vis.filter(l => cel.includes(celPol(l.la, l.ln))).forEach(poe); });
 }
 const posDe = l => { const p = ASSIN && priv(l); return p && p.la != null ? [p.la, p.ln] : l.la != null ? [l.la, l.ln] : null; };
 function lista(){
@@ -643,7 +679,9 @@ function abreFicha(id){
   const jv = (p && p.jv) || l.jv;   // assinante: valor de cadastro exato (o público é arredondado), como na versão clássica
   const pos = posDe(l);
   const trava = !ASSIN ? `<div class="trava"><span>${CRIT(l) ? "Este lote passa no critério BLR. " : ""}Teto de lance, ARV, endereço e contorno ficam no Pro.</span><a class="btn pri peq" href="#planos">Ver planos</a></div>` : "";
-  const cont = p && p.shp && p.shp.length > 2 ? `<svg viewBox="-6 -6 112 112" aria-hidden="true"><polygon points="${p.shp.map(q => q.join(",")).join(" ")}" vector-effect="non-scaling-stroke" stroke-linejoin="round" style="--len:600"/></svg>`
+  const pol = polDe(l);
+  if(ASSIN && POLK && !pol) polDoLote(l).then(x => { if(x && $("#ficha").classList.contains("on") && location.hash === "#lote-" + l.i) abreFicha(l.i); });
+  const cont = pol ? svgPol(pol) : p && p.shp && p.shp.length > 2 ? `<svg viewBox="-6 -6 112 112" aria-hidden="true"><polygon points="${p.shp.map(q => q.join(",")).join(" ")}" vector-effect="non-scaling-stroke" stroke-linejoin="round" style="--len:600"/></svg>`
     : `<svg viewBox="0 0 44 44" aria-hidden="true" style="width:30%"><path d="M10 30V18l12-9 12 9v12z" fill="none" stroke="var(--muted)" stroke-width="1.6"/></svg>`;
   $("#ficha").innerHTML = `<header><div><h2>${esc(titulo(l))}</h2><small>${esc(lugar(l))}</small></div><button class="pill ic x" type="button" id="fichaX" aria-label="Fechar">✕</button></header>
     <div class="corpo">
@@ -676,6 +714,13 @@ function abreFicha(id){
 }
 /* 14/11: fotos do lote na ficha do assinante, como na versão clássica: Street View ao vivo (vitrine_sv.py) → foto de rua do
    Mapillary (vitrine_mly.py) → fachada do cadastro → foto aérea do USGS com o contorno; mais o satélite do bairro, onde houver */
+// contorno em lat/lng → SVG 0..100 (mesmo desenho do "shp"), achatando a longitude pela latitude
+function svgPol(pol){
+  const k = Math.cos(pol[0][0] * Math.PI / 180), xs = pol.map(q => q[1] * k), ys = pol.map(q => -q[0]);
+  const x0 = Math.min(...xs), y0 = Math.min(...ys), w = Math.max(...xs) - x0 || 1e-9, h = Math.max(...ys) - y0 || 1e-9, e = 100 / Math.max(w, h);
+  const dx = (100 - w * e) / 2, dy = (100 - h * e) / 2;
+  return `<svg viewBox="-6 -6 112 112" aria-hidden="true"><polygon points="${pol.map((q, j) => ((xs[j] - x0) * e + dx).toFixed(1) + "," + ((ys[j] - y0) * e + dy).toFixed(1)).join(" ")}" vector-effect="non-scaling-stroke" stroke-linejoin="round" style="--len:600"/></svg>`;
+}
 function capaAerea(la, ln, pol){
   const R = 6378137, X = g => R * g * Math.PI / 180, Y = g => R * Math.log(Math.tan(Math.PI / 4 + g * Math.PI / 360));
   const W = 800, H = 450, temPol = Array.isArray(pol) && pol.length > 2;
@@ -699,7 +744,7 @@ function midiaLote(l, p, pv, pos){
   else if(mly && mly.id) fs.push(`<figure><div class="q"><iframe src="https://www.mapillary.com/embed?image_key=${encodeURIComponent(mly.id)}&style=photo" loading="lazy" allowfullscreen referrerpolicy="no-referrer-when-downgrade" title="Foto de rua (Mapillary)"></iframe></div>
     <figcaption>Foto de rua · © Mapillary contributors (CC-BY-SA 4.0)${mly.ano ? ", foto de " + esc(mly.ano) : ""}${mly.m != null ? " · a " + esc(mly.m) + " m do centro do lote" : ""}</figcaption></figure>`);
   else if(img.f) fs.push(`<figure><div class="q"><img src="/${esc(String(img.f).replace(/^\/+/, ""))}" alt="Fachada" loading="lazy" onerror="this.closest('figure').remove()"></div><figcaption>Fachada · ${esc(img.ff || "cadastro do condado")}</figcaption></figure>`);
-  else if(pos) fs.push(capaAerea(pos[0], pos[1], pv && pv.pol));
+  else if(pos) fs.push(capaAerea(pos[0], pos[1], polDe(l)));
   if(img.s) fs.push(`<figure><div class="q"><img src="/${esc(String(img.s).replace(/^\/+/, ""))}" alt="Vista aérea do bairro com as ruas e o contorno do lote" loading="lazy" onerror="this.closest('figure').remove()"></div><figcaption>Satélite com as ruas, ~400 m de largura · USGS NAIP + Censo TIGER</figcaption></figure>`);
   return fs.length ? `<div class="bloco midia"><h3>Fotos do lote</h3>${fs.join("")}</div>` : "";
 }
@@ -817,7 +862,7 @@ function abreEntrar(volta){
 }
 async function posLogin(){
   if(VOLTA){ location.href = VOLTA; return; }
-  PREM = {}; PRIV = {}; ASSIN = false;
+  PREM = {}; PRIV = {}; ASSIN = false; POLK = null;
   await conta_();
   if(!EU){ toast("Você entrou, mas a conta não abriu agora. Atualize a página."); return; }
   const el = $("#toast"); el.textContent = `Olá, ${primeiroNome()}!`; el.classList.add("on"); clearTimeout(tToast); tToast = setTimeout(() => el.classList.remove("on"), 2600);
