@@ -40,21 +40,21 @@ async function pega(r){ const x = await fetch(API + r, {credentials: "include"})
     pinta(`<h1>O pagamento não foi concluído</h1><p>Nada foi cobrado. Você pode voltar e tentar de novo.</p><div class="acoes"><a class="btn pri" href="/assinar/?plano=${esc(st.plano || "pro")}">Voltar ao pagamento</a><a class="btn" href="/#planos">Ver os planos</a></div>`); return; }
   if(st && st.status === "expired"){
     pinta(`<h1>Este pagamento expirou</h1><p>Nada foi cobrado. Comece de novo pelos planos.</p><div class="acoes"><a class="btn pri" href="/#planos">Ver os planos</a></div>`); return; }
-  const plano = st && st.plano, pago = !!(st && st.status === "complete");
+  const plano = st && st.plano, pago = !!(st && st.status === "complete"), teste = !!(pago && st.payment_status === "no_payment_required");
   // só diz "Pagamento recebido" com a confirmação do Stripe; sem ela (sessão de outro navegador, servidor fora), fala neutro
   if(!pago) pinta(`<h1>Conferindo a sua assinatura</h1><p>Não consegui confirmar o pagamento com o Stripe agora. Estou olhando a sua conta…</p><div class="estado" style="min-height:80px"><div class="gira" aria-hidden="true"></div></div>`);
-  else pinta(`${OK_ICONE}<h1>Pagamento recebido</h1><p>Liberando o seu plano${plano ? " " + esc(nomePlano(plano)) : ""}… isto leva só alguns segundos.</p><div class="estado" style="min-height:80px"><div class="gira" aria-hidden="true"></div></div>`);
+  else pinta(`${OK_ICONE}<h1>${teste ? "Teste grátis iniciado" : "Pagamento recebido"}</h1><p>Liberando o seu plano${plano ? " " + esc(nomePlano(plano)) : ""}… isto leva só alguns segundos.</p><div class="estado" style="min-height:80px"><div class="gira" aria-hidden="true"></div></div>`);
   const t0 = Date.now();
   while(Date.now() - t0 < 30000){
     try{ const eu = await pega("/api/me"); if(eu && eu.plano && (!plano || eu.plano === plano)){
-      pinta(`${OK_ICONE}<h1>Pronto! Seu plano ${esc(nomePlano(eu.plano))} está ativo</h1><p>Teto de lance, ARV, endereço e contorno dos lotes já aparecem para você${Array.isArray(eu.estados) && eu.estados_limite && !eu.estados.length ? ". Antes, escolha os seus estados" : ""}.</p>
+      pinta(`${OK_ICONE}<h1>Pronto! Seu plano ${esc(nomePlano(eu.plano))} está ativo</h1><p>${teste ? "Nada foi cobrado hoje: a primeira cobrança é ao fim do teste, e dá para cancelar antes em Minha conta. " : ""}Teto de lance, ARV, endereço e contorno dos lotes já aparecem para você${Array.isArray(eu.estados) && eu.estados_limite && !eu.estados.length ? ". Antes, escolha os seus estados" : ""}.</p>
         <div class="acoes"><a class="btn pri" href="/">Abrir a Vitrine</a><a class="btn" href="/conta/">Minha conta</a></div>`); return; } }
     catch(e){ if(e.st === 401) break; }
     await espera(2500);
   }
   if(!pago){ pinta(`<h1>Ainda não vimos a confirmação</h1><p>Se você concluiu o pagamento, o plano aparece na sua conta em instantes: abra a Vitrine e atualize em 1 minuto. Se não concluiu, nada foi cobrado. Dúvidas: fale com a BLR pelo assistente.</p>
     <div class="acoes"><a class="btn pri" href="/">Abrir a Vitrine</a><a class="btn" href="/#planos">Ver os planos</a></div>`); return; }
-  pinta(`${OK_ICONE}<h1>Pagamento recebido</h1><p>O seu plano está sendo liberado e aparece em instantes. Se não aparecer ao abrir a Vitrine, atualize a página em 1 minuto. Se ainda assim não aparecer, fale com a BLR pelo assistente ou pelo e-mail.</p>
+  pinta(`${OK_ICONE}<h1>${teste ? "Teste grátis iniciado" : "Pagamento recebido"}</h1><p>O seu plano está sendo liberado e aparece em instantes. Se não aparecer ao abrir a Vitrine, atualize a página em 1 minuto. Se ainda assim não aparecer, fale com a BLR pelo assistente ou pelo e-mail.</p>
     <div class="acoes"><a class="btn pri" href="/">Abrir a Vitrine</a></div>`);
 })();
 </script>

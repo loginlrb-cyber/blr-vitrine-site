@@ -26,7 +26,7 @@
 <script>
 "use strict";
 /* Checkout embutido (13/11/2026). Rotas no servidor da Gallery (API-SERVIDOR.md §3):
-   POST /api/checkout {plano, ciclo} → {client_secret} · 401 login · 409 já assina (troca_de_plano traz plano_atual; ja_assinante traz plano) · sem teste grátis no Stripe · 502/503 → payment link de sempre.
+   POST /api/checkout {plano, ciclo} → {client_secret} · 401 login · 409 já assina (troca_de_plano traz plano_atual; ja_assinante traz plano) · teste: só se o servidor mandar trial_dias · 502/503 → payment link de sempre.
    O Stripe volta para /assinar/ok/?session_id=...; quem libera o plano é o webhook. */
 const P = window.BLR_PLANOS, API = P.api, $ = s => document.querySelector(s);
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"}[c]));
@@ -34,18 +34,19 @@ const USD = new Intl.NumberFormat("pt-BR", {style: "currency", currency: "USD"})
 const q = new URLSearchParams(location.search);
 let plano = ["basico", "pro", "ultra"].includes(q.get("plano")) ? q.get("plano") : "pro";
 let ciclo = q.get("ciclo") === "anual" ? "anual" : "mensal";
-let EU = null, CO = null, vez = 0;
+let EU = null, CO = null, vez = 0, TRIAL = 0;  // TRIAL: dias de teste que o servidor diz que a sessão aplica (trial_dias); 0 = cobra na hora
 const pl = () => P.planos.find(p => p.id === plano);
 const linkPag = () => P.stripe[plano][ciclo === "anual" ? "a" : "m"] + (EU && EU.email ? "?prefilled_email=" + encodeURIComponent(EU.email) : "");
 
 function resumo(){
   const p = pl(), v = ciclo === "anual" ? p.a : p.m;
-  $("#resumo").innerHTML = `<h1>Plano ${esc(p.nome)}</h1><div class="quem">${esc(p.quem)}</div>
+  const d1 = TRIAL ? new Date(Date.now() + TRIAL * 864e5).toLocaleDateString("pt-BR", {day: "2-digit", month: "2-digit"}) : "";
+  $("#resumo").innerHTML = `${TRIAL ? `<span class="selo">${TRIAL} dias grátis</span>` : ""}<h1>Plano ${esc(p.nome)}</h1><div class="quem">${esc(p.quem)}</div>
     <div class="preco num">${USD.format(v).replace(/,00$/, "")}<small> /${ciclo === "anual" ? "ano" : "mês"}</small></div>
     <div class="ciclo" role="group" aria-label="Forma de pagamento"><button type="button" data-c="mensal" aria-pressed="${ciclo === "mensal"}">Mensal</button><button type="button" data-c="anual" aria-pressed="${ciclo === "anual"}">Anual · 2 meses grátis</button></div>
     <ul>${p.itens.map(i => `<li>${esc(i)}</li>`).join("")}</ul>
     <div class="trocar" aria-label="Trocar de plano">${P.planos.filter(x => x.m).map(x => `<a href="?plano=${x.id}&ciclo=${ciclo}" data-p="${x.id}" aria-current="${x.id === plano}">${esc(x.nome)}</a>`).join("")}</div>
-    <p class="nota">A cobrança é feita na hora, quando você confirma no formulário do Stripe, e o acesso é liberado logo em seguida. Pagamento em nome de BLR Development. Mensal: cancele quando quiser.${p.selo ? " O teste grátis de 7 dias é outro caminho: pelo cadastro do site, sem cartão." : ""}</p>
+    ${TRIAL ? `<p class="nota"><b>Você não paga nada hoje.</b> O cartão é cobrado só em ${d1}, ao fim dos ${TRIAL} dias grátis, e dá para cancelar antes em Minha conta. Pagamento em nome de BLR Development.</p>` : `<p class="nota">A cobrança é feita na hora, quando você confirma no formulário do Stripe, e o acesso é liberado logo em seguida. Pagamento em nome de BLR Development. Mensal: cancele quando quiser.${p.selo ? " O teste grátis de 7 dias é outro caminho: pelo cadastro do site, sem cartão." : ""}</p>`}
     ${EU && EU.email ? `<p class="nota">Conta: <b>${esc(EU.email)}</b></p>` : ""}`;
   document.querySelectorAll("[data-c]").forEach(b => b.onclick = () => { if(ciclo === b.dataset.c) return; ciclo = b.dataset.c; troca(); });
   document.querySelectorAll("[data-p]").forEach(a => a.onclick = e => { e.preventDefault(); if(plano === a.dataset.p) return; plano = a.dataset.p; troca(); });
@@ -75,6 +76,7 @@ async function monta(){
     const atual = (P.planos.find(p => p.id === (j.plano_atual || j.plano || EU.plano)) || {}).nome || j.plano_atual || j.plano || EU.plano || "";
     tela(`<h2>Você já tem uma assinatura${atual ? ": " + esc(atual) : ""}</h2><p>${esc(j.mensagem || "Para trocar de plano, fale com a BLR ou ajuste em Minha conta.")}</p>
       <div class="acoes"><a class="btn pri" href="/conta/">Minha conta</a><a class="btn" href="/">Abrir a Vitrine</a></div>`); return; }
+  const tr = Math.max(0, parseInt(j.trial_dias, 10) || 0); if(tr !== TRIAL){ TRIAL = tr; resumo(); }
   if(!r.ok || !j.client_secret) return planoB(j.mensagem || (r.status === 503 ? "O pagamento embutido está em manutenção." : `Código ${r.status}.`));
   try{ await esperaStripe(); }catch(e){ if(minha === vez) planoB("O formulário do Stripe não carregou neste navegador."); return; }
   if(minha !== vez) return;
