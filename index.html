@@ -419,7 +419,10 @@ const prem = l => (PREM[l.uf] || {})[l.i] || null;
 const priv = l => (PRIV[chavePriv(l)] || {})[l.i] || null;
 const diasAte = d => d ? Math.round((new Date(d + "T12:00:00") - new Date(HOJE + "T12:00:00")) / 864e5) : null;
 const quando = l => { const n = diasAte(l.d); return n == null ? "data a confirmar" : n < 0 ? "já leiloado" : n === 0 ? "leilão hoje" : n === 1 ? "leilão amanhã" : `leilão em ${n} dias`; };
-const titulo = l => { const p = ASSIN && priv(l); return p && p.e ? p.e.replace(/\s+\d{5}$/, "") : `Lote em ${l.ci || l.co}`; };
+/* 14/11: endereço só com o estado ("AR", ", AR") vira "Lote em <cidade>"; "ABBEY RD, AR" ganha a cidade */
+const titulo = l => { const p = ASSIN && priv(l); let e = p && p.e ? String(p.e).replace(/\s+\d{5}(-\d{4})?$/, "").replace(/^[\s,]+|[\s,]+$/g, "") : "";
+  if(!e || /^[A-Z]{2}$/i.test(e) || e.replace(/,?\s*[A-Z]{2}$/i, "").replace(/[^A-Za-z]/g, "").length < 3) return `Lote em ${l.ci || l.co}`;
+  return e; };
 const lugar = l => `${l.ci ? l.ci + ", " : ""}${l.uf} · condado de ${l.co}`;
 const teto = l => { const p = ASSIN && prem(l); return p && p.t != null ? p.t : null; };
 
