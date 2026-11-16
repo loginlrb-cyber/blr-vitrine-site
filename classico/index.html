@@ -8,7 +8,7 @@
 <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="manifest" href="/site.webmanifest">
 <style>*,*::before,*::after{box-sizing:border-box}html,body{margin:0}img{max-width:100%}[hidden]{display:none!important}
 :root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}</style>
-</head><body><link rel="preload" href="d_dados_8378226706.json" as="fetch" crossorigin="anonymous"><link rel="preload" href="d_eua_145aaf5d14.json" as="fetch" crossorigin="anonymous"><title>BLR Developments</title>
+</head><body><link rel="preload" href="d_dados_17fbcd5f2d.json" as="fetch" crossorigin="anonymous"><link rel="preload" href="d_eua_145aaf5d14.json" as="fetch" crossorigin="anonymous"><title>BLR Developments</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -1258,11 +1258,11 @@ body{transition:padding-right .5s var(--mola)}
 <div class="modal" id="modal" hidden><div class="mbox" role="dialog" aria-modal="true" aria-labelledby="mTit">
   <button class="x" id="mX" type="button" aria-label="Fechar">✕</button><div id="mBody"></div></div></div>
 
-<script>(function(){var q=function(u){return fetch(u).then(function(r){if(!r.ok)throw new Error(u+' '+r.status);return r.json()})};Promise.all([q('d_dados_8378226706.json'),q('d_eua_145aaf5d14.json')]).then(function(x){window.__DADOS=x[0];window.__EUA=x[1];var s=document.createElement('script');s.textContent=document.getElementById('app').textContent;document.body.appendChild(s)}).catch(function(e){var d=document.createElement('p');d.style.cssText='padding:24px;font:16px sans-serif';d.textContent='Não foi possível carregar os dados ('+e.message+'). Recarregue a página.';document.body.prepend(d)})})();</script>
+<script>(function(){var q=function(u){return fetch(u).then(function(r){if(!r.ok)throw new Error(u+' '+r.status);return r.json()})};Promise.all([q('d_dados_17fbcd5f2d.json'),q('d_eua_145aaf5d14.json')]).then(function(x){window.__DADOS=x[0];window.__EUA=x[1];var s=document.createElement('script');s.textContent=document.getElementById('app').textContent;document.body.appendChild(s)}).catch(function(e){var d=document.createElement('p');d.style.cssText='padding:24px;font:16px sans-serif';d.textContent='Não foi possível carregar os dados ('+e.message+'). Recarregue a página.';document.body.prepend(d)})})();</script>
 <script type="text/plain" id="app">
 const DADOS = window.__DADOS;
 const EUA = window.__EUA;
-const SAT = {"12011":{"src":"sat/12011.jpg","b":[[25.93054,-80.35664],[26.36468,-80.02927]]},"12057":{"src":"sat/12057.jpg","b":[[27.64751,-82.62395],[28.04336,-82.09104]]},"12069":{"src":"sat/12069.jpg","b":[[28.33672,-82.03519],[29.25658,-81.37388]]},"12071":{"src":"sat/12071.jpg","b":[[26.27625,-82.10999],[26.79683,-81.51332]]},"12095":{"src":"sat/12095.jpg","b":[[28.30895,-81.71145],[28.68932,-81.18102]]},"12099":{"src":"sat/12099.jpg","b":[[26.25039,-80.75906],[27.00539,-79.95131]]},"12105":{"src":"sat/12105.jpg","b":[[27.63975,-82.10605],[28.41693,-81.25855]]},"12111":{"src":"sat/12111.jpg","b":[[27.21976,-80.41607],[27.51704,-80.27042]]}};
+const SAT = {"12011":{"src":"sat/12011.jpg","b":[[25.93054,-80.35664],[26.36468,-80.02927]]},"12057":{"src":"sat/12057.jpg","b":[[27.64751,-82.62395],[28.04336,-82.09104]]},"12069":{"src":"sat/12069.jpg","b":[[28.33672,-81.92677],[29.25658,-81.37388]]},"12071":{"src":"sat/12071.jpg","b":[[26.27625,-82.10999],[26.79683,-81.51332]]},"12095":{"src":"sat/12095.jpg","b":[[28.30895,-81.71145],[28.68932,-81.18102]]},"12099":{"src":"sat/12099.jpg","b":[[26.25039,-80.75906],[27.00539,-79.95131]]},"12105":{"src":"sat/12105.jpg","b":[[27.63975,-82.10605],[28.41693,-81.25855]]},"12111":{"src":"sat/12111.jpg","b":[[27.21976,-80.41607],[27.51704,-80.27042]]}};
 /* SITE = a mesma página servida como site (vitrine_site.py), fora do claude.ai: lá não existe db, então a área de membro abre
    com a senha do mês (pacote membros.bin cifrado, AES-GCM), o satélite vem ao vivo do USGS em qualquer condado e a ficha do
    membro abre com o Street View do Google ao vivo. No artifact o navegador bloqueia imagem e quadro de outros sites. */
@@ -1272,7 +1272,7 @@ const RUAS = new Set(["01001", "01003", "01005", "01009", "01011", "01013", "010
 /* Contato que aparece quando o pedido não pode ser gravado direto (visitante por link público não grava dados no artifact). */
 const CONTATO = {"email": "loginlrb@gmail.com", "whats": "+55 51 99135-7544"};
 /* Cotação do dia em que a página foi montada (vitrine_cambio.py); o leilão é sempre em dólar. */
-const CAMBIO = {"data": "2026-11-14", "fonte": "ExchangeRate-API (open.er-api.com)", "r": {"BRL": 5.648277, "EUR": 0.905954, "GBP": 0.756419, "CAD": 1.426026, "MXN": 18.561557, "ARS": 1547.0336, "CLP": 992.125487, "COP": 3286.103569, "PEN": 3.403819, "UYU": 40.702627, "PYG": 6204.967082, "CHF": 0.838606, "JPY": 159.799454, "CNY": 6.684938, "AUD": 1.475083, "INR": 94.289707, "AED": 3.6725, "ILS": 3.207553, "ZAR": 16.898089}};
+const CAMBIO = {"data": "2026-11-15", "fonte": "ExchangeRate-API (open.er-api.com)", "r": {"BRL": 5.648053, "EUR": 0.905984, "GBP": 0.756391, "CAD": 1.425922, "MXN": 18.553067, "ARS": 1547.0336, "CLP": 992.200356, "COP": 3285.261046, "PEN": 3.406102, "UYU": 40.693726, "PYG": 6204.018191, "CHF": 0.838392, "JPY": 159.778993, "CNY": 6.689676, "AUD": 1.474704, "INR": 94.262076, "AED": 3.6725, "ILS": 3.208773, "ZAR": 16.919798}};
 const HOJE = DADOS.meta.gerado;
 const L = DADOS.lotes;
 /* 04/11 (site leve): no site os lotes vêm por estado (vitrine_site.separa_dados). DADOS.partes = [{uf, a: arquivo, n}] e DADOS.idx =
