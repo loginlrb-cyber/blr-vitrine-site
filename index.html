@@ -134,6 +134,7 @@ button{font:inherit;color:inherit}
 .linha:hover{background:var(--sunk)}
 .mini{width:56px;height:56px;border-radius:8px;background:var(--sunk);display:grid;place-items:center;overflow:hidden}
 .mini svg{width:44px;height:44px}
+.mini.foto{position:relative;background:#2b3a2f}.mini.foto img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}.mini.foto svg{position:absolute;inset:0;width:100%;height:100%}
 .linha h3{font:600 15px var(--f-b);margin:0 0 2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .linha .sub{color:var(--muted);font-size:13px}
 .tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:5px}
@@ -656,17 +657,17 @@ function minisContorno(xs){
   const cel = [...new Set(falta.map(l => celPol(l.la, l.ln)))].slice(0, 8);
   if(!cel.length) return;
   Promise.all(cel.map(celula)).then(() => { if(tk !== MINITOK) return;
-    for(const l of falta){ if(!polDe(l)) continue; const m = document.querySelector(`#lista a[href="#lote-${CSS.escape(l.i)}"] .mini`); if(m) m.innerHTML = formaSVG(l); } });
+    for(const l of falta){ if(!polDe(l)) continue; const m = document.querySelector(`#lista a[href="#lote-${CSS.escape(l.i)}"] .mini`); if(m){ m.classList.add("foto"); m.innerHTML = formaSVG(l); } } });
 }
 function formaSVG(l){ const p = ASSIN && prem(l), s = p && p.shp, pol = ASSIN && polDe(l);
-  if(pol) return svgPol(pol, 'fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="2.5"');
+  if(pol) return miniAerea(pol);
   if(s && s.length > 2) return `<svg viewBox="-6 -6 112 112" aria-hidden="true"><polygon points="${s.map(q => q.join(",")).join(" ")}" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="2.5" vector-effect="non-scaling-stroke" stroke-linejoin="round"/></svg>`;
   return `<svg viewBox="0 0 44 44" aria-hidden="true"><path d="M10 30V18l12-9 12 9v12z" fill="none" stroke="var(--muted)" stroke-width="2" stroke-linejoin="round"/></svg>`; }
 function linhaHTML(l){
   const t = teto(l), n = diasAte(l.d), ti = CONTEUDO.tipos[l._t] || CONTEUDO.tipos.nao_informado;
   const crit = CRIT(l) ? `<span class="tag ok">no critério BLR</span>` : SEMDADO(l) ? `<span class="tag sd">sem valores ainda</span>` : "";
   const acima = t != null && l.ab > t ? `<span class="tag acima">acima do teto</span>` : "";
-  return `<a class="linha" href="#lote-${l.i}"><div class="mini">${formaSVG(l)}</div>
+  return `<a class="linha" href="#lote-${l.i}"><div class="mini${ASSIN && polDe(l) ? " foto" : ""}">${formaSVG(l)}</div>
     <div style="min-width:0"><h3>${esc(titulo(l))}</h3><div class="sub">${esc((l.ci || l.co) + ", " + l.uf)} · ${esc(ti[0])}</div>
       <div class="tags"><span class="tag ${n != null && n <= 14 ? "breve" : ""}">${esc(quando(l))}</span>${crit}${acima}</div></div>
     <div class="val"><small>abertura</small><b class="num">${usd(l.ab)}</b><div class="teto">${t != null ? (t > 0 ? "teto " + usd(t) : "não fecha") : CRIT(l) ? "teto no Pro" : ""}</div></div></a>`;
@@ -739,6 +740,16 @@ function svgPol(pol, at){
   const x0 = Math.min(...xs), y0 = Math.min(...ys), w = Math.max(...xs) - x0 || 1e-9, h = Math.max(...ys) - y0 || 1e-9, e = 100 / Math.max(w, h);
   const dx = (100 - w * e) / 2, dy = (100 - h * e) / 2;
   return `<svg viewBox="-6 -6 112 112" aria-hidden="true"><polygon points="${pol.map((q, j) => ((xs[j] - x0) * e + dx).toFixed(1) + "," + ((ys[j] - y0) * e + dy).toFixed(1)).join(" ")}" vector-effect="non-scaling-stroke" stroke-linejoin="round" ${at || 'style="--len:600"'}/></svg>`;
+}
+/* 16/11 (Cris: "não aparece o recorte do lote"): o card mostra o recorte da foto aérea com o contorno por cima, quadrado */
+function miniAerea(pol){
+  const R = 6378137, X = g => R * g * Math.PI / 180, Y = g => R * Math.log(Math.tan(Math.PI / 4 + g * Math.PI / 360)), S = 160;
+  const xs = pol.map(q => X(q[1])), ys = pol.map(q => Y(q[0])), x0 = Math.min(...xs), x1 = Math.max(...xs), y0 = Math.min(...ys), y1 = Math.max(...ys);
+  const cx = (x0 + x1) / 2, cy = (y0 + y1) / 2, h = Math.max(45 / Math.cos(pol[0][0] * Math.PI / 180), (x1 - x0) * .7, (y1 - y0) * .7);
+  const bb = `bbox=${cx - h},${cy - h},${cx + h},${cy + h}&bboxSR=3857&imageSR=3857&size=${S},${S}&format=jpg&f=image`;
+  const px = (a, o) => (((X(o) - (cx - h)) / (2 * h)) * S).toFixed(1) + "," + ((((cy + h) - Y(a)) / (2 * h)) * S).toFixed(1);
+  return `<img src="https://basemap.nationalmap.gov/arcgis/rest/services/USGSImageryOnly/MapServer/export?${bb}" data-alt2="https://imagery.nationalmap.gov/arcgis/rest/services/USGSNAIPImagery/ImageServer/exportImage?${bb}" onerror="if(this.dataset.alt2){this.src=this.dataset.alt2;this.dataset.alt2=''}" alt="" loading="lazy">
+    <svg viewBox="0 0 ${S} ${S}" aria-hidden="true"><polygon points="${pol.map(([a, o]) => px(a, o)).join(" ")}" fill="rgba(242,193,78,.18)" stroke="#F2C14E" stroke-width="4" stroke-linejoin="round"/></svg>`;
 }
 function capaAerea(la, ln, pol){
   const R = 6378137, X = g => R * g * Math.PI / 180, Y = g => R * Math.log(Math.tan(Math.PI / 4 + g * Math.PI / 360));
