@@ -78,8 +78,8 @@ button{font:inherit;color:inherit}
 @media (max-width:820px){
   .nav,.top .marca small,.top .so-desk{display:none}
   #xpTxt{display:none}.pill#xpChip{padding:6px}.top .wrap{gap:var(--s2)}
-  .inferior{display:grid;grid-template-columns:repeat(4,1fr);position:fixed;left:0;right:0;bottom:0;z-index:1000;background:var(--surface);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom)}
-  .inferior a{display:grid;justify-items:center;gap:2px;padding:9px 0 8px;text-decoration:none;color:var(--muted);font-size:12px;font-weight:500}
+  .inferior{display:grid;grid-template-columns:repeat(5,1fr);position:fixed;left:0;right:0;bottom:0;z-index:1000;background:var(--surface);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom)}
+  .inferior a{display:grid;justify-items:center;gap:2px;padding:9px 0 8px;text-decoration:none;color:var(--muted);font-size:11.5px;font-weight:500;white-space:nowrap}
   .inferior a[aria-current="page"]{color:var(--accent);font-weight:600}
   .inferior svg{width:22px;height:22px}
   body{padding-bottom:76px}
@@ -160,6 +160,50 @@ button{font:inherit;color:inherit}
 .lnk.volta{background:none;border:0;padding:0;color:var(--accent);font-weight:600;cursor:pointer;font-size:13.5px}
 .uf-rot{display:inline-block;transform:translateX(-50%);margin-left:30px;font:700 11px var(--f-b);color:var(--ink);text-align:center;line-height:1.15;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:2px 6px;white-space:nowrap}
 .uf-rot small{display:block;font:500 10.5px var(--f-m);color:var(--muted)}
+/* 20/11: mapa no modelo da clássica (grupos com número, nomes de estado, cidade e condado), busca, avisos e agenda */
+.clu{position:absolute;transform:translate(-50%,-50%);width:var(--t);height:var(--t);border-radius:50%;display:grid;place-items:center;cursor:pointer;background:var(--surface);
+  border:3px solid var(--muted);box-shadow:0 0 0 4px color-mix(in srgb,var(--muted) 22%,transparent),0 4px 12px rgba(0,0,0,.18);color:var(--ink);font:700 13px/1 var(--f-b);transition:transform .18s var(--ease);animation:cluIn .3s var(--ease) both}
+.clu.cr{border-color:var(--accent);box-shadow:0 0 0 4px var(--accent-soft),0 4px 12px rgba(0,0,0,.18)}
+.clu b{font-weight:800;white-space:nowrap}
+.leaflet-marker-icon:hover .clu{transform:translate(-50%,-50%) scale(1.1)}
+@keyframes cluIn{from{opacity:0;transform:translate(-50%,-50%) scale(.6)}to{opacity:1;transform:translate(-50%,-50%) scale(1)}}
+@media (prefers-reduced-motion:reduce){.clu{animation:none;transition:none}}
+.rgeo{pointer-events:none;white-space:nowrap;transform:translate(-50%,-50%);font:700 11px/1 var(--f-b);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);
+  text-shadow:0 0 3px var(--surface),0 0 3px var(--surface),0 0 6px var(--surface)}
+.rgeo.ci{transform:translate(-4px,-50%);text-transform:none;letter-spacing:0;font-weight:500;color:var(--ink);font-size:11.5px;display:flex;align-items:center;gap:5px}
+.rgeo.ci i{width:5px;height:5px;border-radius:50%;background:var(--ink);box-shadow:0 0 0 1.5px var(--surface);flex:none}
+.rgeo.ci.t1{font-weight:700;font-size:12.5px}
+.rgeo.co{font-size:10.5px;font-weight:500;letter-spacing:.02em;text-transform:none;font-style:italic;color:var(--muted)}
+.vlt{position:absolute;transform:translate(-50%,calc(-100% - 10px));white-space:nowrap;pointer-events:none;font:700 10.5px/1.2 var(--f-m);color:var(--ink);background:var(--surface);border:1px solid var(--line);padding:1px 5px;border-radius:6px}
+.busca{display:flex;align-items:center;gap:8px;padding:8px 12px;border-bottom:1px solid var(--line);color:var(--muted)}
+.busca input{flex:1;min-width:0;font:inherit;font-size:16px;padding:8px 10px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink)}
+.busca input:focus{outline:2px solid var(--accent);outline-offset:1px}
+.badge{display:inline-grid;place-items:center;min-width:18px;height:18px;padding:0 5px;margin-left:6px;border-radius:9px;background:var(--bad);color:#fff;font:700 11px/1 var(--f-b);vertical-align:2px}
+.inferior a{position:relative}.inferior a .badge{position:absolute;top:2px;left:calc(50% + 4px);margin:0}
+.aviso{display:flex;gap:12px;align-items:flex-start;padding:12px 18px;border-bottom:1px solid var(--line);color:var(--ink);text-decoration:none}
+a.aviso:hover{background:var(--sunk)}
+.aviso b{display:block;font-weight:600;font-size:14.5px}.aviso small{display:block;color:var(--muted);font-size:13px}
+.aviso.novo{background:var(--accent-soft)}
+.avic{flex:none;width:32px;height:32px;border-radius:9px;display:grid;place-items:center;background:var(--sunk);font-size:15px}
+.avic.perto,.avic.insc{background:var(--amber-soft);color:var(--amber)}.avic.saiu{background:var(--bad-soft);color:var(--bad)}
+.aviso .pto{flex:none;width:9px;height:9px;border-radius:50%;background:var(--bad);margin:6px 0 0 auto}
+.agfil{display:flex;flex-wrap:wrap;gap:var(--s4);align-items:center;margin-bottom:var(--s4)}
+.agfil select{font:inherit;padding:6px 10px;border-radius:10px;border:1px solid var(--line);background:var(--surface);color:var(--ink);margin-left:6px}
+.agwrap{display:grid;grid-template-columns:minmax(280px,380px) 1fr;gap:var(--s4);align-items:start}
+@media (max-width:820px){.agwrap{grid-template-columns:1fr}}
+.agcal header h2{font-size:17px}
+.agsemn,.aggrid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;padding:0 12px}
+.agsemn{padding-top:10px;font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;text-align:center}
+.aggrid{padding-bottom:12px;padding-top:4px}
+.agd{aspect-ratio:1;border:0;border-radius:10px;background:none;color:var(--muted);font:inherit;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;padding:0}
+.agd b{font-size:13.5px;font-weight:500}.agd small{font:700 10.5px var(--f-m);color:var(--accent)}
+.agd.tem{background:var(--accent-soft);color:var(--ink);cursor:pointer}.agd.tem b{font-weight:700}
+.agd.hj{box-shadow:inset 0 0 0 2px var(--amber)}.agd.sel{background:var(--accent);color:var(--accent-ink)}.agd.sel small{color:var(--accent-ink)}
+.agd.pas{opacity:.45}.agd.vz{visibility:hidden}.agd:disabled{cursor:default}
+.agd.mini{display:inline-flex;width:22px;height:22px;aspect-ratio:auto;vertical-align:middle}
+.agleg{margin:0;padding:0 14px 14px;font-size:12px;color:var(--muted)}
+.agsem{padding:10px 18px 6px;font:600 12px var(--f-b);letter-spacing:.05em;text-transform:uppercase;color:var(--muted);background:var(--sunk);border-bottom:1px solid var(--line)}
+
 
 /* drawer de filtros */
 .veu{position:fixed;inset:0;background:rgba(19,33,43,.32);z-index:1500;opacity:0;pointer-events:none;transition:opacity .26s}
@@ -325,7 +369,7 @@ button{font:inherit;color:inherit}
    CONTEUDO: todo texto, preço, plano, link e regra de XP da página fica aqui (Cris 13/11: "mexer fácil").
    ==================================================================================================================== */
 const CONTEUDO = {
-  nav: [["explorar", "Explorar", "M3 6l6-2 6 2 6-2v14l-6 2-6-2-6 2z M9 4v14 M15 6v14"], ["meus-lotes", "Meus lotes", "M6 3h12v18l-6-4-6 4z"],
+  nav: [["explorar", "Explorar", "M3 6l6-2 6 2 6-2v14l-6 2-6-2-6 2z M9 4v14 M15 6v14"], ["agenda", "Agenda", "M4 6h16v14H4z M4 10h16 M8 3v5 M16 3v5"], ["meus-lotes", "Meus lotes", "M6 3h12v18l-6-4-6 4z"],
         ["aprender", "Aprender", "M2 9l10-5 10 5-10 5z M6 11v5c3 2 9 2 12 0v-5"], ["planos", "Planos", "M3 6h18v12H3z M3 10h18"]],
   hero: {eyebrow: "BLR Developments", titulo: "Leilões de imóveis por dívida nos EUA, com o teto de lance já calculado.",
          texto: "A BLR junta num mapa só os leilões de imposto atrasado, execução de hipoteca e imóveis de banco e de governo dos EUA. Você abre o lote e vê quanto vale, quanto deve e até quanto vale a pena dar de lance.",
@@ -497,17 +541,18 @@ function pintaXP(){
 /* ---------- navegação por hash ---------- */
 function nav(){
   const h = (location.hash || "#explorar").slice(1), base = h.startsWith("lote-") ? "explorar" : h.startsWith("assinar-") ? "planos" : h;
-  const item = ([id, nome]) => `<a href="#${id}" ${base === id ? 'aria-current="page"' : ""}>${nome}</a>`;
+  const nav_n = CARREGADO ? nAvisos() : 0, bdg = id => id === "meus-lotes" && nav_n ? `<b class="badge" aria-label="${nav_n} ${nav_n === 1 ? "aviso novo" : "avisos novos"}">${nav_n > 99 ? "99+" : nav_n}</b>` : "";
+  const item = ([id, nome]) => `<a href="#${id}" ${base === id ? 'aria-current="page"' : ""}>${nome}${bdg(id)}</a>`;
   $("#nav").innerHTML = CONTEUDO.nav.map(item).join("");
-  $("#navInf").innerHTML = CONTEUDO.nav.map(([id, nome, d]) => `<a href="#${id}" ${base === id ? 'aria-current="page"' : ""}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="${d}" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"/></svg>${nome}</a>`).join("");
+  $("#navInf").innerHTML = CONTEUDO.nav.map(([id, nome, d]) => `<a href="#${id}" ${base === id ? 'aria-current="page"' : ""}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="${d}" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"/></svg>${nome}${bdg(id)}</a>`).join("");
   return {h, base};
 }
 let MAPA = null;
 function rota(){
   const {h, base} = nav();
   const troca = () => {
-    if(base === "explorar"){ if(!$("#explorarPag")) explorar(); else lista(); }
-    else { MAPA = null; const f = {"meus-lotes": meusLotes, aprender, planos, progresso}[base] || explorar; f(); window.scrollTo(0, 0); }
+    if(base === "explorar"){ if(!$("#explorarPag")) explorar(); else { lista(); abrePendente(); } }
+    else { MAPA = null; const f = {"meus-lotes": meusLotes, agenda, aprender, planos, progresso}[base] || explorar; f(); window.scrollTo(0, 0); }
     if(h.startsWith("lote-")) abreFicha(h.slice(5)); else fechaFicha(true);
   };
   if(document.startViewTransition && !REDUZ && !h.startsWith("lote-") && base !== (rota.ult || "")) document.startViewTransition(troca); else troca();
@@ -545,13 +590,14 @@ function explorar(){
   const verHero = !LS.get("blr_novo_hero_ok", false) && !(PROG && PROG.passos && PROG.passos.hero_dispensado);
   $("#app").innerHTML = `<div id="explorarPag">${verHero ? heroHTML() : ""}<div id="passosBox">${passosHTML()}</div>
     <div class="filtros" id="chips" role="group" aria-label="Tipo de leilão"></div><div class="escopo" id="escopo"></div>
-    <div class="explorar"><section class="painel"><header><h2>Leilões no mapa</h2><small id="mapaInfo">${CARREGADO ? "" : "Carregando os leilões…"}</small></header><div id="mapa"></div></section>
+    <div class="explorar"><section class="painel"><header><h2>Leilões no mapa</h2><small id="mapaInfo">${CARREGADO ? "" : "Carregando os leilões…"}</small></header>
+      <form class="busca" id="busca" role="search"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><circle cx="11" cy="11" r="6.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M16 16l4.5 4.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><input id="buscaT" type="search" list="buscaL" autocomplete="off" enterkeyhint="search" placeholder="Cidade, condado, CEP, nº da parcela ou endereço" aria-label="Buscar no mapa por cidade, condado, CEP, número da parcela ou endereço"><datalist id="buscaL"></datalist><button class="btn peq" type="submit">Buscar</button></form><div id="mapa"></div></section>
       <section class="painel"><header><h2 id="tLista">Próximos leilões</h2><small id="nLista"></small></header><div class="lista" id="lista"><div class="carr">Carregando os leilões…</div></div></section></div></div>`;
   document.querySelectorAll("[data-conta]").forEach(e => conta(e, +e.dataset.conta));
   const fx = () => { LS.set("blr_novo_hero_ok", true); evento("hero_dispensado"); const h = $("#hero"); if(h) h.remove(); };
   if($("#btExpl")) $("#btExpl").onclick = () => { fx(); $("#chips").scrollIntoView({behavior: REDUZ ? "auto" : "smooth"}); };
   if($("#heroX")) $("#heroX").onclick = fx;
-  ligaPassos(); chips(); fazMapa(); lista();
+  ligaPassos(); chips(); fazMapa(); ligaBusca(); lista(); abrePendente();
 }
 function ligaPassos(){ const x = $("#passosX"); if(x) x.onclick = () => { evento("faixa_dispensada"); $("#passos").remove(); }; }
 function chips(){
@@ -585,52 +631,223 @@ function ligaSdSeVazio(uf){
   clearTimeout(tToast); tToast = setTimeout(() => el.classList.remove("on"), 3600);
 }
 const FIPS_UF = {"01":"AL","02":"AK","04":"AZ","05":"AR","06":"CA","08":"CO","09":"CT","10":"DE","11":"DC","12":"FL","13":"GA","15":"HI","16":"ID","17":"IL","18":"IN","19":"IA","20":"KS","21":"KY","22":"LA","23":"ME","24":"MD","25":"MA","26":"MI","27":"MN","28":"MS","29":"MO","30":"MT","31":"NE","32":"NV","33":"NH","34":"NJ","35":"NM","36":"NY","37":"NC","38":"ND","39":"OH","40":"OK","41":"OR","42":"PA","44":"RI","45":"SC","46":"SD","47":"TN","48":"TX","49":"UT","50":"VT","51":"VA","53":"WA","54":"WV","55":"WI","56":"WY","66":"GU","72":"PR"};
-let CAM_UF = null, CAM_L = null, CAM_ROT = null, R_L = null, CAM_CO = null, CAM_AER = null;
-/* 14/11: foto aérea do USGS (domínio público) no zoom alto, a mesma da versão clássica; os estados ficam só com a divisa por cima */
-const TILE_AER = "https://basemap.nationalmap.gov/arcgis/rest/services/USGSImageryOnly/MapServer/tile/{z}/{y}/{x}", Z_AER = 5;
-// a cor do estado some aos poucos conforme aproxima (zoom 5 → 10), para a foto aparecer sem tranco
-const opEstado = z => z < Z_AER ? 1 : Math.max(0, Math.min(.6, (10 - z) / 5 * .6));
+let CAM_UF = null, CAM_L = null, CAM_ROT = null, R_L = null, CAM_CO = null, CAM_AER = null, CAM_MESH = null, CAM_CLU = null, CAM_RUA = null, CAM_NOME = null;
+/* 20/11 (Cris: "gosto da navegação e do estilo de mapa do clássico... os parcels acumulados até dar zoom in... no clássico tem os nomes
+   dos condados, desenho no mapa"): o mesmo modelo da clássica. Lotes AGRUPADOS com o número (cada zoom divide o grupo; o lote solto a
+   partir do zoom 14), divisa de todos os condados desde o país, condado com lote ou leilão pintado e com nome (zoom 7+), nome das
+   cidades, ruas do Censo de perto (as mesmas ruas_<estado>.json da clássica) e a foto aérea do USGS só perto do chão (14+). */
+const TILE_AER = "https://basemap.nationalmap.gov/arcgis/rest/services/USGSImageryOnly/MapServer/tile/{z}/{y}/{x}", Z_AER = 14;
+const Z_EST = 5.5, Z_SOLTO = 14, CEL = 72, JUNTA = 58, Z_RUA = 9, Z_NOMECO = 7;
+const cssV = v => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+const pad5 = f => String(f).padStart(5, "0");
+const CIDADES = [
+    // nível 1: as que aparecem no país inteiro
+    ["Nova York","NY",40.71,-74.01,1],["Los Angeles","CA",34.05,-118.24,1],["Chicago","IL",41.88,-87.63,1],["Houston","TX",29.76,-95.37,1],
+    ["Dallas","TX",32.78,-96.80,1],["Miami","FL",25.76,-80.19,1],["Atlanta","GA",33.75,-84.39,1],["Washington","DC",38.91,-77.04,1],
+    ["Filadélfia","PA",39.95,-75.17,1],["Boston","MA",42.36,-71.06,1],["Phoenix","AZ",33.45,-112.07,1],["São Francisco","CA",37.77,-122.42,1],
+    ["Seattle","WA",47.61,-122.33,1],["Denver","CO",39.74,-104.99,1],["Detroit","MI",42.33,-83.05,1],["Minneapolis","MN",44.98,-93.27,1],
+    ["Orlando","FL",28.54,-81.38,1],["Tampa","FL",27.95,-82.46,1],["St. Louis","MO",38.63,-90.20,1],["Nova Orleans","LA",29.95,-90.07,1],
+    ["Pittsburgh","PA",40.44,-80.00,1],["Las Vegas","NV",36.17,-115.14,1],
+    // nível 2
+    ["San Antonio","TX",29.42,-98.49,2],["San Diego","CA",32.72,-117.16,2],["Austin","TX",30.27,-97.74,2],["Jacksonville","FL",30.33,-81.66,2],
+    ["Charlotte","NC",35.23,-80.84,2],["Indianápolis","IN",39.77,-86.16,2],["Columbus","OH",39.96,-83.00,2],["Nashville","TN",36.16,-86.78,2],
+    ["Memphis","TN",35.15,-90.05,2],["Louisville","KY",38.25,-85.76,2],["Baltimore","MD",39.29,-76.61,2],["Milwaukee","WI",43.04,-87.91,2],
+    ["Kansas City","MO",39.10,-94.58,2],["Oklahoma City","OK",35.47,-97.52,2],["Portland","OR",45.52,-122.68,2],["Salt Lake City","UT",40.76,-111.89,2],
+    ["Albuquerque","NM",35.08,-106.65,2],["Cleveland","OH",41.50,-81.69,2],["Cincinnati","OH",39.10,-84.51,2],["Birmingham","AL",33.52,-86.80,2],
+    ["Little Rock","AR",34.75,-92.29,2],["Jackson","MS",32.30,-90.18,2],["Baton Rouge","LA",30.45,-91.19,2],["Raleigh","NC",35.78,-78.64,2],
+    ["Richmond","VA",37.54,-77.44,2],["Buffalo","NY",42.89,-78.88,2],["Omaha","NE",41.26,-95.93,2],["Des Moines","IA",41.59,-93.62,2],
+    ["Tucson","AZ",32.22,-110.97,2],["El Paso","TX",31.76,-106.49,2],["Sacramento","CA",38.58,-121.49,2],["Boise","ID",43.62,-116.20,2],
+    ["Albany","NY",42.65,-73.75,2],["Harrisburg","PA",40.27,-76.88,2],["Columbia","SC",34.00,-81.03,2],["Charleston","SC",32.78,-79.93,2],
+    ["Savannah","GA",32.08,-81.09,2],["West Palm Beach","FL",26.72,-80.05,2],["Fort Myers","FL",26.64,-81.87,2],["Tallahassee","FL",30.44,-84.28,2],
+    ["Mobile","AL",30.69,-88.04,2],["Knoxville","TN",35.96,-83.92,2],["Shreveport","LA",32.53,-93.75,2],["Wichita","KS",37.69,-97.34,2],
+    ["Tulsa","OK",36.15,-95.99,2],["Spokane","WA",47.66,-117.43,2],["Billings","MT",45.78,-108.50,2],["Fargo","ND",46.88,-96.79,2],
+    ["Sioux Falls","SD",43.55,-96.73,2],["Grand Rapids","MI",42.96,-85.67,2],["Madison","WI",43.07,-89.40,2],["Green Bay","WI",44.51,-88.01,2],
+    ["Toledo","OH",41.65,-83.54,2],["Erie","PA",42.13,-80.09,2],["Scranton","PA",41.41,-75.66,2],["Syracuse","NY",43.05,-76.15,2],
+    ["Rochester","NY",43.16,-77.61,2],["Hartford","CT",41.76,-72.68,2],["Providence","RI",41.82,-71.41,2],["Newark","NJ",40.74,-74.17,2],
+    ["Corpus Christi","TX",27.80,-97.40,2],["Fort Worth","TX",32.76,-97.33,2],["Lubbock","TX",33.58,-101.86,2],["Amarillo","TX",35.22,-101.83,2],
+    // nível 3
+    ["Allentown","PA",40.60,-75.47,3],["Reading","PA",40.34,-75.93,3],["Altoona","PA",40.52,-78.39,3],["State College","PA",40.79,-77.86,3],
+    ["Johnstown","PA",40.33,-78.92,3],["Williamsport","PA",41.24,-77.00,3],["Lancaster","PA",40.04,-76.31,3],["Uniontown","PA",39.90,-79.72,3],
+    ["Gainesville","FL",29.65,-82.32,3],["Ocala","FL",29.19,-82.14,3],["Lakeland","FL",28.04,-81.95,3],["Sarasota","FL",27.34,-82.53,3],
+    ["Daytona Beach","FL",29.21,-81.02,3],["Pensacola","FL",30.42,-87.22,3],["Naples","FL",26.14,-81.79,3],["Port St. Lucie","FL",27.27,-80.35,3],
+    ["Melbourne","FL",28.08,-80.61,3],["Fort Lauderdale","FL",26.12,-80.14,3],["Cape Coral","FL",26.56,-81.95,3],["Panama City","FL",30.16,-85.66,3],
+    ["Lafayette","LA",30.22,-92.02,3],["Lake Charles","LA",30.23,-93.22,3],["Monroe","LA",32.51,-92.12,3],["Huntsville","AL",34.73,-86.59,3],
+    ["Montgomery","AL",32.38,-86.30,3],["Tuscaloosa","AL",33.21,-87.57,3],["Gulfport","MS",30.37,-89.09,3],["Hattiesburg","MS",31.33,-89.29,3],
+    ["Tupelo","MS",34.26,-88.70,3],["Fayetteville","AR",36.06,-94.16,3],["Fort Smith","AR",35.39,-94.40,3],["Jonesboro","AR",35.84,-90.70,3],
+    ["Springfield","MO",37.21,-93.29,3],["Columbia","MO",38.95,-92.33,3],["Chattanooga","TN",35.05,-85.31,3],["Lexington","KY",38.04,-84.50,3],
+    ["Dayton","OH",39.76,-84.19,3],["Akron","OH",41.08,-81.52,3],["Youngstown","OH",41.10,-80.65,3],["Flint","MI",43.01,-83.69,3],
+    ["Lansing","MI",42.73,-84.56,3],["Saginaw","MI",43.42,-83.95,3],["Kalamazoo","MI",42.29,-85.59,3],["Duluth","MN",46.79,-92.10,3],
+    ["Waco","TX",31.55,-97.15,3],["Beaumont","TX",30.08,-94.10,3],["Laredo","TX",27.51,-99.51,3],["McAllen","TX",26.20,-98.23,3],
+    ["Trenton","NJ",40.22,-74.76,3],["Atlantic City","NJ",39.36,-74.42,3],["Wilmington","DE",39.74,-75.55,3],["Binghamton","NY",42.10,-75.91,3],
+    ["Utica","NY",43.10,-75.23,3],["Charleston","WV",38.35,-81.63,3],["Wilmington","NC",34.23,-77.94,3],["Greensboro","NC",36.07,-79.79,3],
+    ["Augusta","GA",33.47,-81.97,3],["Macon","GA",32.84,-83.63,3],["Norfolk","VA",36.85,-76.29,3],["Roanoke","VA",37.27,-79.94,3]];
+const POS_UF = {MI: [43.6, -84.6], FL: [28.4, -81.7], LA: [31.0, -92.3], MD: [39.4, -77.2], ID: [44.2, -114.6], CA: [37.0, -119.6], NY: [42.9, -75.3], VA: [37.6, -78.6], MA: [42.3, -72.0], KY: [37.6, -85.0], OK: [35.6, -97.4], TX: [31.3, -99.2]};
+
+/* condado de cada lote: muitos lotes não trazem o fips; sai do nome do condado + estado, pelo mesmo arquivo de condados do Censo */
+let NOMECO = null, PORCO = null, PORCO_N = -1;
+function nomeCoIdx(){
+  if(NOMECO || !EUA) return NOMECO;
+  NOMECO = new Map();
+  for(const g of EUA.objects.counties.geometries){ const f = pad5(g.id), uf = FIPS_UF[f.slice(0, 2)]; if(uf && g.properties) NOMECO.set(uf + "|" + nCo(g.properties.name), f); }
+  return NOMECO;
+}
+const fipsDe = l => l.f ? pad5(l.f) : (nomeCoIdx() && NOMECO.get(l.uf + "|" + nCo(l.co))) || null;
+function porCondado(){
+  if(PORCO && PORCO_N === L.length) return PORCO;
+  PORCO = new Map(); PORCO_N = L.length;
+  const de = f => { let x = PORCO.get(f); if(!x) PORCO.set(f, x = {n: 0, cr: 0, lei: []}); return x; };
+  for(const l of L){ if(HIST(l)) continue; const f = fipsDe(l); if(!f) continue; const x = de(f); x.n++; if(CRIT(l)) x.cr++; }
+  for(const a of DADOS.leiloes || []){ if(!a.d || diasAte(a.d) < 0) continue; const f = a.f ? pad5(a.f) : nomeCoIdx() && NOMECO.get(a.uf + "|" + nCo(a.co)); if(f) de(f).lei.push(a); }
+  for(const x of PORCO.values()) x.lei.sort((a, b) => a.d.localeCompare(b.d));
+  return PORCO;
+}
+const estiloUF = (ly, z, por, m) => z < Z_EST
+  ? {fillColor: !CARREGADO ? m[0] : (q => q >= 300 ? m[4] : q >= 150 ? m[3] : q >= 60 ? m[2] : q >= 15 ? m[1] : m[0])(por[ly._uf] || 0), fillOpacity: 1, color: cssV("--surface"), weight: 1}
+  : {fillColor: m[0], fillOpacity: 0, color: cssV("--muted"), weight: 1.4};
+function estiloCo(f, z){
+  const x = PORCO && PORCO.get(f), sel = ESTADO.leilao && pad5(ESTADO.leilao.f || "") === f;
+  return {fillColor: x && x.lei.length ? cssV("--m2") : cssV("--m1"), fillOpacity: z >= Z_AER ? 0 : z >= 10 ? .16 : z >= 8 ? .3 : .55,
+          color: sel ? cssV("--amber") : cssV("--muted"), weight: sel ? 2.5 : z >= 8 ? 1 : .6, opacity: .8};
+}
+function ttCo(f, nome){
+  const x = PORCO && PORCO.get(f), uf = FIPS_UF[f.slice(0, 2)];
+  const lei = x ? x.lei.slice(0, 4).map(a => `${diaSem(a.d)} ${dataCurta(a.d)} · ${esc(a.t || "leilão")}`).join("<br>") : "";
+  return `<b>${esc(nome)}${/county|parish|borough/i.test(nome) ? "" : " County"}, ${uf}</b><br>${lei || `<span style="opacity:.7">sem leilão no calendário</span>`}${x && x.n ? `<br>${n0(x.n)} ${x.n === 1 ? "lote" : "lotes"}${x.cr ? ` · ${n0(x.cr)} no critério BLR` : ""}` : ""}`;
+}
 function fazMapa(){
-  const css = getComputedStyle(document.documentElement);
-  MAPA = L_.map("mapa", {zoomControl: true, attributionControl: false, preferCanvas: true, minZoom: 3, maxZoom: 17, zoomSnap: .5, worldCopyJump: false}).setView([38.5, -96.5], 4);
+  MAPA = L_.map("mapa", {zoomControl: true, attributionControl: false, preferCanvas: true, minZoom: 3, maxZoom: 18, zoomSnap: .5, zoomDelta: .5, wheelPxPerZoomLevel: 90, worldCopyJump: false}).setView([38.5, -96.5], 4);
   if(innerWidth < 820) MAPA.setView([39, -96], 3);
-  R_L = L_.canvas({padding: .1});   // 13/11: 1 canvas só (estados, condados e lotes); com 2+ canvases o de cima engolia o clique no estado
+  MAPA.createPane("rot").style.zIndex = 625; MAPA.getPane("rot").style.pointerEvents = "none";
+  MAPA.createPane("clu").style.zIndex = 630;
+  R_L = L_.canvas({padding: .1, tolerance: 6});   // 13/11: 1 canvas só (estados, condados, ruas e lotes); com 2+ canvases o de cima engolia o clique no estado
   const geo = topojson.feature(EUA, EUA.objects.states);
-  CAM_UF = L_.geoJSON(geo, {renderer: R_L, style: () => ({weight: 1, color: css.getPropertyValue("--surface").trim(), fillOpacity: 1, fillColor: css.getPropertyValue("--m0").trim()}),
+  CAM_UF = L_.geoJSON(geo, {renderer: R_L, style: () => ({weight: 1, color: cssV("--surface"), fillOpacity: 1, fillColor: cssV("--m0")}),
     onEachFeature: (f, ly) => { const uf = FIPS_UF[String(f.id).padStart(2, "0")]; ly._uf = uf;
-      ly.on("click", () => { if(!uf) return; ligaSdSeVazio(uf); ESTADO.foco = uf; ESTADO.leilao = null; ESTADO.mostrar = 40; MAPA.fitBounds(ly.getBounds(), {padding: [20, 20]}); evento("estado_explorado", uf); });
-      ly.on("mouseover", () => ly.setStyle({weight: 2.2, color: css.getPropertyValue("--accent").trim()})); ly.on("mouseout", () => ly.setStyle({weight: 1, color: css.getPropertyValue("--surface").trim()})); }}).addTo(MAPA);
-  CAM_ROT = L_.layerGroup().addTo(MAPA); CAM_L = L_.layerGroup().addTo(MAPA); CAM_CO = null;
-  MAPA.on("moveend zoomend", () => { if(MAPA.getZoom() < 4.5 && !ESTADO.leilao) ESTADO.foco = ""; pintaMapa(); lista(); });
+      ly.on("click", () => { if(!uf || MAPA.getZoom() >= Z_EST) return; ligaSdSeVazio(uf); ESTADO.foco = uf; ESTADO.leilao = null; ESTADO.mostrar = 40; MAPA.fitBounds(ly.getBounds(), {padding: [20, 20]}); evento("estado_explorado", uf); });
+      ly.on("mouseover", () => { if(MAPA.getZoom() < Z_EST) ly.setStyle({weight: 2.2, color: cssV("--accent")}); });
+      ly.on("mouseout", () => { if(MAPA.getZoom() < Z_EST) ly.setStyle({weight: 1, color: cssV("--surface")}); }); }}).addTo(MAPA);
+  // divisa de todos os condados já no mapa do país: uma linha fina só (não pesa nem tampa a cor do estado), como na clássica
+  CAM_MESH = L_.geoJSON(topojson.mesh(EUA, EUA.objects.counties, (a, b) => a !== b && String(a.id).padStart(5, "0").slice(0, 2) === String(b.id).padStart(5, "0").slice(0, 2)),
+    {renderer: R_L, interactive: false, style: {color: cssV("--muted"), weight: .4, opacity: .35, fill: false}}).addTo(MAPA);
+  CAM_RUA = L_.layerGroup().addTo(MAPA); CAM_ROT = L_.layerGroup().addTo(MAPA); CAM_L = L_.layerGroup().addTo(MAPA); CAM_CLU = L_.layerGroup().addTo(MAPA); CAM_NOME = L_.layerGroup().addTo(MAPA);
+  CAM_CO = null; ROT = null; RUAP = {};
+  const esteMapa = MAPA;   // 20/11: ao trocar de aba no meio de um voo, o mapa velho ainda solta moveend
+  MAPA.on("moveend zoomend", () => { if(MAPA !== esteMapa) return; if(MAPA.getZoom() < 4.5 && !ESTADO.leilao) ESTADO.foco = ""; pintaMapa(); lista(); });
   pintaMapa();
 }
+/* condados com lote ou leilão: pintados, com o calendário no toque/hover; tocar entra no condado */
+function camadaCo(){
+  if(CAM_CO || !CARREGADO) return CAM_CO;
+  const por = porCondado(), fts = topojson.feature(EUA, EUA.objects.counties).features.filter(ft => por.has(pad5(ft.id)));
+  CAM_CO = L_.geoJSON({type: "FeatureCollection", features: fts}, {renderer: R_L, style: ft => estiloCo(pad5(ft.id), MAPA.getZoom()),
+    onEachFeature: (ft, ly) => { const f = pad5(ft.id); ly._f = f;
+      ly.bindTooltip(() => ttCo(f, ft.properties.name), {sticky: true, direction: "top"});
+      ly.on("click", () => { if(MAPA.getZoom() >= 11) return; const uf = FIPS_UF[f.slice(0, 2)]; ESTADO.foco = uf; ESTADO.mostrar = 40; MAPA.flyToBounds(ly.getBounds(), {padding: [24, 24], maxZoom: 11, duration: REDUZ ? 0 : .7}); evento("estado_explorado", uf); });
+      ly.on("mouseover", () => ly.setStyle({weight: 2, color: cssV("--accent")})); ly.on("mouseout", () => ly.setStyle(estiloCo(f, MAPA.getZoom()))); }});
+  return CAM_CO;
+}
+/* nomes: estado (sigla), cidades (lista da clássica) e condados com lote/leilão (zoom 7+). Rótulo que encostaria noutro não entra. */
+let ROT = null;
+function montaRot(){
+  ROT = [];
+  for(const ft of topojson.feature(EUA, EUA.objects.states).features){ const uf = FIPS_UF[String(ft.id).padStart(2, "0")]; if(!uf || uf === "AK" || uf === "HI" || uf === "PR" || uf === "GU") continue;
+    const c = POS_UF[uf] || (b => [b.getCenter().lat, b.getCenter().lng])(L_.geoJSON(ft).getBounds()); ROT.push({tipo: "uf", nome: uf, la: c[0], ln: c[1], t: 1.5}); }
+  for(const [nome, uf, la, ln, t] of CIDADES) ROT.push({tipo: "ci", nome, uf, la, ln, t});
+  if(CARREGADO){ const por = porCondado();
+    for(const ft of topojson.feature(EUA, EUA.objects.counties).features){ const f = pad5(ft.id); if(!por.has(f)) continue;
+      const c = centroCo(f); if(c) ROT.push({tipo: "co", nome: ft.properties.name, la: c.lat, ln: c.lng, t: 4}); }
+    // cidades dos próprios lotes (Lynn, Methuen...), no meio dos lotes daquela cidade, a partir do zoom 9
+    const grandes = new Set(CIDADES.map(c => semAc(c[0]) + "|" + c[1])), cid = new Map();
+    for(const l of L){ if(HIST(l) || !l.ci || l.la == null) continue; const k = semAc(l.ci) + "|" + l.uf; if(grandes.has(k)) continue;
+      let x = cid.get(k); if(!x) cid.set(k, x = {nome: l.ci, la: 0, ln: 0, n: 0}); x.la += l.la; x.ln += l.ln; x.n++; }
+    for(const x of cid.values()) ROT.push({tipo: "ci", nome: x.nome.replace(/[A-Za-z]+/g, w => w[0].toUpperCase() + w.slice(1).toLowerCase()), la: x.la / x.n, ln: x.ln / x.n, t: 5, n: x.n}); }
+  ROT.sort((a, b) => a.t - b.t || (b.n || 0) - (a.n || 0));
+  ROT.ok = CARREGADO;
+}
+const ZCI = {1: 0, 2: 5.4, 3: 6.8, 5: 9};
+function rotulos(z){
+  if(!ROT || (CARREGADO && !ROT.ok)) montaRot();
+  CAM_NOME.clearLayers();
+  const tela = MAPA.getBounds().pad(.05), ocup = [], bate = r => ocup.some(o => r[0] < o[2] && r[2] > o[0] && r[1] < o[3] && r[3] > o[1]);
+  for(const r of ROT){
+    if(!tela.contains([r.la, r.ln])) continue;
+    if(r.tipo === "uf" && z >= 8.5) continue;
+    if(r.tipo === "ci" && z < ZCI[r.t]) continue;
+    if(r.tipo === "co" && (z < Z_NOMECO || z >= 12)) continue;
+    const p = MAPA.latLngToContainerPoint([r.la, r.ln]), w = r.nome.length * (r.tipo === "co" ? 6.2 : 6.8) + (r.tipo === "ci" ? 14 : 6);
+    const q = r.tipo === "ci" ? [p.x - 6, p.y - 8, p.x + w, p.y + 8] : [p.x - w / 2, p.y - 8, p.x + w / 2, p.y + 8];
+    if(bate(q)) continue; ocup.push(q);
+    L_.marker([r.la, r.ln], {pane: "rot", interactive: false, keyboard: false, icon: L_.divIcon({className: "", iconSize: [0, 0],
+      html: r.tipo === "ci" ? `<div class="rgeo ci t${r.t}"><i></i><span>${esc(r.nome)}</span></div>` : `<div class="rgeo ${r.tipo}">${esc(r.nome)}</div>`})}).addTo(CAM_NOME);
+  }
+}
+/* ruas do Censo (TIGER), de perto: um arquivo por estado (ruas_<fips do estado>.json, o mesmo da clássica), só dos condados com lote */
+const RUAE = {}; let RUAP = {}, RUAT = 0;
+const linhasDe = arr => arr.map(a => { const o = []; for(let i = 0; i < a.length; i += 2) o.push([a[i + 1], a[i]]); return o; });
+async function ruas(z){
+  const tk = ++RUAT;
+  if(z < Z_RUA || z >= 15 || !CARREGADO){ CAM_RUA.clearLayers(); return; }
+  const vis = MAPA.getBounds().pad(.2), por = porCondado(), fs = [];
+  for(const f of por.keys()){ const c = centroCo(f); if(!c) continue; const ft = condadoGeo(f); if(!ft) continue;
+    const b = ft._b || (ft._b = L_.geoJSON(ft).getBounds()); if(vis.intersects(b)) fs.push(f); }
+  const ds = await Promise.all(fs.slice(0, 12).map(f => { const e = f.slice(0, 2);
+    if(!RUAE[e]) RUAE[e] = fetch("../ruas_" + e + ".json").then(r => r.ok ? r.json() : {}).catch(() => ({}));
+    return RUAE[e].then(d => [f, d[f] || null]); }));
+  if(tk !== RUAT || !MAPA) return;
+  const cor = cssV("--muted"), ws = z < 12 ? 1.3 : z < 14 ? 2.2 : 3, wl = z < 13 ? .7 : 1.2, quer = new Set();
+  for(const [f, d] of ds){ if(!d) continue;
+    const r = RUAP[f] = RUAP[f] || {s: d.s && d.s.length ? L_.polyline(linhasDe(d.s), {renderer: R_L, interactive: false}) : null, l: d.l && d.l.length ? L_.polyline(linhasDe(d.l), {renderer: R_L, interactive: false}) : null};
+    if(r.s){ r.s.setStyle({color: cor, weight: ws, opacity: .55}); quer.add(r.s); }
+    if(r.l && z >= 10.5){ r.l.setStyle({color: cor, weight: wl, opacity: .45}); quer.add(r.l); } }
+  CAM_RUA.eachLayer(x => { if(!quer.has(x)) CAM_RUA.removeLayer(x); }); quer.forEach(x => { if(!CAM_RUA.hasLayer(x)) CAM_RUA.addLayer(x); });
+}
+const fmtN = n => n >= 1e4 ? Math.round(n / 1e3) + " mil" : n >= 1e3 ? (n / 1e3).toFixed(1).replace(".", ",") + " mil" : String(n);
+const usdC = v => v == null ? "" : v >= 1e6 ? "$" + (v / 1e6).toFixed(1).replace(".0", "") + "M" : v >= 1e3 ? "$" + Math.round(v / 1e3) + "k" : "$" + Math.round(v);
 function pintaMapa(){
   if(!MAPA || !CAM_UF) return;
-  const css = getComputedStyle(document.documentElement), m = [0, 1, 2, 3, 4].map(i => css.getPropertyValue("--m" + i).trim());
-  const xs = visiveis(), por = {}; for(const l of xs) por[l.uf] = (por[l.uf] || 0) + 1;
-  const z = MAPA.getZoom(), perto = z >= 6, aer = z >= Z_AER;
+  const m = [0, 1, 2, 3, 4].map(i => cssV("--m" + i)), xs = visiveis(), por = {}; for(const l of xs) por[l.uf] = (por[l.uf] || 0) + 1;
+  const z = MAPA.getZoom(), aer = z >= Z_AER;
   if(aer && !CAM_AER) CAM_AER = L_.tileLayer(TILE_AER, {maxZoom: 19, maxNativeZoom: 16, opacity: .95, updateWhenZooming: false, updateWhenIdle: true, keepBuffer: 1, className: "aer"});
-  if(CAM_AER){ if(aer && !MAPA.hasLayer(CAM_AER)) CAM_AER.addTo(MAPA); else if(!aer && MAPA.hasLayer(CAM_AER)) MAPA.removeLayer(CAM_AER); }
-  CAM_UF.eachLayer(ly => { const q = por[ly._uf] || 0; ly.setStyle({fillColor: perto || !CARREGADO ? m[0] : q >= 300 ? m[4] : q >= 150 ? m[3] : q >= 60 ? m[2] : q >= 15 ? m[1] : m[0], fillOpacity: opEstado(z)}); });
-  // de perto: as divisas dos condados (mesmo desenho do Censo da versão clássica), só linha, no canvas
-  if(perto && !CAM_CO) CAM_CO = L_.geoJSON(topojson.feature(EUA, EUA.objects.counties), {renderer: R_L, interactive: false,
-    style: () => ({weight: .7, color: css.getPropertyValue("--line").trim(), fill: false})});
-  if(CAM_CO){ if(perto && !MAPA.hasLayer(CAM_CO)) CAM_CO.addTo(MAPA); else if(!perto && MAPA.hasLayer(CAM_CO)) MAPA.removeLayer(CAM_CO); }
-  CAM_ROT.clearLayers(); CAM_L.clearLayers();
-  $("#mapaInfo") && ($("#mapaInfo").textContent = !CARREGADO ? "Carregando os leilões…" : perto ? "Toque num ponto para abrir o lote" : "Toque num estado ou num leilão da lista");
-  if(ESTADO.leilao && CARREGADO){ const ft = condadoGeo(ESTADO.leilao.f); if(ft) L_.geoJSON(ft, {renderer: R_L, interactive: false, style: {weight: 2.5, color: css.getPropertyValue("--amber").trim() || "#E2AC48", fill: false}}).addTo(CAM_ROT); }
+  if(CAM_AER){ if(aer && !MAPA.hasLayer(CAM_AER)){ CAM_AER.addTo(MAPA); CAM_AER.bringToBack(); } else if(!aer && MAPA.hasLayer(CAM_AER)) MAPA.removeLayer(CAM_AER); }
+  CAM_UF.eachLayer(ly => ly.setStyle(estiloUF(ly, z, por, m)));
+  CAM_MESH.setStyle({color: cssV("--muted"), opacity: z < Z_EST ? .3 : .5, weight: z < 8 ? .4 : .8});
+  const co = camadaCo();
+  if(co){ const quer = z >= Z_EST && z < 13; if(quer && !MAPA.hasLayer(co)){ co.addTo(MAPA); co.bringToBack(); CAM_UF.bringToBack(); } else if(!quer && MAPA.hasLayer(co)) MAPA.removeLayer(co);
+    if(quer) co.eachLayer(ly => ly.setStyle(estiloCo(ly._f, z))); }
+  CAM_ROT.clearLayers(); CAM_L.clearLayers(); CAM_CLU.clearLayers();
+  $("#mapaInfo") && ($("#mapaInfo").textContent = !CARREGADO ? "Carregando os leilões…" : z >= Z_SOLTO ? "Toque num ponto para abrir o lote" : z >= Z_EST ? "Toque num grupo ou num condado para aproximar" : "Toque num estado, num grupo ou num leilão da lista");
+  if(ESTADO.leilao && CARREGADO){ const ft = condadoGeo(ESTADO.leilao.f); if(ft) L_.geoJSON(ft, {renderer: R_L, interactive: false, style: {weight: 2.5, color: cssV("--amber") || "#E2AC48", fill: false}}).addTo(CAM_ROT); }
+  rotulos(z);
   if(!CARREGADO) return;
-  if(!perto){
-    CAM_UF.eachLayer(ly => { const q = por[ly._uf]; if(!q || !ly._uf) return; const c = ly.getBounds().getCenter();
-      L_.marker(c, {interactive: false, icon: L_.divIcon({className: "", iconSize: [60, 30], iconAnchor: [30, 15], html: `<div class="uf-rot">${ly._uf}<small>${n0(q)}</small></div>`})}).addTo(CAM_ROT); });
-    return;
+  const b = MAPA.getBounds().pad(.25), ac = cssV("--accent"), mu = cssV("--muted"), sf = cssV("--surface"), vivos = [];
+  for(const l of xs){ const p = posDe(l); if(p && b.contains(p)) vivos.push([l, p]); }
+  const solto = (l, p) => {
+    L_.circleMarker(p, {renderer: R_L, radius: z >= 16 ? 8 : z >= 12 ? 6.5 : 5, weight: 1.5, color: sf, fillColor: CRIT(l) ? ac : mu, fillOpacity: .95})
+      .bindTooltip(() => `<b>${esc(titulo(l))}</b><br>${esc(l.ci || l.co)} · abertura ${usd(l.ab)}`, {direction: "top"}).on("click", () => { location.hash = "lote-" + l.i; }).addTo(CAM_L);
+    if(l.ab != null && z >= 12) L_.marker(p, {pane: "rot", interactive: false, keyboard: false, icon: L_.divIcon({className: "", iconSize: [0, 0], html: `<div class="vlt">${usdC(l.ab)}</div>`})}).addTo(CAM_L);
+  };
+  if(z >= Z_SOLTO) vivos.slice(0, 4000).forEach(([l, p]) => solto(l, p));
+  else {
+    // grade de CEL px na tela; depois junta grupos cujos centros ficam a menos de JUNTA px (um passe), como na clássica
+    const g = new Map();
+    for(const x of vivos){ const p = MAPA.project(x[1], z), k = Math.floor(p.x / CEL) + ":" + Math.floor(p.y / CEL);
+      let c = g.get(k); if(!c) g.set(k, c = {x: 0, y: 0, ls: []}); c.x += p.x; c.y += p.y; c.ls.push(x); }
+    const cs = [...g.values()].map(c => ({x: c.x / c.ls.length, y: c.y / c.ls.length, ls: c.ls})).sort((a, c) => c.ls.length - a.ls.length), fim = [];
+    for(const c of cs){ const o = fim.find(o => Math.hypot(o.x - c.x, o.y - c.y) < JUNTA);
+      if(o){ const n1 = o.ls.length, n2 = c.ls.length; o.x = (o.x * n1 + c.x * n2) / (n1 + n2); o.y = (o.y * n1 + c.y * n2) / (n1 + n2); o.ls.push(...c.ls); } else fim.push(c); }
+    for(const c of fim){
+      if(c.ls.length === 1){ solto(c.ls[0][0], c.ls[0][1]); continue; }
+      const n = c.ls.length, nc = c.ls.filter(x => CRIT(x[0])).length, d = n >= 1000 ? 4 : n >= 100 ? 3 : n >= 10 ? 2 : 1, tam = [0, 34, 40, 48, 56][d];
+      const mk = L_.marker(MAPA.unproject([c.x, c.y], z), {pane: "clu", keyboard: false, riseOnHover: true,
+        icon: L_.divIcon({className: "", iconSize: [0, 0], html: `<div class="clu${nc ? " cr" : ""}" style="--t:${tam}px"><b>${fmtN(n)}</b></div>`})});
+      mk.bindTooltip(`<b>${n0(n)} lotes</b>${nc ? `<br>${n0(nc)} no critério BLR` : ""}<br><span style="opacity:.7">Toque para aproximar</span>`, {direction: "top", offset: [0, -tam / 2]});
+      mk.on("click", () => { const bb = L_.latLngBounds(c.ls.map(x => x[1]));
+        if(bb.getNorthEast().distanceTo(bb.getSouthWest()) < 30) MAPA.flyTo(bb.getCenter(), Math.max(z + 2, Z_SOLTO + .5), {duration: REDUZ ? 0 : .7});
+        else MAPA.flyToBounds(bb, {padding: [50, 50], maxZoom: Math.max(z + 1.5, Math.min(Z_SOLTO + .5, z + 4)), duration: REDUZ ? 0 : .7}); });
+      mk.addTo(CAM_CLU);
+    }
   }
-  const b = MAPA.getBounds(), ac = css.getPropertyValue("--accent").trim(), mu = css.getPropertyValue("--muted").trim(), sf = css.getPropertyValue("--surface").trim();
-  let n = 0;
-  for(const l of xs){ const p = posDe(l); if(!p || !b.contains(p)) continue; if(++n > 4000) break;
-    L_.circleMarker(p, {renderer: R_L, radius: z >= 12 ? 8 : z >= 9 ? 6 : 4.5, weight: 1.5, color: sf, fillColor: CRIT(l) ? ac : mu, fillOpacity: .95})
-      .bindTooltip(() => `<b>${esc(titulo(l))}</b><br>${esc(l.ci || l.co)} · abertura ${usd(l.ab)}`, {direction: "top"}).on("click", () => { location.hash = "lote-" + l.i; }).addTo(CAM_L); }
-  contornosMapa(xs, b, z);
+  contornosMapa(xs, MAPA.getBounds(), z); ruas(z);
 }
 let POLTOK = 0;
 function contornosMapa(xs, b, z){
@@ -672,17 +889,17 @@ function eventos(){
   for(const l of visiveis()){
     if(!l.d || diasAte(l.d) < 0) continue;
     const k = chave(l.uf, l.co, l.d); let e = m.get(k);
-    if(!e){ e = {k, uf: l.uf, co: l.co, nco: nCo(l.co), d: l.d, f: l.f, n: 0, ncrit: 0, abMin: null, tipos: {}, pos: []}; m.set(k, e); }
+    if(!e){ e = {k, uf: l.uf, co: l.co, nco: nCo(l.co), d: l.d, f: fipsDe(l), n: 0, ncrit: 0, abMin: null, tipos: {}, pos: []}; m.set(k, e); }
     e.n++; if(CRIT(l)) e.ncrit++; if(l.ab && (e.abMin == null || l.ab < e.abMin)) e.abMin = l.ab;
     const t = (CONTEUDO.tipos[l._t] || CONTEUDO.tipos.nao_informado)[0]; e.tipos[t] = (e.tipos[t] || 0) + 1;
-    if(!e.f && l.f) e.f = l.f; if(e.pos.length < 30){ const p = posDe(l); if(p) e.pos.push(p); }
+    if(!e.f) e.f = fipsDe(l); if(e.pos.length < 30){ const p = posDe(l); if(p) e.pos.push(p); }
   }
   const semFiltro = !ESTADO.crit && !ESTADO.grupo && !ESTADO.max;
   for(const a of DADOS.leiloes || []){
     if(!a.d || diasAte(a.d) < 0 || (ESTADO.uf && a.uf !== ESTADO.uf) || (ESTADO.dias && diasAte(a.d) > ESTADO.dias)) continue;
     const k = chave(a.uf, a.co, a.d); let e = m.get(k);
-    if(!e){ if(!semFiltro) continue; e = {k, uf: a.uf, co: a.co, nco: nCo(a.co), d: a.d, f: a.f, n: 0, ncrit: 0, abMin: null, tipos: {}, pos: []}; m.set(k, e); }
-    Object.assign(e, {t: a.t, pi: a.pi, on: a.on, g: a.g, gn: a.gn, lk: a.lk, f: e.f || a.f});
+    if(!e){ if(!semFiltro) continue; e = {k, uf: a.uf, co: a.co, nco: nCo(a.co), d: a.d, f: a.f ? pad5(a.f) : null, n: 0, ncrit: 0, abMin: null, tipos: {}, pos: []}; m.set(k, e); }
+    Object.assign(e, {t: a.t, pi: a.pi, on: a.on, g: a.g, gn: a.gn, lk: a.lk, f: e.f || (a.f ? pad5(a.f) : nomeCoIdx() && NOMECO.get(a.uf + "|" + nCo(a.co)))});
   }
   for(const e of m.values()) if(!e.t){ const t = Object.entries(e.tipos).sort((a, b) => b[1] - a[1])[0]; e.t = t ? t[0] : "Leilão"; }
   return [...m.values()].sort((a, b) => a.d.localeCompare(b.d) || b.n - a.n);
@@ -893,15 +1110,175 @@ function fechaFicha(silencio){ $("#ficha").classList.remove("on"); if(!$("#drawe
 addEventListener("keydown", e => { if(e.key === "Escape"){ if(!$("#modal").hidden){ fechaModal(); return; } if($("#ficha").classList.contains("on")) history.back(); fechaDrawer(); } });
 const SEG = "blr_novo_seguindo";
 const seguindo = i => LS.get(SEG, []).includes(i);
-const segue = i => { const s = LS.get(SEG, []); LS.set(SEG, s.includes(i) ? s.filter(x => x !== i) : [...s, i]); };
+const segue = i => { const s = LS.get(SEG, []), F = LS.get(FOTO, {}), l = L.find(x => x.i === i);
+  if(s.includes(i)){ LS.set(SEG, s.filter(x => x !== i)); delete F[i]; } else { LS.set(SEG, [...s, i]); if(l) F[i] = fotoDe(l); }
+  LS.set(FOTO, F); nav(); };
+
+/* ---------- 20/11 (Cris): barra de busca no mapa: estado, cidade, condado, CEP, número da parcela, endereço (os dois últimos são do
+   assinante: ficam no pacote privado) ou o código do lote. Acha e leva o mapa até lá; um lote só abre a ficha. */
+const semAc = s => String(s || "").normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().trim();
+const soAlnum = s => semAc(s).replace(/[^a-z0-9]/g, "");
+function buscaOpcoes(){
+  const dl = $("#buscaL"); if(!dl || !DADOS) return;
+  const ufs = Object.entries(DADOS.estados_nome || {}).map(([u, n]) => n).sort((a, b) => a.localeCompare(b, "pt"));
+  const cis = CIDADES.map(c => `${c[0]}, ${c[1]}`);
+  const cos = [], vistos = new Set();
+  if(CARREGADO){ const por = porCondado();
+    for(const g of EUA.objects.counties.geometries){ const f = pad5(g.id); if(!por.has(f) || !g.properties) continue; const k = `${g.properties.name} County, ${FIPS_UF[f.slice(0, 2)]}`; if(!vistos.has(k)){ vistos.add(k); cos.push(k); } }
+    cos.sort((a, b) => a.localeCompare(b)); }
+  dl.innerHTML = [...ufs, ...cis, ...cos].map(x => `<option value="${esc(x)}">`).join("");
+}
+function voaLotes(xs, rotulo){
+  xs = xs.filter(l => posDe(l)); if(!xs.length) return false;
+  ESTADO.leilao = null; ESTADO.foco = xs[0].uf; ESTADO.mostrar = 40;
+  if(xs.length === 1){ MAPA.flyTo(posDe(xs[0]), Math.max(MAPA.getZoom(), 16), {duration: REDUZ ? 0 : .8}); setTimeout(() => { location.hash = "lote-" + xs[0].i; }, REDUZ ? 50 : 900); }
+  else MAPA.flyToBounds(L_.latLngBounds(xs.map(posDe)).pad(.15), {duration: REDUZ ? 0 : .8, maxZoom: 15});
+  avisoBusca(`${rotulo}: ${n0(xs.length)} ${xs.length === 1 ? "lote" : "lotes"}`);
+  return true;
+}
+function avisoBusca(t){ const el = $("#toast"); if(!el) return; el.textContent = t; el.classList.add("on"); clearTimeout(tToast); tToast = setTimeout(() => el.classList.remove("on"), 3200); }
+function buscar(q){
+  const v = semAc(q).replace(/\s+/g, " "); if(!v || !MAPA) return false;
+  if(!CARREGADO){ avisoBusca("Ainda carregando os leilões. Tente de novo em alguns segundos."); return true; }
+  const vivos = L.filter(l => !HIST(l));
+  // 1) código do lote
+  const porId = L.find(l => semAc(l.i) === v); if(porId) return voaLotes([porId], "Lote");
+  // 2) estado (nome ou sigla)
+  const uf = Object.entries(DADOS.estados_nome || {}).find(([u, n]) => semAc(n) === v || u.toLowerCase() === v);
+  if(uf){ let ly = null; CAM_UF.eachLayer(x => { if(x._uf === uf[0]) ly = x; });
+    if(ly){ ligaSdSeVazio(uf[0]); ESTADO.foco = uf[0]; ESTADO.leilao = null; ESTADO.mostrar = 40; MAPA.flyToBounds(ly.getBounds(), {padding: [20, 20], duration: REDUZ ? 0 : .8}); evento("estado_explorado", uf[0]); return true; } }
+  // 3) CEP
+  const cep = v.match(/^(\d{5})(-\d{4})?$/);
+  if(cep) return voaLotes(vivos.filter(l => String(l.zip || "").slice(0, 5) === cep[1]), "CEP " + cep[1]) || (avisoBusca("Nenhum lote à venda com o CEP " + cep[1] + " agora."), true);
+  // 4) condado: "Essex County, MA", "essex county", "essex"
+  const mc = v.match(/^(.*?)(?:\s+(?:county|parish|borough))?(?:,\s*([a-z]{2}))?$/), nomeC = nCo(mc[1]), ufC = mc[2] ? mc[2].toUpperCase() : null;
+  if(nomeC){ const fs = [...nomeCoIdx().entries()].filter(([k]) => { const [u, n] = k.split("|"); return n === nomeC && (!ufC || u === ufC); }).map(([k, f]) => f);
+    if(fs.length && (/county|parish|borough/.test(v) || ufC || !CIDADES.some(c => semAc(c[0]) === v))){
+      const por = porCondado(), f = fs.sort((a, b) => (FIPS_UF[b.slice(0, 2)] === ESTADO.foco) - (FIPS_UF[a.slice(0, 2)] === ESTADO.foco) || ((por.get(b) || {}).n || 0) - ((por.get(a) || {}).n || 0))[0];
+      const ft = condadoGeo(f);
+      if(ft && (por.has(f) || /county|parish|borough/.test(v))){ ESTADO.foco = FIPS_UF[f.slice(0, 2)]; ESTADO.leilao = null; ESTADO.mostrar = 40;
+        MAPA.flyToBounds(L_.geoJSON(ft).getBounds(), {padding: [24, 24], maxZoom: 11, duration: REDUZ ? 0 : .8});
+        const x = por.get(f); avisoBusca(`${ft.properties.name} County, ${ESTADO.foco}: ${x ? n0(x.n) + " lotes · " + x.lei.length + " leilões no calendário" : "sem lote à venda agora"}`); return true; } } }
+  // 5) cidade dos lotes ("lynn", "lynn, ma") e cidades grandes da lista
+  const mci = v.match(/^(.*?)(?:,\s*([a-z]{2}))?$/), ci = mci[1], ufCi = mci[2] ? mci[2].toUpperCase() : null;
+  const porCi = vivos.filter(l => semAc(l.ci) === ci && (!ufCi || l.uf === ufCi));
+  if(porCi.length) return voaLotes(porCi, `${porCi[0].ci}, ${ufCi || porCi[0].uf}`);
+  const cg = CIDADES.find(c => semAc(c[0]) === ci && (!ufCi || c[1] === ufCi));
+  if(cg){ MAPA.flyTo([cg[2], cg[3]], Math.max(MAPA.getZoom(), 10), {duration: REDUZ ? 0 : .8}); return true; }
+  // 6) número da parcela e endereço: só assinante (vêm no pacote privado)
+  const pareceParcela = /\d/.test(v) && soAlnum(v).length >= 5 && !/[a-z]{4,}/.test(v.replace(/[^a-z]/g, " ").trim().split(" ").sort((a, b) => b.length - a.length)[0] || "");
+  if(!ASSIN){ if(/\d/.test(v)){ avisoBusca("Busca por número da parcela e por endereço é dos assinantes. Tente o CEP, a cidade ou o condado."); return true; } return false; }
+  const qa = soAlnum(v);
+  const porParc = qa.length >= 5 ? vivos.filter(l => { const p = priv(l); return p && p.parcela && soAlnum(p.parcela).includes(qa); }) : [];
+  if(porParc.length) return voaLotes(porParc.slice(0, 50), "Parcela");
+  if(/\d/.test(v) && /[a-z]/.test(v)){ const toks = v.split(/[\s,]+/).filter(t => t.length > 1);
+    const achou = vivos.filter(l => { const p = priv(l); return p && p.e && toks.every(t => semAc(p.e).includes(t)); });
+    if(achou.length) return voaLotes(achou.slice(0, 50), "Endereço"); }
+  if(pareceParcela || /\d/.test(v)){ avisoBusca("Não achei essa parcela ou esse endereço entre os lotes à venda. Tente o CEP ou a cidade."); return true; }
+  return false;
+}
+function ligaBusca(){
+  const f = $("#busca"); if(!f) return;
+  buscaOpcoes();
+  f.onsubmit = e => { e.preventDefault(); const t = $("#buscaT"); if(!t.value.trim()) return;
+    if(buscar(t.value)){ t.blur(); evento("busca_mapa", undefined); } else avisoBusca("Não achei. Tente um estado, cidade, condado, CEP, número da parcela ou endereço."); };
+  $("#buscaT").addEventListener("change", e => { const v = e.target.value; if(v && [...$("#buscaL").options].some(o => o.value === v)) f.requestSubmit(); });
+}
+
+/* ---------- 20/11 (Cris: "a agenda dos leilões aparecer em algum lugar do novo"): aba Agenda, com o mês em calendário e a lista dos
+   leilões do dia ou da semana. Tocar num leilão abre o mapa no condado com os lotes dele (o mesmo da lista do Explorar). */
+const AG = {uf: "", mes: null, dia: null, so: false};
+let PEND_EV = null;
+function agenda(){
+  if(!CARREGADO){ $("#app").innerHTML = `<section class="pag"><h1>Agenda dos leilões</h1><div class="carr">Carregando os leilões…</div></section>`; return; }
+  let ev = eventos(); if(AG.uf) ev = ev.filter(e => e.uf === AG.uf); if(AG.so) ev = ev.filter(e => e.n > 0);
+  const hoje = new Date(HOJE + "T12:00:00");
+  if(!AG.mes) AG.mes = HOJE.slice(0, 7);
+  const [a, mm] = AG.mes.split("-").map(Number), ini = new Date(a, mm - 1, 1, 12), dias = new Date(a, mm, 0, 12).getDate();
+  const porDia = {}; for(const e of ev) (porDia[e.d] = porDia[e.d] || []).push(e);
+  const ufs = [...new Set(eventos().map(e => e.uf))].sort();
+  const iso = d => d.toLocaleDateString("en-CA");
+  let cel = ""; for(let i = 0; i < ini.getDay(); i++) cel += `<span class="agd vz"></span>`;
+  for(let d = 1; d <= dias; d++){ const ds = `${AG.mes}-${String(d).padStart(2, "0")}`, xs = porDia[ds] || [], pas = ds < HOJE;
+    cel += `<button type="button" class="agd${xs.length ? " tem" : ""}${ds === HOJE ? " hj" : ""}${ds === AG.dia ? " sel" : ""}${pas ? " pas" : ""}" data-dia="${ds}" ${xs.length ? "" : "disabled"} aria-label="${d} de ${MES[mm - 1]}: ${xs.length} leilões"><b>${d}</b>${xs.length ? `<small>${xs.length}</small>` : ""}</button>`; }
+  const mesAnt = iso(new Date(a, mm - 2, 1, 12)).slice(0, 7), mesProx = iso(new Date(a, mm, 1, 12)).slice(0, 7);
+  // lista: o dia escolhido, senão as próximas semanas, agrupadas por semana
+  const lst = AG.dia ? (porDia[AG.dia] || []) : AG.mes === HOJE.slice(0, 7) ? ev : ev.filter(e => e.d.slice(0, 7) === AG.mes);
+  const semana = d => { const x = new Date(d + "T12:00:00"); x.setDate(x.getDate() - x.getDay()); return iso(x); };
+  let html = "", ult = ""; const corte = lst.slice(0, 160);
+  for(const e of corte){ const s = semana(e.d); if(s !== ult && !AG.dia){ ult = s; const fimS = new Date(s + "T12:00:00"); fimS.setDate(fimS.getDate() + 6);
+      html += `<div class="agsem">Semana de ${dataCurta(s)} a ${dataCurta(iso(fimS))}</div>`; } html += evLinha(e); }
+  $("#app").innerHTML = `<section class="pag"><h1>Agenda dos leilões</h1><p class="sub">Todos os leilões com data, dos editais e do calendário dos condados. Toque num leilão para ver os lotes dele no mapa.</p>
+    <div class="agfil"><label>Estado <select id="agUf"><option value="">Todos</option>${ufs.map(u => `<option value="${u}" ${AG.uf === u ? "selected" : ""}>${esc(DADOS.estados_nome[u] || u)}</option>`).join("")}</select></label>
+      <label class="troca"><input type="checkbox" id="agSo" ${AG.so ? "checked" : ""}> Só leilões com lotes publicados</label></div>
+    <div class="agwrap"><div class="painel agcal"><header><button type="button" class="pill ic" id="agAnt" aria-label="Mês anterior" ${mesAnt < HOJE.slice(0, 7) ? "disabled" : ""}>‹</button><h2>${MES[mm - 1]} de ${a}</h2><button type="button" class="pill ic" id="agProx" aria-label="Próximo mês">›</button></header>
+      <div class="agsemn">${SEM.map(s => `<span>${s}</span>`).join("")}</div><div class="aggrid">${cel}</div>
+      <p class="agleg"><span class="agd tem mini"><small>3</small></span> leilões no dia · toque no dia para ver só ele</p></div>
+    <div class="painel"><header><h2>${AG.dia ? `${diaSem(AG.dia)} ${dataCurta(AG.dia)}` : "Próximos leilões"}</h2><small>${n0(lst.length)} ${lst.length === 1 ? "leilão" : "leilões"}${AG.dia ? ` · <button type="button" class="lnk" id="agTodos">ver todos</button>` : ""}</small></header>
+      <div class="lista">${html || `<div class="vazio">Nenhum leilão com data${AG.dia ? " neste dia" : " neste mês"}${AG.uf ? " neste estado" : ""}.</div>`}${lst.length > corte.length ? `<div class="vazio">Mais ${n0(lst.length - corte.length)} leilões: escolha um estado ou um dia.</div>` : ""}</div></div></div></section>`;
+  $("#agUf").onchange = e => { AG.uf = e.target.value; AG.dia = null; agenda(); };
+  $("#agSo").onchange = e => { AG.so = e.target.checked; agenda(); };
+  $("#agAnt").onclick = () => { AG.mes = mesAnt; AG.dia = null; agenda(); };
+  $("#agProx").onclick = () => { AG.mes = mesProx; AG.dia = null; agenda(); };
+  if($("#agTodos")) $("#agTodos").onclick = () => { AG.dia = null; agenda(); };
+  document.querySelectorAll(".agd[data-dia]").forEach(b => b.onclick = () => { AG.dia = AG.dia === b.dataset.dia ? null : b.dataset.dia; agenda(); });
+  document.querySelectorAll("#app [data-ev]").forEach(b => b.onclick = () => { PEND_EV = b.dataset.ev; evento("agenda_leilao", undefined); location.hash = "explorar"; });
+  entra(document.querySelectorAll("#app .linha"));
+}
+function abrePendente(){
+  if(!PEND_EV || !MAPA || !CARREGADO) return;
+  const e = eventos().find(x => x.k === PEND_EV); PEND_EV = null;
+  if(e) setTimeout(() => { abreLeilao(e); $("#lista") && $("#lista").scrollIntoView({behavior: "auto", block: "nearest"}); }, 60);
+}
+
+/* ---------- 20/11 (Cris: "notificações relacionadas à lista dele, com um alerta com número"): avisos dos lotes acompanhados.
+   Guarda como o lote estava quando a pessoa começou a acompanhar (data, abertura, se já foi leiloado) e compara a cada visita:
+   data mudou, abertura mudou, saiu da lista do condado, leilão realizado, leilão chegando (7 dias) e inscrição fechando (5 dias).
+   O número no menu "Meus lotes" conta os avisos ainda não vistos; abrir Meus lotes marca como vistos. Fica neste navegador. */
+const FOTO = "blr_novo_seg_foto", LIDOS = "blr_novo_avisos_lidos";
+const fotoDe = l => ({d: l.d || "", ab: l.ab ?? null, h: !!l.h, nome: `${l.ci || l.co}, ${l.uf}`});
+function metaLeilao(l){ if(!l.d) return null; const k = nCo(l.co); return (DADOS.leiloes || []).find(a => a.uf === l.uf && a.d === l.d && nCo(a.co) === k) || null; }
+function avisos(){
+  if(!CARREGADO) return [];
+  const s = LS.get(SEG, []), F = LS.get(FOTO, {}), out = [], idx = new Map(L.map(l => [l.i, l])); let mud = false;
+  for(const i of s){
+    const l = idx.get(i), f = F[i];
+    if(!f){ if(l){ F[i] = fotoDe(l); mud = true; } continue; }
+    const nome = l ? `${l.ci || l.co}, ${l.uf}` : f.nome || "lote acompanhado";
+    if(!l){ out.push({k: i + "|saiu", i, ic: "saiu", t: `Saiu da lista do condado: ${nome}`, s: "Costuma ser dívida paga, acordo ou leilão cancelado."}); continue; }
+    if(HIST(l) && !f.h) out.push({k: i + "|hist", i, ic: "fim", t: `Leilão realizado: ${nome}`, s: "Veja o resultado na ficha do lote."});
+    if((l.d || "") !== f.d) out.push({k: i + "|d|" + (l.d || ""), i, ic: "data", t: `Data do leilão mudou: ${nome}`, s: `${f.d ? diaSem(f.d) + " " + dataCurta(f.d) : "sem data"} → ${l.d ? diaSem(l.d) + " " + dataCurta(l.d) : "sem data"}`});
+    if(l.ab != null && f.ab != null && Math.round(l.ab) !== Math.round(f.ab)) out.push({k: i + "|ab|" + Math.round(l.ab), i, ic: "valor", t: `Lance de abertura mudou: ${nome}`, s: `${usd(f.ab)} → ${usd(l.ab)}`});
+    const n = diasAte(l.d);
+    if(!HIST(l) && n != null && n >= 0 && n <= 7) out.push({k: i + "|perto|" + l.d, i, ic: "perto", t: `${n === 0 ? "Leilão hoje" : n === 1 ? "Leilão amanhã" : `Leilão em ${n} dias`}: ${nome}`, s: `${diaSem(l.d)} ${dataCurta(l.d)}`});
+    const a = !HIST(l) && metaLeilao(l);
+    if(a && a.pi){ const p = diasAte(a.pi); if(p != null && p >= 0 && p <= 5) out.push({k: i + "|pi|" + a.pi, i, ic: "insc", t: `Inscrição fecha ${p === 0 ? "hoje" : p === 1 ? "amanhã" : `em ${p} dias`}: ${nome}`, s: `Prazo para se inscrever no leilão: ${dataCurta(a.pi)}`}); }
+  }
+  if(mud) LS.set(FOTO, F);
+  const lidos = new Set(LS.get(LIDOS, []));
+  return out.map(x => ({...x, novo: !lidos.has(x.k)}));
+}
+const nAvisos = () => avisos().filter(a => a.novo).length;
+function marcaLidos(lista){
+  const lidos = new Set(LS.get(LIDOS, [])), F = LS.get(FOTO, {}), idx = new Map(L.map(l => [l.i, l]));
+  for(const a of lista){ lidos.add(a.k); const l = idx.get(a.i); if(l && /^(data|valor|fim)$/.test(a.ic)) F[a.i] = fotoDe(l); }   // mudança vista vira o novo "antes"
+  LS.set(LIDOS, [...lidos].slice(-400)); LS.set(FOTO, F); nav();
+}
+const IC_AV = {saiu: "↘", fim: "✓", data: "📅", valor: "$", perto: "⏰", insc: "✎"};
+function avisosHTML(xs){
+  if(!xs.length) return `<div class="vazio">Nenhum aviso agora. Avisamos aqui quando a data ou o lance mudar, quando o leilão chegar ou o lote sair da lista.</div>`;
+  return xs.map(a => `<${a.ic === "saiu" ? "div" : "a"} class="aviso${a.novo ? " novo" : ""}" ${a.ic === "saiu" ? "" : `href="#lote-${esc(a.i)}"`}><span class="avic ${a.ic}" aria-hidden="true">${IC_AV[a.ic] || "•"}</span><span><b>${esc(a.t)}</b><small>${esc(a.s)}</small></span>${a.novo ? `<i class="pto" aria-label="novo"></i>` : ""}</${a.ic === "saiu" ? "div" : "a"}>`).join("");
+}
 
 /* ---------- Meus lotes, Aprender, Planos, Progresso ---------- */
 function meusLotes(){
-  const s = LS.get(SEG, []), xs = L.filter(l => s.includes(l.i));
+  const s = LS.get(SEG, []), xs = L.filter(l => s.includes(l.i)), av = avisos(), nv = av.filter(a => a.novo).length;
   $("#app").innerHTML = `<section class="pag"><h1>Meus lotes</h1><p class="sub">Os lotes que você acompanha. Toque em "Acompanhar" na ficha de um lote para ele aparecer aqui.</p>
+    ${s.length ? `<div class="painel avisos" style="margin-bottom:var(--s4)"><header><h2>Notificações${nv ? ` <b class="badge">${nv}</b>` : ""}</h2><small>${n0(av.length)} ${av.length === 1 ? "aviso" : "avisos"}</small></header><div class="lista">${CARREGADO ? avisosHTML(av) : `<div class="carr">Carregando…</div>`}</div></div>` : ""}
     <div class="painel"><header><h2>Acompanhando</h2><small>${n0(xs.length)}</small></header><div class="lista">${CARREGADO ? xs.map(linhaHTML).join("") || `<div class="vazio">Nenhum lote ainda. <a href="#explorar">Explorar o mapa</a></div>` : `<div class="carr">Carregando…</div>`}</div></div>
     <div class="cartao" style="margin-top:var(--s4)"><h3>Portfólio</h3><p>Os imóveis que você arrematou com a BLR aparecem aqui. Por enquanto ficam na <a href="/classico/">versão clássica</a>, em Meu portfólio.</p></div></section>`;
   entra(document.querySelectorAll(".linha"));
+  if(CARREGADO && nv) setTimeout(() => { if(location.hash === "#meus-lotes") marcaLidos(av); }, 1500);
 }
 function aprender(){
   $("#app").innerHTML = `<section class="pag"><h1>Aprender</h1><p class="sub">Guias curtos para ir do edital ao arremate, e as palavras que aparecem nos leilões.</p>
@@ -1161,7 +1538,7 @@ document.addEventListener("click", e => {
 });
 
 /* ---------- tema, versão clássica, XP ---------- */
-$("#btTema").onclick = () => { const d = document.documentElement.dataset.theme === "dark" ? "light" : "dark"; document.documentElement.dataset.theme = d; try{ localStorage.setItem("blr_novo_tema", d); }catch(e){} if(MAPA){ if(CAM_CO && MAPA.hasLayer(CAM_CO)) MAPA.removeLayer(CAM_CO); CAM_CO = null; pintaMapa(); } };
+$("#btTema").onclick = () => { const d = document.documentElement.dataset.theme === "dark" ? "light" : "dark"; document.documentElement.dataset.theme = d; try{ localStorage.setItem("blr_novo_tema", d); }catch(e){} if(MAPA){ if(CAM_CO && MAPA.hasLayer(CAM_CO)) MAPA.removeLayer(CAM_CO); CAM_CO = null; RUAP = {}; if(CAM_RUA) CAM_RUA.clearLayers(); pintaMapa(); } };
 $("#btClassico").onclick = async e => { e.preventDefault(); try{ localStorage.setItem("blr_ui", "classico"); }catch(er){} if(EU) await api("/api/preferencias", {preferencia_ui: "classico"}).catch(() => {}); location.href = CONTEUDO.classicoHref; };
 $("#xpChip").onclick = () => { location.hash = "progresso"; };
 const L_ = window.L;
@@ -1185,7 +1562,7 @@ if(PARAMS_CLASSICO.some(k => new URLSearchParams(location.search).has(k)) || UI_
     if(PARAM_ABRE){ try{ history.replaceState(null, "", location.pathname + location.hash); }catch(e){}
       if(PARAM_ABRE === "entrar") abreEntrar(PARAM_VOLTA); else if(!EU) abreCadastro(); }
     await carregaProgresso(); evento("visita", undefined); const h = location.hash; if(ASSIN && CARREGADO){ pintaMapa(); lista(); } if(h.startsWith("#lote-")) abreFicha(h.slice(6)); else if(!h || h === "#explorar"){ const pb = $("#passosBox"); if(pb){ pb.innerHTML = passosHTML(); ligaPassos(); } } });
-  carregaResto().then(() => { if($("#explorarPag")){ chips(); pintaMapa(); lista(); } else rota(); if(location.hash.startsWith("#lote-")) abreFicha(location.hash.slice(6)); });
+  carregaResto().then(() => { nav(); if($("#explorarPag")){ chips(); ROT = null; pintaMapa(); lista(); buscaOpcoes(); abrePendente(); } else rota(); if(location.hash.startsWith("#lote-")) abreFicha(location.hash.slice(6)); });
 })();
 async function carregaDadosIndice(){
   const a = await busca("../atual.json");
