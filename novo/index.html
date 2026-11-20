@@ -149,6 +149,15 @@ button{font:inherit;color:inherit}
 .vazio{padding:var(--s6) var(--s5);color:var(--muted);text-align:center}
 .mais{display:block;width:100%;padding:14px;border:0;background:none;color:var(--accent);font-weight:600;cursor:pointer}
 .carr{padding:var(--s6);text-align:center;color:var(--muted)}
+/* 20/11: lista de LEILÕES (visão geral do mapa) e cabeçalho do leilão escolhido */
+.linha.ev{width:100%;border:0;border-bottom:1px solid var(--line);background:none;text-align:left;font:inherit}
+.dt{width:56px;height:56px;border-radius:10px;background:var(--accent-soft);color:var(--accent);display:grid;place-content:center;text-align:center;line-height:1.05}
+.dt b{font:700 20px var(--f-b)}.dt small{font-size:10.5px;font-weight:600;text-transform:uppercase}
+.dt.semlista{background:var(--sunk);color:var(--muted)}
+.evcab{padding:14px 18px;border-bottom:1px solid var(--line);background:var(--sunk)}
+.evcab h3{font:600 16px var(--f-b);margin:6px 0 4px}.evcab p{margin:0 0 6px;color:var(--muted);font-size:13px}
+.evcab a{font-weight:600;font-size:13.5px}
+.lnk.volta{background:none;border:0;padding:0;color:var(--accent);font-weight:600;cursor:pointer;font-size:13.5px}
 .uf-rot{display:inline-block;transform:translateX(-50%);margin-left:30px;font:700 11px var(--f-b);color:var(--ink);text-align:center;line-height:1.15;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:2px 6px;white-space:nowrap}
 .uf-rot small{display:block;font:500 10.5px var(--f-m);color:var(--muted)}
 
@@ -404,7 +413,7 @@ function celula(k){
 }
 const polDe = l => { const pv = ASSIN && priv(l); return EXATO[l.i] || (pv && Array.isArray(pv.pol) && pv.pol.length > 2 ? pv.pol : null); };
 async function polDoLote(l){ if(polDe(l)) return polDe(l); if(!ASSIN || !POLK || l.la == null) return null; await celula(celPol(l.la, l.ln)); return EXATO[l.i] || null; }
-const ESTADO = {grupo: "", crit: false, sd: false, uf: "", max: 0, dias: 0, mostrar: 40, prefs: {avisos_xp: true}};
+const ESTADO = {grupo: "", crit: false, sd: false, uf: "", max: 0, dias: 0, mostrar: 40, prefs: {avisos_xp: true}, leilao: null, foco: "", volta: null};
 const TXT_CAMPOS = ["nt", "fo", "jvq", "tp", "u", "mc", "pa"];
 const REGRAS_TIPO = [["upset", /upset/i], ["reo", /\breo\b|real estate owned|bank-owned|bank owned|homepath|homesteps|fannie|freddie/i], ["sheriff_judicial", /sheriff|(?<!non-)judicial/i],
   ["governo_federal", /\bhud\b|\bva\b|usda|\bgsa\b|marshals|tesouro|treasury/i], ["land_bank", /land\s*bank|repositor|adjudicat/i], ["tax_lien", /\bliens?\b|certificate|certificado/i],
@@ -537,7 +546,7 @@ function explorar(){
   $("#app").innerHTML = `<div id="explorarPag">${verHero ? heroHTML() : ""}<div id="passosBox">${passosHTML()}</div>
     <div class="filtros" id="chips" role="group" aria-label="Tipo de leilão"></div><div class="escopo" id="escopo"></div>
     <div class="explorar"><section class="painel"><header><h2>Leilões no mapa</h2><small id="mapaInfo">${CARREGADO ? "" : "Carregando os leilões…"}</small></header><div id="mapa"></div></section>
-      <section class="painel"><header><h2>Próximos leilões</h2><small id="nLista"></small></header><div class="lista" id="lista"><div class="carr">Carregando os leilões…</div></div></section></div></div>`;
+      <section class="painel"><header><h2 id="tLista">Próximos leilões</h2><small id="nLista"></small></header><div class="lista" id="lista"><div class="carr">Carregando os leilões…</div></div></section></div></div>`;
   document.querySelectorAll("[data-conta]").forEach(e => conta(e, +e.dataset.conta));
   const fx = () => { LS.set("blr_novo_hero_ok", true); evento("hero_dispensado"); const h = $("#hero"); if(h) h.remove(); };
   if($("#btExpl")) $("#btExpl").onclick = () => { fx(); $("#chips").scrollIntoView({behavior: REDUZ ? "auto" : "smooth"}); };
@@ -589,10 +598,10 @@ function fazMapa(){
   const geo = topojson.feature(EUA, EUA.objects.states);
   CAM_UF = L_.geoJSON(geo, {renderer: R_L, style: () => ({weight: 1, color: css.getPropertyValue("--surface").trim(), fillOpacity: 1, fillColor: css.getPropertyValue("--m0").trim()}),
     onEachFeature: (f, ly) => { const uf = FIPS_UF[String(f.id).padStart(2, "0")]; ly._uf = uf;
-      ly.on("click", () => { if(!uf) return; ligaSdSeVazio(uf); MAPA.fitBounds(ly.getBounds(), {padding: [20, 20]}); evento("estado_explorado", uf); });
+      ly.on("click", () => { if(!uf) return; ligaSdSeVazio(uf); ESTADO.foco = uf; ESTADO.leilao = null; ESTADO.mostrar = 40; MAPA.fitBounds(ly.getBounds(), {padding: [20, 20]}); evento("estado_explorado", uf); });
       ly.on("mouseover", () => ly.setStyle({weight: 2.2, color: css.getPropertyValue("--accent").trim()})); ly.on("mouseout", () => ly.setStyle({weight: 1, color: css.getPropertyValue("--surface").trim()})); }}).addTo(MAPA);
   CAM_ROT = L_.layerGroup().addTo(MAPA); CAM_L = L_.layerGroup().addTo(MAPA); CAM_CO = null;
-  MAPA.on("moveend zoomend", () => { pintaMapa(); lista(); });
+  MAPA.on("moveend zoomend", () => { if(MAPA.getZoom() < 4.5 && !ESTADO.leilao) ESTADO.foco = ""; pintaMapa(); lista(); });
   pintaMapa();
 }
 function pintaMapa(){
@@ -608,7 +617,8 @@ function pintaMapa(){
     style: () => ({weight: .7, color: css.getPropertyValue("--line").trim(), fill: false})});
   if(CAM_CO){ if(perto && !MAPA.hasLayer(CAM_CO)) CAM_CO.addTo(MAPA); else if(!perto && MAPA.hasLayer(CAM_CO)) MAPA.removeLayer(CAM_CO); }
   CAM_ROT.clearLayers(); CAM_L.clearLayers();
-  $("#mapaInfo") && ($("#mapaInfo").textContent = !CARREGADO ? "Carregando os leilões…" : perto ? "Toque num ponto para abrir o lote" : "Toque num estado para aproximar");
+  $("#mapaInfo") && ($("#mapaInfo").textContent = !CARREGADO ? "Carregando os leilões…" : perto ? "Toque num ponto para abrir o lote" : "Toque num estado ou num leilão da lista");
+  if(ESTADO.leilao && CARREGADO){ const ft = condadoGeo(ESTADO.leilao.f); if(ft) L_.geoJSON(ft, {renderer: R_L, interactive: false, style: {weight: 2.5, color: css.getPropertyValue("--amber").trim() || "#E2AC48", fill: false}}).addTo(CAM_ROT); }
   if(!CARREGADO) return;
   if(!perto){
     CAM_UF.eachLayer(ly => { const q = por[ly._uf]; if(!q || !ly._uf) return; const c = ly.getBounds().getCenter();
@@ -635,16 +645,115 @@ function contornosMapa(xs, b, z){
   Promise.all(cel.map(celula)).then(() => { if(tk !== POLTOK) return; vis.filter(l => cel.includes(celPol(l.la, l.ln))).forEach(poe); });
 }
 const posDe = l => { const p = ASSIN && priv(l); return p && p.la != null ? [p.la, p.ln] : l.la != null ? [l.la, l.ln] : null; };
+/* ---------- 20/11 (Cris): na visão geral, a lista mostra os LEILÕES da área do mapa (condado + data), com a informação de cada um
+   (tipo, onde, inscrição, gravame, edital). Perto (zoom 6+), dentro de um estado ou depois de escolher um leilão, a lista vira a dos
+   lotes. Tocar num leilão leva o mapa ao condado e abre os lotes dele no mesmo lugar. Leilão = lotes com a mesma data no condado,
+   juntados ao calendário (DADOS.leiloes); leilão do calendário sem lista publicada aparece com "lista ainda não publicada". */
+const nCo = s => String(s || "").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/^(st\.?|saint)\s+/, "st ").replace(/\s+(county|parish)$/, "").replace(/[^a-z]/g, "");
+const modoLeiloes = () => CARREGADO && !!MAPA && !ESTADO.leilao && !ESTADO.foco && MAPA.getZoom() < 6;
+let GEOCO = null;
+function condadoGeo(f){
+  if(!f || !EUA) return null;
+  if(!GEOCO){ GEOCO = new Map(); for(const ft of topojson.feature(EUA, EUA.objects.counties).features) GEOCO.set(String(ft.id).padStart(5, "0"), ft); }
+  return GEOCO.get(String(f).padStart(5, "0")) || null;
+}
+const CO_CENTRO = new Map();
+function centroCo(f){
+  if(CO_CENTRO.has(f)) return CO_CENTRO.get(f);
+  const ft = condadoGeo(f); const c = ft ? L_.geoJSON(ft).getBounds().getCenter() : null;
+  CO_CENTRO.set(f, c); return c;
+}
+const MES = ["jan", "fev", "mar", "abr", "mai", "jun", "jul", "ago", "set", "out", "nov", "dez"], SEM = ["dom", "seg", "ter", "qua", "qui", "sex", "sáb"];
+const dataCurta = d => { if(!d) return ""; const [, m, dd] = d.split("-"); return `${dd}/${m}`; };
+const diaSem = d => d ? SEM[new Date(d + "T12:00:00").getDay()] : "";
+const ondeTxt = on => !on ? "" : /online/i.test(on) ? "online" : /presencial|in.?person/i.test(on) ? "presencial" : on;
+function eventos(){
+  const m = new Map(), chave = (uf, co, d) => uf + "|" + nCo(co) + "|" + (d || "");
+  for(const l of visiveis()){
+    if(!l.d || diasAte(l.d) < 0) continue;
+    const k = chave(l.uf, l.co, l.d); let e = m.get(k);
+    if(!e){ e = {k, uf: l.uf, co: l.co, nco: nCo(l.co), d: l.d, f: l.f, n: 0, ncrit: 0, abMin: null, tipos: {}, pos: []}; m.set(k, e); }
+    e.n++; if(CRIT(l)) e.ncrit++; if(l.ab && (e.abMin == null || l.ab < e.abMin)) e.abMin = l.ab;
+    const t = (CONTEUDO.tipos[l._t] || CONTEUDO.tipos.nao_informado)[0]; e.tipos[t] = (e.tipos[t] || 0) + 1;
+    if(!e.f && l.f) e.f = l.f; if(e.pos.length < 30){ const p = posDe(l); if(p) e.pos.push(p); }
+  }
+  const semFiltro = !ESTADO.crit && !ESTADO.grupo && !ESTADO.max;
+  for(const a of DADOS.leiloes || []){
+    if(!a.d || diasAte(a.d) < 0 || (ESTADO.uf && a.uf !== ESTADO.uf) || (ESTADO.dias && diasAte(a.d) > ESTADO.dias)) continue;
+    const k = chave(a.uf, a.co, a.d); let e = m.get(k);
+    if(!e){ if(!semFiltro) continue; e = {k, uf: a.uf, co: a.co, nco: nCo(a.co), d: a.d, f: a.f, n: 0, ncrit: 0, abMin: null, tipos: {}, pos: []}; m.set(k, e); }
+    Object.assign(e, {t: a.t, pi: a.pi, on: a.on, g: a.g, gn: a.gn, lk: a.lk, f: e.f || a.f});
+  }
+  for(const e of m.values()) if(!e.t){ const t = Object.entries(e.tipos).sort((a, b) => b[1] - a[1])[0]; e.t = t ? t[0] : "Leilão"; }
+  return [...m.values()].sort((a, b) => a.d.localeCompare(b.d) || b.n - a.n);
+}
+function posEv(e){
+  const c = e.f && centroCo(e.f); if(c) return c;
+  if(e.pos.length) return L_.latLng(e.pos.reduce((s, p) => s + p[0], 0) / e.pos.length, e.pos.reduce((s, p) => s + p[1], 0) / e.pos.length);
+  return null;
+}
+const grTag = g => g === "sim" ? `<span class="tag acima">dívidas continuam</span>` : g === "nao" || g === "não" ? `<span class="tag ok">gravames caem</span>` : "";
+function evLinha(e){
+  const n = diasAte(e.d), [, mm, dd] = e.d.split("-"), onde = ondeTxt(e.on);
+  return `<button type="button" class="linha ev" data-ev="${esc(e.k)}"><div class="dt${e.n ? "" : " semlista"}"><b>${dd}</b><small>${MES[+mm - 1]} · ${diaSem(e.d)}</small></div>
+    <div style="min-width:0"><h3>${esc(e.co)}, ${esc(e.uf)}</h3><div class="sub">${esc(e.t)}${onde ? " · " + esc(onde) : ""}${e.pi ? " · inscrição até " + dataCurta(e.pi) : ""}</div>
+      <div class="tags"><span class="tag ${n != null && n <= 14 ? "breve" : ""}">${n === 0 ? "hoje" : n === 1 ? "amanhã" : `em ${n} dias`}</span>${e.n ? `<span class="tag">${n0(e.n)} ${e.n === 1 ? "lote" : "lotes"}</span>` : `<span class="tag">lista ainda não publicada</span>`}${e.ncrit ? `<span class="tag ok">${n0(e.ncrit)} no critério BLR</span>` : ""}${grTag(e.g)}</div></div>
+    <div class="val">${e.abMin != null ? `<small>a partir de</small><b class="num">${usd(e.abMin)}</b>` : ""}</div></button>`;
+}
+let EV_ULT = [];
+function eventosNaTela(){
+  let ev = eventos(); const z = MAPA ? MAPA.getZoom() : 4;
+  if(MAPA && z >= 4.5){ const b = MAPA.getBounds().pad(.05); ev = ev.filter(e => { const p = posEv(e); return p && b.contains(p); }); }
+  return ev;
+}
+function listaLeiloes(){
+  const el = $("#lista"); $("#tLista") && ($("#tLista").textContent = "Próximos leilões");
+  const ev = EV_ULT = eventosNaTela(), z = MAPA.getZoom(), nl = ev.reduce((s, e) => s + e.n, 0);
+  $("#nLista").textContent = `${n0(ev.length)} ${ev.length === 1 ? "leilão" : "leilões"} · ${n0(nl)} lotes${z >= 4.5 ? " nesta área" : ""}`;
+  if(!ev.length){ el.innerHTML = `<div class="vazio">Nenhum leilão com data nesta área${ESTADO.crit || ESTADO.grupo ? " com esses filtros" : ""}.<br>Aproxime o mapa para ver os lotes sem data (venda direta e listados).</div>`; return; }
+  el.innerHTML = ev.slice(0, ESTADO.mostrar).map(evLinha).join("") + (ev.length > ESTADO.mostrar ? `<button class="mais" type="button" id="mais">Mostrar mais ${n0(Math.min(40, ev.length - ESTADO.mostrar))}</button>` : "");
+  entra(el.querySelectorAll(".linha"));
+  el.querySelectorAll("[data-ev]").forEach(b => b.onclick = () => abreLeilao(EV_ULT.find(e => e.k === b.dataset.ev)));
+  const m = $("#mais"); if(m) m.onclick = () => { ESTADO.mostrar += 40; lista(); };
+}
+function abreLeilao(e){
+  if(!e || !MAPA) return;
+  ESTADO.volta = {c: MAPA.getCenter(), z: MAPA.getZoom()};
+  ESTADO.leilao = e; ESTADO.foco = e.uf; ESTADO.mostrar = 40; evento("leilao_aberto", e.k);
+  const ft = condadoGeo(e.f), b = ft ? L_.geoJSON(ft).getBounds() : e.pos.length ? L_.latLngBounds(e.pos) : null;
+  if(b) MAPA.flyToBounds(b, {padding: [24, 24], maxZoom: 11, duration: REDUZ ? 0 : .8}); else { pintaMapa(); lista(); }
+  if(innerWidth < 820) $("#mapa").scrollIntoView({behavior: REDUZ ? "auto" : "smooth", block: "start"});
+}
+function evCab(e){
+  if(!e) return "";
+  const onde = ondeTxt(e.on), gr = e.g ? `Gravames: ${e.g === "sim" ? "dívidas continuam com o comprador" : e.g === "nao" || e.g === "não" ? "caem com o leilão" : "depende"}${e.gn ? " (" + e.gn + ")" : ""}` : "";
+  return `<div class="evcab"><button type="button" class="lnk volta" id="evVolta">← Todos os leilões</button>
+    <h3>${esc(e.co)}, ${esc(DADOS.estados_nome[e.uf] || e.uf)} · ${diaSem(e.d)} ${dataCurta(e.d)}</h3>
+    <p>${esc(e.t || "Leilão")}${onde ? " · " + esc(onde) : ""}${e.pi ? " · inscrição até " + dataCurta(e.pi) : ""}${e.n ? " · " + n0(e.n) + (e.n === 1 ? " lote" : " lotes") : ""}</p>
+    ${gr ? `<p>${esc(gr)}</p>` : ""}${e.lk ? `<a href="${esc(e.lk)}" target="_blank" rel="noopener">Lista oficial do leilão ↗</a>` : ""}</div>`;
+}
+function ligaEvCab(){
+  const v = $("#evVolta"); if(!v) return;
+  v.onclick = () => { const w = ESTADO.volta; ESTADO.leilao = null; ESTADO.foco = ""; ESTADO.mostrar = 40;
+    if(w) MAPA.setView(w.c, Math.min(w.z, 5.5)); else MAPA.setView([38.5, -96.5], 4); };
+}
 function lista(){
   const el = $("#lista"); if(!el) return;
   if(!CARREGADO){ el.innerHTML = `<div class="carr">Carregando os leilões…</div>`; return; }
+  if(modoLeiloes()) return listaLeiloes();
+  $("#tLista") && ($("#tLista").textContent = ESTADO.leilao ? "Lotes do leilão" : "Lotes nesta área");
   let xs = visiveis().filter(l => diasAte(l.d) == null || diasAte(l.d) >= 0);
-  if(MAPA && MAPA.getZoom() >= 5){ const b = MAPA.getBounds(); xs = xs.filter(l => { const p = posDe(l); return p && b.contains(p); }); }
+  const E = ESTADO.leilao;
+  if(E) xs = xs.filter(l => l.uf === E.uf && nCo(l.co) === E.nco && (l.d || "") === E.d);
+  else if(MAPA && MAPA.getZoom() >= 5){ const b = MAPA.getBounds(); xs = xs.filter(l => { const p = posDe(l); return p && b.contains(p); }); }
   xs.sort((a, b) => (a.d || "9999").localeCompare(b.d || "9999") || CRIT(b) - CRIT(a));
-  $("#nLista").textContent = `${n0(xs.length)} ${xs.length === 1 ? "lote" : "lotes"}${MAPA && MAPA.getZoom() >= 5 ? " no mapa visível" : ""}`;
+  $("#nLista").textContent = `${n0(xs.length)} ${xs.length === 1 ? "lote" : "lotes"}${E ? "" : MAPA && MAPA.getZoom() >= 5 ? " no mapa visível" : ""}`;
+  const cab = evCab(E);
+  if(E && !xs.length){ el.innerHTML = cab + `<div class="vazio">A lista de lotes deste leilão ainda não foi publicada${ESTADO.crit || ESTADO.grupo ? " ou nenhum lote passa nos filtros" : ""}. Confira o edital no link acima.</div>`; ligaEvCab(); return; }
   if(!xs.length){ el.innerHTML = `<div class="vazio">Nenhum leilão com esses filtros nesta área.<br><button class="btn peq" type="button" id="verTodos" style="margin-top:12px">Ver todos os estados</button></div>`;
     $("#verTodos").onclick = () => { Object.assign(ESTADO, {grupo: "", crit: false, uf: "", max: 0, dias: 0}); chips(); if(MAPA) MAPA.setView([38.5, -96.5], 4); }; return; }
-  el.innerHTML = xs.slice(0, ESTADO.mostrar).map(linhaHTML).join("") + (xs.length > ESTADO.mostrar ? `<button class="mais" type="button" id="mais">Mostrar mais ${n0(Math.min(40, xs.length - ESTADO.mostrar))}</button>` : "");
+  el.innerHTML = cab + xs.slice(0, ESTADO.mostrar).map(linhaHTML).join("") + (xs.length > ESTADO.mostrar ? `<button class="mais" type="button" id="mais">Mostrar mais ${n0(Math.min(40, xs.length - ESTADO.mostrar))}</button>` : "");
+  ligaEvCab();
   entra(el.querySelectorAll(".linha"));
   minisContorno(xs.slice(0, ESTADO.mostrar));
   const m = $("#mais"); if(m) m.onclick = () => { ESTADO.mostrar += 40; lista(); };
@@ -837,6 +946,87 @@ function progresso(){
 }
 
 /* ---------- assistente de IA (mesma rota da versão clássica) ---------- */
+/* 20/11 (Cris: "fizemos a mesma pergunta na clássica e na nova e as respostas foram diferentes"): a IA da nova recebe o mesmo que a da
+   clássica: o conhecimento geral e o Guia (ia_base.json, tirado da própria clássica a cada montagem), o panorama por estado, o calendário
+   (do estado em foco ou o geral), os melhores lotes da área da tela e, com o lote aberto, os números dele (teto e ARV só para assinante).
+   Endereço não vai. O servidor aceita até 60 KB: corta do menos importante para o mais importante. */
+let IA_BASE = null;
+async function iaBase(){
+  if(IA_BASE) return IA_BASE;
+  try{ const r = await fetch("ia_base.json", {cache: "no-cache"}); IA_BASE = r.ok ? await r.json() : {}; }catch(e){ IA_BASE = {}; }
+  return IA_BASE;
+}
+const iaNorm = s => String(s || "").normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
+function iaUfDaPergunta(q){
+  const n = " " + iaNorm(q).replace(/[^a-z]+/g, " ") + " ", nomes = Object.entries(DADOS.estados_nome || {}).concat(Object.entries((IA_BASE && IA_BASE.uf_en) || {}));
+  let achou = null;
+  for(const [uf, nome] of nomes){ const t = iaNorm(nome).replace(/[^a-z]+/g, " ").trim(); if(t && n.includes(" " + t + " ") && (!achou || t.length > achou[1])) achou = [uf, t.length]; }
+  if(achou) return achou[0];
+  const m = String(q || "").match(/\b[A-Z]{2}\b/g) || [];
+  return m.find(x => (DADOS.estados_nome || {})[x]) || null;
+}
+const iaForca = l => CRIT(l) ? 2 : l.et === "preco" ? 1 : 0;
+const iaMelhor = (a, b) => iaForca(b) - iaForca(a) || (b.desc ?? -1) - (a.desc ?? -1);
+function iaLote(l){
+  const p = (ASSIN && prem(l)) || {}, ti = CONTEUDO.tipos[l._t] || CONTEUDO.tipos.nao_informado;
+  const o = {id: l.i, estado: l.uf, condado: l.co, cidade: l.ci, cep: l.zip, imovel_e_leilao: ti[0], data: l.d || "sem data (venda contínua ou a definir)",
+    abertura: l.ab, valor_cadastro: p.jv ?? l.jv, desconto_pct: l.desc, teto_blr: p.t, arv: p.am ?? p.a, area_pes2: l.a, ano: l.y, etapa: l.et,
+    faixa: l.et === "final" ? (l.ft === "tipico" ? "fecha no típico" : "faixa fraca") : undefined, resultado: HIST(l) ? "já leiloado" : undefined};
+  for(const c in o) if(o[c] == null || o[c] === "") delete o[c];
+  return o;
+}
+const iaLeilao = e => { const o = {data: e.d, estado: e.uf, condado: e.co, tipo: e.t, inscricao_ate: e.pi, onde: e.on, lotes_na_vitrine: e.n, gravame: e.g, nota_gravame: e.gn};
+  for(const c in o) if(o[c] == null || o[c] === "") delete o[c]; return o; };
+function iaPanorama(){
+  const T = (DADOS.cobertura && DADOS.cobertura.tot) || {}, ev = eventos(), por = {};
+  for(const l of L) if(!HIST(l)){ const x = por[l.uf] || (por[l.uf] = {n: 0, lei: 0, prox: null}); x.n++; }
+  for(const e of ev){ const x = por[e.uf] || (por[e.uf] = {n: 0, lei: 0, prox: null}); x.lei++; if(!x.prox || e.d < x.prox) x.prox = e.d; }
+  return {dados_de: DADOS.meta && DADOS.meta.gerado,
+    totais: {lotes_a_venda: T.lotes, leiloes_no_calendario: ev.length, estados: T.estados, estados_com_leilao: T.com_leilao, condados: T.condados,
+      nos_criterios_blr: T.nos_criterios, ja_leiloados_no_historico: T.historico},
+    por_estado: Object.entries(por).sort((a, b) => b[1].n - a[1].n).map(([uf, x]) => `${DADOS.estados_nome[uf] || uf} (${uf}): ${x.n} lotes, ${x.lei} leilões${x.prox ? ", próximo em " + x.prox : ""}`),
+    planos: (CONTEUDO.planos || []).map(p => ({plano: p.nome, para_quem: p.quem, mensal_usd: p.m, anual_usd: p.a, inclui: p.itens})),
+    imoveis_comprados_pela_blr: (DADOS.comprados || []).length};
+}
+function iaResumoUF(uf){
+  const vivos = L.filter(l => l.uf === uf && !HIST(l)), porCo = {};
+  for(const l of vivos) porCo[l.co] = (porCo[l.co] || 0) + 1;
+  return {estado: DADOS.estados_nome[uf] || uf, uf, lotes_a_venda: vivos.length, sem_data_ou_venda_continua: vivos.filter(l => !l.d).length, condados: Object.keys(porCo).length,
+    nos_criterios_blr: vivos.filter(CRIT).length, analise_completa_blr: uf === "FL", leiloes_proximos: eventos().filter(e => e.uf === uf).slice(0, 40).map(iaLeilao),
+    condados_com_mais_lotes: Object.entries(porCo).sort((a, b) => b[1] - a[1]).slice(0, 12).map(([c, n]) => c + ": " + n),
+    melhores_lotes: vivos.sort(iaMelhor).slice(0, 12).map(iaLote)};
+}
+function iaTela(){
+  const z = MAPA ? MAPA.getZoom() : null, E = ESTADO.leilao;
+  const t = {versao: "Vitrine nova (raiz do site)", aba: (location.hash.slice(1).split("/")[0] || "explorar"), estado: ESTADO.foco ? (DADOS.estados_nome[ESTADO.foco] || ESTADO.foco) : null,
+    leilao_destacado: E ? {condado: E.co, estado: E.uf, data: E.d} : null, zoom_do_mapa: z, lista_mostra: MAPA ? (modoLeiloes() ? "leilões da área do mapa" : "lotes da área do mapa") : null,
+    filtros: {grupo: ESTADO.grupo || undefined, so_criterio_blr: ESTADO.crit || undefined, inclui_so_listados: ESTADO.sd || undefined}, visitante: EU ? undefined : true, assinante: ASSIN || undefined};
+  for(const k in t) if(t[k] == null) delete t[k];
+  return t;
+}
+async function iaContexto(pergunta){
+  const B = await iaBase(), ctx = {canal: "texto", tela: iaTela()};
+  try{
+    if(B.guia) ctx.guia = B.guia; if(B.saber) ctx.saber = B.saber;
+    ctx.plataforma = iaPanorama();
+    const uf = iaUfDaPergunta(pergunta) || (ESTADO.leilao && ESTADO.leilao.uf) || ESTADO.foco || null;
+    if(uf) ctx.estado_em_foco = iaResumoUF(uf); else ctx.proximos_leiloes = eventos().slice(0, 30).map(iaLeilao);
+    if(MAPA && MAPA.getZoom() >= 5){ const b = MAPA.getBounds();
+      const area = visiveis().filter(l => { const p = posDe(l); return p && b.contains(p); }).sort(iaMelhor).slice(0, 15).map(iaLote);
+      if(area.length) ctx.area_da_tela = {nota: "melhores lotes da área do mapa que a pessoa está vendo, do melhor para o pior", lotes: area}; }
+    if(ESTADO.leilao) ctx.leilao_aberto = iaLeilao(ESTADO.leilao);
+    if(!uf) ctx.melhores_nos_criterios = L.filter(l => !HIST(l) && CRIT(l)).sort(iaMelhor).slice(0, 10).map(iaLote);
+    if(IA_L){ ctx.lote = iaLote(IA_L); const p = ASSIN && prem(IA_L);
+      if(p) ctx.analise_blr = Object.fromEntries(Object.entries(p).filter(([k, v]) => v != null && typeof v !== "object" && !["shp", "img"].includes(k))); }
+    const cabe = () => JSON.stringify(ctx).length < 56000;
+    if(!cabe() && ctx.estado_em_foco) ctx.estado_em_foco.leiloes_proximos = ctx.estado_em_foco.leiloes_proximos.slice(0, 15);
+    if(!cabe()) delete ctx.melhores_nos_criterios;
+    if(!cabe() && ctx.area_da_tela) ctx.area_da_tela.lotes = ctx.area_da_tela.lotes.slice(0, 6);
+    if(!cabe()) ctx.plataforma.por_estado = ctx.plataforma.por_estado.slice(0, 20);
+    if(!cabe()) delete ctx.saber;
+  }catch(e){ console.warn("contexto da IA", e); }
+  return ctx;
+}
 let IA_L = null, IA_H = [];
 function abreIA(l){
   IA_L = l || null; const box = $("#ia"); box.hidden = false;
@@ -847,8 +1037,7 @@ function abreIA(l){
   $("#iaF").onsubmit = async e => { e.preventDefault(); const t = $("#iaT").value.trim(); if(!t) return; $("#iaT").value = "";
     const msgs = $("#iaMsgs"), u = document.createElement("div"); u.className = "m u"; u.textContent = t; msgs.append(u);
     const r = document.createElement("div"); r.className = "m"; r.textContent = "Pensando…"; msgs.append(r); msgs.scrollTop = 1e9;
-    const lote = IA_L ? Object.fromEntries(["uf", "co", "ci", "zip", "d", "ab", "jv", "desc", "u", "a", "y", "et"].filter(c => IA_L[c] != null).map(c => [c, IA_L[c]])) : null;
-    try{ const j = await api("/api/assistente", {pergunta: t, contexto: {tela: IA_L ? "ficha do lote (versão nova)" : "mapa (versão nova)", canal: "texto", ...(lote ? {lote} : {})}, historico: IA_H.slice(-6)});
+    try{ const j = await api("/api/assistente", {pergunta: t, contexto: await iaContexto(t), historico: IA_H.slice(-6)});
       r.textContent = j.resposta || "Sem resposta."; IA_H.push({p: t, r: r.textContent}); }
     catch(er){ r.textContent = er.st === 401 ? "Entre na sua conta para usar o assistente." : er.st === 429 ? "Você chegou ao limite de perguntas do seu plano." : "O assistente não respondeu agora. Tente de novo."; }
     msgs.scrollTop = 1e9; };
