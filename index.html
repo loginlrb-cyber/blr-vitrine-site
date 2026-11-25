@@ -15,6 +15,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@500;600;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <script src="../vendor/topojson.min.js"></script>
 <script src="../vendor/leaflet.min.js"></script>
+<script src="/assinar/i18n.js"></script>
 <script src="/assinar/planos.js"></script>
 <script>/* 24/11 (Cris): origem do 1º acesso (link da bio do Instagram = ?utm_source=instagram&utm_medium=bio) vai no cadastro */
 try{ const q = new URLSearchParams(location.search), u = {}; ["utm_source","utm_medium","utm_campaign","utm_content","utm_term"].forEach(k => { if(q.get(k)) u[k] = q.get(k).slice(0, 80); });
@@ -426,9 +427,11 @@ const CONTEUDO = {
 const API = "https://api.blrdevelopment.com";
 const $ = s => document.querySelector(s);
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"}[c]));
-const USD = new Intl.NumberFormat("pt-BR", {style: "currency", currency: "USD", maximumFractionDigits: 0});
+/* 25/11: em inglês, número e data no formato americano (US$ 79,600 · Nov 24 · Tue); o texto é traduzido por /assinar/i18n.js */
+const EN = !!(window.BLR_I18N && BLR_I18N.en), LOC = EN ? "en-US" : "pt-BR";
+const USD = new Intl.NumberFormat(LOC, {style: "currency", currency: "USD", maximumFractionDigits: 0});
 const usd = v => v == null || isNaN(v) ? "—" : USD.format(v);
-const n0 = v => Number(v || 0).toLocaleString("pt-BR");
+const n0 = v => Number(v || 0).toLocaleString(LOC);
 const LS = {get(k, d){ try{ const v = localStorage.getItem(k); return v == null ? d : JSON.parse(v); }catch(e){ return d; } },
             set(k, v){ try{ localStorage.setItem(k, JSON.stringify(v)); }catch(e){} }};
 const REDUZ = matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -586,7 +589,7 @@ function heroHTML(){
       <div class="nota-t"><small>Teto de lance BLR · exemplo</small><b class="num">${usd(79600)}</b><small>Abertura ${usd(6200)}</small></div>
       <button class="pill ic fecha" type="button" id="heroX" aria-label="Fechar apresentação">✕</button></div></section>`;
 }
-const proxTxt = d => { if(!d) return "—"; const [a, m, dd] = d.split("-"); return `${dd}/${m}`; };
+const proxTxt = d => { if(!d) return "—"; return dataCurta(d); };
 function passosHTML(){
   const p = (PROG && PROG.passos) || {}; if(p.faixa_dispensada || p.feitos >= 5) return "";
   const prox = CONTEUDO.passos.find(([k]) => !p[k]);
@@ -809,7 +812,8 @@ async function ruas(z){
     if(r.l && z >= 10.5){ r.l.setStyle({color: cor, weight: wl, opacity: .45}); quer.add(r.l); } }
   CAM_RUA.eachLayer(x => { if(!quer.has(x)) CAM_RUA.removeLayer(x); }); quer.forEach(x => { if(!CAM_RUA.hasLayer(x)) CAM_RUA.addLayer(x); });
 }
-const fmtN = n => n >= 1e4 ? Math.round(n / 1e3) + " mil" : n >= 1e3 ? (n / 1e3).toFixed(1).replace(".", ",") + " mil" : String(n);
+const fmtN = n => EN ? (n >= 1e4 ? Math.round(n / 1e3) + "K" : n >= 1e3 ? (n / 1e3).toFixed(1) + "K" : String(n))
+  : n >= 1e4 ? Math.round(n / 1e3) + " mil" : n >= 1e3 ? (n / 1e3).toFixed(1).replace(".", ",") + " mil" : String(n);
 const usdC = v => v == null ? "" : v >= 1e6 ? "$" + (v / 1e6).toFixed(1).replace(".0", "") + "M" : v >= 1e3 ? "$" + Math.round(v / 1e3) + "k" : "$" + Math.round(v);
 function pintaMapa(){
   if(!MAPA || !CAM_UF) return;
@@ -888,8 +892,9 @@ function centroCo(f){
   const ft = condadoGeo(f); const c = ft ? L_.geoJSON(ft).getBounds().getCenter() : null;
   CO_CENTRO.set(f, c); return c;
 }
-const MES = ["jan", "fev", "mar", "abr", "mai", "jun", "jul", "ago", "set", "out", "nov", "dez"], SEM = ["dom", "seg", "ter", "qua", "qui", "sex", "sáb"];
-const dataCurta = d => { if(!d) return ""; const [, m, dd] = d.split("-"); return `${dd}/${m}`; };
+const MES = EN ? ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"] : ["jan", "fev", "mar", "abr", "mai", "jun", "jul", "ago", "set", "out", "nov", "dez"],
+      SEM = EN ? ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"] : ["dom", "seg", "ter", "qua", "qui", "sex", "sáb"];
+const dataCurta = d => { if(!d) return ""; const [, m, dd] = d.split("-"); return EN ? `${MES[+m - 1]} ${+dd}` : `${dd}/${m}`; };
 const diaSem = d => d ? SEM[new Date(d + "T12:00:00").getDay()] : "";
 const ondeTxt = on => !on ? "" : /online/i.test(on) ? "online" : /presencial|in.?person/i.test(on) ? "presencial" : on;
 function eventos(){
@@ -1050,7 +1055,7 @@ function abreFicha(id){
         ${ASSIN && pos ? `<p style="margin-top:10px"><a href="${pv && pv.sv ? `https://www.google.com/maps/@?api=1&map_action=pano&pano=${encodeURIComponent(pv.sv.p)}&heading=${pv.sv.h}` : `https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=${pos[0]},${pos[1]}`}" target="_blank" rel="noopener">Abrir o Street View ↗</a> · <a href="https://www.google.com/maps/search/?api=1&query=${pos[0]},${pos[1]}" target="_blank" rel="noopener">Ver no mapa ↗</a></p>` : ""}</div>
       ${ASSIN ? midiaLote(l, p, pv, pos, pol) : ""}
       <div class="bloco"><h3>${esc(ti[0])}</h3><p>${esc(ti[1])}</p>
-        <dl class="det"><dt>Condado</dt><dd>${esc(l.co)}, ${esc(l.uf)}</dd><dt>Data do leilão</dt><dd>${l.d ? l.d.split("-").reverse().join("/") : "a confirmar"}</dd>
+        <dl class="det"><dt>Condado</dt><dd>${esc(l.co)}, ${esc(l.uf)}</dd><dt>Data do leilão</dt><dd>${l.d ? (EN ? (([y, m, d]) => `${m}/${d}/${y}`)(l.d.split("-")) : l.d.split("-").reverse().join("/")) : "a confirmar"}</dd>
           ${jv ? `<dt>Valor de cadastro</dt><dd>${usd(jv)}</dd>` : ""}${l.desc != null ? `<dt>Abertura sobre o cadastro</dt><dd>−${l.desc}%</dd>` : ""}
           ${l.u ? `<dt>Uso</dt><dd>${esc(l.u)}</dd>` : ""}${l.a ? `<dt>Área construída</dt><dd>${n0(l.a)} pé²${l.y ? " · " + esc(l.y) : ""}</dd>` : ""}
           ${pv && pv.parcela ? `<dt>Parcela</dt><dd class="mono">${esc(pv.parcela)}</dd>` : ""}</dl>
@@ -1390,7 +1395,7 @@ function iaTela(){
   return t;
 }
 async function iaContexto(pergunta){
-  const B = await iaBase(), ctx = {canal: "texto", tela: iaTela()};
+  const B = await iaBase(), ctx = {canal: "texto", tela: iaTela(), idioma: EN ? "en" : "pt", responda_em: EN ? "English (the visitor is using the site in English; answer in English, US formats)" : "português"};
   try{
     if(B.guia) ctx.guia = B.guia; if(B.saber) ctx.saber = B.saber;
     ctx.plataforma = iaPanorama();
