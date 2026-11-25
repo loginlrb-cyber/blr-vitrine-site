@@ -1,7 +1,7 @@
 {
-  "name": "Vitrine BLR",
-  "short_name": "Vitrine BLR",
-  "description": "Imóveis indo a leilão nos EUA, analisados pela BLR Development.",
+  "name": "BLR Developments",
+  "short_name": "BLR",
+  "description": "US property auctions, analyzed by BLR Developments.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#0C0E12",

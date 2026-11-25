@@ -5,14 +5,22 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="index,follow">
 <meta name="theme-color" content="#F4F6F7">
-<title>Vitrine BLR</title>
-<meta name="description" content="Leilões de imóveis por dívida nos EUA, com o teto de lance calculado pela BLR Developments.">
+<title>BLR Developments · US property auctions, analyzed</title>
+<meta name="description" content="Tax-deed, tax-lien and foreclosure auctions across the US, with the maximum bid calculated by BLR Developments. 7-day free trial.">
+<meta property="og:type" content="website"><meta property="og:site_name" content="BLR Developments"><meta property="og:url" content="https://www.blrdevelopment.com/">
+<meta property="og:title" content="BLR Developments · US property auctions, analyzed"><meta property="og:description" content="Tax-deed and foreclosure auctions in all 50 states, with the maximum bid already calculated. Try it free for 7 days.">
+<meta property="og:image" content="https://www.blrdevelopment.com/icon-512.png"><meta name="twitter:card" content="summary">
 <link rel="icon" type="image/svg+xml" href="/blr-icon-small.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@500;600;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <script src="../vendor/topojson.min.js"></script>
 <script src="../vendor/leaflet.min.js"></script>
 <script src="/assinar/planos.js"></script>
+<script>/* 24/11 (Cris): origem do 1º acesso (link da bio do Instagram = ?utm_source=instagram&utm_medium=bio) vai no cadastro */
+try{ const q = new URLSearchParams(location.search), u = {}; ["utm_source","utm_medium","utm_campaign","utm_content","utm_term"].forEach(k => { if(q.get(k)) u[k] = q.get(k).slice(0, 80); });
+  if(Object.keys(u).length && !localStorage.getItem("blr_origem")) localStorage.setItem("blr_origem", JSON.stringify({...u, em: new Date().toISOString(), pagina: location.pathname})); }catch(e){}
+const origemAcesso = () => { try{ return JSON.parse(localStorage.getItem("blr_origem") || "null"); }catch(e){ return null; } };
+</script>
 <script>try{ const t = localStorage.getItem("blr_novo_tema"); if(t === "dark" || t === "light") document.documentElement.dataset.theme = t;
   else if(matchMedia("(prefers-color-scheme: dark)").matches) document.documentElement.dataset.theme = "dark"; }catch(e){}</script>
 <style>
@@ -400,7 +408,7 @@ const CONTEUDO = {
   /* planos, preços e payment links: fonte única em /assinar/planos.js (a mesma do checkout embutido) */
   planos: window.BLR_PLANOS.planos,
   stripe: window.BLR_PLANOS.stripe,
-  compara: [["Ferramenta comum", "Uma calculadora. O lance e o risco ficam por sua conta."], ["BLR", "O teto de lance já calculado no Pro e, no UltraPro, a BLR comprando junto com você."]],
+  compara: [["Ferramenta comum", "Uma calculadora. O lance e o risco ficam por sua conta."], ["BLR", "O teto de lance já calculado no Pro e, no UltraPro, levantamento, projeto e gestão de obra com a BLR."]],
   aprender: [["../tutoriais/", "O primeiro lance, passo a passo", "Do edital ao arremate em cada tipo de leilão."], ["../por-que-blr/", "Por que BLR", "A jornada em 4 passos: achar, arrematar, reformar e lucrar."],
              ["../checklist/", "Checklist de terrenos", "Os pontos que separam um bom negócio de um prejuízo."]],
   glossario: [["Abertura", "O lance mínimo do leilão, em geral a dívida mais as custas."], ["Teto de lance BLR", "Até quanto vale a pena dar de lance para o negócio fechar com margem, pela conta da BLR."],
@@ -1525,6 +1533,7 @@ function abreCadastro(){
     // aceite dos Termos e consentimento de SMS vão com data e versão (11/11, padrão da clássica)
     const aceite = {termos: c.termosVersao, aceito_em: new Date().toISOString(), sms_marketing: !!f.get("sms")};
     try{ await api("/api/cadastro", {email, telefone: tel, aceite});
+      { const o = origemAcesso(); if(o) api("/api/interesse", {tipo: "origem do cadastro", email, origem: o, texto: "Cadastro de teste vindo de " + [o.utm_source, o.utm_medium, o.utm_campaign].filter(Boolean).join(" / "), pagina: location.href.slice(0, 300)}).catch(() => {}); }
       abreModal(`<h2 id="mTit">Quase lá ✓</h2><p>Mandamos para <b>${esc(email)}</b> o link para criar a sua senha. O teste de 7 dias começa quando você entrar.</p><button class="btn pri" type="button" data-fm>Fechar</button>`); }
     catch(er){ bt.disabled = false; bt.textContent = "Começar o teste";
       $("#mErro").textContent = er.st === 429 ? msgErro(er, "Muitas tentativas. Espere alguns minutos.") : er.st === 409 ? msgErro(er, "Este e-mail já tem acesso. Entre ou peça uma senha nova.")

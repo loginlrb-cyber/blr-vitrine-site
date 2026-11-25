@@ -8,7 +8,7 @@
 <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="manifest" href="/site.webmanifest">
 <style>*,*::before,*::after{box-sizing:border-box}html,body{margin:0}img{max-width:100%}[hidden]{display:none!important}
 :root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}</style>
-</head><body><link rel="preload" href="d_dados_1dac3b4dc6.json" as="fetch" crossorigin="anonymous"><link rel="preload" href="d_eua_145aaf5d14.json" as="fetch" crossorigin="anonymous"><title>BLR Developments</title>
+</head><body><link rel="preload" href="d_dados_330eaf12bc.json" as="fetch" crossorigin="anonymous"><link rel="preload" href="d_eua_145aaf5d14.json" as="fetch" crossorigin="anonymous"><title>BLR Developments</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -1262,7 +1262,7 @@ body{transition:padding-right .5s var(--mola)}
 <div class="modal" id="modal" hidden><div class="mbox" role="dialog" aria-modal="true" aria-labelledby="mTit">
   <button class="x" id="mX" type="button" aria-label="Fechar">✕</button><div id="mBody"></div></div></div>
 
-<script>(function(){var q=function(u){return fetch(u).then(function(r){if(!r.ok)throw new Error(u+' '+r.status);return r.json()})};Promise.all([q('d_dados_1dac3b4dc6.json'),q('d_eua_145aaf5d14.json')]).then(function(x){window.__DADOS=x[0];window.__EUA=x[1];var s=document.createElement('script');s.textContent=document.getElementById('app').textContent;document.body.appendChild(s)}).catch(function(e){var d=document.createElement('p');d.style.cssText='padding:24px;font:16px sans-serif';d.textContent='Não foi possível carregar os dados ('+e.message+'). Recarregue a página.';document.body.prepend(d)})})();</script>
+<script>(function(){var q=function(u){return fetch(u).then(function(r){if(!r.ok)throw new Error(u+' '+r.status);return r.json()})};Promise.all([q('d_dados_330eaf12bc.json'),q('d_eua_145aaf5d14.json')]).then(function(x){window.__DADOS=x[0];window.__EUA=x[1];var s=document.createElement('script');s.textContent=document.getElementById('app').textContent;document.body.appendChild(s)}).catch(function(e){var d=document.createElement('p');d.style.cssText='padding:24px;font:16px sans-serif';d.textContent='Não foi possível carregar os dados ('+e.message+'). Recarregue a página.';document.body.prepend(d)})})();</script>
 <script type="text/plain" id="app">
 const DADOS = window.__DADOS;
 const EUA = window.__EUA;
@@ -1276,7 +1276,7 @@ const RUAS = new Set(["01001", "01003", "01005", "01009", "01011", "01013", "010
 /* Contato que aparece quando o pedido não pode ser gravado direto (visitante por link público não grava dados no artifact). */
 const CONTATO = {"email": "loginlrb@gmail.com", "whats": "+55 51 99135-7544"};
 /* Cotação do dia em que a página foi montada (vitrine_cambio.py); o leilão é sempre em dólar. */
-const CAMBIO = {"data": "2026-11-23", "fonte": "ExchangeRate-API (open.er-api.com)", "r": {"BRL": 5.945309, "EUR": 0.911134, "GBP": 0.763577, "CAD": 1.433241, "MXN": 19.113379, "ARS": 1575.9572, "CLP": 1016.589577, "COP": 3437.41712, "PEN": 3.442586, "UYU": 40.573291, "PYG": 6326.700243, "CHF": 0.840419, "JPY": 158.701406, "CNY": 6.681345, "AUD": 1.507013, "INR": 92.753491, "AED": 3.6725, "ILS": 3.351967, "ZAR": 17.513472}};
+const CAMBIO = {"data": "2026-11-25", "fonte": "ExchangeRate-API (open.er-api.com)", "r": {"BRL": 5.894422, "EUR": 0.91245, "GBP": 0.763269, "CAD": 1.429121, "MXN": 19.375508, "ARS": 1592.0227, "CLP": 1016.254496, "COP": 3516.051988, "PEN": 3.472691, "UYU": 40.532358, "PYG": 6403.898532, "CHF": 0.836724, "JPY": 159.238818, "CNY": 6.678179, "AUD": 1.507265, "INR": 92.925233, "AED": 3.6725, "ILS": 3.339784, "ZAR": 17.532655}};
 const HOJE = DADOS.meta.gerado;
 const L = DADOS.lotes;
 /* 04/11 (site leve): no site os lotes vêm por estado (vitrine_site.separa_dados). DADOS.partes = [{uf, a: arquivo, n}] e DADOS.idx =
@@ -2203,6 +2203,7 @@ function abreCadastro(){
     // 11/11 (Cris, termos no padrão PropertyRadar): o aceite dos Termos e o consentimento de SMS vão com data e versão
     const aceite = {termos: "2026-11-11", aceito_em: new Date().toISOString(), sms_marketing: !!f.get("sms")};
     try{ await api("/api/cadastro", {email, telefone: tel, aceite});
+      { const o = origemAcesso(); if(o) api("/api/interesse", {tipo: "origem do cadastro", email, origem: o, texto: "Cadastro de teste vindo de " + [o.utm_source, o.utm_medium, o.utm_campaign].filter(Boolean).join(" / "), pagina: location.href.slice(0, 300)}).catch(() => {}); }
       abreModal(`<h3 id="mTit">Quase lá ✓</h3><p class="ok-msg">Mandamos para <b>${esc(email)}</b> o link para criar a sua senha. O teste de 7 dias começa quando você entrar.</p><button class="cta" type="button" onclick="fechaModal()">Fechar</button>`); }
     catch(er){ if(er.st === 429){ bt.disabled = false; bt.textContent = "Começar o teste"; $("#tErro").textContent = "Muitas tentativas. Espere alguns minutos."; return; }
       envia({tipo: "teste 7 dias", nome: email.split("@")[0], email, whats: tel}, "Pedido de teste recebido. A BLR libera o seu acesso e manda o link para criar a senha."); } };
@@ -2307,7 +2308,7 @@ const IA_SABER = [
   "- A análise BLR completa (teto, ARV pelas vendas reais, Força) hoje existe para a Flórida. Nos outros estados o lote aparece com ARV estimado (valor oficial do condado ou preço por pé² do CEP) ou como \"listado\" (dado do edital, sem a conta completa). Alguns estados não têm leilão no calendário, só estoque de venda direta (land bank, imóveis do governo).",
   "- Abas: Mapa (antes BIDMAP), Lista (antes BIDLIST: a lista dos lotes, com ordenação e colunas), Pacotes (listas ★ dos lotes que você acompanha), Meu portfólio (o que você arrematou) e Guia (cada item explicado). O questionário \"Para você\" monta uma lista com os lotes que combinam com o seu perfil.",
   "- Novos desde a sua última visita: lista na página, por estado, para o Básico e acima, só nos estados do plano. A data da visita fica neste navegador, na conta. Sem e-mail e sem envio automático.",
-  "- Como comprar: Self Bidder (planos Básico e Pro): você se inscreve no leilão e dá o lance por conta própria, com a análise da plataforma. Partner Bidder (UltraPro, por convite e depois de homologação): a BLR opera o lance com você e divide o risco. O botão \"Quero participar deste leilão\" pede à BLR para inscrever e dar o lance por você.",
+  "- Como comprar: Self Bidder (planos Básico e Pro): você se inscreve no leilão e dá o lance por conta própria, com a análise da plataforma. UltraPro: inclui levantamento, projeto e gestão de obra com a BLR. Comprar junto com a BLR não é oferecido no site (só por convite, fora da plataforma): não ofereça nem descreva divisão de risco, sociedade ou investimento com a BLR. O botão \"Quero participar deste leilão\" pede à BLR para inscrever e dar o lance por você.",
   "- Teste grátis de 7 dias, só com e-mail e telefone, para testar o Pro. O UltraPro entra nesse teste; o Básico não tem. O plano anual sai pelo preço de 10 meses. O pagamento é por link enviado pela BLR; nada é cobrado dentro do site. Sem cartão: se não assinar, a pessoa continua como visitante.",
   "## Tipos de leilão nos EUA (regras gerais; cada estado e condado tem as suas, e o edital é o que vale)",
   "- Tax deed (imposto, escritura): o condado vende o imóvel por imposto atrasado e quem ganha recebe a escritura. Em geral a hipoteca privada cai; lien de governo pode continuar; o IRS (receita federal), quando tem lien, pode resgatar o imóvel em até 120 dias.",
@@ -2805,9 +2806,9 @@ function planoFaixa(sessao, assin){
   return "gratuito";
 }
 function faixaPartnerHTML(plano){
-  if(plano === "ultra") return `<aside class="pb-faixa pb-ok" data-pb="ultra"><p>Partner Bidder: neste plano a BLR compra junto com você.</p><button type="button" data-pb-como>Como funciona</button></aside>`;
-  if(plano === "pro" || plano === "basico") return `<aside class="pb-faixa" data-pb="membro"><p>O teto de lance do analista é do Pro. O Partner Bidder — a BLR compra junto — é do UltraPro.</p><button type="button" data-pb-ultra>Ver o Partner Bidder</button></aside>`;
-  return `<aside class="pb-faixa" data-pb="visita"><p>Eles te dão uma calculadora. A BLR te dá o teto de lance do analista e, no UltraPro, compra junto.</p><button type="button" data-assina>Ver planos</button></aside>`;
+  if(plano === "ultra") return `<aside class="pb-faixa pb-ok" data-pb="ultra"><p>UltraPro: levantamento, projeto e gestão de obra com a BLR.</p><button type="button" data-pb-ultra>Falar com a BLR</button></aside>`;
+  if(plano === "pro" || plano === "basico") return `<aside class="pb-faixa" data-pb="membro"><p>O teto de lance do analista é do Pro. Levantamento, projeto e gestão de obra com a BLR é do UltraPro.</p><button type="button" data-pb-ultra>Ver o UltraPro</button></aside>`;
+  return `<aside class="pb-faixa" data-pb="visita"><p>Eles te dão uma calculadora. A BLR te dá o teto de lance do analista e, no UltraPro, levantamento, projeto e gestão de obra.</p><button type="button" data-assina>Ver planos</button></aside>`;
 }
 // PARTNER_FAIXA_FIM
 // NOVOS_INICIO
@@ -3698,7 +3699,7 @@ const campos = (extra) => `
 /* 12/11 (Cris, ideias InvestorIQ item 4): "Falar com a BLR" — formulário curto para quem quer o UltraPro / Partner Bidder ou tirar
    dúvida antes de assinar. Vai pelo mesmo envia() (POST /api/interesse, aparece no /admin e avisa a BLR por e-mail). */
 function abreFalar(assunto){
-  const ops = ["Quero o UltraPro / comprar junto com a BLR (Partner Bidder)", "Dúvida sobre um leilão ou um lote", "Quero investir com a BLR", "Parceria (corretor, obra, financiamento)", "Outro assunto"];
+  const ops = ["Quero o UltraPro (levantamento, projeto e gestão de obra)", "Dúvida sobre um leilão ou um lote", "Quero investir com a BLR", "Parceria (corretor, obra, financiamento)", "Outro assunto"];
   abreModal(`<h3 id="mTit">Falar com a BLR</h3>
     <p>Conte o que você procura. Uma pessoa da BLR responde pelo e-mail ou WhatsApp que você deixar, em português ou inglês.</p>
     <form class="fcad" id="fFalar">${campos(`<label>Assunto<select name="assunto">${ops.map(o => `<option ${o === assunto ? "selected" : ""}>${esc(o)}</option>`).join("")}</select></label>
@@ -3716,6 +3717,10 @@ function textoPedido(p){
   if(p.msg) linhas.push("", p.msg);
   return linhas.filter(x => x !== "").join("\n").replace(/\n- /g, "\n- ");
 }
+/* 24/11 (Cris): origem do 1º acesso (link da bio do Instagram = ?utm_source=instagram&utm_medium=bio) vai no cadastro */
+try{ const q = new URLSearchParams(location.search), u = {}; ["utm_source","utm_medium","utm_campaign","utm_content","utm_term"].forEach(k => { if(q.get(k)) u[k] = q.get(k).slice(0, 80); });
+  if(Object.keys(u).length && !localStorage.getItem("blr_origem")) localStorage.setItem("blr_origem", JSON.stringify({...u, em: new Date().toISOString(), pagina: location.pathname})); }catch(e){}
+const origemAcesso = () => { try{ return JSON.parse(localStorage.getItem("blr_origem") || "null"); }catch(e){ return null; } };
 async function envia(p, ok){
   p.em = new Date().toISOString();
   CAD = {nome: p.nome, email: p.email, whats: p.whats}; try{ localStorage.setItem("vitrine_cadastro", JSON.stringify(CAD)); }catch(e){}
@@ -3723,7 +3728,7 @@ async function envia(p, ok){
   if(PODE && DB && UID){ try{ await DB.doc(`pedidos/${UID}/itens/${Date.now()}`).set(p); gravou = true; }catch(e){} }
   // 01/11 (Cris OK, Clauds 2.5): no site o pedido vai para POST /api/interesse (grava no D1, aparece no /admin e avisa a BLR por
   // e-mail), de membro ou visitante; sem o endpoint (404) ou sem resposta, segue o caminho antigo (WhatsApp / copiar)
-  if(SITE && !gravou){ try{ await api("/api/interesse", {...p, texto: textoPedido(p), pagina: location.href.slice(0, 300)}); gravou = true; }catch(e){} }
+  if(SITE && !gravou){ try{ await api("/api/interesse", {...p, origem: origemAcesso(), texto: textoPedido(p), pagina: location.href.slice(0, 300)}); gravou = true; }catch(e){} }
   if(gravou){ abreModal(`<h3 id="mTit">Recebido ✓</h3><p class="ok-msg">${ok}</p><p>A BLR responde pelo e-mail ${esc(p.email)}${p.whats ? " ou pelo WhatsApp" : ""}.</p><button class="cta" type="button" onclick="fechaModal()">Fechar</button>`); return; }
   const txt = textoPedido(p);
   const wa = dig(CONTATO.whats);
@@ -3749,7 +3754,7 @@ function seloTrialHTML(id){ return temTrial(id) ? `<span class="selo-trial">${TR
 const PLANOS = {
   basico: {n: "Básico", p: "9,90", a: "99", am: "8,25", ec: "19,80", ben: ["Ficha completa e filtros avançados", "1 estado à sua escolha (troca 1× por mês)", "Self Bidder: você opera por conta própria", "Assistente de IA: 10 consultas por mês"]},
   pro: {n: "Pro", p: "49,90", a: "499", am: "41,58", ec: "99,80", ben: ["Tudo do Básico, em até 3 estados", "Teto de lance BLR, ARV e a conta ao vivo de cada lote", "Posição exata, contorno do lote, Street View, endereço e parcela", "Várias listas e alertas de oportunidades", "Self Bidder com suporte a dúvidas · IA: 40 consultas por mês"]},
-  ultra: {n: "UltraPro", p: "249,90", a: "2.499", am: "208,25", ec: "499,80", ben: ["Tudo do Pro, nos 50 estados, DC e territórios", "Partner Bidder: a BLR opera com você e divide o risco", "Comunidade, mentoria e oferta de lotes já arrematados", "Sala de leilão ao vivo, consultoria de engenharia e o curso completo", "Assistente de IA ilimitado"]}};
+  ultra: {n: "UltraPro", p: "249,90", a: "2.499", am: "208,25", ec: "499,80", ben: ["Tudo do Pro, nos 50 estados, DC e territórios", "Serviço de levantamento, projeto e gestão de obra com a BLR", "Comunidade, mentoria e oferta de lotes já arrematados", "Sala de leilão ao vivo, consultoria de engenharia e o curso completo", "Assistente de IA ilimitado"]}};
 /* 12/11 (Cris aprovou os planos e a conta Stripe da Gallery "por enquanto"): links de pagamento do Stripe por plano e ciclo.
    Pagar ainda não muda o plano no servidor: o admin libera à mão. O e-mail da conta vai em prefilled_email para casar o pagamento. */
 const STRIPE = {
@@ -4883,7 +4888,7 @@ $("#tipoLegBt").onclick = () => { const leg = $("#tipoLeg"), a = leg.hidden; leg
 { const q = new URLSearchParams(location.search);
   try{ if(q.get("assinatura") === "ok") abreModal(`<h3 id="mTit">Obrigado pela assinatura ✓</h3><p class="ok-msg">Recebemos o seu pagamento${PLANO_NOME[q.get("plano")] ? " do plano " + esc(PLANO_NOME[q.get("plano")]) + (q.get("ciclo") === "anual" ? " anual" : q.get("ciclo") === "mensal" ? " mensal" : "") : ""}. A BLR libera o seu acesso em até 1 dia útil, no mesmo e-mail usado no pagamento.</p><p>Enquanto isso, o mapa e as notas já estão abertos para você. Dúvidas: <button type="button" class="lnk" onclick="abreFalar('')">falar com a BLR</button>.</p><button class="cta" type="button" onclick="fechaModal()">Ver o mapa</button>`);
     else if(q.get("teste")) abreCadastro(); else if(q.get("plano")) abreAssina(q.get("plano"), q.get("ciclo")); else if(q.get("entrar")) abreEntrar();
-    else if(q.get("senha")) abreEsqueci(""); else if(q.get("listas")) abreSeg(); else if(q.get("falar")) abreFalar(q.get("falar") === "ultra" ? "Quero o UltraPro / comprar junto com a BLR (Partner Bidder)" : ""); else if(q.get("tour")) setTimeout(() => tour(true), 1200); }catch(e){ console.warn("atalho", e); } }
+    else if(q.get("senha")) abreEsqueci(""); else if(q.get("listas")) abreSeg(); else if(q.get("falar")) abreFalar(q.get("falar") === "ultra" ? "Quero o UltraPro (levantamento, projeto e gestão de obra)" : ""); else if(q.get("tour")) setTimeout(() => tour(true), 1200); }catch(e){ console.warn("atalho", e); } }
 { const bs = $("#btSino"); if(bs) bs.onclick = abreSino; }
 $("#tgSeg").onclick = () => { FSEG = FSEG ? false : true; $("#tgSeg").setAttribute("aria-pressed", !!FSEG); render(); };
 /* 02/11 (Cris): o botão alterna Histórico junto → Só vendidos → sem histórico */
