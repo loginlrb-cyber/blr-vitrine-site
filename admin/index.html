@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex,nofollow">
 <meta name="referrer" content="no-referrer">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob: https:; connect-src 'self' https://api.blrdevelopment.com; object-src 'none'; base-uri 'self'; form-action 'self'">
 <title>Usuários — BLR</title>
 <link rel="icon" type="image/svg+xml" href="/blr-icon-small.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -74,6 +75,20 @@ label{display:block;font-size:13px;font-weight:600;color:var(--mute)}label>input
 .login{max-width:400px;margin:8vh auto}
 .login form{display:flex;flex-direction:column;gap:12px}
 .nota{color:var(--mute);font-size:13px}
+/* 25/11 (Cris): aba Saúde — o que está saudável e o que não está (ao vivo no navegador + /admin/saude.enc.json cifrado, de vitrine_saude.py) */
+.sd-res{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-bottom:16px}
+.sd-res .num{cursor:pointer}.sd-res .num b{font-size:28px}
+.sd-res .num.ok b{color:var(--ok)}.sd-res .num.atencao b{color:var(--warn)}.sd-res .num.problema b{color:var(--bad)}
+.sd-g{margin-bottom:14px}.sd-g h2{display:flex;align-items:center;gap:10px;font-size:16px;margin:0 0 10px}
+.sd-g h2 .bar{flex:1;height:6px;border-radius:99px;background:var(--line);overflow:hidden;display:flex}
+.sd-g h2 .bar i{display:block;height:100%}.sd-g h2 .cnt{color:var(--mute);font-size:12px;font-weight:500;white-space:nowrap}
+.sd-i{display:grid;grid-template-columns:14px minmax(0,1.1fr) auto minmax(0,2fr);gap:10px;align-items:start;padding:9px 2px;border-top:1px solid var(--line);font-size:13px}
+.sd-i .pt{width:10px;height:10px;border-radius:50%;margin-top:4px}
+.sd-i .pt.ok{background:var(--ok)}.sd-i .pt.atencao{background:var(--warn)}.sd-i .pt.problema{background:var(--bad);box-shadow:0 0 0 4px var(--badbg)}
+.sd-i .nm{font-weight:600;overflow-wrap:anywhere}.sd-i .vl{font-variant-numeric:tabular-nums;white-space:nowrap;font-weight:600}
+.sd-i .vl.ok{color:var(--ok)}.sd-i .vl.atencao{color:var(--warn)}.sd-i .vl.problema{color:var(--bad)}
+.sd-i .dt{color:var(--mute);overflow-wrap:anywhere}.sd-i .sg{display:block;color:var(--ink);margin-top:3px}.sd-i .sg::before{content:"→ ";color:var(--gold)}
+@media (max-width:640px){.sd-i{grid-template-columns:14px minmax(0,1fr) auto}.sd-i .dt{grid-column:2/-1}}
 [hidden]{display:none!important}
 </style>
 </head>
@@ -150,14 +165,15 @@ function montaApp(){
       <button class="aba" role="tab" data-aba="novo">＋ Novo acesso</button>
       <button class="aba" role="tab" data-aba="pedidos">Pedidos de senha<span class="n" id="nPed" hidden></span></button>
       <button class="aba" role="tab" data-aba="auditoria">Histórico</button>
+      <button class="aba" role="tab" data-aba="saude">Saúde<span class="n" id="nSau" hidden></span></button>
     </div>
     <section id="corpo"></section>
     <p class="nota" style="margin-top:28px">Configuração do assistente de IA e as conversas continuam no <a href="${API}/admin" target="_blank" rel="noopener">painel completo do servidor</a>.</p>`;
   document.querySelectorAll(".aba").forEach(b => b.onclick = () => vai(b.dataset.aba));
-  carregaPedidos(); vai("membros");
+  carregaPedidos(); carregaSaude(); vai("membros");
 }
 function vai(a){ ABA = a; document.querySelectorAll(".aba").forEach(b => b.setAttribute("aria-selected", b.dataset.aba === a));
-  ({membros: telaMembros, novo: telaNovo, pedidos: telaPedidos, auditoria: telaAuditoria})[a](); }
+  ({membros: telaMembros, novo: telaNovo, pedidos: telaPedidos, auditoria: telaAuditoria, saude: telaSaude})[a](); }
 
 /* ---------- membros ---------- */
 async function carregaMembros(){
@@ -303,6 +319,127 @@ async function telaAuditoria(){
   $("#corpo").innerHTML = `<div class="c"><h2>Últimos 100 eventos</h2><p class="sub">Logins, convites, bloqueios e mudanças de prazo, como o servidor registrou.</p>
     ${l.length ? l.map(e => `<div class="ev"><div class="q">${esc(new Date(e.ts).toLocaleString("pt-BR", {dateStyle: "short", timeStyle: "short"}))}</div>
       <div><div class="a">${esc(e.acao)}</div><div class="q">${esc(e.email || "—")}</div></div><div class="d">${esc(e.detalhe || "")}${e.ip ? ` · ${esc(e.ip)}` : ""}</div></div>`).join("") : `<div class="vazio">Sem eventos.</div>`}</div>`;
+}
+
+/* ---------- saúde da vitrine ----------
+   25/11 (Cris: "um agente exclusivo que confira de X em X tempo, ou quando alguém faz login"). Duas partes, nenhuma da Clauds:
+   1. ao vivo: ao entrar (e ao abrir a aba) o navegador confere as páginas principais, o /api/me, a idade dos dados
+      (/atual.json -> arquivo DADOS -> meta.gerado) e que o relatório em claro NÃO está no site. Só 'self' + a API (CSP).
+   2. relatório do agente (vitrine_saude.py, rotina das 20h e de 3 em 3 h): /admin/saude.enc.json, AES-256-GCM com chave
+      PBKDF2-SHA256 (200 mil voltas) da senha de admin. A senha é pedida uma vez e fica neste aparelho (localStorage). */
+const SD_CHAVE = "blr_saude_senha", SD_VIVO = "Agora, pelo navegador";
+const SD_PAGS = ["/", "/classico/", "/planos/", "/conta/", "/tutoriais/", "/privacy/", "/terms/", "/sitemap.xml"];
+let VIVO = null, VIVO_P = null, REL = null, REL_ERRO = "", REL_FALTA = false, SFILTRO = "";
+const lsLe = k => { try{ return localStorage.getItem(k); }catch(e){ return null; } };
+const lsGrava = (k, v) => { try{ v == null ? localStorage.removeItem(k) : localStorage.setItem(k, v); }catch(e){} };
+const seg = s => s.toFixed(1).replace(".", ",") + " s";
+
+async function mede(u, o){
+  const t = performance.now();
+  try{ const r = await fetch(u, Object.assign({cache: "no-store"}, o)); return {r, s: (performance.now() - t) / 1000}; }
+  catch(e){ return {r: null, s: (performance.now() - t) / 1000}; }
+}
+const semCache = u => u + (u.includes("?") ? "&" : "?") + "v=" + Date.now();
+async function pagina(p){   // HEAD (não baixa a página); o GitHub Pages às vezes devolve 503: uma 2ª tentativa
+  let x = await mede(semCache(p), {method: "HEAD"});
+  if(x.r && x.r.status === 405) x = await mede(semCache(p));
+  if(!x.r || (!x.r.ok && x.r.status !== 404)) x = await mede(semCache(p), {method: "HEAD"});
+  return x;
+}
+async function aoVivo(){
+  const it = [], add = (nome, estado, valor, detalhe, sugestao) => it.push({grupo: SD_VIVO, nome, estado, valor: String(valor), detalhe: detalhe || "", sugestao: sugestao || ""});
+  const [pags, me, dados, claro] = await Promise.all([
+    Promise.all(SD_PAGS.map(pagina)),
+    mede(API + "/api/me", {credentials: "include"}),
+    (async () => { try{
+      const a = await fetch(semCache("/atual.json"), {cache: "no-store"}); if(!a.ok) return {erro: "atual.json HTTP " + a.status};
+      const nome = (await a.json()).DADOS; if(!nome) return {erro: "atual.json sem DADOS"};
+      const d = await fetch("/" + nome, {cache: "no-store"}); if(!d.ok) return {erro: nome + " HTTP " + d.status};
+      return {nome, j: await d.json()};
+    }catch(e){ return {erro: String(e && e.message || e)}; } })(),
+    pagina("/admin/saude.json")]);
+  SD_PAGS.forEach((p, k) => { const {r, s} = pags[k];
+    if(r && r.ok) add(p, s < 3 ? "ok" : "atencao", seg(s), "Respondeu agora.", s < 3 ? "" : "Página lenta: conferir peso e cache.");
+    else add(p, "problema", r ? "HTTP " + r.status : "sem resposta", "Falhou agora.", "Recarregar daqui a pouco; se seguir, ver o GitHub Pages do blr-vitrine-site."); });
+  { const {r, s} = me; let j = {}; if(r){ try{ j = await r.json(); }catch(e){} }
+    if(r && r.status === 200 && j.papel === "admin") add("Servidor de login (/api/me)", "ok", seg(s), "Respondeu com a sua sessão de administrador.");
+    else if(r && (r.status === 200 || r.status === 401)) add("Servidor de login (/api/me)", "atencao", r.status === 401 ? "sessão caiu" : "sem papel admin", "O servidor respondeu, mas a sessão não é mais de administrador.", "Sair e entrar de novo.");
+    else add("Servidor de login (/api/me)", "problema", r ? "HTTP " + r.status : "sem resposta", "O servidor de login não respondeu como devia.", "Avisar a Clauds: servidor de login fora."); }
+  if(dados.erro) add("Idade dos dados publicados", "problema", "não li", dados.erro, "Conferir o atual.json e o arquivo de dados no site.");
+  else { const g = String((dados.j.meta || {}).gerado || ""), m = g.match(/^(\d{4})-(\d\d)-(\d\d)/);
+    const hoje = new Date(); hoje.setHours(0, 0, 0, 0);
+    const dias = m ? Math.round((hoje - new Date(+m[1], m[2] - 1, +m[3])) / 864e5) : 99;
+    const t = ((dados.j.cobertura || {}).tot || {}).lotes;
+    add("Idade dos dados publicados", dias <= 1 ? "ok" : dias <= 3 ? "atencao" : "problema", m ? `${m[3]}/${m[2]}` : "sem data",
+      (dias === 0 ? "Gerados hoje" : dias === 1 ? "Gerados ontem" : m ? `Gerados há ${dias} dias` : "meta.gerado vazio") + (t ? ` · ${Number(t).toLocaleString("pt-BR")} lotes` : "") + ".",
+      dias <= 1 ? "" : "A rotina das 20h não publicou: ver vitrine/diaria.log e a tarefa no Agendador."); }
+  { const {r} = claro, fora = r && r.status === 404;
+    add("Relatório em claro fora do ar", fora ? "ok" : r && r.ok ? "problema" : "atencao", r ? "HTTP " + r.status : "sem resposta",
+      fora ? "O /admin/saude.json não existe no site; só o cifrado." : r && r.ok ? "Qualquer pessoa lê as nossas fontes e falhas sem login." : "Esperado 404.",
+      fora ? "" : r && r.ok ? "Tirar admin/saude.json do site e publicar de novo." : "Conferir de novo daqui a pouco."); }
+  VIVO = {quando: new Date().toISOString(), itens: it}; return VIVO;
+}
+
+async function abreRelatorio(senha){   // erro = senha errada (o GCM não confere) ou arquivo faltando (e.falta)
+  const r = await fetch(semCache("/admin/saude.enc.json"), {cache: "no-store"});
+  if(!r.ok){ const e = new Error("falta"); e.falta = true; throw e; }
+  const env = await r.json(), b = Uint8Array.from(atob(env.b64), c => c.charCodeAt(0));
+  const base = await crypto.subtle.importKey("raw", new TextEncoder().encode(senha), "PBKDF2", false, ["deriveKey"]);
+  const k = await crypto.subtle.deriveKey({name: "PBKDF2", salt: b.slice(0, 16), iterations: env.voltas || 200000, hash: "SHA-256"}, base, {name: "AES-GCM", length: 256}, false, ["decrypt"]);
+  const claro = await crypto.subtle.decrypt({name: "AES-GCM", iv: b.slice(16, 28)}, k, b.slice(28));
+  return JSON.parse(new TextDecoder().decode(claro));
+}
+async function tentaSenhaGuardada(){
+  const s = lsLe(SD_CHAVE); if(!s) return;
+  try{ REL = await abreRelatorio(s); REL_ERRO = ""; REL_FALTA = false; }
+  catch(e){ if(e.falta){ REL_FALTA = true; return; } lsGrava(SD_CHAVE, null); REL_ERRO = "A senha guardada não abre mais o relatório (foi trocada?). Digite a nova."; }
+}
+function sdItens(){
+  const l = VIVO ? VIVO.itens.slice() : [];
+  if(VIVO && REL && REL.gerado){ const h = (Date.now() - new Date(REL.gerado)) / 36e5;
+    l.push({grupo: SD_VIVO, nome: "Relatório do agente", estado: h < 4 ? "ok" : h < 26 ? "atencao" : "problema", valor: quando(REL.gerado),
+      detalhe: "O agente confere de 3 em 3 h e na rotina das 20h.", sugestao: h < 4 ? "" : "Ver a tarefa 'BLR Vitrine saude 3h' no Agendador e o vitrine/saude.log."}); }
+  return l.concat(REL ? REL.itens || [] : []);
+}
+function badgeSaude(){ const n = $("#nSau"), p = sdItens().filter(i => i.estado === "problema").length; if(n){ n.hidden = !p; n.textContent = p; } }
+function carregaSaude(){   // no login: confere ao vivo e abre o relatório se a senha já está neste aparelho
+  VIVO_P = Promise.all([aoVivo(), tentaSenhaGuardada()]).then(() => { badgeSaude(); if(ABA === "saude") desenhaSaude(); });
+  return VIVO_P;
+}
+function telaSaude(){ desenhaSaude(); if(!VIVO_P) carregaSaude(); }
+function desenhaSaude(){
+  const ORD = {problema: 0, atencao: 1, ok: 2}, ROT = {ok: "saudável", atencao: "atenção", problema: "problema"};
+  const its = sdItens(), grupos = [], res = {ok: 0, atencao: 0, problema: 0};
+  its.forEach(i => { res[i.estado]++; let g = grupos.find(x => x.nome === i.grupo); if(!g){ g = {nome: i.grupo, itens: []}; grupos.push(g); } g.itens.push(i); });
+  const pior = g => g.nome === SD_VIVO ? -1 : Math.min(...g.itens.map(i => ORD[i.estado]));
+  grupos.sort((a, b) => pior(a) - pior(b));
+  const caixa = k => `<button class="num ${k}" type="button" data-sf="${k}" aria-pressed="${SFILTRO === k}"><b>${res[k] || 0}</b><span>${ROT[k]}</span></button>`;
+  const hora = s => new Date(s).toLocaleString("pt-BR", {dateStyle: "short", timeStyle: "short"});
+  const cab = (VIVO ? `Conferido agora pelo navegador (${esc(hora(VIVO.quando))})` : "Conferindo agora pelo navegador…")
+    + (REL ? `; relatório do agente de ${esc(hora(REL.gerado))} (${esc(quando(REL.gerado))})` : "") + ". Problema primeiro; clique num número para filtrar.";
+  const trava = REL ? "" : REL_FALTA ? `<div class="c sd-g"><h2>Relatório do agente</h2><p class="nota">Ainda não há relatório cifrado no site (admin/saude.enc.json). Ele sai na rotina das 20h e de 3 em 3 h.</p></div>`
+    : `<form class="c sd-g" id="fSau"><h2>Relatório completo do agente</h2><p class="sub">Fontes de leilão, rotina diária e qualidade dos dados vêm cifrados. Digite a senha do relatório uma vez; ela fica guardada neste aparelho.</p>
+      <div class="filtros"><input type="password" id="sSenha" autocomplete="off" placeholder="Senha do relatório" aria-label="Senha do relatório" required>
+      <button class="b pri" type="submit">Abrir</button></div><div class="erro" id="sErro">${esc(REL_ERRO)}</div></form>`;
+  const vivoVazio = VIVO ? "" : `<div class="c sd-g"><h2>${esc(SD_VIVO)}</h2><p class="vazio">Conferindo páginas, login e dados…</p></div>` + trava;
+  $("#corpo").innerHTML = `<p class="sub">${cab}</p>
+    <div class="sd-res">${caixa("problema")}${caixa("atencao")}${caixa("ok")}</div>
+    ${vivoVazio}
+    ${grupos.map(g => { const l = g.itens.filter(i => !SFILTRO || i.estado === SFILTRO).sort((a, b) => ORD[a.estado] - ORD[b.estado]);
+      const fecha = g.nome === SD_VIVO ? trava : ""; if(!l.length) return fecha;
+      const c = {ok: 0, atencao: 0, problema: 0}; g.itens.forEach(i => c[i.estado]++); const t = g.itens.length;
+      return `<div class="c sd-g"><h2>${esc(g.nome)}<span class="bar">${["problema", "atencao", "ok"].map(k => c[k] ? `<i style="width:${c[k] * 100 / t}%;background:var(--${k === "atencao" ? "warn" : k === "problema" ? "bad" : "ok"})"></i>` : "").join("")}</span><span class="cnt">${c.ok}/${t} ok</span></h2>
+        ${l.map(i => `<div class="sd-i"><span class="pt ${esc(i.estado)}" title="${esc(ROT[i.estado])}"></span><div class="nm">${esc(i.nome)}</div><div class="vl ${esc(i.estado)}">${esc(i.valor)}</div>
+          <div class="dt">${esc(i.detalhe)}${i.sugestao ? `<span class="sg">${esc(i.sugestao)}</span>` : ""}</div></div>`).join("")}</div>` + fecha; }).join("")}
+    <div class="filtros"><button class="b" type="button" id="btSau">↻ Conferir de novo</button>${REL ? `<button class="b" type="button" id="btEsq">Esquecer a senha neste aparelho</button>` : ""}</div>`;
+  document.querySelectorAll("[data-sf]").forEach(b => b.onclick = () => { SFILTRO = SFILTRO === b.dataset.sf ? "" : b.dataset.sf; desenhaSaude(); });
+  $("#btSau").onclick = () => { VIVO = null; REL = null; REL_ERRO = ""; REL_FALTA = false; desenhaSaude(); carregaSaude(); };
+  const be = $("#btEsq"); if(be) be.onclick = () => { lsGrava(SD_CHAVE, null); REL = null; badgeSaude(); desenhaSaude(); toast("Senha esquecida neste aparelho."); };
+  const f = $("#fSau"); if(f) f.onsubmit = async e => { e.preventDefault(); const s = $("#sSenha").value.trim(), bt = f.querySelector("button");
+    if(!s) return; bt.disabled = true; bt.textContent = "Abrindo…";
+    try{ REL = await abreRelatorio(s); REL_ERRO = ""; lsGrava(SD_CHAVE, s); badgeSaude(); desenhaSaude(); }
+    catch(er){ bt.disabled = false; bt.textContent = "Abrir"; if(er.falta){ REL_FALTA = true; desenhaSaude(); return; }
+      $("#sErro").textContent = "A senha não confere."; $("#sSenha").select(); } };
 }
 
 inicio();
