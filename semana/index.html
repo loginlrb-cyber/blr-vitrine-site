@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="index,follow">
+<meta name="theme-color" content="#0b0d11">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob: https:; connect-src 'self' https://api.blrdevelopment.com; object-src 'none'; base-uri 'self'; form-action 'self'">
+<title>This week's real auctions — BLR Developments</title>
+<meta name="description" content="The real property auctions happening in the U.S. over the next two weeks, read live from county notices. Data, not promises.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="BLR Developments">
+<meta property="og:title" content="This week's real auctions — BLR Developments">
+<meta property="og:description" content="Every U.S. property auction we track for the next 14 days, from official county notices. See the list, then decide for yourself.">
+<meta property="og:url" content="https://www.blrdevelopment.com/semana/">
+<meta property="og:image" content="https://www.blrdevelopment.com/icon-512.png">
+<meta property="og:locale" content="en_US"><meta property="og:locale:alternate" content="pt_BR">
+<meta name="twitter:card" content="summary">
+<link rel="icon" type="image/svg+xml" href="/blr-icon-small.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Sora:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* 25/11 (Cris): página de isca do Instagram @blrdevelopment. Inspirada no funil da Link Realty (form em 2 passos, call grátis,
+   para quem é/não é, FAQ), mas com dado real no lugar de promessa: a lista de leilões vem AO VIVO de /atual.json → DADOS.leiloes.
+   Nada de "até X% de desconto", nada de promessa de lucro, nada de sociedade (risco Reg D 506(b)). Tokens claro/escuro do admin. */
+:root{--bg:#0b0d11;--bg2:#12151b;--card:rgba(255,255,255,.05);--card2:rgba(255,255,255,.085);--ink:#f3f1ec;--mute:#a7abb3;--line:rgba(255,255,255,.12);
+  --gold:#e2b75e;--gold2:#f4d58d;--ok:#7fd6a4;--okbg:rgba(127,214,164,.12);--bad:#f28b82;--badbg:rgba(242,139,130,.12);--warn:#f0b36b;--warnbg:rgba(240,179,107,.12);
+  --sh:0 18px 50px rgba(0,0,0,.45);--r:18px}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]){--bg:#f4f1ea;--bg2:#ebe6da;--card:rgba(255,255,255,.8);--card2:#fff;--ink:#16181d;--mute:#5c6169;--line:rgba(20,20,30,.12);
+  --gold:#9a6f1c;--gold2:#b8892c;--ok:#1d7a4a;--okbg:#e5f4ec;--bad:#b3261e;--badbg:#fbe9e7;--warn:#9a5413;--warnbg:#fbefe1;--sh:0 14px 34px rgba(60,50,20,.12)}}
+:root[data-theme="light"]{--bg:#f4f1ea;--bg2:#ebe6da;--card:rgba(255,255,255,.8);--card2:#fff;--ink:#16181d;--mute:#5c6169;--line:rgba(20,20,30,.12);
+  --gold:#9a6f1c;--gold2:#b8892c;--ok:#1d7a4a;--okbg:#e5f4ec;--bad:#b3261e;--badbg:#fbe9e7;--warn:#9a5413;--warnbg:#fbefe1;--sh:0 14px 34px rgba(60,50,20,.12)}
+:root{color-scheme:dark}:root[data-theme="light"]{color-scheme:light}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]){color-scheme:light}}
+*,*::before,*::after{box-sizing:border-box}html,body{margin:0}[hidden]{display:none!important}
+body{background:var(--bg);color:var(--ink);font:15px/1.6 Sora,system-ui,sans-serif;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+a{color:inherit}.serif{font-family:Fraunces,Georgia,serif;font-weight:500;letter-spacing:-.01em}
+select option{background:var(--bg);color:var(--ink)}
+.top{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:14px clamp(14px,4vw,40px);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:10;background:var(--bg)}
+.marca{display:flex;align-items:center;gap:8px;text-decoration:none;font-weight:600;min-width:0}
+.marca img{width:26px;height:26px}.marca span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.acoes{display:flex;gap:8px;align-items:center;flex:0 0 auto}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.seg button{all:unset;cursor:pointer;padding:6px 10px;font-size:13px;font-weight:600;color:var(--mute)}
+.seg button[aria-pressed="true"]{background:var(--gold);color:#1a1408}
+.ic{all:unset;cursor:pointer;border:1px solid var(--line);border-radius:10px;padding:5px 9px;font-size:14px;line-height:1}
+.seg button:focus-visible,.ic:focus-visible,.bt:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+main{max-width:1080px;margin:0 auto;padding:0 clamp(14px,4vw,40px) 40px}
+section{padding:34px 0 6px}
+h1{font-size:clamp(30px,5.4vw,52px);line-height:1.08;margin:8px 0 10px}
+h2{font-size:clamp(22px,3.4vw,30px);line-height:1.15;margin:0 0 12px}
+h3{font-size:17px;margin:0 0 6px}
+.kick{display:inline-block;font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--gold)}
+.sub{color:var(--mute);max-width:660px;margin:0 0 18px;font-size:16px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:18px;box-shadow:var(--sh);min-width:0}
+.hero{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,.85fr);gap:22px;align-items:start}
+@media (max-width:860px){.hero{grid-template-columns:minmax(0,1fr)}}
+.nums{display:flex;flex-wrap:wrap;gap:10px;margin:6px 0 14px}
+.num{flex:1 1 120px;background:var(--card2);border:1px solid var(--line);border-radius:14px;padding:10px 12px;min-width:0}
+.num b{display:block;font-size:26px;font-family:Fraunces,Georgia,serif;font-weight:600;line-height:1.1}
+.num span{font-size:12.5px;color:var(--mute)}
+.ufs{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 14px}
+.uf{font-size:12.5px;border:1px solid var(--line);border-radius:99px;padding:3px 9px;background:var(--card2)}
+.uf b{color:var(--gold)}
+.lei{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+.lei li{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:4px 12px;align-items:center;padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:var(--card2)}
+.lei .dt{font-weight:700;font-size:13px;white-space:nowrap}
+.lei .nm{min-width:0}.lei .nm b{display:block;overflow-wrap:anywhere}.lei .nm small{color:var(--mute);font-size:12.5px}
+.lei a{font-size:13px;font-weight:600;color:var(--gold);white-space:nowrap}
+.lei .sl{font-size:12px;color:var(--mute);white-space:nowrap}
+@media (max-width:480px){.lei li{grid-template-columns:minmax(0,1fr) auto}.lei .dt{grid-column:1/-1}}
+.trava{position:relative;margin-top:8px}
+.trava .fake{filter:blur(5px);opacity:.55;pointer-events:none;user-select:none}
+.trava .msg{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:8px;padding:10px}
+.trava .msg b{font-size:16px}
+.bt{all:unset;box-sizing:border-box;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:12px 16px;border-radius:12px;border:1px solid var(--line);background:var(--card2);font-weight:600;font-size:15px;text-align:center}
+.bt:hover{border-color:var(--gold)}.bt.pri{background:var(--gold);color:#1a1408;border-color:var(--gold)}
+.bt.lg{width:100%}
+.bt[disabled]{opacity:.6;cursor:wait}
+form .passo{display:flex;flex-direction:column;gap:12px}
+label{display:flex;flex-direction:column;gap:5px;font-size:13px;color:var(--mute);min-width:0}
+input,select{font:inherit;font-size:16px;color:var(--ink);background:var(--card2);border:1px solid var(--line);border-radius:10px;padding:10px 12px;min-width:0;width:100%}
+input[type=checkbox],input[type=radio]{width:18px;height:18px;flex:0 0 auto;margin:2px 0 0;accent-color:var(--gold)}
+.tel{display:grid;grid-template-columns:minmax(0,112px) minmax(0,1fr);gap:8px}
+.ops{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.op{flex-direction:row;align-items:center;gap:8px;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--card2);color:var(--ink);font-size:14px;cursor:pointer}
+.op:has(input:checked){border-color:var(--gold)}
+.chk{flex-direction:row;align-items:flex-start;gap:10px;color:var(--ink);font-size:13.5px;line-height:1.45}
+.chk small{display:block;color:var(--mute);font-size:12px;margin-top:2px}
+fieldset{border:0;margin:0;padding:0;min-width:0}legend{font-size:13px;color:var(--mute);margin-bottom:6px;padding:0}
+.passos{display:flex;gap:6px;margin-bottom:10px}.passos i{flex:1;height:4px;border-radius:99px;background:var(--card2)}.passos i.on{background:var(--gold)}
+.erro{color:var(--bad);font-size:13px;min-height:1em;margin:0}
+.nota{color:var(--mute);font-size:12.5px}
+.lin{display:flex;gap:8px}.lin .bt{flex:1}
+.ok-box{border-color:var(--ok);background:linear-gradient(180deg,var(--okbg),var(--card) 60%)}
+.aviso-box{border-color:var(--warn);background:linear-gradient(180deg,var(--warnbg),var(--card) 60%)}
+.grade3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.grade2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+@media (max-width:760px){.grade3,.grade2{grid-template-columns:minmax(0,1fr)}}
+.card p{margin:0;color:var(--mute);font-size:14px}
+.comp{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px}
+.comp div{padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:var(--card2);font-size:13.5px}
+.comp b{display:block}.comp small{color:var(--mute)}
+.comp .pg{display:grid;grid-template-columns:auto 1fr;gap:1px 8px;margin-top:6px;font-size:12.5px;font-variant-numeric:tabular-nums}.comp .pg span:nth-child(even){text-align:right}.comp .pg b{display:inline}
+.sim li,.nao li{margin:6px 0}.sim,.nao{padding-left:20px;margin:6px 0 0;font-size:14px}
+.sim li::marker{content:"✓  ";color:var(--ok)}.nao li::marker{content:"✕  ";color:var(--bad)}
+details{border-bottom:1px solid var(--line);padding:12px 0}
+summary{cursor:pointer;font-weight:600;list-style:none;display:flex;justify-content:space-between;gap:10px}
+summary::-webkit-details-marker{display:none}summary::after{content:"+";color:var(--gold);font-weight:700}
+details[open] summary::after{content:"–"}
+details p{margin:8px 0 0;color:var(--mute);font-size:14px}
+.full .grupo{margin-top:6px}
+.full .grupo summary{font-size:15px}
+.filtro{display:flex;flex-wrap:wrap;gap:8px;align-items:end;margin:6px 0 10px}.filtro label{flex:1 1 180px}
+footer{border-top:1px solid var(--line);margin-top:34px;padding:22px clamp(14px,4vw,40px) 40px;color:var(--mute);font-size:12.5px}
+footer .disc{max-width:1080px;margin:0 auto;display:flex;flex-direction:column;gap:8px}
+footer b{color:var(--ink)}
+.carrega{color:var(--mute);font-size:14px;padding:12px 0}
+</style>
+</head>
+<body>
+<header class="top">
+  <a class="marca" href="/"><img src="/blr-icon-small.svg" alt=""><span>BLR <span class="serif">Developments</span></span></a>
+  <div class="acoes">
+    <div class="seg" role="group" aria-label="Language"><button type="button" data-lang="en" aria-pressed="true">EN</button><button type="button" data-lang="pt" aria-pressed="false">PT</button></div>
+    <button type="button" class="ic" id="btTema" data-it="tema" aria-label="Theme">◐</button>
+  </div>
+</header>
+<main>
+  <!-- HERO: lista ao vivo -->
+  <section class="hero" id="topo">
+    <div>
+      <span class="kick" data-i="kick"></span>
+      <h1 class="serif" data-i="h1"></h1>
+      <p class="sub" data-i="sub"></p>
+      <div class="card" id="vivo">
+        <div class="nums">
+          <div class="num"><b id="n14">–</b><span data-i="n14"></span></div>
+          <div class="num"><b id="n7">–</b><span data-i="n7"></span></div>
+          <div class="num"><b id="nUf">–</b><span data-i="nUf"></span></div>
+        </div>
+        <div class="ufs" id="ufs"></div>
+        <p class="carrega" id="carrega" data-i="carregando"></p>
+        <ul class="lei" id="top3"></ul>
+        <div class="trava" id="trava" hidden>
+          <ul class="lei fake" aria-hidden="true" id="fake"></ul>
+          <div class="msg"><b id="maisN"></b><span class="nota" data-i="travaTxt"></span><a class="bt pri" href="#form" data-i="travaBt"></a></div>
+        </div>
+        <p class="nota" id="fonte"></p>
+      </div>
+    </div>
+    <!-- FORMULÁRIO 2 PASSOS -->
+    <div class="card" id="form">
+      <form id="fLead" novalidate>
+        <div class="passos" aria-hidden="true"><i class="on" id="p1i"></i><i id="p2i"></i></div>
+        <div class="passo" id="passo1">
+          <h2 class="serif" data-i="fTit"></h2>
+          <p class="nota" data-i="fSub"></p>
+          <label><span data-i="fNome"></span><input name="nome" autocomplete="name" required maxlength="120"></label>
+          <label><span data-i="fEmail"></span><input name="email" type="email" autocomplete="email" required maxlength="160"></label>
+          <label><span data-i="fTel"></span>
+            <span class="tel"><select name="ddi" aria-label="Country code" id="ddi"></select><input name="tel" type="tel" autocomplete="tel-national" inputmode="tel" required maxlength="24" data-ip="fTelPh"></span></label>
+          <p class="erro" id="erro1" role="alert"></p>
+          <button class="bt pri lg" type="button" id="btProx" data-i="fProx"></button>
+        </div>
+        <div class="passo" id="passo2" hidden>
+          <h2 class="serif" data-i="f2Tit"></h2>
+          <fieldset><legend data-i="fObj"></legend>
+            <div class="ops">
+              <label class="op"><input type="radio" name="objetivo" value="flip" required><span data-i="oFlip"></span></label>
+              <label class="op"><input type="radio" name="objetivo" value="rental"><span data-i="oRent"></span></label>
+              <label class="op"><input type="radio" name="objetivo" value="land"><span data-i="oLand"></span></label>
+              <label class="op"><input type="radio" name="objetivo" value="learning"><span data-i="oLearn"></span></label>
+            </div></fieldset>
+          <label><span data-i="fCap"></span><select name="capital" required id="selCap"></select></label>
+          <label><span data-i="fUf"></span><select name="estado" id="selUf"></select></label>
+          <label class="chk"><input type="checkbox" name="aceite_email" required><span><span data-i="cEmail"></span><small data-i="cEmailS"></small></span></label>
+          <label class="chk"><input type="checkbox" name="aceite_sms"><span><span data-i="cSms"></span><small data-i="cSmsS"></small></span></label>
+          <p class="nota" data-ih="cTermos"></p>
+          <p class="erro" id="erro2" role="alert"></p>
+          <div class="lin"><button class="bt" type="button" id="btVolta" data-i="fVolta"></button><button class="bt pri" type="submit" id="btEnvia" data-i="fEnvia"></button></div>
+        </div>
+      </form>
+      <div id="pronto" hidden>
+        <h2 class="serif" data-i="okTit"></h2>
+        <p class="nota" id="okTxt"></p>
+        <div id="falhou" class="card aviso-box" hidden style="margin:10px 0;box-shadow:none"><p data-i="falhou"></p>
+          <div class="lin" style="margin-top:10px"><a class="bt" id="waFalha" target="_blank" rel="noopener">WhatsApp</a><a class="bt" id="mailFalha">E-mail</a></div></div>
+        <a class="bt pri lg" id="btCall" target="_blank" rel="noopener" style="margin-top:12px" data-i="call"></a>
+        <p class="nota" style="margin-top:8px" id="callAlt"></p>
+        <a class="bt lg" href="#lista" style="margin-top:8px" data-i="verLista"></a>
+      </div>
+    </div>
+  </section>
+
+  <!-- LISTA COMPLETA (depois do formulário) -->
+  <section id="lista" hidden>
+    <span class="kick" data-i="kLista"></span>
+    <h2 class="serif" data-i="hLista"></h2>
+    <p class="sub" data-i="subLista"></p>
+    <div class="filtro"><label><span data-i="filUf"></span><select id="filUf"></select></label>
+      <a class="bt" href="/" data-i="abreMapa"></a></div>
+    <div class="full" id="full"></div>
+  </section>
+
+  <!-- PROVA REAL -->
+  <section id="prova">
+    <span class="kick" data-i="kProva"></span>
+    <h2 class="serif" data-i="hProva"></h2>
+    <p class="sub" data-i="subProva"></p>
+    <div class="nums" id="cob">
+      <div class="num"><b id="cLotes">–</b><span data-i="cLotes"></span></div>
+      <div class="num"><b id="cCond">–</b><span data-i="cCond"></span></div>
+      <div class="num"><b id="cUf">–</b><span data-i="cUf"></span></div>
+    </div>
+    <div class="card"><h3 data-i="hComp"></h3><p style="margin-bottom:12px" data-i="subComp"></p><div class="comp" id="comp"></div><p style="margin:12px 0 4px;font-weight:600" id="compSoma"></p><p style="margin:0;color:var(--mute);font-size:12.5px" data-i="compNota"></p></div>
+  </section>
+
+  <section id="como">
+    <span class="kick" data-i="kComo"></span>
+    <h2 class="serif" data-i="hComo"></h2>
+    <div class="grade3">
+      <div class="card"><h3 data-i="a1t"></h3><p data-i="a1p"></p></div>
+      <div class="card"><h3 data-i="a2t"></h3><p data-i="a2p"></p></div>
+      <div class="card"><h3 data-i="a3t"></h3><p data-i="a3p"></p></div>
+    </div>
+  </section>
+
+  <section id="paraquem">
+    <h2 class="serif" data-i="hQuem"></h2>
+    <div class="grade2">
+      <div class="card"><h3 data-i="simT"></h3><ul class="sim"><li data-i="sim1"></li><li data-i="sim2"></li><li data-i="sim3"></li><li data-i="sim4"></li></ul></div>
+      <div class="card"><h3 data-i="naoT"></h3><ul class="nao"><li data-i="nao1"></li><li data-i="nao2"></li><li data-i="nao3"></li><li data-i="nao4"></li></ul></div>
+    </div>
+  </section>
+
+  <section id="faq">
+    <h2 class="serif" data-i="hFaq"></h2>
+    <details><summary data-i="q1"></summary><p data-i="r1"></p></details>
+    <details><summary data-i="q2"></summary><p data-i="r2"></p></details>
+    <details><summary data-i="q3"></summary><p data-i="r3"></p></details>
+    <details><summary data-i="q4"></summary><p data-i="r4"></p></details>
+    <details><summary data-i="q5"></summary><p data-i="r5"></p></details>
+    <p style="margin-top:20px"><a class="bt pri" href="#form" data-i="ctaFim"></a></p>
+  </section>
+</main>
+<footer><div class="disc">
+  <p><b data-i="discT"></b> <span data-i="disc"></span></p>
+  <p data-ih="rodape"></p>
+</div></footer>
+
+<script>
+"use strict";
+/* ---------- textos: um dicionário só {en, pt}; checaI18n() acusa chave faltando ---------- */
+const I = {
+en: {
+  tema: "Switch light/dark theme",
+  kick: "Live from county notices", h1: "This week's real auctions",
+  sub: "Every U.S. property auction we track for the next 14 days, read live from official county notices. No promises — just the list, so you can judge for yourself.",
+  n14: "auctions in the next 14 days", n7: "in the next 7 days", nUf: "states",
+  carregando: "Loading this week's auctions…", erroDados: "Could not load the auction list right now. Please reload the page.",
+  semLeilao: "No auctions in our list for the next 14 days. Check back soon.",
+  oficial: "Official notice", travaTxt: "Unlock the full list + our analysis (free).", travaBt: "Unlock the full list",
+  maisN: "+ {n} more auctions", fonte: "Source: official county notices and public records. Data updated {d}.",
+  online: "Online", presencial: "In person", verEdital: "See notice",
+  fTit: "Get the full list", fSub: "Free. Step 1 of 2.", fNome: "Full name", fEmail: "Email", fTel: "Phone", fTelPh: "Phone number",
+  fProx: "Continue", f2Tit: "A bit about your goal", fObj: "What's your goal?",
+  oFlip: "Flip (buy, fix, sell)", oRent: "Rental income", oLand: "Land", oLearn: "Just learning",
+  fCap: "Capital available (your own cash)", fUf: "State of interest", qualquer: "Any state", escolha: "Choose…",
+  cap0: "Under $10k", cap1: "$10k – $25k", cap2: "$25k – $50k", cap3: "$50k – $100k", cap4: "$100k+",
+  cEmail: "Email me the full list and BLR updates.", cEmailS: "Required to send the list. Unsubscribe anytime.",
+  cSms: "I agree to receive SMS/WhatsApp messages from BLR Developments at the number above.",
+  cSmsS: "Optional. Msg & data rates may apply. Reply STOP to opt out. Not a condition of anything.",
+  cTermos: 'By submitting you agree to our <a href="/terms/">Terms</a> and <a href="/privacy/">Privacy Policy</a>.',
+  fVolta: "Back", fEnvia: "Unlock the list", enviando: "Sending…",
+  e_nome: "Please enter your name.", e_email: "Please enter a valid email.", e_tel: "Please enter a valid phone number.",
+  e_obj: "Please choose a goal.", e_cap: "Please choose a capital range.", e_aceite: "Please check the email consent to receive the list.",
+  okTit: "You're in. Here's the full list.", okTxt: "Thanks, {nome}. The full list is below, and we'll email a copy to {email}.",
+  falhou: "Our server didn't answer right now, so your request wasn't saved. The list is unlocked anyway — send us a quick message so we have your contact:",
+  call: "Book a free 30-min call", callAlt: "Opens WhatsApp. Prefer email? {email}",
+  callMsg: "Hi BLR, I'd like to book a free 30-min call about this week's auctions.",
+  verLista: "See the full list", kLista: "Full list", hLista: "All auctions in the next 14 days",
+  subLista: "Grouped by state. Open our map for the analysis of each county: bid ceiling, ARV and liens that survive the sale.",
+  filUf: "Filter by state", todos: "All states", abreMapa: "Open the BLR map", nLei: "{n} auctions", gravSobre: "Some liens may survive — read the notice",
+  kProva: "Real data", hProva: "What we actually do", subProva: "No screenshots of returns. These are the counts behind our map today, and the properties BLR has bought itself.",
+  cLotes: "properties tracked", cCond: "counties", cUf: "states & territories",
+  hComp: "Properties BLR has bought", subComp: "What we actually paid, from the official county receipts: winning bid plus every fee to get the deed.",
+  compLance: "Bid", compTaxas: "Fees", compTotal: "Total paid", compSoma: "{n} properties · {t} paid in total ({l} in bids + {x} in fees)",
+  compNota: "Fees: deed recording, deed preparation, realty transfer tax and the county demolition fund (Clearfield); closing costs (Venango). Repairs, insurance and travel not included.",
+  comprado: "Bought", vendido: "Sold", semComp: "List unavailable right now.",
+  kComo: "How we analyze", hComo: "Three numbers before any bid",
+  a1t: "Bid ceiling", a1p: "The most a property can cost at auction and still make sense after repairs, closing, holding costs and a safety margin. Above it, we walk away.",
+  a2t: "ARV (after-repair value)", a2p: "What the property should sell for once fixed, from real recorded sales nearby — not automated estimates. Every comp is listed so you can check it.",
+  a3t: "Liens that survive", a3p: "Some debts are wiped out by the sale, others are not (government liens, IRS redemption rights). We flag what the notice and public records show.",
+  hQuem: "Who this is for — and who it's not for",
+  simT: "This is for you if", sim1: "You have your own capital, starting around $10,000.", sim2: "You understand tax deed and sheriff sales are usually paid in cash, within days.",
+  sim3: "You accept the risk: properties are sold as-is, often without an interior inspection.", sim4: "You want to decide with real data, not hype.",
+  naoT: "This is not for you if", nao1: "You need a mortgage or financing to buy.", nao2: "You need a home to move into right away.",
+  nao3: "You're looking for a guaranteed return.", nao4: "You can't afford to lose part of the money invested.",
+  hFaq: "Questions",
+  q1: "What exactly is on this list?", r1: "Tax deed, sheriff, foreclosure and similar public auctions scheduled in the next 14 days, taken from official county notices. It updates daily.",
+  q2: "Is it really free?", r2: "Yes. The list is free. BLR also has a paid map with deeper analysis per property, but you don't need it to see this list.",
+  q3: "How much money do I need?", r3: "Most auctions require full payment in cash shortly after the sale, plus fees, taxes and repairs. Starting around $10,000 of your own capital is realistic for land and small properties; houses usually need more.",
+  q4: "Do you guarantee any return?", r4: "No. Auctions carry real risk and results vary. We show data and our analysis; you decide and you bid on your own.",
+  q5: "Can I buy if I live outside the U.S.?", r5: "Many online auctions accept non-U.S. bidders, but rules vary by county. Check the auction terms and talk to a U.S. tax professional before bidding.",
+  ctaFim: "Get this week's full list",
+  discT: "Important:", disc: "Not investment advice; results vary; auctions carry risk; no guarantee of return. BLR Developments provides public data and its own analysis for information only.",
+  rodape: '© BLR Developments · <a href="/privacy/">Privacy</a> · <a href="/terms/">Terms</a>'
+},
+pt: {
+  tema: "Alternar tema claro/escuro",
+  kick: "Ao vivo, dos editais dos condados", h1: "Os leilões reais desta semana",
+  sub: "Todos os leilões de imóveis nos EUA que acompanhamos nos próximos 14 dias, lidos ao vivo dos editais oficiais dos condados. Sem promessa: só a lista, para você julgar.",
+  n14: "leilões nos próximos 14 dias", n7: "nos próximos 7 dias", nUf: "estados",
+  carregando: "Carregando os leilões da semana…", erroDados: "Não foi possível carregar a lista de leilões agora. Recarregue a página.",
+  semLeilao: "Nenhum leilão na nossa lista para os próximos 14 dias. Volte em breve.",
+  oficial: "Edital oficial", travaTxt: "Libere a lista completa + a nossa análise (grátis).", travaBt: "Liberar a lista completa",
+  maisN: "+ {n} leilões", fonte: "Fonte: editais oficiais dos condados e registros públicos. Dados de {d}.",
+  online: "Online", presencial: "Presencial", verEdital: "Ver edital",
+  fTit: "Receba a lista completa", fSub: "Grátis. Passo 1 de 2.", fNome: "Nome completo", fEmail: "E-mail", fTel: "Telefone", fTelPh: "Número de telefone",
+  fProx: "Continuar", f2Tit: "Um pouco sobre o seu objetivo", fObj: "Qual é o seu objetivo?",
+  oFlip: "Flip (comprar, reformar, vender)", oRent: "Renda de aluguel", oLand: "Terreno", oLearn: "Só aprendendo",
+  fCap: "Capital disponível (dinheiro próprio)", fUf: "Estado de interesse", qualquer: "Qualquer estado", escolha: "Escolha…",
+  cap0: "Menos de US$ 10 mil", cap1: "US$ 10 mil – 25 mil", cap2: "US$ 25 mil – 50 mil", cap3: "US$ 50 mil – 100 mil", cap4: "Mais de US$ 100 mil",
+  cEmail: "Quero receber a lista completa e novidades da BLR por e-mail.", cEmailS: "Necessário para mandar a lista. Cancele quando quiser.",
+  cSms: "Aceito receber mensagens por SMS/WhatsApp da BLR Developments no número acima.",
+  cSmsS: "Opcional. Podem incidir tarifas da operadora. Responda SAIR para cancelar. Não é condição para nada.",
+  cTermos: 'Ao enviar, você aceita os <a href="/termos/">Termos</a> e a <a href="/privacy/">Política de Privacidade</a>.',
+  fVolta: "Voltar", fEnvia: "Liberar a lista", enviando: "Enviando…",
+  e_nome: "Informe o seu nome.", e_email: "Informe um e-mail válido.", e_tel: "Informe um telefone válido.",
+  e_obj: "Escolha um objetivo.", e_cap: "Escolha uma faixa de capital.", e_aceite: "Marque o aceite de e-mail para receber a lista.",
+  okTit: "Pronto. Aqui está a lista completa.", okTxt: "Obrigado, {nome}. A lista completa está abaixo, e mandamos uma cópia para {email}.",
+  falhou: "O nosso servidor não respondeu agora e o seu pedido não ficou gravado. A lista está liberada mesmo assim — mande uma mensagem rápida para termos o seu contato:",
+  call: "Agendar conversa grátis de 30 min", callAlt: "Abre o WhatsApp. Prefere e-mail? {email}",
+  callMsg: "Olá, BLR. Quero agendar a conversa grátis de 30 min sobre os leilões da semana.",
+  verLista: "Ver a lista completa", kLista: "Lista completa", hLista: "Todos os leilões dos próximos 14 dias",
+  subLista: "Agrupados por estado. Abra o nosso mapa para a análise de cada condado: teto de lance, ARV e ônus que sobrevivem ao leilão.",
+  filUf: "Filtrar por estado", todos: "Todos os estados", abreMapa: "Abrir o mapa da BLR", nLei: "{n} leilões", gravSobre: "Alguns ônus podem sobreviver — leia o edital",
+  kProva: "Dado real", hProva: "O que a gente faz de verdade", subProva: "Nada de print de retorno. Estas são as contagens por trás do nosso mapa hoje e os imóveis que a própria BLR comprou.",
+  cLotes: "imóveis acompanhados", cCond: "condados", cUf: "estados e territórios",
+  hComp: "Imóveis que a BLR comprou", subComp: "Quanto pagamos de verdade, pelo recibo oficial do condado: o lance mais todas as taxas até a escritura.",
+  compLance: "Lance", compTaxas: "Taxas", compTotal: "Total pago", compSoma: "{n} imóveis · {t} pagos no total ({l} em lances + {x} em taxas)",
+  compNota: "Taxas: registro e preparo da escritura, imposto de transferência e fundo de demolição do condado (Clearfield); custos de fechamento (Venango). Obra, seguro e viagens não estão incluídos.",
+  comprado: "Comprado", vendido: "Vendido", semComp: "Lista indisponível agora.",
+  kComo: "Como analisamos", hComo: "Três números antes de qualquer lance",
+  a1t: "Teto de lance", a1p: "O máximo que o imóvel pode custar no leilão e ainda fazer sentido depois de reforma, escritura, custo de carregamento e margem de segurança. Acima disso, a gente não entra.",
+  a2t: "ARV (valor depois da reforma)", a2p: "Por quanto o imóvel deve vender depois de reformado, a partir de vendas reais registradas por perto — não de estimativa automática. Cada comparável aparece para você conferir.",
+  a3t: "Ônus que sobrevivem", a3p: "Algumas dívidas caem com o leilão, outras não (lien de governo, direito de resgate do IRS). Mostramos o que o edital e os registros públicos indicam.",
+  hQuem: "Para quem é — e para quem não é",
+  simT: "É para você se", sim1: "Você tem capital próprio, a partir de cerca de US$ 10 mil.", sim2: "Você entende que tax deed e sheriff sale costumam ser pagos à vista, em poucos dias.",
+  sim3: "Você aceita o risco: o imóvel é vendido no estado em que está, muitas vezes sem vistoria por dentro.", sim4: "Você quer decidir com dado real, não com promessa.",
+  naoT: "Não é para você se", nao1: "Você precisa de financiamento para comprar.", nao2: "Você precisa de uma casa para morar já.",
+  nao3: "Você procura retorno garantido.", nao4: "Você não pode perder parte do dinheiro investido.",
+  hFaq: "Perguntas",
+  q1: "O que exatamente está nesta lista?", r1: "Leilões públicos de tax deed, xerife, execução e parecidos marcados para os próximos 14 dias, tirados dos editais oficiais dos condados. Atualiza todo dia.",
+  q2: "É grátis mesmo?", r2: "Sim. A lista é grátis. A BLR também tem um mapa pago com análise mais funda por imóvel, mas você não precisa dele para ver esta lista.",
+  q3: "Quanto dinheiro eu preciso?", r3: "A maioria dos leilões exige pagamento à vista pouco depois da venda, mais taxas, impostos e reforma. A partir de cerca de US$ 10 mil de capital próprio é realista para terrenos e imóveis pequenos; casas costumam pedir mais.",
+  q4: "Vocês garantem algum retorno?", r4: "Não. Leilão tem risco real e os resultados variam. Mostramos dados e a nossa análise; quem decide e dá o lance é você.",
+  q5: "Posso comprar morando fora dos EUA?", r5: "Muitos leilões online aceitam quem não mora nos EUA, mas as regras mudam de condado para condado. Leia as regras do leilão e fale com um contador nos EUA antes de dar lance.",
+  ctaFim: "Receber a lista completa da semana",
+  discT: "Importante:", disc: "Não é recomendação de investimento; os resultados variam; leilões têm risco; não há garantia de retorno. A BLR Developments oferece dados públicos e análise própria só para informação.",
+  rodape: '© BLR Developments · <a href="/privacy/">Privacidade</a> · <a href="/termos/">Termos</a>'
+}};
+const UF_EN = {AL:"Alabama",AK:"Alaska",AZ:"Arizona",AR:"Arkansas",CA:"California",CO:"Colorado",CT:"Connecticut",DE:"Delaware",DC:"District of Columbia",
+  FL:"Florida",GA:"Georgia",HI:"Hawaii",ID:"Idaho",IL:"Illinois",IN:"Indiana",IA:"Iowa",KS:"Kansas",KY:"Kentucky",LA:"Louisiana",ME:"Maine",MD:"Maryland",
+  MA:"Massachusetts",MI:"Michigan",MN:"Minnesota",MS:"Mississippi",MO:"Missouri",MT:"Montana",NE:"Nebraska",NV:"Nevada",NH:"New Hampshire",NJ:"New Jersey",
+  NM:"New Mexico",NY:"New York",NC:"North Carolina",ND:"North Dakota",OH:"Ohio",OK:"Oklahoma",OR:"Oregon",PA:"Pennsylvania",RI:"Rhode Island",SC:"South Carolina",
+  SD:"South Dakota",TN:"Tennessee",TX:"Texas",UT:"Utah",VT:"Vermont",VA:"Virginia",WA:"Washington",WV:"West Virginia",WI:"Wisconsin",WY:"Wyoming",PR:"Puerto Rico",GU:"Guam",VI:"U.S. Virgin Islands"};
+// tipos de leilão (DADOS.leiloes[].t): os que vêm em português ganham tradução; o resto já é o nome em inglês
+const TIPO = {en: {"Tesouro dos EUA": "U.S. Treasury", "Distraint (Mobile Home Sem Terreno)": "Distraint (mobile home, no land)"},
+              pt: {"Tesouro dos EUA": "Tesouro dos EUA", "Distraint (Mobile Home Sem Terreno)": "Distraint (mobile home sem terreno)", "Foreclosure": "Execução (foreclosure)"}};
+const DDI = [["+1","US/CA"],["+55","BR"],["+351","PT"],["+44","UK"],["+34","ES"],["+52","MX"],["+57","CO"],["+54","AR"],["+56","CL"],["+598","UY"],["+595","PY"],
+  ["+51","PE"],["+49","DE"],["+33","FR"],["+39","IT"],["+41","CH"],["+971","AE"],["+972","IL"],["+81","JP"],["+61","AU"],["+244","AO"]];
+// contato que o site usa hoje (vitrine/contato.json, embutido na Vitrine clássica como CONTATO; o para-voce usa o mesmo WhatsApp)
+const CONTATO = {email: "hello@blrdevelopment.com", whats: "+1 857 869-0935"};   // Cris 25/11: contato da página = hello@ + número dos EUA
+const API = "https://api.blrdevelopment.com";
+
+let LANG = "en";
+function checaI18n(){
+  const falta = [];
+  for (const a of ["en", "pt"]) for (const b of ["en", "pt"]) if (a !== b) for (const k in I[a]) if (!(k in I[b])) falta.push(b + "." + k);
+  document.querySelectorAll("[data-i],[data-ih],[data-ip],[data-it]").forEach(e => {
+    const k = e.dataset.i || e.dataset.ih || e.dataset.ip || e.dataset.it;
+    for (const l of ["en", "pt"]) if (!(k in I[l])) falta.push(l + "." + k);
+  });
+  window.__i18nFaltando = [...new Set(falta)];
+  if (window.__i18nFaltando.length) console.error("i18n: chave faltando:", window.__i18nFaltando.join(", "));
+}
+const T = (k, v) => { let s = (I[LANG] && I[LANG][k]); if (s == null) { console.error("i18n: chave faltando:", LANG + "." + k); s = I.en[k] != null ? I.en[k] : k; }
+  return v ? s.replace(/\{(\w+)\}/g, (_, x) => v[x] != null ? v[x] : "") : s; };
+const $ = s => document.querySelector(s);
+const esc = s => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const nf = n => Number(n).toLocaleString(LANG === "pt" ? "pt-BR" : "en-US");
+const guarda = (k, v) => { try { localStorage.setItem(k, typeof v === "string" ? v : JSON.stringify(v)); } catch (e) {} };
+const le = k => { try { return localStorage.getItem(k); } catch (e) { return null; } };
+
+function aplicaLang(l){
+  LANG = l === "pt" ? "pt" : "en"; guarda("blr_semana_lang", LANG);
+  document.documentElement.lang = LANG === "pt" ? "pt-BR" : "en";
+  document.querySelectorAll("[data-lang]").forEach(b => b.setAttribute("aria-pressed", b.dataset.lang === LANG));
+  document.querySelectorAll("[data-i]").forEach(e => { e.textContent = T(e.dataset.i); });
+  document.querySelectorAll("[data-ih]").forEach(e => { e.innerHTML = T(e.dataset.ih); });   // só texto do próprio dicionário
+  document.querySelectorAll("[data-ip]").forEach(e => { e.placeholder = T(e.dataset.ip); });
+  document.querySelectorAll("[data-it]").forEach(e => { e.title = T(e.dataset.it); e.setAttribute("aria-label", T(e.dataset.it)); });
+  montaSelects(); desenha();
+}
+
+/* ---------- tema ---------- */
+(function(){ const t = le("blr_semana_tema"); if (t === "light" || t === "dark") document.documentElement.setAttribute("data-theme", t); })();
+$("#btTema").addEventListener("click", () => {
+  const atual = document.documentElement.getAttribute("data-theme") || (matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark");
+  const novo = atual === "light" ? "dark" : "light"; document.documentElement.setAttribute("data-theme", novo); guarda("blr_semana_tema", novo);
+});
+
+/* ---------- origem (UTM): mesma regra e mesma chave do site (blr_origem, 1º acesso) ---------- */
+const UTM = {};
+try { const q = new URLSearchParams(location.search);
+  ["utm_source","utm_medium","utm_campaign","utm_content","utm_term"].forEach(k => { if (q.get(k)) UTM[k] = q.get(k).slice(0, 80); });
+  if (Object.keys(UTM).length && !le("blr_origem")) guarda("blr_origem", {...UTM, em: new Date().toISOString(), pagina: location.pathname});
+} catch (e) {}
+const origemAcesso = () => { try { return JSON.parse(le("blr_origem") || "null"); } catch (e) { return null; } };
+
+/* recibos oficiais (id público do comprado → [lance, total pago com taxas]); Clearfield: recibo 2026142736; Venango: carta de 28/09 */
+const PAGO = {"bl-c1873c4f": [4514.24, 6210.69], "bl-9b18d8c4": [4646.71, 5905.52], "bl-5d488f99": [2500.00, 3685.87], "bl-56902d7d": [4983.09, 7059.88],
+  "bl-ae3728d6": [2275.53, 3424.94], "bl-3b3003cc": [3500.00, 4560.83], "bl-8843260b": [4472.84, 6190.13], "bl-78fe7829": [9942.64, 11717.25],
+  "bl-27d4ec20": [4626.13, 5838.06], "bl-400a27ab": [6750.00, 8785.11], "bl-e5d069a1": [1000.00, 1214.25]};
+/* ---------- dados ao vivo: /atual.json → DADOS → leiloes / cobertura / comprados ---------- */
+let LEI = [], DADOS = null, ERRO = false, LIBERADO = false;
+const ymd = d => d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
+const soma = (s, n) => { const [y, m, d] = s.split("-").map(Number); return ymd(new Date(y, m - 1, d + n)); };
+function dataFmt(s){ const [y, m, d] = s.split("-").map(Number);
+  return new Date(y, m - 1, d).toLocaleDateString(LANG === "pt" ? "pt-BR" : "en-US", {weekday: "short", month: "short", day: "numeric"}); }
+const linkOk = u => /^https?:\/\//i.test(u || "") ? u : "";
+function modo(on){ const s = String(on || "").toLowerCase();
+  if (/presencial|courthouse|porta do f/.test(s)) return T("presencial");
+  if (/online|virtual|\.com|\.org|\.gov|bid4assets|civilview|zeus|realforeclose|realtaxdeed/.test(s)) return T("online");
+  return T("verEdital"); }
+const tipo = t => (TIPO[LANG] && TIPO[LANG][t]) || t || "";
+const nomeUf = uf => UF_EN[uf] || uf;
+let HOJE = ymd(new Date()), FIM7, FIM14;
+
+async function carrega(){
+  const q = u => fetch(u, {cache: "no-cache"}).then(r => { if (!r.ok) throw new Error(u + " " + r.status); return r.json(); });
+  try {
+    const a = await q("/atual.json");
+    DADOS = await q("/" + String(a.DADOS).replace(/^\/+/, ""));
+    FIM7 = soma(HOJE, 7); FIM14 = soma(HOJE, 14);
+    LEI = (DADOS.leiloes || []).filter(x => x && x.d && x.d >= HOJE && x.d <= FIM14)
+      .sort((a, b) => a.d.localeCompare(b.d) || (linkOk(b.lk) ? 1 : 0) - (linkOk(a.lk) ? 1 : 0) || (a.uf + a.co).localeCompare(b.uf + b.co));
+  } catch (e) { ERRO = true; console.warn("dados:", e.message); }
+  desenha();
+}
+
+function linha(x, comLink){
+  const lk = comLink ? linkOk(x.lk) : "";
+  return `<li><span class="dt">${esc(dataFmt(x.d))}</span><span class="nm"><b>${esc(x.co)} County, ${esc(x.uf)}</b><small>${esc(tipo(x.t))} · ${esc(modo(x.on))}</small></span>`
+    + (lk ? `<a href="${esc(lk)}" target="_blank" rel="noopener nofollow">${esc(T("oficial"))} ↗</a>` : (comLink ? `<span class="sl">${esc(modo(x.on))}</span>` : "")) + `</li>`;
+}
+
+function desenha(){
+  if (!DADOS && !ERRO) return;
+  $("#carrega").hidden = !ERRO; if (ERRO) { $("#carrega").textContent = T("erroDados"); }
+  if (DADOS) {
+    const ufs = {}; LEI.forEach(x => { ufs[x.uf] = (ufs[x.uf] || 0) + 1; });
+    $("#n14").textContent = nf(LEI.length); $("#n7").textContent = nf(LEI.filter(x => x.d <= FIM7).length); $("#nUf").textContent = nf(Object.keys(ufs).length);
+    $("#ufs").innerHTML = Object.entries(ufs).sort((a, b) => b[1] - a[1]).map(([u, n]) => `<span class="uf" title="${esc(nomeUf(u))}">${esc(u)} <b>${n}</b></span>`).join("");
+    if (!LEI.length) { $("#carrega").hidden = false; $("#carrega").textContent = T("semLeilao"); }
+    $("#top3").innerHTML = LEI.slice(0, 3).map(x => linha(x, true)).join("");
+    const resto = LEI.length - 3;
+    $("#trava").hidden = LIBERADO || resto <= 0;
+    $("#maisN").textContent = T("maisN", {n: nf(Math.max(resto, 0))});
+    // linhas de enfeite borradas: texto genérico, nenhum dado real vaza por trás do borrão
+    $("#fake").innerHTML = Array.from({length: 4}, () => `<li><span class="dt">— — —</span><span class="nm"><b>████████ County, ██</b><small>██████ · ████</small></span></li>`).join("");
+    const g = DADOS.meta && DADOS.meta.gerado; $("#fonte").textContent = g ? T("fonte", {d: dataFmt(g.slice(0, 10))}) : "";
+    // cobertura (DADOS.cobertura.tot)
+    const tot = (DADOS.cobertura && DADOS.cobertura.tot) || {};
+    $("#cLotes").textContent = tot.lotes ? nf(tot.lotes) : "–"; $("#cCond").textContent = tot.condados ? nf(tot.condados) : "–"; $("#cUf").textContent = tot.estados ? nf(tot.estados) : "–";
+    // comprados (DADOS.comprados, parte pública: cidade, condado, data; o preço pago é premium e não está no público)
+    // Cris 25/11: mostrar o valor pago e abrir lance + taxas (recibos oficiais; sem endereço)
+    const cp = DADOS.comprados || [];
+    const us = v => "$" + Number(v).toLocaleString("en-US", {minimumFractionDigits: 2, maximumFractionDigits: 2});
+    let sl = 0, st = 0, n = 0;
+    $("#comp").innerHTML = cp.length ? cp.slice().sort((a, b) => String(b.d).localeCompare(String(a.d))).map(c => { const pg = PAGO[c.i];
+      if (pg) { sl += pg[0]; st += pg[1]; n++; }
+      return `<div><b>${esc(c.ci || c.co)}, ${esc(c.uf)}</b><small>${esc(c.co)} County · ${esc(String(c.d || "").slice(0, 4))} · ${esc(c.tp || "")}</small><br><small>${esc(T(c.st === "vendido" ? "vendido" : "comprado"))}</small>`
+        + (pg ? `<div class="pg"><span>${esc(T("compLance"))}</span><span>${us(pg[0])}</span><span>${esc(T("compTaxas"))}</span><span>${us(pg[1] - pg[0])}</span><span><b>${esc(T("compTotal"))}</b></span><span><b>${us(pg[1])}</b></span></div>` : "") + `</div>`; }).join("")
+      : `<p>${esc(T("semComp"))}</p>`;
+    $("#compSoma").textContent = n ? T("compSoma", {n, t: us(st), l: us(sl), x: us(st - sl)}) : "";
+  }
+  desenhaLista();
+}
+
+function desenhaLista(){
+  $("#lista").hidden = !LIBERADO;
+  if (!LIBERADO || !DADOS) return;
+  const f = $("#filUf").value || "";
+  const por = {}; LEI.forEach(x => { if (!f || x.uf === f) (por[x.uf] = por[x.uf] || []).push(x); });
+  $("#full").innerHTML = Object.entries(por).sort((a, b) => b[1].length - a[1].length).map(([u, xs], i) =>
+    `<details class="grupo"${i === 0 || f ? " open" : ""}><summary>${esc(nomeUf(u))} · ${esc(T("nLei", {n: nf(xs.length)}))}</summary><ul class="lei" style="margin-top:10px">`
+    + xs.map(x => linha(x, true).replace("</small>", (x.g === "depende" ? " · " + esc(T("gravSobre")) : "") + "</small>")).join("") + `</ul></details>`).join("");
+}
+
+function montaSelects(){
+  const ddi = $("#ddi"), v = ddi.value;
+  ddi.innerHTML = DDI.map(([c, p]) => `<option value="${c}">${p} ${c}</option>`).join("");
+  ddi.value = v || ((navigator.language || "").toLowerCase().startsWith("pt-br") ? "+55" : "+1");
+  const cap = $("#selCap"), vc = cap.value;
+  cap.innerHTML = `<option value="">${esc(T("escolha"))}</option>` + ["cap0","cap1","cap2","cap3","cap4"].map(k => `<option value="${k}">${esc(T(k))}</option>`).join("");
+  cap.value = vc;
+  const su = $("#selUf"), vu = su.value, lista = Object.keys(UF_EN).sort((a, b) => nomeUf(a).localeCompare(nomeUf(b)));
+  su.innerHTML = `<option value="">${esc(T("qualquer"))}</option>` + lista.map(u => `<option value="${u}">${esc(nomeUf(u))}</option>`).join(""); su.value = vu;
+  const fu = $("#filUf"), vf = fu.value, comLei = [...new Set(LEI.map(x => x.uf))].sort((a, b) => nomeUf(a).localeCompare(nomeUf(b)));
+  fu.innerHTML = `<option value="">${esc(T("todos"))}</option>` + comLei.map(u => `<option value="${u}">${esc(nomeUf(u))}</option>`).join(""); fu.value = vf;
+}
+
+/* ---------- formulário ---------- */
+const F = $("#fLead");
+const telDig = () => (F.tel.value || "").replace(/\D/g, "");
+function passo1Ok(){
+  const e = $("#erro1");
+  if (F.nome.value.trim().length < 2) { e.textContent = T("e_nome"); F.nome.focus(); return false; }
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(F.email.value.trim())) { e.textContent = T("e_email"); F.email.focus(); return false; }
+  if (telDig().length < 6 || telDig().length > 15) { e.textContent = T("e_tel"); F.tel.focus(); return false; }
+  e.textContent = ""; return true;
+}
+function vaiPasso(n){ $("#passo1").hidden = n !== 1; $("#passo2").hidden = n !== 2; $("#p2i").classList.toggle("on", n === 2);
+  (n === 1 ? F.nome : F.querySelector("input[name=objetivo]")).focus(); }
+$("#btProx").addEventListener("click", () => { if (passo1Ok()) vaiPasso(2); });
+$("#btVolta").addEventListener("click", () => vaiPasso(1));
+F.addEventListener("keydown", ev => { if (ev.key === "Enter" && !$("#passo1").hidden && ev.target.tagName === "INPUT") { ev.preventDefault(); if (passo1Ok()) vaiPasso(2); } });
+$("#filUf").addEventListener("change", desenhaLista);
+
+function textoLead(p){
+  return [`Lead da página /semana (${p.idioma})`, `Nome: ${p.nome}`, `E-mail: ${p.email}`, `Telefone: ${p.telefone}`,
+    `Objetivo: ${p.objetivo}`, `Capital: ${p.capital_txt}`, `Estado de interesse: ${p.estado || "qualquer"}`,
+    `Aceite e-mail: ${p.aceite_email ? "sim" : "não"} · Aceite SMS/WhatsApp: ${p.aceite_sms ? "sim" : "não"}`,
+    [p.utm_source, p.utm_medium, p.utm_campaign].some(Boolean) ? `Origem: ${[p.utm_source, p.utm_medium, p.utm_campaign].filter(Boolean).join(" / ")}` : ""].filter(Boolean).join("\n");
+}
+/* ENVIO DO LEAD — isolado aqui. Usa o mesmo endpoint e formato que o site já usa para visitante sem login:
+   POST https://api.blrdevelopment.com/api/interesse (Clauds, 01/11: grava no D1, aparece no /admin e avisa a BLR por e-mail),
+   JSON com tipo/nome/email/whats/texto/origem/em, como envia() da Vitrine. Não usa /api/cadastro: esse cria acesso de teste de
+   7 dias (exige aceite dos termos da Vitrine), não é um lead. Campos novos (objetivo, capital, estado, aceites, utm_*, pagina)
+   vão no mesmo objeto e também dentro de "texto", que é o que o e-mail de aviso mostra caso o servidor ignore campo desconhecido. */
+async function enviaLead(p){
+  const r = await fetch(API + "/api/interesse", {method: "POST", credentials: "include", headers: {"Content-Type": "application/json"}, body: JSON.stringify(p)});
+  const j = await r.json().catch(() => ({}));
+  if (!r.ok) throw Object.assign(new Error(j.mensagem || "falha"), {st: r.status, erro: j.erro});
+  return j;
+}
+
+F.addEventListener("submit", async ev => {
+  ev.preventDefault();
+  const e = $("#erro2");
+  if (!passo1Ok()) { vaiPasso(1); return; }
+  const obj = F.querySelector("input[name=objetivo]:checked");
+  if (!obj) { e.textContent = T("e_obj"); return; }
+  if (!F.capital.value) { e.textContent = T("e_cap"); F.capital.focus(); return; }
+  if (!F.aceite_email.checked) { e.textContent = T("e_aceite"); F.aceite_email.focus(); return; }
+  e.textContent = "";
+  const tel = F.ddi.value + " " + telDig();
+  const o = origemAcesso() || {};
+  const p = {tipo: "lead · semana", pagina: "semana", nome: F.nome.value.trim().slice(0, 120), email: F.email.value.trim().slice(0, 160),
+    telefone: tel, whats: F.aceite_sms.checked ? tel : "", objetivo: obj.value, capital: F.capital.value, capital_txt: I.en[F.capital.value],
+    estado: F.estado.value, aceite_email: true, aceite_sms: !!F.aceite_sms.checked, aceite_termos: true, idioma: LANG,
+    utm_source: UTM.utm_source || o.utm_source || "", utm_medium: UTM.utm_medium || o.utm_medium || "", utm_campaign: UTM.utm_campaign || o.utm_campaign || "",
+    origem: Object.keys(o).length ? o : (Object.keys(UTM).length ? UTM : null), url: location.href.slice(0, 300), em: new Date().toISOString()};
+  p.texto = textoLead(p);
+  const bt = $("#btEnvia"); bt.disabled = true; bt.textContent = T("enviando");
+  let gravou = false;
+  try { await enviaLead(p); gravou = true; } catch (err) { console.warn("lead:", err.st, err.erro || err.message); }
+  bt.disabled = false; bt.textContent = T("fEnvia");
+  guarda("blr_semana_lead", {em: p.em, gravou});
+  guarda("vitrine_cadastro", {nome: p.nome, email: p.email, whats: p.whats});   // a Vitrine já preenche os formulários com isto
+  libera(p, gravou);
+});
+
+function libera(p, gravou){
+  LIBERADO = true;
+  F.hidden = true; $("#pronto").hidden = false;
+  $("#okTxt").textContent = p ? T("okTxt", {nome: p.nome.split(" ")[0], email: p.email}) : "";
+  const wa = CONTATO.whats.replace(/\D/g, "");
+  $("#btCall").href = `https://wa.me/${wa}?text=${encodeURIComponent(T("callMsg"))}`;
+  $("#callAlt").innerHTML = esc(T("callAlt", {email: "\u0000"})).replace("\u0000", `<a href="mailto:${esc(CONTATO.email)}?subject=${encodeURIComponent(T("call"))}">${esc(CONTATO.email)}</a>`);
+  $("#falhou").hidden = gravou !== false;
+  if (p && gravou === false) {
+    $("#waFalha").href = `https://wa.me/${wa}?text=${encodeURIComponent(p.texto)}`;
+    $("#mailFalha").href = `mailto:${CONTATO.email}?subject=${encodeURIComponent("Lead /semana")}&body=${encodeURIComponent(p.texto)}`;
+  }
+  montaSelects(); desenha();
+}
+
+/* ---------- início ---------- */
+document.querySelectorAll("[data-lang]").forEach(b => b.addEventListener("click", () => {
+  aplicaLang(b.dataset.lang);
+  if (LIBERADO) { const s = JSON.parse(le("vitrine_cadastro") || "{}"); $("#okTxt").textContent = s.email ? T("okTxt", {nome: String(s.nome || "").split(" ")[0], email: s.email}) : ""; }
+}));
+checaI18n();
+{ const q = new URLSearchParams(location.search).get("lang"); aplicaLang(q || le("blr_semana_lang") || "en"); }
+if (le("blr_semana_lead")) { const s = (() => { try { return JSON.parse(le("vitrine_cadastro") || "{}"); } catch (e) { return {}; } })();
+  libera(s.email ? {nome: s.nome || "", email: s.email} : null, null); }
+carrega();
+</script>
+</body>
+</html>
