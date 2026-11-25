@@ -31,7 +31,7 @@
     "A BLR junta num mapa só os leilões de imposto atrasado, execução de hipoteca e imóveis de banco e de governo dos EUA. Você abre o lote e vê quanto vale, quanto deve e até quanto vale a pena dar de lance.":
       "BLR puts the US tax-sale, foreclosure, bank-owned and government property auctions on one map. Open a lot and see what it is worth, what is owed and how high it still makes sense to bid.",
     "Testar # dias grátis": "Try # days free", "Explorar o mapa": "Explore the map", "condados": "counties", "nos critérios BLR": "meet BLR criteria", "próximo leilão": "next auction",
-    "Teto de lance BLR · exemplo": "BLR max bid · example", "Abertura US$ #": "Opening bid US$ #", "Abertura": "Opening bid",
+    "Teto de lance BLR · exemplo": "BLR max bid · example", "Abertura US$ #": "Opening bid US$ #", "Abertura $#": "Opening bid $#", "cadastro $#": "assessed $#", "Abertura": "Opening bid",
     "Use o e-mail e a senha do seu acesso BLR.": "Use the email and password of your BLR account.",
     "Só e-mail e telefone, sem cartão. Você recebe um link para criar a senha e, por # dias, vê tudo o que o assinante Pro vê.": "Just email and phone, no card. You get a link to create your password and, for # days, you see everything a Pro subscriber sees.",
     "Endereço, posição exata, contorno do lote e Street View": "Address, exact location, lot outline and Street View", "Teto de lance BLR, ARV e a conta de cada lote": "BLR max bid, ARV and the math for each lot",
@@ -287,7 +287,7 @@
   Object.assign(D, DIAS, MESES);
   for(const m in MESES) for(const d in DIAS) D[m + " · " + d] = MESES[m] + " · " + DIAS[d];
 
-  const PT = /[ãõçáéíóúâêôà]|\b(de|do|da|dos|das|em|com|sem|para|não|você|seu|sua|os|o|um|uma|ao|na|quero|ver|lote|lotes|leilão|leilões|grátis|mais|já|até)\b/i;
+  const PT = /[ãõçáéíóúâêôà]|\b(de|do|da|dos|das|em|com|sem|para|não|você|seu|sua|os|o|um|uma|ao|na|quero|ver|abertura|cadastro|lote|lotes|leilão|leilões|grátis|mais|já|até)\b/i;
   const SAIDAS = new Set();   // textos que já são tradução (o observer vê a troca e não pode contar como faltando)
   const NUM = /\d+(?:[.,]\d+)*/g;
   const cache = new Map();
