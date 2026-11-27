@@ -1,0 +1,23 @@
+{
+  "_leia": "Parceiros BLR (27/11/2026). Parceiro novo = um item em 'lista' com ativo:true. estados:[] = todos. servicos: credito_compra, credito_reforma, orcar_reforma, opiniao_preco, venda. Logo so com autorizacao por escrito do parceiro.",
+  "consentimento_versao": "parceiros-2026-11-27",
+  "lista": [],
+  "_exemplo": {
+    "id": "exemplo-lender",
+    "ativo": false,
+    "nome": "Nome do Lender",
+    "tipo": "lender",
+    "logo": "/parceiros/logos/exemplo.svg",
+    "site": "https://exemplo.com",
+    "estados": [
+      "PA",
+      "FL"
+    ],
+    "aviso": "NMLS #000000 · Equal Housing Lender",
+    "email_leads": "(fica so no servidor, nao aqui)",
+    "servicos": {
+      "credito_compra": "https://exemplo.com/simular?origem=blr",
+      "credito_reforma": "https://exemplo.com/reforma?origem=blr"
+    }
+  }
+}

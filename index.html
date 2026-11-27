@@ -344,6 +344,27 @@ a.aviso:hover{background:var(--sunk)}
 .umenu a:hover,.umenu button:hover{background:var(--sunk)}
 .umenu .sair{color:var(--bad)}
 .tag.sd{background:var(--sunk);color:var(--muted)}
+.parc{border-top:1px solid var(--line);background:var(--surface);padding-block:var(--s5)}
+.parc .wrap{display:grid;gap:var(--s3)}
+.parc header{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:8px}
+.parc h2{margin:0;font-size:18px}.parc header small{color:var(--muted)}
+.parc .trilho{overflow:hidden;-webkit-mask-image:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent);mask-image:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent)}
+.parc .fita{display:flex;gap:12px;width:max-content;animation:parcRola 38s linear infinite}
+.parc .trilho:hover .fita,.parc .trilho:focus-within .fita{animation-play-state:paused}
+@keyframes parcRola{to{transform:translateX(-50%)}}
+.parc .pc{display:flex;align-items:center;gap:10px;min-width:220px;border:1px solid var(--line);border-radius:14px;padding:12px 16px;background:var(--bg);color:var(--ink);text-decoration:none;font:inherit;cursor:pointer;text-align:left}
+.parc .pc img{height:32px;max-width:120px;object-fit:contain}
+.parc .pc small{display:block;color:var(--muted);font-size:12px}
+.parc .pc.vago{border-style:dashed;background:transparent}
+.parc .pc.vago i{width:32px;height:32px;border-radius:9px;border:1.5px dashed var(--muted);display:grid;place-items:center;font-style:normal;color:var(--muted)}
+.parc .pc:hover{border-color:var(--accent)}
+.fparc .srv{display:grid;gap:8px}
+.fparc .srv button{display:flex;justify-content:space-between;align-items:center;gap:10px;width:100%;text-align:left;border:1px solid var(--line);border-radius:12px;background:var(--bg);color:var(--ink);padding:10px 14px;font:inherit;cursor:pointer}
+.fparc .srv button:hover{border-color:var(--accent)}
+.fparc .srv small{display:block;color:var(--muted)}
+.fparc .aviso,.consent .aviso{font-size:12px;color:var(--muted);margin-top:8px}
+.consent dl{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;margin:0 0 var(--s4);font-size:14px}.consent dt{color:var(--muted)}.consent dd{margin:0}
+@media (prefers-reduced-motion: reduce){.parc .fita{animation:none;flex-wrap:wrap;width:auto}.parc .trilho{-webkit-mask-image:none;mask-image:none}}
 @media (prefers-reduced-motion: reduce){*,*::before,*::after{animation-duration:0s!important;transition-duration:0s!important}}
 </style>
 </head>
@@ -359,6 +380,7 @@ a.aviso:hover{background:var(--sunk)}
 </div></header>
 <nav class="inferior" id="navInf"></nav>
 <main id="app" class="wrap"></main>
+<section class="parc" id="parcStrip" aria-label="Parceiros BLR"></section>
 <footer class="rodape"><div class="wrap">
   <span>© BLR Developments · dados de editais e cadastros oficiais</span>
   <a href="../termos/">Termos</a><a href="../privacy/">Privacidade</a><a href="../por-que-blr/">Por que BLR</a>
@@ -1060,6 +1082,7 @@ function abreFicha(id){
           ${l.u ? `<dt>Uso</dt><dd>${esc(l.u)}</dd>` : ""}${l.a ? `<dt>Área construída</dt><dd>${n0(l.a)} pé²${l.y ? " · " + esc(l.y) : ""}</dd>` : ""}
           ${pv && pv.parcela ? `<dt>Parcela</dt><dd class="mono">${esc(pv.parcela)}</dd>` : ""}</dl>
         ${pv && pv.lk ? `<p style="margin-top:10px"><a href="${esc(pv.lk)}" target="_blank" rel="noopener">Edital oficial ↗</a></p>` : `<p style="margin-top:10px">Confira sempre o edital oficial do condado antes do lance.</p>`}</div>
+      ${parcFicha(l, arv, jv)}
       <div class="facoes"><button class="btn pri" type="button" id="btSeg">${seguindo(l.i) ? "Acompanhando ✓" : "Acompanhar"}</button><button class="btn" type="button" id="btIaL">Perguntar à IA</button></div>
     </div>`;
   $("#ficha").classList.add("on"); $("#veu").classList.add("on"); $("#ficha").scrollTop = 0;
@@ -1069,6 +1092,7 @@ function abreFicha(id){
   $("#fichaX").onclick = () => history.back();
   $("#btSeg").onclick = () => { segue(l.i); $("#btSeg").textContent = seguindo(l.i) ? "Acompanhando ✓" : "Acompanhar"; if(seguindo(l.i)) evento("lote_acompanhado", l.i); };
   $("#btIaL").onclick = () => abreIA(l);
+  $("#ficha").querySelectorAll("[data-parc-srv]").forEach(b => b.onclick = () => abreConsentParceiro(l, b.dataset.parcSrv, b.dataset.parcId, arv, jv));
   evento("lote_aberto", l.i);
 }
 /* 14/11: fotos do lote na ficha do assinante, como na versão clássica: Street View ao vivo (vitrine_sv.py) → foto de rua do
@@ -1443,6 +1467,87 @@ function abreModal(html){
   cx.innerHTML = `<button class="pill ic x" type="button" aria-label="Fechar" data-fm>✕</button>` + html;
   m.hidden = false; const i = cx.querySelector("input"); if(i) i.focus();
 }
+/* ====================================================================================================================
+   PARCEIROS BLR (27/11): lenders, general contractors e corretores. Cadastro em /parceiros/parceiros.json (sem mexer no código).
+   Carrossel com o card "Sua empresa aqui"; na ficha, botões por serviço só quando há parceiro ativo no estado do lote.
+   Antes de abrir a página do parceiro: consentimento explícito; o lead vai ao servidor (/api/interesse, tipo "lead parceiro")
+   com o código BLR-…, e o link do parceiro leva utm_source=blrdevelopment + blr_ref, para ele reconhecer que veio da BLR.
+   ==================================================================================================================== */
+const PARC_SRV = {
+  credito_compra: ["Simular crédito para a compra", "Financiamento para arrematar ou comprar REO", "lender"],
+  credito_reforma: ["Simular crédito para a reforma", "Rehab / fix & flip", "lender"],
+  orcar_reforma: ["Orçar a reforma", "Orçamento com um general contractor", "gc"],
+  opiniao_preco: ["Opinião de preço de um corretor", "Quanto vale depois da reforma", "realtor"],
+  venda: ["Vender com um corretor", "Listar o imóvel depois da reforma", "realtor"]};
+const PARC_TIPO = {lender: "Crédito (lender)", gc: "Reforma (general contractor)", realtor: "Corretor (realtor)", outro: "Outro serviço"};
+let PARC = {consentimento_versao: "parceiros-2026-11-27", lista: []};
+const parcAtivos = () => (PARC.lista || []).filter(p => p && p.ativo && p.id && p.nome);
+const parcNoEstado = (uf, srv) => parcAtivos().filter(p => p.servicos && /^https:\/\//.test(p.servicos[srv] || "") && (!Array.isArray(p.estados) || !p.estados.length || p.estados.includes(uf)));
+async function carregaParceiros(){
+  try{ const r = await fetch("/parceiros/parceiros.json", {cache: "no-cache"}); if(r.ok){ const j = await r.json(); if(j && Array.isArray(j.lista)) PARC = j; } }catch(e){}
+  parcStrip();
+}
+function parcStrip(){
+  const el = $("#parcStrip"); if(!el) return;
+  const ps = parcAtivos();
+  const card = p => `<a class="pc" href="${esc(p.site || "#")}" target="_blank" rel="noopener sponsored">${p.logo ? `<img src="${esc(p.logo)}" alt="${esc(p.nome)}" loading="lazy">` : ""}<span><b>${esc(p.nome)}</b><small>${esc(PARC_TIPO[p.tipo] || PARC_TIPO.outro)}</small></span></a>`;
+  const vago = t => `<button class="pc vago" type="button" data-parc-quero="${t}"><i>+</i><span><b>Sua empresa aqui</b><small>${esc(PARC_TIPO[t])}</small></span></button>`;
+  const itens = [...ps.map(card), ...["lender", "gc", "realtor"].map(vago)];
+  const volta = [...itens, ...itens, ...(itens.length < 5 ? [...itens, ...itens] : [])];   // a fita roda até a metade e recomeça
+  el.innerHTML = `<div class="wrap"><header><h2>Parceiros BLR</h2><small>Crédito, reforma e corretagem em cada etapa da compra · <button type="button" class="lnk" data-parc-quero="lender">Quero ser parceiro</button></small></header>
+    <div class="trilho"><div class="fita">${volta.join("")}</div></div></div>`;
+  el.querySelectorAll(".fita > *").forEach((c, i) => { if(i >= itens.length){ c.setAttribute("aria-hidden", "true"); c.tabIndex = -1; } });
+}
+document.addEventListener("click", e => { const b = e.target.closest("[data-parc-quero]"); if(b){ e.preventDefault(); abreQueroParceiro(b.dataset.parcQuero); } });
+function abreQueroParceiro(tipo){
+  abreModal(`<h2 id="mTit">Seja parceiro BLR</h2><p>Lenders, general contractors e corretores aparecem para quem está comprando imóveis em leilão, no momento em que precisa do serviço. Deixe o contato e a BLR fala com você.</p>
+    <form id="fParc"><label class="campo">Empresa<input name="empresa" required maxlength="120" autocomplete="organization"></label>
+      <label class="campo">Tipo<select name="tipo">${Object.entries(PARC_TIPO).map(([k, v]) => `<option value="${k}"${k === tipo ? " selected" : ""}>${esc(v)}</option>`).join("")}</select></label>
+      <label class="campo">Estados onde atende<input name="estados" maxlength="200" placeholder="PA, FL, NY"></label>
+      <label class="campo">Seu nome<input name="nome" required maxlength="120" autocomplete="name"></label>
+      <label class="campo">E-mail<input name="email" type="email" required autocomplete="email" value="${esc(EU && EU.email || "")}"></label>
+      <label class="campo">Telefone / WhatsApp<input name="telefone" type="tel" minlength="8" autocomplete="tel" placeholder="+1 617 000 0000"></label>
+      <label class="aceite"><input type="checkbox" name="ok" required> <span>Autorizo a BLR a me contatar sobre a parceria, conforme os <a href="../termos/#a7" target="_blank" rel="noopener">Termos de Uso</a> e a <a href="../privacy/" target="_blank" rel="noopener">Política de Privacidade</a>.</span></label>
+      <button class="btn pri" type="submit">Enviar</button><div class="erro" id="mErro" role="alert"></div></form>`);
+  $("#fParc").onsubmit = async e => { e.preventDefault(); const f = new FormData(e.target), bt = e.target.querySelector("button[type=submit]");
+    const d = Object.fromEntries([...f.entries()].map(([k, v]) => [k, String(v).trim()])); bt.disabled = true; bt.textContent = "Enviando…";
+    try{ await api("/api/interesse", {tipo: "quero ser parceiro", email: d.email.toLowerCase(), nome: d.nome, telefone: d.telefone, empresa: d.empresa, parceiro_tipo: d.tipo, estados: d.estados,
+        texto: `Quero ser parceiro: ${d.empresa} (${PARC_TIPO[d.tipo] || d.tipo}) · estados: ${d.estados || "—"} · ${d.nome} · ${d.telefone || ""}`, origem: origemAcesso(), pagina: location.href.slice(0, 300),
+        consentimento: {texto: "contato sobre parceria", versao: PARC.consentimento_versao, aceito_em: new Date().toISOString()}});
+      abreModal(`<h2 id="mTit">Recebido ✓</h2><p>Obrigado. A BLR entra em contato pelo e-mail <b>${esc(d.email)}</b> para falar da parceria.</p><button class="btn pri" type="button" data-fm>Fechar</button>`); }
+    catch(er){ bt.disabled = false; bt.textContent = "Enviar"; $("#mErro").textContent = er.st && er.st < 500 ? msgErro(er, "Confira os campos.") : "Não foi possível enviar agora. Tente de novo em instantes."; } };
+}
+function parcFicha(l, arv, jv){
+  const srvs = Object.keys(PARC_SRV).map(k => [k, parcNoEstado(l.uf, k)]).filter(([, ps]) => ps.length);
+  if(!srvs.length) return "";
+  return `<div class="bloco fparc"><h3>Serviços de parceiros para este lote</h3><div class="srv">${srvs.map(([k, ps]) => ps.map(p =>
+    `<button type="button" data-parc-srv="${k}" data-parc-id="${esc(p.id)}"><span><b>${esc(PARC_SRV[k][0])}</b><small>${esc(PARC_SRV[k][1])} · ${esc(p.nome)}</small></span><span aria-hidden="true">↗</span></button>`).join("")).join("")}</div>
+    <p class="aviso">Parceiros independentes. A BLR não concede crédito, não executa obra e não intermedeia a venda, e não garante aprovação, preço nem prazo. Seus dados só são enviados ao parceiro com a sua autorização.</p></div>`;
+}
+const parcRef = () => "BLR-" + new Date().toISOString().slice(2, 10).replace(/-/g, "") + "-" + Math.random().toString(36).slice(2, 7).toUpperCase();
+function abreConsentParceiro(l, srv, pid, arv, jv){
+  const p = parcAtivos().find(x => x.id === pid), sv = PARC_SRV[srv]; if(!p || !sv) return;
+  const lote = {id: l.i, condado: l.co, estado: l.uf, titulo: titulo(l), abertura: l.ab || null, arv: arv || null, cadastro: jv || null, leilao: l.d || null, link: location.origin + "/#lote-" + l.i};
+  abreModal(`<div class="consent"><h2 id="mTit">${esc(sv[0])}</h2><p>Você vai para a página de <b>${esc(p.nome)}</b>, parceiro independente da BLR. Para ele já abrir a simulação com o seu caso, a BLR envia:</p>
+    <form id="fCons">${EU ? `<dl><dt>Nome</dt><dd>${esc(EU.nome || "—")}</dd><dt>E-mail</dt><dd>${esc(EU.email)}</dd></dl>` : `<label class="campo">Seu nome<input name="nome" required maxlength="120" autocomplete="name"></label><label class="campo">E-mail<input name="email" type="email" required autocomplete="email"></label>`}
+      <label class="campo">Telefone / WhatsApp<input name="telefone" type="tel" minlength="8" autocomplete="tel" value="${esc(EU && EU.telefone || "")}" placeholder="+1 617 000 0000"></label>
+      <dl><dt>Lote</dt><dd>${esc(lote.titulo)} · ${esc(l.co)}, ${esc(l.uf)}</dd>${lote.abertura ? `<dt>Abertura</dt><dd>${usd(lote.abertura)}</dd>` : ""}${arv ? `<dt>ARV</dt><dd>${usd(arv)}</dd>` : ""}</dl>
+      <label class="aceite"><input type="checkbox" name="ok" required> <span>Autorizo a BLR a enviar esses dados a ${esc(p.nome)} para ${esc(sv[0].toLowerCase())}, e a ${esc(p.nome)} a me contatar sobre isso. Li a seção de parceiros dos <a href="../termos/#a7" target="_blank" rel="noopener">Termos de Uso</a> e a <a href="../privacy/" target="_blank" rel="noopener">Política de Privacidade</a>.</span></label>
+      <button class="btn pri" type="submit">Autorizar e abrir a página do parceiro ↗</button><div class="erro" id="mErro" role="alert"></div></form>
+    <p class="aviso">A BLR não concede crédito, não executa obra e não intermedeia a venda; a contratação é direto com o parceiro.${p.aviso ? " " + esc(p.aviso) : ""}</p></div>`);
+  $("#fCons").onsubmit = async e => { e.preventDefault(); const f = new FormData(e.target), bt = e.target.querySelector("button[type=submit]");
+    const nome = EU ? (EU.nome || "") : String(f.get("nome") || "").trim(), email = (EU ? EU.email : String(f.get("email") || "")).trim().toLowerCase(), tel = String(f.get("telefone") || "").trim();
+    const ref = parcRef(), u = new URL(p.servicos[srv]);
+    [["utm_source", "blrdevelopment"], ["utm_medium", "parceiro"], ["utm_campaign", srv], ["blr_ref", ref]].forEach(([k, v]) => u.searchParams.set(k, v));
+    const w = window.open("about:blank", "_blank");   // abre já no clique (bloqueador de pop-up); o endereço entra depois de registrar o lead
+    bt.disabled = true; bt.textContent = "Enviando…";
+    try{ await api("/api/interesse", {tipo: "lead parceiro", ref, parceiro: p.id, parceiro_nome: p.nome, servico: srv, email, nome, telefone: tel, lote, origem: origemAcesso(), pagina: location.href.slice(0, 300),
+        texto: `Lead BLR ${ref} para ${p.nome}: ${sv[0]} · ${lote.titulo} (${l.co}, ${l.uf}) · ${nome} · ${email} · ${tel}`,
+        consentimento: {texto: `envio de dados a ${p.nome} para ${sv[0]}`, versao: PARC.consentimento_versao, aceito_em: new Date().toISOString()}}); }
+    catch(er){ if(w) w.close(); bt.disabled = false; bt.textContent = "Autorizar e abrir a página do parceiro ↗"; $("#mErro").textContent = er.st && er.st < 500 ? msgErro(er, "Confira o e-mail e o telefone.") : "Não foi possível enviar agora. Tente de novo em instantes."; return; }
+    if(w) w.location.href = u.href; else location.href = u.href;
+    abreModal(`<h2 id="mTit">Enviado ✓</h2><p>${esc(p.nome)} recebeu o seu pedido com o código <b class="mono">${esc(ref)}</b>. Se a página não abriu, <a href="${esc(u.href)}" target="_blank" rel="noopener sponsored">abra aqui ↗</a>.</p><button class="btn pri" type="button" data-fm>Fechar</button>`); };
+}
 function fechaModal(){ $("#modal").hidden = true; $("#modal .caixa").innerHTML = ""; }
 $("#modal").addEventListener("click", e => { if(e.target.id === "modal" || e.target.closest("[data-fm]")) fechaModal(); });
 const msgErro = (er, padrao) => er.message && er.message !== "falha" ? er.message : padrao;
@@ -1567,6 +1672,7 @@ const UI_LOCAL = (() => { try{ return localStorage.getItem("blr_ui"); }catch(e){
 if(PARAMS_CLASSICO.some(k => new URLSearchParams(location.search).has(k)) || UI_LOCAL === "classico") location.replace("/classico/" + location.search + location.hash);
 (async function inicio(){
   if(UI_LOCAL === "classico") return;
+  carregaParceiros();
   try{ await carregaDadosIndice(); }catch(e){ $("#app").innerHTML = `<p class="vazio">Não foi possível carregar os dados (${esc(e.message)}). Recarregue a página.</p>`; return; }
   PROG = progressoLocal(); pintaXP(); rota();
   conta_().then(async () => {

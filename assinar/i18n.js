@@ -68,6 +68,34 @@
     "Abriu o primeiro lote": "Opened your first lot", "# estados explorados": "# states explored", "# tetos de lance vistos": "# max bids seen", "# lotes acompanhados": "# lots followed",
     "# guias lidos": "# guides read", "# dias seguidos": "# days in a row",
     "Quais os próximos leilões?": "What are the next auctions?", "Como funciona um tax deed?": "How does a tax deed work?", "Qual plano é melhor para mim?": "Which plan is best for me?",
+    "no condado (ver edital)": "at the county (see notice)",
+    // parceiros (27/11)
+    "Parceiros BLR": "BLR partners", "Crédito, reforma e corretagem em cada etapa da compra": "Financing, renovation and brokerage at every step of the purchase", "Crédito, reforma e corretagem em cada etapa da compra ·": "Financing, renovation and brokerage at every step of the purchase ·",
+    "Quero ser parceiro": "Become a partner", "Sua empresa aqui": "Your company here", "Crédito (lender)": "Financing (lender)", "Reforma (general contractor)": "Renovation (general contractor)",
+    "Corretor (realtor)": "Broker (realtor)", "Outro serviço": "Other service", "Seja parceiro BLR": "Become a BLR partner",
+    "Lenders, general contractors e corretores aparecem para quem está comprando imóveis em leilão, no momento em que precisa do serviço.": "Lenders, general contractors and realtors are shown to people buying properties at auction, right when they need the service.",
+    "Deixe o contato e a BLR fala com você.": "Leave your details and BLR will get in touch.",
+    "Empresa": "Company", "Tipo": "Type", "Estados onde atende": "States you serve", "Seu nome": "Your name", "E-mail": "Email", "Enviar": "Send", "Lote": "Lot",
+    "Autorizo a BLR a me contatar sobre a parceria, conforme os": "I authorize BLR to contact me about the partnership, under the",
+    "Recebido ✓": "Received ✓", "Obrigado. A BLR entra em contato pelo e-mail": "Thank you. BLR will contact you at", "para falar da parceria.": "about the partnership.",
+    "Confira os campos.": "Please check the fields.", "Não foi possível enviar agora. Tente de novo em instantes.": "Couldn't send right now. Please try again in a moment.",
+    "Serviços de parceiros para este lote": "Partner services for this lot",
+    "Simular crédito para a compra": "Get a financing quote for the purchase", "Financiamento para arrematar ou comprar REO": "Financing to win the bid or buy REO",
+    "Simular crédito para a reforma": "Get a renovation loan quote", "Rehab / fix & flip": "Rehab / fix & flip",
+    "Orçar a reforma": "Get a renovation estimate", "Orçamento com um general contractor": "Estimate from a general contractor",
+    "Opinião de preço de um corretor": "Price opinion from a realtor", "Quanto vale depois da reforma": "What it's worth after renovation",
+    "Vender com um corretor": "Sell with a realtor", "Listar o imóvel depois da reforma": "List the property after renovation",
+    "Parceiros independentes.": "Independent partners.",
+    "A BLR não concede crédito, não executa obra e não intermedeia a venda, e não garante aprovação, preço nem prazo.": "BLR does not lend, does not perform construction and does not broker sales, and does not guarantee approval, price or timing.",
+    "Seus dados só são enviados ao parceiro com a sua autorização.": "Your data is sent to the partner only with your authorization.",
+    "Você vai para a página de": "You're going to the page of", "parceiro independente da BLR.": "an independent BLR partner.",
+    ", parceiro independente da BLR.": ", an independent BLR partner.",
+    "Para ele já abrir a simulação com o seu caso, a BLR envia:": "So it can open the quote with your case, BLR sends:",
+    ", parceiro independente da BLR. Para ele já abrir a simulação com o seu caso, a BLR envia:": ", an independent BLR partner. So it can open the quote with your case, BLR sends:",
+    "Li a seção de parceiros dos": "I have read the partners section of the",
+    "Autorizar e abrir a página do parceiro ↗": "Authorize and open the partner's page ↗",
+    "A BLR não concede crédito, não executa obra e não intermedeia a venda; a contratação é direto com o parceiro.": "BLR does not lend, does not perform construction and does not broker sales; you contract directly with the partner.",
+    "Enviado ✓": "Sent ✓", "Se a página não abriu,": "If the page didn't open,", ". Se a página não abriu,": ". If the page didn't open,", "abra aqui ↗": "open it here ↗",
     // explorar
     "Leilões no mapa": "Auctions on the map", "Carregando os leilões…": "Loading auctions…", "Próximos leilões": "Upcoming auctions", "Buscar": "Search",
     "Cidade, condado, CEP, nº da parcela ou endereço": "City, county, ZIP, parcel number or address",
@@ -247,6 +275,8 @@
   const t = s => tr(s);
   const P = I.P = [
     [/^Lote em (.+)$/, (m, a) => "Lot in " + a],
+    [/^Autorizo a BLR a enviar esses dados a (.+?) para (.+), e a \1 a me contatar sobre isso\.$/, (m, a, b) => `I authorize BLR to send this data to ${a} for “${t(b.charAt(0).toUpperCase() + b.slice(1))}”, and ${a} to contact me about it.`],
+    [/^(.+) recebeu o seu pedido com o código$/, (m, a) => a + " received your request with code"],
     [/^· Próximo: (.+)$/, (m, a) => "· Next: " + t(a)],
     [/^XP para (.+)$/, (m, a) => "XP to reach " + t(a)],
     [/^US\$ ?(\d{1,3}(?:\.\d{3})*),(\d{2})$/, (m, a, c) => "US$ " + a.replace(/\./g, ",") + "." + c],
@@ -303,7 +333,7 @@
       if(r == null && s.includes(" — ")){ const ps = s.split(" — "), ts = ps.map(x => tr(x)); if(ts.some((x, i) => x !== ps[i])) r = ts.join(" — "); }
       if(r == null && /\.\s/.test(s)){ const ps = s.split(/(?<=\.)\s+/), ts = ps.map(x => tr(x)); if(ts.some((x, i) => x !== ps[i])) r = ts.join(" "); }
     }
-    if(r == null){ r = s; if(!SAIDAS.has(s) && PT.test(s.replace(/\S+\.(com|org|net|gov|us)\b\S*/gi, ""))) I.faltando.add(s); }
+    if(r == null){ r = s; if(!SAIDAS.has(s) && PT.test(s.replace(/\S+\.(com|org|net|gov|us)\b\S*/gi, "").replace(/\b[A-Z]{2}\b/g, ""))) I.faltando.add(s); }
     else SAIDAS.add(r);
     cache.set(s, r); return r;
   }
