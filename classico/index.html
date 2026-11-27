@@ -8,7 +8,7 @@
 <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="manifest" href="/site.webmanifest">
 <style>*,*::before,*::after{box-sizing:border-box}html,body{margin:0}img{max-width:100%}[hidden]{display:none!important}
 :root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}</style>
-</head><body><link rel="preload" href="d_dados_4c47716008.json" as="fetch" crossorigin="anonymous"><link rel="preload" href="d_eua_145aaf5d14.json" as="fetch" crossorigin="anonymous"><title>BLR Developments</title>
+</head><body><link rel="preload" href="d_dados_e3f30cd5ab.json" as="fetch" crossorigin="anonymous"><link rel="preload" href="d_eua_145aaf5d14.json" as="fetch" crossorigin="anonymous"><title>BLR Developments</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -1246,6 +1246,12 @@ body{transition:padding-right .5s var(--mola)}
   <footer class="rodape" id="rodape"></footer>
 </main>
 
+<script>/* 27/11 (Cris): ?embed=1 = só a ficha, ocupando a tela (botão "Análise completa" da Vitrine nova, num quadro) */
+if(/[?&]embed=1(&|$)/.test(location.search)) document.documentElement.classList.add("embed");</script>
+<style>html.embed body>*:not(#ficha):not(#modal):not(#relPdf):not(script):not(style):not(main){display:none!important}
+html.embed body>main{position:fixed!important;inset:0!important;visibility:hidden!important;pointer-events:none!important}   /* o mapa precisa de tamanho (com display:none o Leaflet dá LatLng NaN) */
+html.embed .ficha{position:fixed!important;inset:0!important;width:100%!important;height:100%!important;max-height:none!important;transform:none!important;border:0!important;border-radius:0!important;box-shadow:none!important;transition:none!important}
+html.embed .ficha .pega,html.embed #fX{display:none!important}</style>
 <div class="vel" id="vel"></div>
 <aside class="ficha" id="ficha" aria-hidden="true">
   <div class="pega" aria-hidden="true"></div>
@@ -1262,7 +1268,7 @@ body{transition:padding-right .5s var(--mola)}
 <div class="modal" id="modal" hidden><div class="mbox" role="dialog" aria-modal="true" aria-labelledby="mTit">
   <button class="x" id="mX" type="button" aria-label="Fechar">✕</button><div id="mBody"></div></div></div>
 
-<script>(function(){var q=function(u){return fetch(u).then(function(r){if(!r.ok)throw new Error(u+' '+r.status);return r.json()})};Promise.all([q('d_dados_4c47716008.json'),q('d_eua_145aaf5d14.json')]).then(function(x){window.__DADOS=x[0];window.__EUA=x[1];var s=document.createElement('script');s.textContent=document.getElementById('app').textContent;document.body.appendChild(s)}).catch(function(e){var d=document.createElement('p');d.style.cssText='padding:24px;font:16px sans-serif';d.textContent='Não foi possível carregar os dados ('+e.message+'). Recarregue a página.';document.body.prepend(d)})})();</script>
+<script>(function(){var q=function(u){return fetch(u).then(function(r){if(!r.ok)throw new Error(u+' '+r.status);return r.json()})};Promise.all([q('d_dados_e3f30cd5ab.json'),q('d_eua_145aaf5d14.json')]).then(function(x){window.__DADOS=x[0];window.__EUA=x[1];var s=document.createElement('script');s.textContent=document.getElementById('app').textContent;document.body.appendChild(s)}).catch(function(e){var d=document.createElement('p');d.style.cssText='padding:24px;font:16px sans-serif';d.textContent='Não foi possível carregar os dados ('+e.message+'). Recarregue a página.';document.body.prepend(d)})})();</script>
 <script type="text/plain" id="app">
 const DADOS = window.__DADOS;
 const EUA = window.__EUA;
@@ -5202,5 +5208,14 @@ if(PARTES.length){
       .finally(() => { ativos--; agenda(); proxima(); }); } };
   requestAnimationFrame(() => setTimeout(proxima, 0));
 }
+/* 27/11: ?lote=ID&uf=XX abre a ficha desse lote (a Vitrine nova chama com &embed=1 no botão "Análise completa"). O estado do lote
+   passa na frente na fila; a ficha abre quando o lote chega e se refaz sozinha quando a conta do assinante carrega. */
+{ const q = new URLSearchParams(location.search), id = q.get("lote");
+  if(id){ const uf = String(q.get("uf") || "").toUpperCase(); if(/^[A-Z]{2}$/.test(uf)) pedeUF(uf);
+    let n = 0; const tenta = () => { if(L.some(x => x.i === id)) abre(id);
+      else if(++n < 160 && faltam()) setTimeout(tenta, 250);
+      else { $("#fhTit").textContent = "Lote não encontrado"; $("#fBody").innerHTML = `<div class="sec"><p>Este lote não está mais na lista de hoje (pode ter sido leiloado, resgatado ou retirado).</p></div>`;
+        $("#ficha").classList.add("on"); $("#ficha").setAttribute("aria-hidden", "false"); } };
+    tenta(); } }
 </script>
 <style>#btNova{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(14px + env(safe-area-inset-bottom,0px));z-index:1300;background:#0E7A64;color:#fff;font:600 13px system-ui,sans-serif;padding:8px 14px;border-radius:999px;text-decoration:none;box-shadow:0 6px 18px rgba(0,0,0,.35)}@media (max-width:760px){#btNova{left:10px;transform:none;bottom:calc(74px + env(safe-area-inset-bottom,0px));font-size:12px;padding:7px 11px}}</style><a href="/" id="btNova" onclick="try{localStorage.setItem(&quot;blr_ui&quot;,&quot;novo&quot;)}catch(e){}">Experimentar a nova Vitrine</a></body></html>

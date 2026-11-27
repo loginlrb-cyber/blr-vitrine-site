@@ -13,8 +13,7 @@
 <link rel="icon" type="image/svg+xml" href="/blr-icon-small.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@500;600;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-<script src="../vendor/topojson.min.js"></script>
-<script src="../vendor/leaflet.min.js"></script>
+<link rel="preload" href="../vendor/topojson.min.js" as="script"><link rel="preload" href="../vendor/leaflet.min.js" as="script">
 <script src="/assinar/i18n.js"></script>
 <script src="/assinar/planos.js"></script>
 <script>/* 24/11 (Cris): origem do 1º acesso (link da bio do Instagram = ?utm_source=instagram&utm_medium=bio) vai no cadastro */
@@ -41,7 +40,7 @@ const origemAcesso = () => { try{ return JSON.parse(localStorage.getItem("blr_or
 
 :root{
   --bg:#F4F6F7; --surface:#FFFFFF; --sunk:#EBEFF1; --ink:#13212B; --muted:#5B6B76; --line:#DDE3E7;
-  --accent:#0E7A64; --accent-ink:#FFFFFF; --accent-soft:rgba(14,122,100,.1); --amber:#B8741E; --amber-soft:rgba(184,116,30,.12); --bad:#B4413A; --bad-soft:rgba(180,65,58,.1);
+  --accent:#0E7A64; --accent-ink:#FFFFFF; --accent-soft:rgba(14,122,100,.1); --amber:#B8741E; --amber-ink:#8A5512; --amber-soft:rgba(184,116,30,.12); --bad:#B4413A; --bad-soft:rgba(180,65,58,.1);
   --m0:#E6ECEE; --m1:#C5DDD5; --m2:#8CC3B1; --m3:#46A189; --m4:#0E7A64;
   --f-d:'Schibsted Grotesk',system-ui,sans-serif; --f-b:'Inter',system-ui,sans-serif; --f-m:'JetBrains Mono',ui-monospace,monospace;
   --s1:4px; --s2:8px; --s3:12px; --s4:16px; --s5:24px; --s6:32px; --s7:48px; --s8:72px;
@@ -50,7 +49,7 @@ const origemAcesso = () => { try{ return JSON.parse(localStorage.getItem("blr_or
 }
 :root[data-theme="dark"]{
   --bg:#0E151A; --surface:#151F26; --sunk:#1B262E; --ink:#E6EDF0; --muted:#93A3AD; --line:#26333C;
-  --accent:#3CC29F; --accent-ink:#06261E; --accent-soft:rgba(60,194,159,.13); --amber:#E2A650; --amber-soft:rgba(226,166,80,.14); --bad:#E57F76; --bad-soft:rgba(229,127,118,.12);
+  --accent:#3CC29F; --accent-ink:#06261E; --accent-soft:rgba(60,194,159,.13); --amber:#E2A650; --amber-ink:#E2A650; --amber-soft:rgba(226,166,80,.14); --bad:#E57F76; --bad-soft:rgba(229,127,118,.12);
   --m0:#1B262E; --m1:#1E3B37; --m2:#246052; --m3:#2E8D74; --m4:#3CC29F; --sombra:0 10px 30px rgba(0,0,0,.4);
   color-scheme:dark;
 }
@@ -148,7 +147,7 @@ button{font:inherit;color:inherit}
 .linha .sub{color:var(--muted);font-size:13px}
 .tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:5px}
 .tag{font-size:11.5px;font-weight:600;border-radius:999px;padding:2px 8px;background:var(--sunk);color:var(--muted)}
-.tag.breve{background:var(--amber-soft);color:var(--amber)}
+.tag.breve{background:var(--amber-soft);color:var(--amber-ink,#8A5512)}
 .tag.ok{background:var(--accent-soft);color:var(--accent)}
 .tag.acima{background:var(--bad-soft);color:var(--bad)}
 .linha .val{text-align:right}
@@ -260,9 +259,20 @@ a.aviso:hover{background:var(--sunk)}
 .trava{display:flex;gap:12px;align-items:center;background:var(--amber-soft);border-radius:12px;padding:12px 14px;margin-top:var(--s3);font-size:14px}
 .trava .btn{margin-left:auto}
 .facoes{display:flex;gap:var(--s2);flex-wrap:wrap;margin-top:var(--s4)}
+/* 27/11 (Cris: "um botão que entrega todas as informações que a clássica já tem, sem carregar de informação"): a ficha completa da
+   clássica, só deste lote, num painel por cima; o quadro só é criado no clique */
+.tudoBt{width:100%;justify-content:space-between;margin-top:var(--s3)}
+.tudoBt small{color:var(--muted);font-weight:400}
+.tudo{position:fixed;inset:0;z-index:1800;background:var(--bg);display:flex;flex-direction:column}
+.tudo header{display:flex;align-items:center;gap:var(--s3);padding:10px 16px;border-bottom:1px solid var(--line);background:var(--surface)}
+.tudo header div{flex:1;min-width:0}.tudo header b{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.tudo header small{color:var(--muted)}
+.tudo iframe{flex:1;width:100%;border:0;background:var(--bg)}
+.tudo .carr{position:absolute;inset:64px 0 auto;text-align:center}
 
 /* páginas */
 .pag{padding:var(--s6) 0 var(--s7)}
+main#app{min-height:100vh}   /* 27/11: sem isto a faixa de parceiros e o rodapé nasciam no topo e desciam (CLS 0,35) */
+.parc{content-visibility:auto;contain-intrinsic-size:auto 160px}
 .pag>h1{font-size:clamp(28px,4vw,40px);margin-bottom:8px}
 .pag>.sub{color:var(--muted);margin:0 0 var(--s5);max-width:640px}
 .ciclo{display:inline-flex;border:1px solid var(--line);border-radius:999px;padding:3px;background:var(--surface);margin-bottom:var(--s5)}
@@ -370,7 +380,7 @@ a.aviso:hover{background:var(--sunk)}
 </head>
 <body>
 <header class="top"><div class="wrap">
-  <a class="marca" href="#explorar" aria-label="BLR Developments, início"><i><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M5 6l11-2 3 13-12 3z" fill="none" stroke="#fff" stroke-width="2.2" stroke-linejoin="round"/></svg></i>BLR <small>Vitrine de leilões</small></a>
+  <a class="marca" href="#explorar" aria-label="BLR Vitrine de leilões, início"><i><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M5 6l11-2 3 13-12 3z" fill="none" stroke="#fff" stroke-width="2.2" stroke-linejoin="round"/></svg></i>BLR <small>Vitrine de leilões</small></a>
   <nav class="nav" id="nav"></nav>
   <div class="dir">
     <button class="pill" id="xpChip" type="button" title="Meu progresso"><span class="anel" id="xpAnel"><b id="xpNiv">1</b></span><span id="xpTxt">Curioso · 0 XP</span></button>
@@ -386,7 +396,7 @@ a.aviso:hover{background:var(--sunk)}
   <a href="../termos/">Termos</a><a href="../privacy/">Privacidade</a><a href="../por-que-blr/">Por que BLR</a>
   <a href="#" class="classico" id="btClassico">Voltar à versão clássica</a>
 </div></footer>
-<button class="fab" id="fab" type="button"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z" fill="currentColor"/></svg><span>Perguntar</span></button>
+<button class="fab" id="fab" type="button" aria-label="Perguntar à IA"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z" fill="currentColor"/></svg><span>Perguntar</span></button>
 <section class="ia" id="ia" hidden aria-label="Assistente BLR"></section>
 <div class="veu" id="veu"></div>
 <aside class="drawer" id="drawer" aria-label="Filtros"></aside>
@@ -604,11 +614,11 @@ function heroHTML(){
       <div class="eyebrow">${esc(c.eyebrow)}</div><h1>${esc(c.titulo)}</h1><p>${esc(c.texto)}</p>
       <div class="acoes">${EU ? "" : `<button class="btn pri" type="button" data-teste>${esc(c.principal)}</button>`}<button class="btn" type="button" id="btExpl">${esc(c.secundario)}</button></div>
       <div class="kpis"><div><b class="num" data-conta="${k.cos}">0</b>condados</div><div><b class="num" data-conta="${k.cr}">0</b>nos critérios BLR</div><div><b class="num">${esc(proxTxt(k.prox))}</b>próximo leilão</div></div></div>
-    <div class="viz" aria-hidden="true"><svg viewBox="0 0 400 300"><defs><pattern id="gr" width="26" height="26" patternUnits="userSpaceOnUse" patternTransform="rotate(-8)"><path d="M26 0H0V26" fill="none" stroke="var(--line)" stroke-width="1"/></pattern></defs>
+    <div class="viz"><svg viewBox="0 0 400 300" aria-hidden="true"><defs><pattern id="gr" width="26" height="26" patternUnits="userSpaceOnUse" patternTransform="rotate(-8)"><path d="M26 0H0V26" fill="none" stroke="var(--line)" stroke-width="1"/></pattern></defs>
       <rect width="400" height="300" fill="url(#gr)"/><path d="M-10 205 L410 160 L410 185 L-10 230Z" fill="var(--sunk)"/>
       <polygon points="150,70 270,58 285,150 160,165" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="2.5" style="--len:420" class="hpol"/>
       <circle cx="215" cy="110" r="13" fill="var(--amber)"/><circle cx="215" cy="110" r="5" fill="var(--surface)"/></svg>
-      <div class="nota-t"><small>Teto de lance BLR · exemplo</small><b class="num">${usd(79600)}</b><small>Abertura ${usd(6200)}</small></div>
+      <div class="nota-t" aria-hidden="true"><small>Teto de lance BLR · exemplo</small><b class="num">${usd(79600)}</b><small>Abertura ${usd(6200)}</small></div>
       <button class="pill ic fecha" type="button" id="heroX" aria-label="Fechar apresentação">✕</button></div></section>`;
 }
 const proxTxt = d => { if(!d) return "—"; return dataCurta(d); };
@@ -1083,6 +1093,7 @@ function abreFicha(id){
           ${pv && pv.parcela ? `<dt>Parcela</dt><dd class="mono">${esc(pv.parcela)}</dd>` : ""}</dl>
         ${pv && pv.lk ? `<p style="margin-top:10px"><a href="${esc(pv.lk)}" target="_blank" rel="noopener">Edital oficial ↗</a></p>` : `<p style="margin-top:10px">Confira sempre o edital oficial do condado antes do lance.</p>`}</div>
       ${parcFicha(l, arv, jv)}
+      <button class="btn tudoBt" type="button" id="btTudo"><span>Análise completa</span><small>conta, comparáveis, ônus, cadastro e links</small></button>
       <div class="facoes"><button class="btn pri" type="button" id="btSeg">${seguindo(l.i) ? "Acompanhando ✓" : "Acompanhar"}</button><button class="btn" type="button" id="btIaL">Perguntar à IA</button></div>
     </div>`;
   $("#ficha").classList.add("on"); $("#veu").classList.add("on"); $("#ficha").scrollTop = 0;
@@ -1092,6 +1103,7 @@ function abreFicha(id){
   $("#fichaX").onclick = () => history.back();
   $("#btSeg").onclick = () => { segue(l.i); $("#btSeg").textContent = seguindo(l.i) ? "Acompanhando ✓" : "Acompanhar"; if(seguindo(l.i)) evento("lote_acompanhado", l.i); };
   $("#btIaL").onclick = () => abreIA(l);
+  $("#btTudo").onclick = () => abreTudo(l);
   $("#ficha").querySelectorAll("[data-parc-srv]").forEach(b => b.onclick = () => abreConsentParceiro(l, b.dataset.parcSrv, b.dataset.parcId, arv, jv));
   evento("lote_aberto", l.i);
 }
@@ -1143,8 +1155,21 @@ function midiaLote(l, p, pv, pos, pol){
   if(img.s && !pol) fs.push(`<figure><div class="q"><img src="/${esc(String(img.s).replace(/^\/+/, ""))}" alt="Vista aérea do bairro com as ruas e o contorno do lote" loading="lazy" onerror="this.closest('figure').remove()"></div><figcaption>Satélite com as ruas, ~400 m de largura · USGS NAIP + Censo TIGER</figcaption></figure>`);
   return fs.length ? `<div class="bloco midia"><h3>Fotos do lote</h3>${fs.join("")}</div>` : "";
 }
-function fechaFicha(silencio){ $("#ficha").classList.remove("on"); if(!$("#drawer").classList.contains("on")) $("#veu").classList.remove("on"); }
-addEventListener("keydown", e => { if(e.key === "Escape"){ if(!$("#modal").hidden){ fechaModal(); return; } if($("#ficha").classList.contains("on")) history.back(); fechaDrawer(); } });
+function abreTudo(l){
+  fechaTudo();
+  const d = document.createElement("div"); d.className = "tudo"; d.id = "tudo"; d.setAttribute("role", "dialog"); d.setAttribute("aria-modal", "true"); d.setAttribute("aria-labelledby", "tudoT");
+  d.innerHTML = `<header><div><b id="tudoT">${esc(titulo(l))}</b><small>Análise completa do lote · todos os dados da versão clássica, só deste lote</small></div>
+    <button class="pill ic x" type="button" id="tudoX" aria-label="Fechar a análise completa">✕</button></header>
+    <div class="carr" id="tudoC">Carregando a análise completa…</div>
+    <iframe title="Análise completa do lote" src="/classico/?lote=${encodeURIComponent(l.i)}&uf=${encodeURIComponent(l.uf)}&embed=1"></iframe>`;
+  document.body.appendChild(d);
+  d.querySelector("iframe").onload = () => { const c = $("#tudoC"); if(c) c.remove(); };
+  $("#tudoX").onclick = fechaTudo; $("#tudoX").focus();
+  evento("analise_completa", l.i);
+}
+function fechaTudo(){ const d = $("#tudo"); if(d){ d.remove(); const b = $("#btTudo"); if(b) b.focus(); return true; } return false; }
+function fechaFicha(silencio){ fechaTudo(); $("#ficha").classList.remove("on"); if(!$("#drawer").classList.contains("on")) $("#veu").classList.remove("on"); }
+addEventListener("keydown", e => { if(e.key === "Escape"){ if(fechaTudo()) return; if(!$("#modal").hidden){ fechaModal(); return; } if($("#ficha").classList.contains("on")) history.back(); fechaDrawer(); } });
 const SEG = "blr_novo_seguindo";
 const seguindo = i => LS.get(SEG, []).includes(i);
 const segue = i => { const s = LS.get(SEG, []), F = LS.get(FOTO, {}), l = L.find(x => x.i === i);
@@ -1660,7 +1685,11 @@ document.addEventListener("click", e => {
 $("#btTema").onclick = () => { const d = document.documentElement.dataset.theme === "dark" ? "light" : "dark"; document.documentElement.dataset.theme = d; try{ localStorage.setItem("blr_novo_tema", d); }catch(e){} if(MAPA){ if(CAM_CO && MAPA.hasLayer(CAM_CO)) MAPA.removeLayer(CAM_CO); CAM_CO = null; RUAP = {}; if(CAM_RUA) CAM_RUA.clearLayers(); pintaMapa(); } };
 $("#btClassico").onclick = async e => { e.preventDefault(); try{ localStorage.setItem("blr_ui", "classico"); }catch(er){} if(EU) await api("/api/preferencias", {preferencia_ui: "classico"}).catch(() => {}); location.href = CONTEUDO.classicoHref; };
 $("#xpChip").onclick = () => { location.hash = "progresso"; };
-const L_ = window.L;
+let L_ = window.L;
+/* 27/11 (comparação com o Atlas, Lighthouse): leaflet e topojson saíam no <head> e travavam a 1ª pintura (celular: 1,2 s só do leaflet).
+   Agora baixam em paralelo (preload) e rodam junto com os dados, antes do 1º mapa. */
+function carregaJs(src){ return new Promise((ok, erro) => { const s = document.createElement("script"); s.src = src; s.onload = ok; s.onerror = () => erro(new Error(src)); document.head.appendChild(s); }); }
+const LIBS = (window.L && window.topojson ? Promise.resolve() : Promise.all([carregaJs("../vendor/topojson.min.js"), carregaJs("../vendor/leaflet.min.js")])).then(() => { L_ = window.L; });
 
 /* ---------- início ---------- */
 /* 13/11: a nova é a raiz. Links antigos (?plano, volta do Stripe ?assinatura, ?senha...) abrem as telas da clássica;
@@ -1673,7 +1702,7 @@ if(PARAMS_CLASSICO.some(k => new URLSearchParams(location.search).has(k)) || UI_
 (async function inicio(){
   if(UI_LOCAL === "classico") return;
   carregaParceiros();
-  try{ await carregaDadosIndice(); }catch(e){ $("#app").innerHTML = `<p class="vazio">Não foi possível carregar os dados (${esc(e.message)}). Recarregue a página.</p>`; return; }
+  try{ await Promise.all([carregaDadosIndice(), LIBS]); }catch(e){ $("#app").innerHTML = `<p class="vazio">Não foi possível carregar os dados (${esc(e.message)}). Recarregue a página.</p>`; return; }
   PROG = progressoLocal(); pintaXP(); rota();
   conta_().then(async () => {
     if(EU && EU.preferencia_ui === "classico" && UI_LOCAL !== "novo"){ location.replace("/classico/"); return; }

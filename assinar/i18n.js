@@ -20,7 +20,7 @@
   /* ---------- dicionário PT -> EN ---------- */
   const D = I.D = {
     // topo, navegação, rodapé
-    "Vitrine de leilões": "Auction finder", "BLR Developments, início": "BLR Developments, home", "Meu progresso": "My progress", "Tema claro ou escuro": "Light or dark theme",
+    "Vitrine de leilões": "Auction finder", "BLR Developments, início": "BLR Developments, home", "BLR Vitrine de leilões, início": "BLR Auction finder, home", "Meu progresso": "My progress", "Tema claro ou escuro": "Light or dark theme",
     "Entrar": "Sign in", "Explorar": "Explore", "Agenda": "Calendar", "Meus lotes": "My lots", "Aprender": "Learn", "Planos": "Plans", "Perguntar": "Ask",
     "© BLR Developments · dados de editais e cadastros oficiais": "© BLR Developments · data from official notices and county records",
     "Termos": "Terms", "Privacidade": "Privacy", "Por que BLR": "Why BLR", "Voltar à versão clássica": "Back to the classic version", "versão clássica": "classic version",
@@ -152,6 +152,10 @@
     "Uso": "Use", "Área construída": "Building area", "# pé²": "# sq ft", "# pé² · #": "# sq ft · #", "Parcela": "Parcel", "Edital oficial ↗": "Official notice ↗",
     "Confira sempre o edital oficial do condado antes do lance.": "Always check the county's official notice before bidding.",
     "Acompanhando ✓": "Following ✓", "Acompanhar": "Follow", "Acompanhando": "Following", "Perguntar à IA": "Ask the AI", "Fotos do lote": "Lot photos",
+    // análise completa (27/11): a ficha da clássica, só do lote, num painel; a clássica ainda é em português
+    "Análise completa": "Full analysis", "conta, comparáveis, ônus, cadastro e links": "math, comps, liens, county record and links",
+    "Análise completa do lote · todos os dados da versão clássica, só deste lote": "Full lot analysis · every data point from the classic version, for this lot (in Portuguese)",
+    "Fechar a análise completa": "Close the full analysis", "Carregando a análise completa…": "Loading the full analysis…", "Análise completa do lote": "Full lot analysis",
     "Foto aérea do lote": "Aerial photo of the lot", "Foto aérea (USGS, domínio público)": "Aerial photo (USGS, public domain)", "contorno da parcela no cadastro": "parcel outline from county records",
     "círculo = posição do lote": "circle = lot location", "arraste para girar": "drag to look around", "Fachada": "Front view", "cadastro do condado": "county records",
     "Vista aérea do bairro com as ruas e o contorno do lote": "Aerial view of the neighborhood with streets and the lot outline",
@@ -374,7 +378,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const I = window.BLR_I18N; if(!I || document.getElementById("btLang")) return;
   const alvo = document.querySelector("[data-lang-aqui]") || document.getElementById("btTema");
   const b = document.createElement("button"); b.type = "button"; b.id = "btLang"; b.className = alvo && alvo.classList.contains("pill") ? "pill" : "";
-  b.setAttribute("data-sem-traducao", ""); b.setAttribute("aria-label", I.en ? "Mudar para português" : "Switch to English");
+  b.setAttribute("data-sem-traducao", ""); b.setAttribute("aria-label", I.en ? "PT, mudar para português" : "EN, switch to English");   // 27/11: o nome acessível começa pelo texto visível (Lighthouse)
   b.title = b.getAttribute("aria-label"); b.textContent = I.en ? "PT" : "EN"; b.style.fontWeight = "600";
   if(!b.className) b.style.cssText = "font:600 13px/1 system-ui,sans-serif;padding:7px 11px;margin-right:10px;border:1px solid currentColor;border-radius:99px;background:transparent;color:inherit;cursor:pointer;opacity:.85";
   b.onclick = () => I.troca(I.en ? "pt" : "en");
