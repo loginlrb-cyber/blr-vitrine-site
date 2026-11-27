@@ -14,8 +14,8 @@
     "pt": "O Título 40 cap. 10 deixa cada condado escolher por ano entre a venda fiscal clássica (certificado) e o leilão de tax lien."
    },
    "juros": {
-    "en": "Tax lien auction: bid down on interest rate, can reach 0%. Tax-sale redemption: 8% a year for sales after 1 Jan 2020 (12% before).",
-    "pt": "Leilão de lien: lance pela menor taxa de juros, pode chegar a 0%. Resgate da venda fiscal: 8% a.a. para vendas após 01/01/2020 (antes 12%)."
+    "en": "Tax lien auction: bid down on interest rate, can reach 0%. Tax-sale redemption: 8% a year on the sale price (current Code § 40-10-122).",
+    "pt": "Leilão de lien: lance pela menor taxa de juros, pode chegar a 0%. Resgate da venda fiscal: 8% a.a. sobre o preço (Código atual, § 40-10-122)."
    },
    "resgate": {
     "en": "3 years from the tax sale.",
@@ -25,11 +25,11 @@
     "en": "Annual public tax auction, usually the first Monday in May.",
     "pt": "Leilão público anual, geralmente na primeira segunda-feira de maio."
    },
-   "online": "a confirmar",
+   "online": "varia",
    "otc": "sim",
    "lei": {
-    "cit": "Code of Ala. 1975, Title 40, Chapter 10 (incl. Art. 7, §§ 40-10-180 to 40-10-200, tax lien sales); Ala. Admin. Code r. 810-4-6",
-    "url": "a confirmar"
+    "cit": "Code of Ala. 1975, Title 40, Chapter 10 (redemption § 40-10-122; tax lien auctions Art. 7, §§ 40-10-180 to 40-10-201); Ala. Admin. Code r. 810-4-6",
+    "url": "https://alison.legislature.state.al.us/code-of-alabama?section=40-10-122"
    },
    "fontes": [
     {
@@ -41,11 +41,6 @@
      "campo": "juros",
      "url": "https://admincode.legislature.state.al.us/api/rule/810-4-6-.01",
      "trecho": "If the interest rate bid for the property reaches 0.00 percent and more than one bidder remains, the tax collecting official shall draw lots"
-    },
-    {
-     "campo": "juros",
-     "url": "https://admincode.legislature.state.al.us/api/rule/810-4-6-.02",
-     "trecho": "If property is sold in a tax sale occurring after January 1, 2020, an eight percent interest rate must be used to calculate the redemption."
     },
     {
      "campo": "resgate",
@@ -61,13 +56,20 @@
      "campo": "quando",
      "url": "https://www.revenue.alabama.gov/faqs/at-what-point-will-my-tax-delinquent-property-be-sold-for-taxes/",
      "trecho": "A public tax auction is held every year usually the first Monday in May."
+    },
+    {
+     "campo": "juros",
+     "url": "https://alison.legislature.state.al.us/code-of-alabama?section=40-10-122",
+     "trecho": "the amount of money for which the lands were sold, with interest payable at the rate of eight percent per annum from date of sale"
+    },
+    {
+     "campo": "online",
+     "url": "https://alison.legislature.state.al.us/code-of-alabama?section=40-10-201",
+     "trecho": "A tax collecting official may conduct a tax lien auction and sale online or in person (Act 2022-208, §2.)"
     }
    ],
    "conferido": "2026-11-27",
-   "pendente": [
-    "online",
-    "lei"
-   ]
+   "pendente": []
   },
   "AK": {
    "nome": {
@@ -286,27 +288,48 @@
     "pt": "Califórnia"
    },
    "fips": "06",
-   "tipo": "a confirmar",
-   "tipo_nota": "a confirmar",
-   "juros": "a confirmar",
-   "resgate": "a confirmar",
+   "tipo": "deed",
+   "tipo_nota": {
+    "en": "After 5 years of default (3 for nonresidential commercial), the county tax collector sells the property itself, usually at public auction to the highest bidder.",
+    "pt": "Após 5 anos de atraso (3 para imóvel comercial não residencial), o coletor do condado vende o próprio imóvel, em geral em leilão ao maior lance."
+   },
+   "juros": {
+    "en": "Not applicable",
+    "pt": "Não se aplica"
+   },
+   "resgate": {
+    "en": "Until close of business on the last business day before the sale starts; none during or after the auction.",
+    "pt": "Até o fim do expediente do último dia útil antes do início da venda; nenhum durante ou após o leilão."
+   },
    "quando": "a confirmar",
    "online": "a confirmar",
    "otc": "a confirmar",
    "lei": {
-    "cit": "Cal. Revenue and Taxation Code § 3691 et seq. (tax-defaulted property sales) — section numbers located via search, not read",
-    "url": "a confirmar"
+    "cit": "Cal. Rev. & Tax. Code §§ 3691 et seq. (power to sell; redemption cutoff § 3707)",
+    "url": "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=RTC&sectionNum=3691"
    },
-   "fontes": [],
+   "fontes": [
+    {
+     "campo": "tipo",
+     "url": "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=RTC&sectionNum=3691",
+     "trecho": "Five years or more ... after the property has become tax defaulted, the tax collector shall have the power to sell"
+    },
+    {
+     "campo": "tipo",
+     "url": "https://sco.ca.gov/ardtax_public_auction.html",
+     "trecho": "Public auctions are the most common way of selling tax-defaulted property ... sold to the highest bidder."
+    },
+    {
+     "campo": "resgate",
+     "url": "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=RTC&sectionNum=3707",
+     "trecho": "The right of redemption terminates at the close of business on the last business day prior to the commencement date of the tax sale."
+    }
+   ],
    "conferido": "2026-11-27",
    "pendente": [
-    "tipo",
-    "juros",
-    "resgate",
     "online",
     "otc",
-    "quando",
-    "lei"
+    "quando"
    ]
   },
   "CO": {
@@ -392,27 +415,58 @@
     "pt": "Connecticut"
    },
    "fips": "09",
-   "tipo": "a confirmar",
-   "tipo_nota": "a confirmar",
-   "juros": "a confirmar",
-   "resgate": "a confirmar",
+   "tipo": "redeemable",
+   "tipo_nota": {
+    "en": "The town tax collector auctions the property itself and gives a collector's deed, which the owner can still redeem for 6 months; towns may also assign liens by negotiated contract.",
+    "pt": "O coletor de impostos da cidade leiloa o próprio imóvel e emite escritura, que o dono ainda pode resgatar em 6 meses; a cidade também pode ceder os ônus por contrato negociado."
+   },
+   "juros": {
+    "en": "18% per year on the purchase price, paid by the owner who redeems after the sale (not bid down).",
+    "pt": "18% ao ano sobre o preço pago, devidos pelo dono que resgata após a venda (não há lance de juros)."
+   },
+   "resgate": {
+    "en": "Up to 6 months after the sale (60 days if the property is abandoned).",
+    "pt": "Até 6 meses após a venda (60 dias se o imóvel estiver abandonado)."
+   },
    "quando": "a confirmar",
    "online": "a confirmar",
    "otc": "a confirmar",
    "lei": {
     "cit": "Conn. Gen. Stat. § 12-157 (tax sale, ch. 204); § 12-195h (assignment of liens, ch. 205)",
-    "url": "a confirmar"
+    "url": "https://www.cga.ct.gov/current/pub/chap_204.htm"
    },
-   "fontes": [],
+   "fontes": [
+    {
+     "campo": "tipo",
+     "url": "https://www.cga.ct.gov/current/pub/chap_204.htm",
+     "trecho": "§ 12-157(c): may sell at public auction to the highest bidder all of said real property"
+    },
+    {
+     "campo": "tipo",
+     "url": "https://www.cga.ct.gov/current/pub/chap_204.htm",
+     "trecho": "§ 12-157(e): the collector shall execute a deed thereof to the purchaser ... where it shall remain unrecorded six months from the date of such sale"
+    },
+    {
+     "campo": "tipo",
+     "url": "https://www.cga.ct.gov/current/pub/chap_205.htm",
+     "trecho": "§ 12-195h(a): may assign, for consideration, any and all liens ... The consideration received by the municipality shall be negotiated"
+    },
+    {
+     "campo": "resgate",
+     "url": "https://www.cga.ct.gov/current/pub/chap_204.htm",
+     "trecho": "not later than six months after the date of the sale or within sixty days if the property was abandoned"
+    },
+    {
+     "campo": "juros",
+     "url": "https://www.cga.ct.gov/current/pub/chap_204.htm",
+     "trecho": "interest on the total purchase price paid by the purchaser at the rate of eighteen per cent per annum from the date of such sale"
+    }
+   ],
    "conferido": "2026-11-27",
    "pendente": [
-    "tipo",
-    "juros",
-    "resgate",
     "online",
     "otc",
-    "quando",
-    "lei"
+    "quando"
    ]
   },
   "DE": {
@@ -817,7 +871,10 @@
     "en": "At the annual sale a lien is sold, not the property; buyer gets a certificate and may petition for a tax deed if not redeemed.",
     "pt": "No leilão anual vende-se o lien, não o imóvel; o comprador recebe certificado e pode pedir escritura se não houver resgate."
    },
-   "juros": "a confirmar",
+   "juros": {
+    "en": "Bidders bid down a penalty of at most 9% of the tax; the penalty multiplies for each 6-month period until redemption (county-bought: 0.75%/month).",
+    "pt": "Lance pela menor penalidade, no máximo 9% do imposto; a penalidade se multiplica a cada 6 meses até o resgate (comprado pelo condado: 0,75%/mês)."
+   },
    "resgate": {
     "en": "6 months to 2.5 years depending on property type; buyer may extend up to 3 years from the sale.",
     "pt": "De 6 meses a 2,5 anos conforme o tipo de imóvel; comprador pode estender até 3 anos da venda."
@@ -826,11 +883,11 @@
     "en": "Annual sale after the collector's application for judgment (generally October); 'scavenger sale' for taxes 3+ years delinquent.",
     "pt": "Leilão anual após o pedido de sentença do coletor (em geral outubro); 'scavenger sale' para impostos com 3+ anos de atraso."
    },
-   "online": "a confirmar",
+   "online": "nao",
    "otc": "sim",
    "lei": {
-    "cit": "35 ILCS 200/Art. 21 (Property Tax Code), incl. §§ 21-215, 21-350",
-    "url": "a confirmar"
+    "cit": "35 ILCS 200/Art. 21 (Property Tax Code), incl. §§ 21-205, 21-215, 21-355",
+    "url": "https://www.ilga.gov/documents/legislation/ilcs/documents/003502000K21-215.htm"
    },
    "fontes": [
     {
@@ -867,15 +924,26 @@
      "campo": "quando",
      "url": "https://tax.illinois.gov/content/dam/soi/en/web/tax/research/publications/documents/localgovernment/ptax-1004.pdf",
      "trecho": "If the taxes are delinquent for three or more years, the county collector may offer the property tax lien at a scavenger sale."
+    },
+    {
+     "campo": "juros",
+     "url": "https://www.ilga.gov/documents/legislation/ilcs/documents/003502000K21-215.htm",
+     "trecho": "No bid shall be accepted for a penalty exceeding 9% of the amount of the tax ... (Source: P.A. 104-553, eff. 7-10-26.)"
+    },
+    {
+     "campo": "juros",
+     "url": "https://www.ilga.gov/documents/legislation/ilcs/documents/003502000K21-355.htm",
+     "trecho": "after 6 months from the date of sale ... the certificate amount times 2 times the penalty bid at sale"
+    },
+    {
+     "campo": "online",
+     "url": "https://www.ilga.gov/documents/legislation/ilcs/documents/003502000K21-205.htm",
+     "trecho": "All bidders are required to personally attend the tax sale"
     }
    ],
    "condado": "Cook",
    "conferido": "2026-11-27",
-   "pendente": [
-    "juros",
-    "online",
-    "lei"
-   ]
+   "pendente": []
   },
   "IN": {
    "nome": {
@@ -903,8 +971,8 @@
    "online": "varia",
    "otc": "sim",
    "lei": {
-    "cit": "Ind. Code § 6-1.1-24 (tax sales) and § 6-1.1-25 (redemption)",
-    "url": "a confirmar"
+    "cit": "Ind. Code § 6-1.1-24 (tax sales) and § 6-1.1-25 (redemption and tax deeds)",
+    "url": "https://iga.in.gov/laws/2025/ic/titles/6"
    },
    "fontes": [
     {
@@ -945,9 +1013,7 @@
    ],
    "condado": "Lake",
    "conferido": "2026-11-27",
-   "pendente": [
-    "lei"
-   ]
+   "pendente": []
   },
   "IA": {
    "nome": {
@@ -1108,8 +1174,8 @@
    "online": "a confirmar",
    "otc": "sim",
    "lei": {
-    "cit": "KRS 134.128 (sale of certificates of delinquency); KRS Chapter 134",
-    "url": "a confirmar"
+    "cit": "KRS 134.128 (sale of certificates of delinquency; as amended 2025 Ky. Acts ch. 56, eff. June 27, 2025); KRS Chapter 134",
+    "url": "https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=56172"
    },
    "fontes": [
     {
@@ -1146,12 +1212,16 @@
      "campo": "quando",
      "url": "https://revenue.ky.gov/Property/Documents/Basic%20Information%20About%20Becoming%20a%20Potential%20Third%20Party%20Purchaser%20UPDATED%2012-9-2025.pdf",
      "trecho": "County Clerk's Sale of Certificates of Delinquency ... July 14 through August 28*"
+    },
+    {
+     "campo": "quando",
+     "url": "https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=56172",
+     "trecho": "Establish an annual statewide schedule for the sale of certificates of delinquency in each county ... administered by the county clerk"
     }
    ],
    "conferido": "2026-11-27",
    "pendente": [
-    "online",
-    "lei"
+    "online"
    ]
   },
   "LA": {
@@ -1160,27 +1230,64 @@
     "pt": "Luisiana"
    },
    "fips": "22",
-   "tipo": "a confirmar",
-   "tipo_nota": "a confirmar",
-   "juros": "a confirmar",
-   "resgate": "a confirmar",
-   "quando": "a confirmar",
-   "online": "a confirmar",
+   "tipo": "lien",
+   "tipo_nota": {
+    "en": "Since Jan. 1, 2026 parishes auction tax lien certificates (Acts 2024 No. 774); the holder earns interest and may later sue to enforce the lien.",
+    "pt": "Desde 1º/01/2026 as paróquias leiloam certificados de ônus fiscal (Lei 774/2024); o titular recebe juros e depois pode ir à Justiça executar o ônus."
+   },
+   "juros": {
+    "en": "Bidders bid down the monthly interest rate from 1% to no less than 0.7% per month, simple interest on the certificate face value.",
+    "pt": "Lance reduzindo os juros mensais de 1% até no mínimo 0,7% ao mês, juros simples sobre o valor de face do certificado."
+   },
+   "resgate": {
+    "en": "Owner can pay off (terminate) the lien; the holder may only sue after 3 years from recording the certificate and 6 months after notices.",
+    "pt": "O dono pode quitar (extinguir) o ônus; o titular só pode ir à Justiça após 3 anos do registro do certificado e 6 meses após as notificações."
+   },
+   "quando": {
+    "en": "Auction advertised by May 1 of the year after the tax year, or as soon as possible after; bidding only on weekdays, 8 a.m. to 8 p.m.",
+    "pt": "Leilão anunciado até 1º de maio do ano seguinte ao do imposto, ou assim que possível; lances só em dias úteis, das 8h às 20h."
+   },
+   "online": "varia",
    "otc": "a confirmar",
    "lei": {
-    "cit": "La. R.S. 47:2121 et seq. (tax sales; R.S. 47:2154 as amended eff. Jan. 1, 2026)",
-    "url": "a confirmar"
+    "cit": "La. R.S. 47:2121 et seq. (as amended by Acts 2024 No. 774 and Acts 2025 No. 411, eff. Jan. 1, 2026), incl. 47:2154, 47:2243, 47:2266.1",
+    "url": "https://www.legis.la.gov/legis/Law.aspx?d=631549"
    },
-   "fontes": [],
+   "fontes": [
+    {
+     "campo": "tipo",
+     "url": "https://www.legis.la.gov/legis/Law.aspx?d=631549",
+     "trecho": "§2154. Tax lien auctions ... The tax collector shall advertise for sale by public auction the tax lien"
+    },
+    {
+     "campo": "juros",
+     "url": "https://www.legis.la.gov/legis/Law.aspx?d=631549",
+     "trecho": "maximum bid of one percent per month ... no bid shall be accepted ... below seven-tenths of one percent"
+    },
+    {
+     "campo": "resgate",
+     "url": "https://www.legis.la.gov/legis/Law.aspx?d=1388659",
+     "trecho": "Upon the expiration of the later of three years from recordation of the tax lien certificate ... or six months after providing the notices"
+    },
+    {
+     "campo": "resgate",
+     "url": "https://www.legis.la.gov/legis/Law.aspx?d=631610",
+     "trecho": "a tax lien shall be extinguished by payment of the termination price to the tax collector"
+    },
+    {
+     "campo": "online",
+     "url": "https://www.legis.la.gov/legis/Law.aspx?d=631549",
+     "trecho": "If a tax lien auction is conducted by using an online or electronic bidding process that is conducted over the course of multiple days"
+    },
+    {
+     "campo": "quando",
+     "url": "https://www.legis.la.gov/legis/Law.aspx?d=631549",
+     "trecho": "on or before May first of the year following the year in which the taxes were assessed, or as soon thereafter as possible"
+    }
+   ],
    "conferido": "2026-11-27",
    "pendente": [
-    "tipo",
-    "juros",
-    "resgate",
-    "online",
-    "otc",
-    "quando",
-    "lei"
+    "otc"
    ]
   },
   "ME": {
@@ -1328,27 +1435,53 @@
     "pt": "Massachusetts"
    },
    "fips": "25",
-   "tipo": "a confirmar",
-   "tipo_nota": "a confirmar",
-   "juros": "a confirmar",
-   "resgate": "a confirmar",
+   "tipo": "lien",
+   "tipo_nota": {
+    "en": "The town takes or sells a 'tax title' (a lien-like title the owner can redeem); the treasurer may auction it to the highest bidder, who must foreclose in Land Court.",
+    "pt": "A cidade toma ou vende um 'tax title' (título tipo ônus que o dono pode resgatar); o tesoureiro pode leiloá-lo ao maior lance, e quem compra precisa executar na Land Court."
+   },
+   "juros": {
+    "en": "Owner redeeming a town-held tax title pays 8% interest on the original sum from the date of sale or taking.",
+    "pt": "O dono que resgata um tax title em mãos da cidade paga juros de 8% sobre o valor original desde a data da venda ou tomada."
+   },
+   "resgate": {
+    "en": "Owner may redeem until a Land Court foreclosure petition is filed; that petition generally only after 12 months from the sale or taking.",
+    "pt": "O dono pode resgatar até ser aberta a ação de execução na Land Court; em geral ela só pode ser aberta 12 meses após a venda ou tomada."
+   },
    "quando": "a confirmar",
    "online": "a confirmar",
    "otc": "a confirmar",
    "lei": {
-    "cit": "M.G.L. c. 60 (tax titles; redemption § 62; Land Court foreclosure § 65)",
-    "url": "a confirmar"
+    "cit": "M.G.L. c. 60 (tax titles; assignment § 52; redemption § 62; Land Court foreclosure § 65)",
+    "url": "https://malegislature.gov/Laws/GeneralLaws/PartI/TitleIX/Chapter60/Section62"
    },
-   "fontes": [],
+   "fontes": [
+    {
+     "campo": "tipo",
+     "url": "https://malegislature.gov/Laws/GeneralLaws/PartI/TitleIX/Chapter60/Section52",
+     "trecho": "The treasurer ... holding 1 or more tax titles may assign and transfer such tax title or titles ... to the highest bidder after a public auction"
+    },
+    {
+     "campo": "juros",
+     "url": "https://malegislature.gov/Laws/GeneralLaws/PartI/TitleIX/Chapter60/Section62",
+     "trecho": "taken or purchased by the town and has not been assigned, may redeem ... and interest at 8 per cent upon the original sum"
+    },
+    {
+     "campo": "resgate",
+     "url": "https://malegislature.gov/Laws/GeneralLaws/PartI/TitleIX/Chapter60/Section62",
+     "trecho": "at any time prior to the filing of a petition for foreclosure under section sixty-five"
+    },
+    {
+     "campo": "resgate",
+     "url": "https://malegislature.gov/Laws/GeneralLaws/PartI/TitleIX/Chapter60/Section65",
+     "trecho": "may bring a petition in the land court for the foreclosure of all rights of redemption ... after 12 months from the sale or taking"
+    }
+   ],
    "conferido": "2026-11-27",
    "pendente": [
-    "tipo",
-    "juros",
-    "resgate",
     "online",
     "otc",
-    "quando",
-    "lei"
+    "quando"
    ]
   },
   "MI": {
@@ -1374,11 +1507,11 @@
     "en": "Public auction after foreclosure; Wayne County lists September–October.",
     "pt": "Leilão público após a execução; Wayne County indica setembro–outubro."
    },
-   "online": "a confirmar",
+   "online": "varia",
    "otc": "a confirmar",
    "lei": {
-    "cit": "General Property Tax Act, MCL 211.78 et seq. (PA 123 of 1999), incl. MCL 211.78k, 211.78m — not read",
-    "url": "a confirmar"
+    "cit": "General Property Tax Act, MCL 211.78 et seq. (PA 123 of 1999), incl. MCL 211.78k (foreclosure judgment), 211.78m (auction)",
+    "url": "https://legislature.mi.gov/Laws/MCL?objectName=mcl-211-78m"
    },
    "fontes": [
     {
@@ -1395,14 +1528,22 @@
      "campo": "quando",
      "url": "https://www.waynecountymi.gov/Government/Elected-Officials/Treasurer/Property-Tax-Information/ForfeitureForeclosure-Timeline",
      "trecho": "Property is sold at public auction (September and October 2025)"
+    },
+    {
+     "campo": "online",
+     "url": "https://legislature.mi.gov/Laws/MCL?objectName=mcl-211-78m",
+     "trecho": "will be sold by auction sale, which may include an auction sale conducted via an internet website"
+    },
+    {
+     "campo": "quando",
+     "url": "https://legislature.mi.gov/Laws/MCL?objectName=mcl-211-78m",
+     "trecho": "beginning on the third Tuesday in July ... and ending on the immediately succeeding first Tuesday in November ... shall hold 1 or more property sales"
     }
    ],
    "condado": "Wayne",
    "conferido": "2026-11-27",
    "pendente": [
-    "online",
-    "otc",
-    "lei"
+    "otc"
    ]
   },
   "MN": {
@@ -1480,13 +1621,19 @@
     "en": "Annual tax sale to private buyers; title matures only if not redeemed within 2 years; unsold land is struck off to the State.",
     "pt": "Venda fiscal anual a compradores privados; o título só se consolida sem resgate em 2 anos; o que não vende vai ao Estado."
    },
-   "juros": "a confirmar",
+   "juros": {
+    "en": "On redemption the buyer gets back taxes and penalty plus 1.5% interest; no interest and no refund on the overbid (county page; statute not read).",
+    "pt": "No resgate o comprador recebe impostos e multa mais juros de 1,5%; sem juros e sem devolução do ágio (página do condado; lei não lida)."
+   },
    "resgate": {
     "en": "2 years after the tax sale.",
     "pt": "2 anos após a venda fiscal."
    },
-   "quando": "a confirmar",
-   "online": "a confirmar",
+   "quando": {
+    "en": "Tax sale on the last Monday in August each year.",
+    "pt": "Venda fiscal na última segunda-feira de agosto, todo ano."
+   },
+   "online": "sim",
    "otc": "sim",
    "lei": {
     "cit": "Miss. Code Ann. Title 27, ch. 41 and ch. 45 (e.g. § 27-45-21); Miss. Admin. Code Title 1, Part 11, ch. 1 (Secretary of State, tax-forfeited lands)",
@@ -1507,13 +1654,26 @@
      "campo": "otc",
      "url": "https://www.sos.ms.gov/content/documents/lands/00000176c.pdf",
      "trecho": "lands approved for public sale by the Attorney General and upon which applications to purchase have been received"
+    },
+    {
+     "campo": "juros",
+     "url": "https://itawamba.gov/tax-collector/",
+     "trecho": "tax sale purchasers are returned the base amount of the taxes and penalty (excluding overbid) plus 1.5% interest"
+    },
+    {
+     "campo": "online",
+     "url": "https://desotocountyms.gov/690/Tax-Sale-Information",
+     "trecho": "The Tax Collector uses an online bidding platform with the assistance of GovEase."
+    },
+    {
+     "campo": "quando",
+     "url": "https://desotocountyms.gov/690/Tax-Sale-Information",
+     "trecho": "The DeSoto County Tax Collector holds their Tax Sale on the last Monday in August each year."
     }
    ],
+   "condado": "DeSoto / Itawamba",
    "conferido": "2026-11-27",
    "pendente": [
-    "juros",
-    "online",
-    "quando",
     "lei"
    ]
   },
@@ -1528,17 +1688,23 @@
     "en": "Counties under RSMo ch. 140 hold an annual tax certificate sale; the buyer gets a deed only if not redeemed.",
     "pt": "Condados sob o cap. 140 RSMo fazem venda anual de certificado; o comprador só recebe escritura se não houver resgate."
    },
-   "juros": "a confirmar",
-   "resgate": "a confirmar",
+   "juros": {
+    "en": "Owner redeeming pays interest at the certificate rate, up to 10% a year (none on the bid excess), plus 8% a year on later taxes the buyer paid.",
+    "pt": "O dono que resgata paga juros do certificado, até 10% ao ano (nada sobre o excedente do lance), mais 8% ao ano sobre impostos posteriores pagos pelo comprador."
+   },
+   "resgate": {
+    "en": "1st/2nd offering: 1 year absolute, then until the buyer gets the deed. 3rd offering: 90 days. Sales after the 3rd offering: immediate deed.",
+    "pt": "1ª/2ª oferta: 1 ano absoluto, depois até o comprador receber a escritura. 3ª oferta: 90 dias. Vendas após a 3ª oferta: escritura imediata."
+   },
    "quando": {
     "en": "Annually on the fourth Monday of August (Ste. Genevieve County, under RSMo ch. 140).",
     "pt": "Anualmente na quarta segunda-feira de agosto (Ste. Genevieve County, pelo cap. 140 RSMo)."
    },
    "online": "a confirmar",
-   "otc": "a confirmar",
+   "otc": "sim",
    "lei": {
-    "cit": "RSMo ch. 140 (§§ 140.150–140.250 etc.); some cities/charter counties use ch. 141 Land Tax Collection Law — not read",
-    "url": "a confirmar"
+    "cit": "RSMo ch. 140 (§§ 140.150–140.420; redemption § 140.340; third offering § 140.250); some cities/charter counties use ch. 141",
+    "url": "https://revisor.mo.gov/main/OneSection.aspx?section=140.340"
    },
    "fontes": [
     {
@@ -1550,16 +1716,37 @@
      "campo": "quando",
      "url": "https://stegencounty.gov/tax-sale-information",
      "trecho": "In accordance with Chapter 140 of the Revised Statutes of Missouri (RSMo)."
+    },
+    {
+     "campo": "juros",
+     "url": "https://revisor.mo.gov/main/OneSection.aspx?section=140.340",
+     "trecho": "together with interest at the rate specified in such certificate, not to exceed ten percent annually"
+    },
+    {
+     "campo": "resgate",
+     "url": "https://revisor.mo.gov/main/OneSection.aspx?section=140.340",
+     "trecho": "absolute right to redeem the same at any time during the one year next ensuing and shall continue to have a defeasible right to redeem"
+    },
+    {
+     "campo": "resgate",
+     "url": "https://revisor.mo.gov/main/OneSection.aspx?section=140.250",
+     "trecho": "sell same to the highest bidder ... and there shall be a ninety-day period"
+    },
+    {
+     "campo": "otc",
+     "url": "https://revisor.mo.gov/main/OneSection.aspx?section=140.250",
+     "trecho": "not sold at such third offering, then the collector shall ... offer such lands or lots for sale once every thirty days"
+    },
+    {
+     "campo": "resgate",
+     "url": "https://revisor.mo.gov/main/OneSection.aspx?section=140.250",
+     "trecho": "A purchaser at any sale subsequent to the third offering ... shall be entitled to the immediate issuance and delivery of a collector's deed"
     }
    ],
    "condado": "Ste. Genevieve",
    "conferido": "2026-11-27",
    "pendente": [
-    "juros",
-    "resgate",
-    "online",
-    "otc",
-    "lei"
+    "online"
    ]
   },
   "MT": {
@@ -1629,27 +1816,70 @@
     "pt": "Nebraska"
    },
    "fips": "31",
-   "tipo": "a confirmar",
-   "tipo_nota": "a confirmar",
-   "juros": "a confirmar",
-   "resgate": "a confirmar",
-   "quando": "a confirmar",
+   "tipo": "lien",
+   "tipo_nota": {
+    "en": "The county treasurer sells tax sale certificates at public auction (round-robin allowed); the holder can seek a tax deed or foreclose if not redeemed.",
+    "pt": "O tesoureiro do condado vende certificados de venda fiscal em leilão (rodízio permitido); sem resgate, o titular pede escritura ou executa."
+   },
+   "juros": {
+    "en": "14% per year on the certificate amount, at the statutory rate (not bid down).",
+    "pt": "14% ao ano sobre o valor do certificado, pela taxa legal (sem lance de juros)."
+   },
+   "resgate": {
+    "en": "Until the buyer applies for a tax deed, which is allowed 3 years after the sale (2 years if vacant and abandoned).",
+    "pt": "Até o comprador pedir a escritura, o que pode ocorrer 3 anos após a venda (2 anos se vago e abandonado)."
+   },
+   "quando": {
+    "en": "Property with taxes unpaid by the first Monday of March is subject to sale on or after that date.",
+    "pt": "Imóvel com imposto não pago até a primeira segunda-feira de março pode ir a venda a partir dessa data."
+   },
    "online": "a confirmar",
    "otc": "a confirmar",
    "lei": {
-    "cit": "Neb. Rev. Stat. § 77-1801 et seq. (citation located via search, not read on official site)",
-    "url": "a confirmar"
+    "cit": "Neb. Rev. Stat. §§ 77-1801 to 77-1863 (tax sale; auction § 77-1807; redemption § 77-1824; tax deed § 77-1837); interest § 45-104.01",
+    "url": "https://nebraskalegislature.gov/laws/statutes.php?statute=77-1807"
    },
-   "fontes": [],
+   "fontes": [
+    {
+     "campo": "tipo",
+     "url": "https://nebraskalegislature.gov/laws/statutes.php?statute=77-1807",
+     "trecho": "the person who offers to pay the amount of taxes, delinquent interest, and costs due on any real property shall be the purchaser"
+    },
+    {
+     "campo": "tipo",
+     "url": "https://nebraskalegislature.gov/laws/statutes.php?statute=77-1837",
+     "trecho": "may apply to the county treasurer for a tax deed for the real estate described in such purchaser's or assignee's tax sale certificate"
+    },
+    {
+     "campo": "juros",
+     "url": "https://nebraskalegislature.gov/laws/statutes.php?statute=77-1824",
+     "trecho": "the sum mentioned in his or her certificate, with interest thereon at the rate specified in section 45-104.01"
+    },
+    {
+     "campo": "juros",
+     "url": "https://nebraskalegislature.gov/laws/statutes.php?statute=45-104.01",
+     "trecho": "shall be assessed at a rate of fourteen percent per annum"
+    },
+    {
+     "campo": "resgate",
+     "url": "https://nebraskalegislature.gov/laws/statutes.php?statute=77-1824",
+     "trecho": "The right of redemption expires when the purchaser files an application for tax deed with the county"
+    },
+    {
+     "campo": "resgate",
+     "url": "https://nebraskalegislature.gov/laws/statutes.php?statute=77-1837",
+     "trecho": "shall apply at any time within nine months after the expiration of three years after the date of sale"
+    },
+    {
+     "campo": "quando",
+     "url": "https://nebraskalegislature.gov/laws/statutes.php?statute=77-1801",
+     "trecho": "on or before the first Monday of March, after they become delinquent, shall be subject to sale on or after such date"
+    }
+   ],
    "conferido": "2026-11-27",
    "pendente": [
-    "tipo",
-    "juros",
-    "resgate",
     "online",
-    "otc",
-    "quando",
-    "lei"
+    "otc"
    ]
   },
   "NV": {
@@ -1719,27 +1949,53 @@
     "pt": "Nova Hampshire"
    },
    "fips": "33",
-   "tipo": "a confirmar",
-   "tipo_nota": "a confirmar",
-   "juros": "a confirmar",
-   "resgate": "a confirmar",
+   "tipo": "deed",
+   "tipo_nota": {
+    "en": "The tax lien is executed only to the town; if unredeemed in 2 years the town takes a tax deed and may resell the property by public auction or sealed bids.",
+    "pt": "O ônus fiscal é executado só em favor da cidade; sem resgate em 2 anos a cidade recebe a escritura e pode revender o imóvel em leilão ou por propostas lacradas."
+   },
+   "juros": {
+    "en": "Owner redeeming pays the town 14% per year on the recorded lien; investors do not buy the lien.",
+    "pt": "O dono que resgata paga à cidade 14% ao ano sobre o ônus registrado; investidores não compram o ônus."
+   },
+   "resgate": {
+    "en": "2 years from the execution of the tax lien, until the collector gives the tax deed; none after the town's resale.",
+    "pt": "2 anos a partir da execução do ônus, até o coletor emitir a escritura; nenhum após a revenda pela cidade."
+   },
    "quando": "a confirmar",
    "online": "a confirmar",
    "otc": "a confirmar",
    "lei": {
-    "cit": "RSA 80 (collection of taxes: tax lien execution and tax deed)",
-    "url": "a confirmar"
+    "cit": "N.H. RSA ch. 80 (real estate tax lien §§ 80:58-86; redemption 80:69; tax deed 80:76; transfer/sale 80:80)",
+    "url": "https://gc.nh.gov/rsa/html/V/80/80-mrg.htm"
    },
-   "fontes": [],
+   "fontes": [
+    {
+     "campo": "tipo",
+     "url": "https://gc.nh.gov/rsa/html/V/80/80-mrg.htm",
+     "trecho": "RSA 80:61: The collector shall execute to the municipality, county or state only"
+    },
+    {
+     "campo": "tipo",
+     "url": "https://gc.nh.gov/rsa/html/V/80/80-mrg.htm",
+     "trecho": "RSA 80:80 II: to convey such property by deed, either a public auction shall be held, or ... sold by advertised sealed bids"
+    },
+    {
+     "campo": "juros",
+     "url": "https://gc.nh.gov/rsa/html/V/80/80-mrg.htm",
+     "trecho": "RSA 80:69: the amount of the real estate lien, with interest at 14 percent per annum upon the whole amount of the recorded lien"
+    },
+    {
+     "campo": "resgate",
+     "url": "https://gc.nh.gov/rsa/html/V/80/80-mrg.htm",
+     "trecho": "RSA 80:76: The collector, after 2 years from the execution of the real estate tax lien, shall execute to the lienholder a deed"
+    }
+   ],
    "conferido": "2026-11-27",
    "pendente": [
-    "tipo",
-    "juros",
-    "resgate",
     "online",
     "otc",
-    "quando",
-    "lei"
+    "quando"
    ]
   },
   "NJ": {
@@ -1947,27 +2203,48 @@
     "pt": "Carolina do Norte"
    },
    "fips": "37",
-   "tipo": "a confirmar",
-   "tipo_nota": "a confirmar",
-   "juros": "a confirmar",
-   "resgate": "a confirmar",
+   "tipo": "deed",
+   "tipo_nota": {
+    "en": "The taxing unit forecloses its tax lien in court; a commissioner sells the property at public auction, open to 10-day upset bids, then the court confirms.",
+    "pt": "O ente tributante executa o ônus fiscal na Justiça; um comissário leiloa o imóvel, há 10 dias para lances maiores (upset bid) e depois o juiz confirma."
+   },
+   "juros": {
+    "en": "Not applicable",
+    "pt": "Não se aplica"
+   },
+   "resgate": {
+    "en": "Only before the court confirms the foreclosure sale (owner pays taxes, penalties, interest and costs); none after confirmation.",
+    "pt": "Só antes de o juiz confirmar a venda (o dono paga impostos, multas, juros e custas); nenhum após a confirmação."
+   },
    "quando": "a confirmar",
    "online": "a confirmar",
    "otc": "a confirmar",
    "lei": {
-    "cit": "N.C.G.S. §§ 105-374 (foreclosure action) and 105-375 (in rem foreclosure)",
-    "url": "a confirmar"
+    "cit": "N.C.G.S. § 105-374 (foreclosure action) and § 105-375 (in rem foreclosure); upset bids under G.S. ch. 1, art. 29A",
+    "url": "https://www.ncleg.gov/EnactedLegislation/Statutes/HTML/BySection/Chapter_105/GS_105-374.html"
    },
-   "fontes": [],
+   "fontes": [
+    {
+     "campo": "tipo",
+     "url": "https://www.ncleg.gov/EnactedLegislation/Statutes/HTML/BySection/Chapter_105/GS_105-374.html",
+     "trecho": "(m) Sale. - The sale shall be by public auction to the highest bidder and shall ... be held at the courthouse door"
+    },
+    {
+     "campo": "tipo",
+     "url": "https://www.ncleg.gov/EnactedLegislation/Statutes/HTML/BySection/Chapter_105/GS_105-374.html",
+     "trecho": "At any time within 10 days after the commissioner files the report of the foreclosure sale ... an increased bid may be filed"
+    },
+    {
+     "campo": "resgate",
+     "url": "https://www.ncleg.gov/EnactedLegislation/Statutes/HTML/BySection/Chapter_105/GS_105-374.html",
+     "trecho": "In case of redemption before confirmation of the foreclosure sale, the person redeeming shall be required to pay"
+    }
+   ],
    "conferido": "2026-11-27",
    "pendente": [
-    "tipo",
-    "juros",
-    "resgate",
     "online",
     "otc",
-    "quando",
-    "lei"
+    "quando"
    ]
   },
   "ND": {
@@ -2040,27 +2317,58 @@
     "pt": "Ohio"
    },
    "fips": "39",
-   "tipo": "a confirmar",
-   "tipo_nota": "a confirmar",
-   "juros": "a confirmar",
-   "resgate": "a confirmar",
+   "tipo": "hibrido",
+   "tipo_nota": {
+    "en": "County treasurers may sell tax certificates (liens) on selected parcels; delinquent land is otherwise foreclosed and sold, with forfeited land resold under ch. 5723.",
+    "pt": "O tesoureiro do condado pode vender certificados (ônus) de parcelas escolhidas; nas demais o imóvel é executado e vendido, e o terreno perdido é revendido pelo cap. 5723."
+   },
+   "juros": {
+    "en": "Certificate auction starts at 18% simple interest per year and is bid down in 0.25% steps, to as low as 0%.",
+    "pt": "O leilão de certificado começa em 18% de juros simples ao ano e cai em passos de 0,25%, podendo chegar a 0%."
+   },
+   "resgate": {
+    "en": "Certificate holder can start foreclosure 1 year after the sale, until the certificate period ends; in foreclosure, redemption until the sale is confirmed.",
+    "pt": "O titular do certificado pode pedir a execução 1 ano após a venda, até o fim do prazo do certificado; na execução, resgate até a confirmação da venda."
+   },
    "quando": "a confirmar",
    "online": "a confirmar",
    "otc": "a confirmar",
    "lei": {
-    "cit": "Ohio R.C. ch. 5721 (tax certificates §§ 5721.30-5721.43; foreclosure) and ch. 5723 (forfeited lands)",
-    "url": "a confirmar"
+    "cit": "Ohio R.C. ch. 5721 (tax certificates §§ 5721.30-5721.43; foreclosure § 5721.19; redemption § 5721.25) and ch. 5723 (forfeited lands)",
+    "url": "https://codes.ohio.gov/ohio-revised-code/section-5721.32"
    },
-   "fontes": [],
+   "fontes": [
+    {
+     "campo": "tipo",
+     "url": "https://codes.ohio.gov/ohio-revised-code/section-5721.31",
+     "trecho": "the county treasurer may select ... parcels ... the lien against which the county treasurer may attempt to transfer by the sale of tax certificates"
+    },
+    {
+     "campo": "tipo",
+     "url": "https://codes.ohio.gov/ohio-revised-code/section-5721.19",
+     "trecho": "if at a subsequent time a parcel is sold at a foreclosure sale or a forfeiture sale pursuant to Chapter 5723. of the Revised Code"
+    },
+    {
+     "campo": "juros",
+     "url": "https://codes.ohio.gov/ohio-revised-code/section-5721.32",
+     "trecho": "shall begin the bidding at eighteen per cent per year simple interest, and accept lower bids in even increments of one-fourth of one per cent"
+    },
+    {
+     "campo": "resgate",
+     "url": "https://codes.ohio.gov/ohio-revised-code/section-5721.37",
+     "trecho": "At any time after one year from the date ... the tax certificate was sold, and not later than the end of the certificate period"
+    },
+    {
+     "campo": "resgate",
+     "url": "https://codes.ohio.gov/ohio-revised-code/section-5721.25",
+     "trecho": "but before the filing of an entry of confirmation of sale pursuant to the proceeding ... any person entitled to redeem the land"
+    }
+   ],
    "conferido": "2026-11-27",
    "pendente": [
-    "tipo",
-    "juros",
-    "resgate",
     "online",
     "otc",
-    "quando",
-    "lei"
+    "quando"
    ]
   },
   "OK": {
@@ -2069,35 +2377,34 @@
     "pt": "Oklahoma"
    },
    "fips": "40",
-   "tipo": "a confirmar",
-   "tipo_nota": "a confirmar",
-   "juros": "a confirmar",
-   "resgate": "a confirmar",
+   "tipo": "deed",
+   "tipo_nota": {
+    "en": "After 3 years of unpaid taxes the county treasurer sells the property itself at the June resale and issues a resale tax deed; the old certificate sale sections were repealed.",
+    "pt": "Após 3 anos de imposto em atraso, o tesoureiro do condado vende o próprio imóvel no resale de junho e emite escritura; as seções da antiga venda de certificado foram revogadas."
+   },
+   "juros": {
+    "en": "Not applicable",
+    "pt": "Não se aplica"
+   },
+   "resgate": {
+    "en": "Until the resale auction starts (none after); minors or incapacitated owners get 1 year after the disability ends.",
+    "pt": "Até o início do leilão de resale (nenhum depois); menores ou incapazes têm 1 ano após cessar a incapacidade."
+   },
    "quando": {
     "en": "Annually on the second Monday of June in each county (online auctions start that same week).",
     "pt": "Anualmente na segunda segunda-feira de junho em cada condado (leilão online começa na mesma semana)."
    },
    "online": "varia",
-   "otc": "a confirmar",
+   "otc": "sim",
    "lei": {
-    "cit": "68 O.S. §§ 3105, 3113, 3125, 3127, 3129 (as amended by HB 1663, 2025, eff. Nov 1, 2025)",
-    "url": "https://www.oklegislature.gov/cf_pdf/2025-26 ENR/hB/HB1663 ENR.PDF"
+    "cit": "68 O.S. §§ 3105, 3113, 3125, 3135 (as amended by HB 1663, 2025, eff. Nov 1, 2025)",
+    "url": "https://www.oscn.net/applications/oscn/DeliverDocument.asp?CiteID=436510"
    },
    "fontes": [
     {
      "campo": "tipo",
-     "url": "https://www.oklegislature.gov/cf_pdf/2025-26 INT/hB/HB3847 INT.PDF",
-     "trecho": "have been unpaid for a period of three (3) years or more ... advertise and sell such real estate ... at the tax resale"
-    },
-    {
-     "campo": "tipo",
      "url": "https://www.oklegislature.gov/cf_pdf/2025-26 ENR/hB/HB1663 ENR.PDF",
      "trecho": "The real estate shall be sold at public auction to the highest bidder for cash or certified funds."
-    },
-    {
-     "campo": "resgate",
-     "url": "https://www.oklegislature.gov/cf_pdf/2025-26 ENR/hB/HB1663 ENR.PDF",
-     "trecho": "may redeem the same at any time before ... the start of the resale auction"
     },
     {
      "campo": "resgate",
@@ -2118,15 +2425,30 @@
      "campo": "quando",
      "url": "https://www.oklegislature.gov/cf_pdf/2025-26 ENR/hB/HB1663 ENR.PDF",
      "trecho": "resale, which shall be held on the second Monday of June each year in each county"
+    },
+    {
+     "campo": "tipo",
+     "url": "https://www.oscn.net/applications/oscn/DeliverDocument.asp?CiteID=436510",
+     "trecho": "§ 3105 A: unpaid for a period of three (3) years or more ... advertise and sell such real estate ... at the tax resale"
+    },
+    {
+     "campo": "tipo",
+     "url": "https://www.oscn.net/applications/oscn/DeliverDocument.asp?CiteID=439207",
+     "trecho": "§ 3108. Repealed by Laws 2008, SB 1770, c. 82, § 8, emerg. eff. April 24, 2008"
+    },
+    {
+     "campo": "resgate",
+     "url": "https://www.oscn.net/applications/oscn/DeliverDocument.asp?CiteID=93165",
+     "trecho": "may redeem the same at any time before the start of the resale auction (Amended by Laws 2025, HB 1663, eff. November 1, 2025)"
+    },
+    {
+     "campo": "otc",
+     "url": "https://www.oscn.net/applications/oscn/DeliverDocument.asp?CiteID=93189",
+     "trecho": "Any property acquired by the county under the provisions of the resale tax laws may be sold by the county treasurer ... after receipt of bid"
     }
    ],
    "conferido": "2026-11-27",
-   "pendente": [
-    "tipo",
-    "juros",
-    "resgate",
-    "otc"
-   ]
+   "pendente": []
   },
   "OR": {
    "nome": {
@@ -2209,7 +2531,7 @@
     "en": "Upset sale between the second Monday of September and October 1, adjournable to year end.",
     "pt": "Upset Sale entre a segunda segunda-feira de setembro e 1º de outubro, podendo ser adiado até o fim do ano."
    },
-   "online": "a confirmar",
+   "online": "varia",
    "otc": "sim",
    "lei": {
     "cit": "72 P.S. § 5860.101 et seq. (Real Estate Tax Sale Law, Act 542 of 1947)",
@@ -2240,12 +2562,25 @@
      "campo": "quando",
      "url": "https://www.legis.state.pa.us/WU01/LI/LI/US/PDF/1947/0/0542..PDF",
      "trecho": "The bureau shall schedule the date of the sale no earlier than the second Monday of September and before October 1"
+    },
+    {
+     "campo": "online",
+     "url": "https://www.berkspa.gov/departments/tax-claim-bureau/tax-sale-information",
+     "trecho": "Berks: we have partnered with Bid4Assets to handle all of our Tax Sales online."
+    },
+    {
+     "campo": "online",
+     "url": "https://eriecountypa.gov/departments/tax-claim-and-revenue/tax-sales/",
+     "trecho": "Erie: This sale is held as an online public auction."
+    },
+    {
+     "campo": "online",
+     "url": "https://delcopa.gov/treasurer/upsetinstructions",
+     "trecho": "Delaware County: Paperwork must be picked up from the Tax Claim Bureau prior to leaving the Courthouse after the sale."
     }
    ],
    "conferido": "2026-11-27",
-   "pendente": [
-    "online"
-   ]
+   "pendente": []
   },
   "RI": {
    "nome": {
@@ -2334,7 +2669,10 @@
     "en": "12 months from the sale date.",
     "pt": "12 meses a partir da data do leilão."
    },
-   "quando": "a confirmar",
+   "quando": {
+    "en": "Each county sets its own date, usually in the fall (e.g. Richland Nov. 2, 2026; Saluda Dec. 8, 2026).",
+    "pt": "Cada condado marca sua data, em geral no outono (ex.: Richland 2/11/2026; Saluda 8/12/2026)."
+   },
    "online": "a confirmar",
    "otc": "sim",
    "lei": {
@@ -2361,12 +2699,22 @@
      "campo": "otc",
      "url": "https://www.scstatehouse.gov/code/t12c059.php",
      "trecho": "12-59-80: commission may assign its bids, not less than the amount of taxes; unassigned bids go on a first come, first served basis"
+    },
+    {
+     "campo": "quando",
+     "url": "https://saludacounty.sc.gov/departments/tax-collector/delinquent-tax-sale",
+     "trecho": "2026 Delinquent Tax Sale Tuesday, December 8, 2026, at 10:00 a.m."
+    },
+    {
+     "campo": "quando",
+     "url": "https://www.richlandcountysc.gov/Property-Business/Taxes/Delinquent-Taxes/Tax-Sale",
+     "trecho": "If you have a bidder number from the November 2, 2026 Tax Sale you do not have to register again."
     }
    ],
+   "condado": "Saluda / Richland",
    "conferido": "2026-11-27",
    "pendente": [
-    "online",
-    "quando"
+    "online"
    ]
   },
   "SD": {
@@ -2457,7 +2805,7 @@
     "pt": "Definido por condado; Hamilton County faz um leilão por ano (junho)."
    },
    "online": "a confirmar",
-   "otc": "a confirmar",
+   "otc": "nao",
    "lei": {
     "cit": "Tenn. Code Ann. § 67-5-2501 et seq.; redemption § 67-5-2701",
     "url": "a confirmar"
@@ -2482,13 +2830,17 @@
      "campo": "quando",
      "url": "https://www.hamiltontn.gov/Clerkmasterforms/taxsale/2026TaxSale/TAX%20SALE%20INFORMATION%202026.pdf",
      "trecho": "Once a year, tax sale auction is on Thursday, June 05, 2025."
+    },
+    {
+     "campo": "otc",
+     "url": "https://chanceryclerkandmaster.nashville.gov/fees/delinquent-tax-sales/",
+     "trecho": "Delinquent tax properties are sold only by public auction and will not be sold over the counter."
     }
    ],
-   "condado": "Hamilton",
+   "condado": "Hamilton / Davidson (Nashville)",
    "conferido": "2026-11-27",
    "pendente": [
     "online",
-    "otc",
     "lei"
    ]
   },
@@ -2625,27 +2977,53 @@
     "pt": "Vermont"
    },
    "fips": "50",
-   "tipo": "a confirmar",
-   "tipo_nota": "a confirmar",
-   "juros": "a confirmar",
-   "resgate": "a confirmar",
+   "tipo": "redeemable",
+   "tipo_nota": {
+    "en": "The town tax collector auctions the land itself (only as much as needed for the tax); the owner can redeem for 1 year, otherwise the buyer gets the deed.",
+    "pt": "O coletor da cidade leiloa o próprio terreno (só o necessário para cobrir o imposto); o dono pode resgatar em 1 ano, senão o comprador recebe a escritura."
+   },
+   "juros": {
+    "en": "Owner redeeming repays the sale price plus 1% per month (or fraction) from the day of sale; not bid down.",
+    "pt": "O dono que resgata devolve o preço da venda mais 1% ao mês (ou fração) desde a venda; não há lance de juros."
+   },
+   "resgate": {
+    "en": "1 year from the day of sale.",
+    "pt": "1 ano a partir do dia da venda."
+   },
    "quando": "a confirmar",
    "online": "a confirmar",
    "otc": "a confirmar",
    "lei": {
-    "cit": "32 V.S.A. ch. 133 (§§ 5252–5262, tax sales)",
-    "url": "a confirmar"
+    "cit": "32 V.S.A. ch. 133, subch. 9 (§§ 5252–5262, tax sales; redemption § 5260)",
+    "url": "https://legislature.vermont.gov/statutes/fullchapter/32/133"
    },
-   "fontes": [],
+   "fontes": [
+    {
+     "campo": "tipo",
+     "url": "https://legislature.vermont.gov/statutes/fullchapter/32/133",
+     "trecho": "§ 5252(a)(2): Advertise forthwith such land for sale at public auction in the town where it lies"
+    },
+    {
+     "campo": "tipo",
+     "url": "https://legislature.vermont.gov/statutes/fullchapter/32/133",
+     "trecho": "§ 5260(a): within one year from the day of sale, pays or tenders ... a deed of the land shall not be made to the purchaser"
+    },
+    {
+     "campo": "juros",
+     "url": "https://legislature.vermont.gov/statutes/fullchapter/32/133",
+     "trecho": "the sum for which the land was sold with interest ... at a rate of one percent per month ... from the day of sale"
+    },
+    {
+     "campo": "resgate",
+     "url": "https://legislature.vermont.gov/statutes/fullchapter/32/133",
+     "trecho": "§ 5260. Redemption (a) When the owner, lien holder, or mortgagee of lands sold for taxes ... within one year from the day of sale"
+    }
+   ],
    "conferido": "2026-11-27",
    "pendente": [
-    "tipo",
-    "juros",
-    "resgate",
     "online",
     "otc",
-    "quando",
-    "lei"
+    "quando"
    ]
   },
   "VA": {
@@ -2776,19 +3154,24 @@
    "resgate": "a confirmar",
    "quando": "a confirmar",
    "online": "a confirmar",
-   "otc": "a confirmar",
+   "otc": "sim",
    "lei": {
     "cit": "W. Va. Code ch. 11A, art. 3 (Sale of Tax Liens and Nonentered, Escheated and Waste and Unappropriated Lands)",
     "url": "a confirmar"
    },
-   "fontes": [],
+   "fontes": [
+    {
+     "campo": "otc",
+     "url": "https://www.wvsao.gov/CountyCollections/Default",
+     "trecho": "No Bid Listings Select a county to view properties currently available for bid."
+    }
+   ],
    "conferido": "2026-11-27",
    "pendente": [
     "tipo",
     "juros",
     "resgate",
     "online",
-    "otc",
     "quando",
     "lei"
    ]
@@ -2799,27 +3182,69 @@
     "pt": "Wisconsin"
    },
    "fips": "55",
-   "tipo": "a confirmar",
-   "tipo_nota": "a confirmar",
-   "juros": "a confirmar",
-   "resgate": "a confirmar",
-   "quando": "a confirmar",
-   "online": "a confirmar",
-   "otc": "a confirmar",
-   "lei": {
-    "cit": "Wis. Stat. chs. 74-75 (e.g. § 75.521 in rem foreclosure, § 75.69 county sale; located via search, not read)",
-    "url": "a confirmar"
+   "tipo": "deed",
+   "tipo_nota": {
+    "en": "Unpaid parcels go on a tax certificate issued to the county; after 2 years the county takes a tax deed (or forecloses in rem) and sells the property.",
+    "pt": "Parcelas em atraso entram num certificado emitido ao próprio condado; após 2 anos o condado toma a escritura (ou executa in rem) e vende o imóvel."
    },
-   "fontes": [],
+   "juros": {
+    "en": "Not applicable",
+    "pt": "Não se aplica"
+   },
+   "resgate": {
+    "en": "About 2 years from the Sept. 1 tax certificate, until the tax deed is recorded; owner pays tax plus 1% per month interest and penalty.",
+    "pt": "Cerca de 2 anos a partir do certificado de 1º de setembro, até registrar a escritura; o dono paga imposto mais juros de 1% ao mês e multa."
+   },
+   "quando": {
+    "en": "County must advertise each acquired property within 240 days of acquiring it (180 days from 2026); timing set by each county.",
+    "pt": "O condado deve anunciar cada imóvel em até 240 dias após adquiri-lo (180 dias a partir de 2026); a data é de cada condado."
+   },
+   "online": "a confirmar",
+   "otc": "sim",
+   "lei": {
+    "cit": "Wis. Stat. ch. 74 (§ 74.47 interest; § 74.57 tax certificate) and ch. 75 (§ 75.01 redemption; § 75.14 tax deed; § 75.521 in rem; § 75.69 sale)",
+    "url": "https://docs.legis.wisconsin.gov/statutes/statutes/75"
+   },
+   "fontes": [
+    {
+     "campo": "tipo",
+     "url": "https://docs.legis.wisconsin.gov/document/statutes/74.57",
+     "trecho": "Two years after the issuance of the tax certificate ... the county is entitled ... Take a tax deed under s. 75.14."
+    },
+    {
+     "campo": "tipo",
+     "url": "https://docs.legis.wisconsin.gov/document/statutes/75.69",
+     "trecho": "no tax delinquent real estate acquired by a county may be sold unless the sale and appraised value ... has first been advertised"
+    },
+    {
+     "campo": "resgate",
+     "url": "https://docs.legis.wisconsin.gov/document/statutes/74.57",
+     "trecho": "Annually, on September 1, the county treasurer shall issue to the county a tax certificate ... commences the redemption period"
+    },
+    {
+     "campo": "resgate",
+     "url": "https://docs.legis.wisconsin.gov/document/statutes/75.01",
+     "trecho": "Any person, prior to the recording of a tax deed based on a tax certificate ... may redeem the land"
+    },
+    {
+     "campo": "resgate",
+     "url": "https://docs.legis.wisconsin.gov/document/statutes/74.47",
+     "trecho": "The interest rate on delinquent general property taxes ... is one percent per month or fraction of a month."
+    },
+    {
+     "campo": "otc",
+     "url": "https://docs.legis.wisconsin.gov/document/statutes/75.69",
+     "trecho": "Any county is authorized to sell for any amount any land previously advertised for sale after advertising the sale"
+    },
+    {
+     "campo": "quando",
+     "url": "https://docs.legis.wisconsin.gov/document/statutes/75.69",
+     "trecho": "no later than 240 days after the county acquires the property or, beginning in 2026, no later than 180 days"
+    }
+   ],
    "conferido": "2026-11-27",
    "pendente": [
-    "tipo",
-    "juros",
-    "resgate",
-    "online",
-    "otc",
-    "quando",
-    "lei"
+    "online"
    ]
   },
   "WY": {
