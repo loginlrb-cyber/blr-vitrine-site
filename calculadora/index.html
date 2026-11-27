@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="index,follow">
+<meta name="theme-color" content="#0b0d11">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob: https:; connect-src 'self' https://api.blrdevelopment.com; object-src 'none'; base-uri 'self'; form-action 'self'">
+<title>Tax Deed Max Bid Calculator (Free) — Auction Bid Ceiling | BLR Developments</title>
+<meta name="description" content="Free tax deed and sheriff sale max bid calculator. Enter the ARV, living area and repairs to get the highest bid that still keeps your margin, with every cost shown step by step.">
+<link rel="canonical" href="https://www.blrdevelopment.com/calculadora/">
+<link rel="alternate" hreflang="en" href="https://www.blrdevelopment.com/calculadora/">
+<link rel="alternate" hreflang="pt-BR" href="https://www.blrdevelopment.com/calculadora/?lang=pt">
+<link rel="alternate" hreflang="x-default" href="https://www.blrdevelopment.com/calculadora/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="BLR Developments">
+<meta property="og:title" content="Free tax deed max bid calculator — BLR Developments">
+<meta property="og:description" content="How much can you bid at a tax deed or upset sale and still make money? The math, step by step, from ARV to bid ceiling.">
+<meta property="og:url" content="https://www.blrdevelopment.com/calculadora/">
+<meta property="og:image" content="https://www.blrdevelopment.com/icon-512.png">
+<meta property="og:locale" content="en_US"><meta property="og:locale:alternate" content="pt_BR">
+<meta name="twitter:card" content="summary">
+<link rel="icon" type="image/svg+xml" href="/blr-icon-small.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Sora:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebApplication","name":"Tax deed max bid calculator","url":"https://www.blrdevelopment.com/calculadora/",
+ "applicationCategory":"FinanceApplication","operatingSystem":"Any","isAccessibleForFree":true,"inLanguage":["en","pt-BR"],
+ "offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"publisher":{"@type":"Organization","name":"BLR Developments","url":"https://www.blrdevelopment.com/"}}
+</script>
+<style>
+/* 27/11: calculadora grátis de lance máximo (isca de SEO e de leads). A conta é a mesma da clássica (vitrine_tpl.html,
+   contaDe/modDe, conta da JV do Rodrigo 31/10); os parâmetros têm os mesmos nomes e valores de lá e o teste_calculadora.py
+   confere a paridade. Tokens claro/escuro e cabeçalho copiados de site_extra/semana/. */
+:root{--bg:#0b0d11;--bg2:#12151b;--card:rgba(255,255,255,.05);--card2:rgba(255,255,255,.085);--ink:#f3f1ec;--mute:#a7abb3;--line:rgba(255,255,255,.12);
+  --gold:#e2b75e;--gold2:#f4d58d;--ok:#7fd6a4;--okbg:rgba(127,214,164,.12);--bad:#f28b82;--badbg:rgba(242,139,130,.12);--warn:#f0b36b;--warnbg:rgba(240,179,107,.12);
+  --sh:0 18px 50px rgba(0,0,0,.45);--r:18px}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]){--bg:#f4f1ea;--bg2:#ebe6da;--card:rgba(255,255,255,.8);--card2:#fff;--ink:#16181d;--mute:#5c6169;--line:rgba(20,20,30,.12);
+  --gold:#9a6f1c;--gold2:#b8892c;--ok:#1d7a4a;--okbg:#e5f4ec;--bad:#b3261e;--badbg:#fbe9e7;--warn:#9a5413;--warnbg:#fbefe1;--sh:0 14px 34px rgba(60,50,20,.12)}}
+:root[data-theme="light"]{--bg:#f4f1ea;--bg2:#ebe6da;--card:rgba(255,255,255,.8);--card2:#fff;--ink:#16181d;--mute:#5c6169;--line:rgba(20,20,30,.12);
+  --gold:#9a6f1c;--gold2:#b8892c;--ok:#1d7a4a;--okbg:#e5f4ec;--bad:#b3261e;--badbg:#fbe9e7;--warn:#9a5413;--warnbg:#fbefe1;--sh:0 14px 34px rgba(60,50,20,.12)}
+:root{color-scheme:dark}:root[data-theme="light"]{color-scheme:light}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]){color-scheme:light}}
+*,*::before,*::after{box-sizing:border-box}html,body{margin:0}[hidden]{display:none!important}
+body{background:var(--bg);color:var(--ink);font:15px/1.6 Sora,system-ui,sans-serif;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+a{color:inherit}.serif{font-family:Fraunces,Georgia,serif;font-weight:500;letter-spacing:-.01em}
+select option{background:var(--bg);color:var(--ink)}
+.top{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:14px clamp(14px,4vw,40px);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:10;background:var(--bg)}
+.marca{display:flex;align-items:center;gap:8px;text-decoration:none;font-weight:600;min-width:0}
+.marca img{width:26px;height:26px}.marca span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.acoes{display:flex;gap:8px;align-items:center;flex:0 0 auto}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.seg button{all:unset;cursor:pointer;padding:6px 10px;font-size:13px;font-weight:600;color:var(--mute)}
+.seg button[aria-pressed="true"]{background:var(--gold);color:#1a1408}
+.ic{all:unset;cursor:pointer;border:1px solid var(--line);border-radius:10px;padding:5px 9px;font-size:14px;line-height:1}
+.seg button:focus-visible,.ic:focus-visible,.bt:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+main{max-width:1080px;margin:0 auto;padding:0 clamp(14px,4vw,40px) 40px}
+section{padding:30px 0 6px}
+h1{font-size:clamp(28px,5vw,48px);line-height:1.08;margin:8px 0 10px}
+h2{font-size:clamp(21px,3.2vw,28px);line-height:1.15;margin:0 0 12px}
+h3{font-size:17px;margin:0 0 6px}
+.kick{display:inline-block;font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--gold)}
+.sub{color:var(--mute);max-width:700px;margin:0 0 18px;font-size:16px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:18px;box-shadow:var(--sh);min-width:0}
+.calc{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:18px;align-items:start}
+@media (max-width:860px){.calc{grid-template-columns:minmax(0,1fr)}}
+.campos{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.campos .tudo{grid-column:1/-1}
+@media (max-width:420px){.campos{grid-template-columns:minmax(0,1fr)}}
+label{display:flex;flex-direction:column;gap:5px;font-size:13px;color:var(--mute);min-width:0}
+label small{font-size:11.5px;color:var(--mute);opacity:.9}
+input,select{font:inherit;font-size:16px;color:var(--ink);background:var(--card2);border:1px solid var(--line);border-radius:10px;padding:9px 11px;min-width:0;width:100%}
+input[type=checkbox]{width:18px;height:18px;flex:0 0 auto;margin:2px 0 0;accent-color:var(--gold)}
+.chk{flex-direction:row;align-items:flex-start;gap:10px;color:var(--ink);font-size:13.5px;line-height:1.45}
+.tipo{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:12px}
+.tipo .seg button{padding:8px 14px;font-size:14px}
+details.av{margin-top:14px;border-top:1px solid var(--line);padding-top:10px}
+details.av summary{cursor:pointer;font-weight:600;font-size:14px;list-style:none;display:flex;justify-content:space-between;gap:10px}
+details.av summary::-webkit-details-marker{display:none}details.av summary::after{content:"+";color:var(--gold);font-weight:700}
+details.av[open] summary::after{content:"–"}
+details.av .campos{margin-top:10px}
+.extra{margin-top:14px;padding:12px;border:1px dashed var(--line);border-radius:12px}
+.extra p{margin:0 0 10px;font-size:12.5px;color:var(--mute)}
+.res .teto{font-family:Fraunces,Georgia,serif;font-weight:600;font-size:clamp(36px,7vw,54px);line-height:1.05;margin:4px 0 2px;overflow-wrap:anywhere}
+.res .teto.neg{color:var(--bad)}
+.res .exato{color:var(--mute);font-size:13px;margin:0 0 12px}
+.veredito{border-radius:12px;padding:10px 12px;font-size:14px;margin:0 0 12px}
+.veredito.ok{background:var(--okbg);color:var(--ok)}.veredito.bad{background:var(--badbg);color:var(--bad)}.veredito.neu{background:var(--card2);color:var(--mute)}
+.kpis{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:6px 0 10px}
+@media (max-width:420px){.kpis{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}}
+.kpis div{background:var(--card2);border:1px solid var(--line);border-radius:12px;padding:8px 10px;min-width:0}
+.kpis span{display:block;font-size:11.5px;color:var(--mute)}
+.kpis b{display:block;font-size:17px;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.pos{color:var(--ok)}.neg{color:var(--bad)}
+.mods{width:100%;border-collapse:collapse;font-size:13px;margin-top:6px}
+.mods td,.mods th{padding:5px 4px;border-bottom:1px solid var(--line);text-align:right;font-variant-numeric:tabular-nums}
+.mods td:first-child,.mods th:first-child{text-align:left}
+.mods th.esc{color:var(--gold)}
+.casc{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:2px}
+.casc li{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr) auto;gap:4px 10px;align-items:center;padding:6px 0;border-bottom:1px solid var(--line);font-size:13.5px}
+.casc li small{display:block;color:var(--mute);font-size:11.5px;line-height:1.35}
+.casc .bar{position:relative;height:12px;background:transparent;min-width:0}
+.casc .bar i{position:absolute;top:0;height:12px;border-radius:3px;background:var(--mute);opacity:.6}
+.casc li.t .bar i{background:#6aa7e8;opacity:1}.casc li.f .bar i{background:var(--gold);opacity:1}.casc li.f.neg .bar i{background:var(--bad)}
+.casc .v{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.casc li.f{border-bottom:0;font-weight:700}
+.casc li.sep{font-size:12px;color:var(--mute);border-bottom:0;padding-top:10px;grid-template-columns:1fr}
+@media (max-width:520px){.casc li{grid-template-columns:minmax(0,1fr) auto}.casc .bar{grid-column:1/-1;grid-row:2}}
+.conta{font-size:13px;color:var(--mute);background:var(--card2);border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin-top:12px;overflow-wrap:anywhere}
+.conta code{font-family:inherit;color:var(--ink)}
+.nota{color:var(--mute);font-size:12.5px}
+.bt{all:unset;box-sizing:border-box;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:12px 16px;border-radius:12px;border:1px solid var(--line);background:var(--card2);font-weight:600;font-size:15px;text-align:center}
+.bt:hover{border-color:var(--gold)}.bt.pri{background:var(--gold);color:#1a1408;border-color:var(--gold)}
+.cta{display:flex;flex-wrap:wrap;gap:16px;align-items:center;justify-content:space-between;border-color:var(--gold);background:linear-gradient(180deg,rgba(226,183,94,.10),var(--card) 70%)}
+.cta p{margin:4px 0 0;color:var(--mute);font-size:14px;max-width:620px}
+.grade3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+@media (max-width:760px){.grade3{grid-template-columns:minmax(0,1fr)}}
+.card p{margin:0;color:var(--mute);font-size:14px}
+.param{width:100%;border-collapse:collapse;font-size:13.5px}
+.param td{padding:6px 4px;border-bottom:1px solid var(--line);vertical-align:top}
+.param td:last-child{text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums;padding-left:10px}
+.tabx{overflow-x:auto;max-width:100%}
+details.faq{border-bottom:1px solid var(--line);padding:12px 0}
+details.faq summary{cursor:pointer;font-weight:600;list-style:none;display:flex;justify-content:space-between;gap:10px}
+details.faq summary::-webkit-details-marker{display:none}details.faq summary::after{content:"+";color:var(--gold);font-weight:700}
+details.faq[open] summary::after{content:"–"}
+details.faq p{margin:8px 0 0;color:var(--mute);font-size:14px}
+footer{border-top:1px solid var(--line);margin-top:34px;padding:22px clamp(14px,4vw,40px) 40px;color:var(--mute);font-size:12.5px}
+footer .disc{max-width:1080px;margin:0 auto;display:flex;flex-direction:column;gap:8px}
+footer b{color:var(--ink)}
+</style>
+</head>
+<body>
+<header class="top">
+  <a class="marca" href="/"><img src="/blr-icon-small.svg" alt=""><span>BLR <span class="serif">Developments</span></span></a>
+  <div class="acoes">
+    <div class="seg" role="group" aria-label="Language"><button type="button" data-lang="en" aria-pressed="true">EN</button><button type="button" data-lang="pt" aria-pressed="false">PT</button></div>
+    <button type="button" class="ic" id="btTema" data-it="tema" aria-label="Theme">◐</button>
+  </div>
+</header>
+<main>
+  <section>
+    <span class="kick" data-i="kick"></span>
+    <h1 class="serif" data-i="h1"></h1>
+    <p class="sub" data-i="sub"></p>
+  </section>
+
+  <div class="calc">
+    <form class="card" id="f" autocomplete="off" novalidate>
+      <div class="tipo"><span class="nota" data-i="tipoRot"></span>
+        <div class="seg" role="group" data-it="tipoRot" aria-label="Property type">
+          <button type="button" data-tipo="casa" aria-pressed="true" data-i="tCasa"></button><button type="button" data-tipo="terreno" aria-pressed="false" data-i="tTerreno"></button></div></div>
+      <div class="campos">
+        <label class="tudo"><span id="rotArv" data-i="arv"></span><input name="arv" type="number" inputmode="numeric" min="0" step="1000" value="150000"><small id="dicaArv" data-i="arvDica"></small></label>
+        <label data-so="casa"><span data-i="area"></span><input name="area" type="number" inputmode="numeric" min="0" step="10" value="1200"></label>
+        <label data-so="casa"><span data-i="ano"></span><input name="ano" type="number" inputmode="numeric" min="1700" max="2100" step="1" value="1965" data-ip="anoPh"></label>
+        <label data-so="casa"><span data-i="nivel"></span><select name="nivel">
+          <option value="ano" data-i="nvAno"></option><option value="leve" data-i="nvLeve"></option><option value="media" data-i="nvMedia"></option>
+          <option value="geral" data-i="nvGeral"></option><option value="sem" data-i="nvSem"></option></select></label>
+        <label data-so="casa"><span data-i="reforma"></span><input name="reforma" type="number" inputmode="numeric" min="0" step="500" data-ip="reformaPh"><small data-i="reformaDica"></small></label>
+        <label><span data-i="uf"></span><select name="uf" id="selUf"></select></label>
+        <label><span data-i="abertura"></span><input name="abertura" type="number" inputmode="numeric" min="0" step="100" data-ip="aberturaPh"></label>
+      </div>
+      <div class="extra">
+        <p data-i="extraTxt"></p>
+        <div class="campos">
+          <label><span data-i="divida"></span><input name="divida" type="number" inputmode="numeric" min="0" step="100" value="0"></label>
+          <label><span data-i="premio"></span><input name="premio" type="number" inputmode="decimal" min="0" max="40" step="0.5" value="0"></label>
+        </div>
+      </div>
+      <details class="av">
+        <summary data-i="avancado"></summary>
+        <div class="campos">
+          <label class="tudo"><span data-i="margem"></span><input name="m" type="number" inputmode="numeric" min="0" max="80" step="1" value="40"><small id="dicaMargem"></small></label>
+          <label data-so="casa"><span data-i="ppLeve"></span><input name="pp_leve" type="number" inputmode="numeric" min="0" step="1" value="20"></label>
+          <label data-so="casa"><span data-i="ppMedia"></span><input name="pp_media" type="number" inputmode="numeric" min="0" step="1" value="30"></label>
+          <label data-so="casa"><span data-i="ppGeral"></span><input name="pp_geral" type="number" inputmode="numeric" min="0" step="1" value="45"></label>
+          <label class="chk tudo"><input type="checkbox" name="titulo" checked><span data-i="titulo"></span></label>
+          <label class="tudo"><span data-i="qt"></span><input name="qt" type="number" inputmode="numeric" min="0" step="250" id="inQt"><small id="dicaQt"></small></label>
+        </div>
+      </details>
+      <p class="nota" style="margin:12px 0 0" data-i="exemplo"></p>
+    </form>
+
+    <div class="card res" id="res" aria-live="polite">
+      <span class="kick" data-i="resKick"></span>
+      <div class="teto" id="teto">–</div>
+      <p class="exato" id="exato"></p>
+      <p class="veredito neu" id="veredito"></p>
+      <div class="kpis" id="kpis"></div>
+      <p class="nota" id="kpiNota"></p>
+      <div class="tabx" id="mods"></div>
+    </div>
+  </div>
+
+  <section id="cascata">
+    <span class="kick" data-i="kCasc"></span>
+    <h2 class="serif" data-i="hCasc"></h2>
+    <p class="sub" data-i="subCasc"></p>
+    <div class="card"><ol class="casc" id="casc"></ol><div class="conta" id="conta"></div></div>
+  </section>
+
+  <section>
+    <div class="card cta">
+      <div><h2 class="serif" style="margin:0" data-i="ctaT"></h2><p data-i="ctaP"></p></div>
+      <a class="bt pri" href="/?teste=1" data-i="ctaBt"></a>
+    </div>
+  </section>
+
+  <section>
+    <span class="kick" data-i="kParam"></span>
+    <h2 class="serif" data-i="hParam"></h2>
+    <p class="sub" data-i="subParam"></p>
+    <div class="card"><div class="tabx"><table class="param" id="param"></table></div>
+      <p class="nota" style="margin-top:10px" data-i="paramNota"></p></div>
+  </section>
+
+  <section>
+    <span class="kick" data-i="kComo"></span>
+    <h2 class="serif" data-i="hComo"></h2>
+    <div class="grade3">
+      <div class="card"><h3 data-i="c1t"></h3><p data-i="c1p"></p></div>
+      <div class="card"><h3 data-i="c2t"></h3><p data-i="c2p"></p></div>
+      <div class="card"><h3 data-i="c3t"></h3><p data-i="c3p"></p></div>
+    </div>
+  </section>
+
+  <section>
+    <h2 class="serif" data-i="hFaq"></h2>
+    <details class="faq"><summary data-i="q1"></summary><p data-i="r1"></p></details>
+    <details class="faq"><summary data-i="q2"></summary><p data-i="r2"></p></details>
+    <details class="faq"><summary data-i="q3"></summary><p data-i="r3"></p></details>
+    <details class="faq"><summary data-i="q4"></summary><p data-i="r4"></p></details>
+    <details class="faq"><summary data-i="q5"></summary><p data-i="r5"></p></details>
+    <p style="margin-top:20px"><a class="bt pri" href="/?teste=1" data-i="ctaBt2"></a></p>
+  </section>
+</main>
+<footer><div class="disc">
+  <p><b data-i="discT"></b> <span data-i="disc"></span></p>
+  <p data-ih="rodape"></p>
+</div></footer>
+
+<script>
+"use strict";
+/* ---------- parâmetros: MESMOS nomes e valores de vitrine_tpl.html (linhas 1487–1494 e 4936). teste_calculadora.py confere. ---------- */
+const CONTA0 = {m: 40, n: "ano", p: {leve: 20, media: 30, geral: 45}, t: true, qt: null};
+const QT = {PA: 2000, MI: 2500, NY: 6000, AR: 2250}, QT0 = 5000;
+const CJ = .11 * 6 / 12, CSAIDA = .05, CFIXOS = 2550, CTIP = .65;
+const CVENDA_T = .80, CMARG_T = -10;
+const JVC = {proj: .01, projMin: 6000, lic: .015, licMin: 500, fs: .60, ff: .75, com: .05, mkt: .025, gc: .01, fech: .01, adm: .25, admMin: 1000, admArv: .01, limpeza: 5};
+const nivelAno = y => { const a = parseFloat(y); return isNaN(a) ? "geral" : a >= 2000 ? "leve" : a >= 1970 ? "media" : "geral"; };
+const UFS = ["AL","AK","AZ","AR","CA","CO","CT","DE","DC","FL","GA","HI","ID","IL","IN","IA","KS","KY","LA","ME","MD","MA","MI","MN","MS","MO","MT","NE","NV","NH","NJ","NM","NY","NC","ND","OH","OK","OR","PA","RI","SC","SD","TN","TX","UT","VT","VA","WA","WV","WI","WY"];
+
+/* modDe da clássica (vitrine_tpl.html ≈ linha 4938), sem o objeto do lote: arv = l.am, area = l.a || l.ae */
+function modDe(arv, area, mod, reno, qt, m){
+  const ff = mod === "ff", V = arv * JVC[mod];
+  const obra = ff ? reno : area * JVC.limpeza, adm = ff ? JVC.adm * obra : Math.max(JVC.admMin, JVC.admArv * arv);
+  const proj = ff && obra > 0 ? Math.max(JVC.projMin, JVC.proj * arv) : 0, lic = ff && obra > 0 ? Math.max(JVC.licMin, JVC.lic * obra) : 0;
+  const fixos = CFIXOS + qt + lic, cv = V * (JVC.mkt + JVC.gc + JVC.fech), com = V * JVC.com, custos = proj + obra + adm + fixos + cv;
+  const mg = m / 100 * V, bmax = V - com - custos - mg;
+  return {mod, V, com, proj, obra, adm, qt, lic, fixos, cv, custos, mg, bmax};
+}
+/* contaDe da clássica (≈ linha 4949) + dois extras opcionais desta página (dívida que sobrevive e taxa do leilão em % do lance).
+   Com os dois em zero, teto = contaDe(l).teto. Com eles, o teto é o lance em que o lucro ainda é a margem pedida. */
+function conta(x){
+  const m = x.m, qt = x.titulo ? (x.qt != null ? x.qt : QT[x.uf] ?? QT0) : 0, dv = x.divida || 0, bp = (x.premio || 0) / 100;
+  if(x.tipo === "terreno"){
+    const venda = x.arv * CVENDA_T, mT = m + CMARG_T, bruto = venda * (1 - mT / 100 - CSAIDA);
+    const base = (bruto - CFIXOS - qt) / (1 + CJ), teto = (bruto - CFIXOS - qt - dv) / (1 + CJ + bp);
+    const passos = [["arv", x.arv, "t"], ["vendaT", venda - x.arv], ["margemT", -(venda * mT / 100)], ["saida", -(venda * CSAIDA)],
+      ["fixosT", -(CFIXOS + qt)], ["divida", -dv], ["juros", -teto * CJ], ["premio", -teto * bp], ["teto", teto, "f"]];
+    const em = L => { const cap = L * (1 + CJ + bp) + dv + CFIXOS + qt, saida = venda * CSAIDA, lucro = venda - saida - cap;
+      return {L, cap, total: cap + saida, lucro, ret: cap > 0 ? lucro / cap : null, margem: venda ? lucro / venda : null}; };
+    return {tipo: "terreno", qt, venda, mT, bruto, base, teto, passos, em};
+  }
+  const nv = x.nivel === "ano" ? nivelAno(x.ano) : x.nivel, pp = nv === "sem" ? 0 : +(x.p || CONTA0.p)[nv] || 0;
+  const reno = x.reforma != null ? x.reforma : x.area * pp;
+  const fs = modDe(x.arv, x.area, "fs", 0, qt, m), ff = nv === "sem" && x.reforma == null ? null : modDe(x.arv, x.area, "ff", reno, qt, m);
+  const md = ff && ff.bmax > fs.bmax ? ff : fs, base = md.bmax, teto = (base - dv) / (1 + bp);
+  const passos = [["arv", x.arv, "t"], ["venda_" + md.mod, md.V - x.arv], ["com", -md.com], ["cv", -md.cv], ["margem", -md.mg],
+    ["proj", -md.proj], [md.mod === "ff" ? "obraFf" : "obraFs", -md.obra], ["adm", -md.adm], ["fixos", -md.fixos],
+    ["divida", -dv], ["premio", -teto * bp], ["teto", teto, "f"]];
+  const em = L => { const cap = L * (1 + bp) + dv + md.custos, lucro = md.V - md.com - cap;
+    return {L, cap, total: cap + md.com, lucro, ret: cap > 0 ? lucro / cap : null, margem: md.V ? lucro / md.V : null}; };
+  return {tipo: "casa", qt, nv, pp, reno, fs, ff, m: md, base, teto, passos, em};
+}
+const arred = t => Math.round(t / 1000) * 1000;   // o mapa da clássica guarda o teto arredondado a US$ 1.000 (contaRefaz)
+
+/* ---------- textos ---------- */
+const I = {
+en: {
+  tema: "Switch light/dark theme",
+  kick: "Free calculator · no sign-up", h1: "Tax deed max bid calculator",
+  sub: "How much can you bid at a tax deed, upset or sheriff sale and still keep your margin? Type the after-repair value and the house size. You get the bid ceiling and every cost behind it, step by step. The math stays in plain sight.",
+  tipoRot: "Property", tCasa: "House", tTerreno: "Land",
+  arv: "ARV — after-repair value ($)", arvT: "Land market value ($)",
+  arvDica: "What the house sells for once fixed, from real sales nearby.", arvDicaT: "What the lot is worth on the market (the county assessment is a common source).",
+  area: "Living area (sq ft)", ano: "Year built", anoPh: "e.g. 1965",
+  nivel: "Repair level", nvAno: "By year built", nvLeve: "Light", nvMedia: "Medium", nvGeral: "Full", nvSem: "No repairs (quick flip only)",
+  reforma: "Repair budget ($, optional)", reformaPh: "uses $/sq ft if empty", reformaDica: "If you type it, it replaces level × area.",
+  uf: "State", abertura: "Opening bid ($, optional)", aberturaPh: "from the auction notice",
+  extraTxt: "Optional, outside BLR's standard account (leave at 0 for the same ceiling BLR uses):",
+  divida: "Debts that survive the sale ($)", premio: "Buyer's premium (% of bid)",
+  avancado: "Adjust the assumptions", margem: "Project margin (% of sale price)",
+  margemDicaC: "BLR default 40% (20% for each side of the joint venture).", margemDicaT: "Land uses {m}%: 10 points below the house margin.",
+  ppLeve: "Light repair ($/sq ft)", ppMedia: "Medium repair ($/sq ft)", ppGeral: "Full repair ($/sq ft)",
+  titulo: "Include quiet title (clearing the title in court)", qt: "Quiet title cost ($)", qtDica: "Empty = estimate for {uf}: {v}.",
+  exemplo: "The numbers already filled in are an example, not a real property.",
+  resKick: "Maximum bid", exato: "Exact: {v} · BLR rounds to the nearest $1,000",
+  naoFecha: "Doesn't close", naoFechaTxt: "Even a $0 bid would not leave the margin you asked for.",
+  falta: "Enter the value and the living area to see the ceiling.", faltaT: "Enter the land value to see the ceiling.",
+  vOk: "The ceiling is {d} above the opening bid. The math works at the opening bid.",
+  vBad: "The opening bid is {d} above the ceiling. At that price the margin does not hold.",
+  vNeu: "Add the opening bid from the notice to compare.",
+  kLance: "Bid", kTotal: "Total cost", kLucro: "Profit", kRet: "Return on cash", kMarg: "Margin on sale",
+  kpiAt: "At the opening bid of {v}.", kpiTeto: "At the maximum bid. Profit here is exactly the margin you asked for.",
+  kpiDef: "Total cost = everything paid, including the sale commission. Return = profit ÷ cash put in (total cost minus the commission, which comes out of the sale).",
+  modT: "Two ways to resell", modFs: "Quick flip", modFf: "Fix & flip", modVenda: "Sale price", modTeto: "Max bid", modEsc: "used",
+  kCasc: "The math in sight", hCasc: "From ARV to maximum bid, step by step",
+  subCasc: "Each line takes a cost out of the value. What is left at the end is the most you can pay and still keep the margin.",
+  s_arv: "ARV", s_arvT: "Land value",
+  s_venda_fs: "Quick resale at {p}% of ARV", s_venda_ff: "Resale at {p}% of ARV", s_vendaT: "Sale at {p}% of value",
+  s_venda_d: "BLR prices to sell fast for cash: below full ARV, on purpose.",
+  s_com: "Sales commission ({p}%)", s_com_d: "paid at closing",
+  s_cv: "Marketing, sales management and closing", s_cv_d: "{a}% + {b}% + {c}% of the sale price",
+  s_margem: "Project margin ({p}%)", s_margem_d: "the profit you require",
+  s_margemT: "Margin ({p}%)", s_margemT_d: "10 points below the house margin",
+  s_saida: "Exit costs ({p}%)", s_saida_d: "closing and transfer tax",
+  s_proj: "Plans and engineering", s_proj_d: "{p}% of ARV, min. {v} — only when there is a real renovation",
+  s_obraFf: "Renovation", s_obraFf_d: "{nv}: {pp}/sq ft × {a} sq ft", s_obraFfX: "your repair budget",
+  s_obraFs: "Clean-up, landscaping and paint", s_obraFs_d: "{pp}/sq ft × {a} sq ft",
+  s_adm: "Asset management", s_admFf_d: "{p}% of the renovation", s_admFs_d: "greater of {v} or {p}% of ARV",
+  s_fixos: "Title, permits and fixed costs", s_fixos_d: "{f} fixed (title search, recording, inspection, insurance){q}{l}",
+  s_fixos_q: " + {v} quiet title", s_fixos_l: " + {v} permits ({p}% of the renovation, min. {m})",
+  s_fixosT: "Fixed costs and title", s_fixosT_d: "{f} fixed{q}",
+  s_divida: "Debts that survive", s_divida_d: "you pay them on top of the bid",
+  s_juros: "Interest on the bid (6 months)", s_juros_d: "{p}% a year for 6 months, on the bid",
+  s_premio: "Buyer's premium ({p}%)", s_premio_d: "charged on the bid itself",
+  s_teto: "Maximum bid",
+  contaC: "Max bid = ARV × {pv}% × (1 − {c}% − {cv}% − {m}%) − plans − renovation − management − fixed − title{x}",
+  contaT: "Max bid = (value × {pv}% × (1 − {m}% − {s}%) − fixed − title{x}) ÷ (1 + {j}%{b})",
+  contaX1: " − surviving debts", contaX2: ", then ÷ (1 + {b}% premium)", contaX3: " + {b}% premium",
+  contaMax: "BLR runs both resale paths and keeps the higher bid. Here: {m}.",
+  ctaT: "Want this math on every auction in the country?", ctaP: "BLR's map runs this same account on thousands of real tax deed and upset properties, with real comps, liens and auction dates. Try it free for 7 days. No card needed.",
+  ctaBt: "Start the free trial", ctaBt2: "Try BLR free for 7 days",
+  kParam: "Assumptions", hParam: "Every number this calculator uses", subParam: "Same values the BLR map uses today. Change margin, repair and title above.",
+  p_fs: "Quick flip: resale price", p_ff: "Fix & flip: resale price", p_com: "Sales commission", p_cv: "Marketing + sales management + closing",
+  p_adm: "Asset management (fix & flip / quick flip)", p_proj: "Plans and engineering (fix & flip)", p_lic: "Permits (fix & flip)",
+  p_limp: "Clean-up and paint (quick flip)", p_fixos: "Fixed costs (title search, recording, inspection, insurance)",
+  p_qt: "Quiet title, by state", p_rep: "Repair by level (light / medium / full)", p_nivel: "Level by year built",
+  p_terra: "Land: sale / margin / exit / interest", p_m: "Project margin",
+  v_fs: "{p}% of ARV", v_adm: "{a}% of works / greater of {m} or {b}% of ARV", v_proj: "{p}% of ARV, min. {m}", v_lic: "{p}% of works, min. {m}",
+  v_limp: "{v}/sq ft", v_qt: "PA {pa} · MI {mi} · NY {ny} · AR {ar} · other states {o}", v_rep: "{l} / {m} / {g} per sq ft",
+  v_nivel: "2000+ light · 1970–1999 medium · older full", v_terra: "{v}% / margin −10 pts / {s}% / 11% a year for 6 months",
+  paramNota: "Fixed costs, auction fees and quiet title change from county to county. Where a county value would be needed, this page uses BLR's default and says so. Check the auction notice.",
+  kComo: "How to read it", hComo: "Three things the calculator does not know",
+  c1t: "Your ARV is the whole game", c1p: "A 10% mistake in ARV moves the ceiling far more than any cost line. Use recorded sales of similar houses nearby, not automated estimates.",
+  c2t: "What survives the sale", c2p: "Some debts are wiped out by the sale, others stay with the property (federal tax liens, some municipal liens). Put those in “Debts that survive”.",
+  c3t: "The condition inside", c3p: "Auction properties are sold as-is, often without an interior visit. Pick the repair level for the worst case you can live with.",
+  hFaq: "Questions",
+  q1: "What is a maximum bid in a tax deed auction?", r1: "It is the highest price you can pay at the auction and still keep the profit margin you set, after resale costs, repairs, title work and fixed costs. Above it, the deal stops making sense, so you walk away.",
+  q2: "Why does the resale price sit below the ARV?", r2: "BLR plans to resell fast and for cash, so it prices below the full after-repair value: 60% of ARV for a quick flip and 75% for a full fix & flip. That cushion is part of the method, not a forecast of the market.",
+  q3: "Why two resale paths?", r3: "A cheap clean-up sale and a full renovation lead to different ceilings. The calculator runs both and keeps the higher one, the same way BLR's map does.",
+  q4: "Do debts and liens get wiped out at a tax sale?", r4: "It depends on the state and the type of sale. Many mortgages are wiped out in a tax deed sale; some government liens and, in Pennsylvania upset sales, recorded liens can survive. Read the notice and search the title before you bid.",
+  q5: "Is this investment advice?", r5: "No. It is an estimate for information only, with public assumptions you can change. Confirm the notice, the title and the property before any bid.",
+  discT: "Important:", disc: "Not investment advice; results vary; auctions carry risk; no guarantee of return. BLR Developments provides public data and its own analysis for information only. Estimate only: confirm the notice, the title and the property.",
+  rodape: '© BLR Developments · <a href="/privacy/">Privacy</a> · <a href="/terms/">Terms</a>',
+  titulo_pag: "Tax Deed Max Bid Calculator (Free) — Auction Bid Ceiling | BLR Developments"
+},
+pt: {
+  tema: "Alternar tema claro/escuro",
+  kick: "Calculadora grátis · sem cadastro", h1: "Calculadora de lance máximo em leilão de imóvel",
+  sub: "Quanto dá para pagar num leilão de tax deed, upset ou do xerife e ainda manter a sua margem? Digite o valor depois de arrumada e o tamanho da casa. Sai o teto do lance e cada custo por trás dele, degrau a degrau. A conta fica à vista.",
+  tipoRot: "Imóvel", tCasa: "Casa", tTerreno: "Terreno",
+  arv: "ARV — valor depois de arrumada (US$)", arvT: "Valor de mercado do terreno (US$)",
+  arvDica: "Quanto a casa vale arrumada, por vendas reais do entorno.", arvDicaT: "Quanto o lote vale no mercado (a avaliação do condado é uma fonte comum).",
+  area: "Área construída (pés²)", ano: "Ano de construção", anoPh: "ex.: 1965",
+  nivel: "Nível da reforma", nvAno: "Pelo ano da casa", nvLeve: "Leve", nvMedia: "Média", nvGeral: "Geral", nvSem: "Sem obra (só flip simples)",
+  reforma: "Orçamento da reforma (US$, opcional)", reformaPh: "usa US$/pé² se vazio", reformaDica: "Se você digitar, substitui nível × área.",
+  uf: "Estado", abertura: "Lance de abertura (US$, opcional)", aberturaPh: "do edital do leilão",
+  extraTxt: "Opcional, fora da conta padrão da BLR (deixe em 0 para o mesmo teto que a BLR usa):",
+  divida: "Dívidas que sobrevivem ao leilão (US$)", premio: "Taxa do leilão (% do lance)",
+  avancado: "Mudar as premissas", margem: "Margem do projeto (% da venda)",
+  margemDicaC: "Padrão BLR 40% (20% para cada parte da sociedade).", margemDicaT: "Terreno usa {m}%: 10 pontos abaixo da margem da casa.",
+  ppLeve: "Reforma leve (US$/pé²)", ppMedia: "Reforma média (US$/pé²)", ppGeral: "Reforma geral (US$/pé²)",
+  titulo: "Somar o quiet title (limpar o título na Justiça)", qt: "Custo do quiet title (US$)", qtDica: "Vazio = estimativa de {uf}: {v}.",
+  exemplo: "Os números já preenchidos são um exemplo, não um imóvel real.",
+  resKick: "Lance máximo", exato: "Exato: {v} · a BLR arredonda para o milhar mais próximo",
+  naoFecha: "Não fecha", naoFechaTxt: "Nem um lance de US$ 0 deixaria a margem pedida.",
+  falta: "Informe o valor e a área construída para ver o teto.", faltaT: "Informe o valor do terreno para ver o teto.",
+  vOk: "O teto passa {d} do lance de abertura. A conta fecha no lance de abertura.",
+  vBad: "O lance de abertura passa {d} do teto. Nesse preço a margem não se sustenta.",
+  vNeu: "Informe o lance de abertura do edital para comparar.",
+  kLance: "Lance", kTotal: "Custo total", kLucro: "Lucro", kRet: "Retorno sobre o caixa", kMarg: "Margem na venda",
+  kpiAt: "No lance de abertura de {v}.", kpiTeto: "No lance máximo. Aqui o lucro é exatamente a margem pedida.",
+  kpiDef: "Custo total = tudo o que sai, inclusive a comissão de venda. Retorno = lucro ÷ caixa posto (custo total menos a comissão, que sai da venda).",
+  modT: "Duas formas de revender", modFs: "Flip simples", modFf: "Fix & Flip", modVenda: "Preço de venda", modTeto: "Lance máximo", modEsc: "usada",
+  kCasc: "A conta à vista", hCasc: "Do ARV ao lance máximo, degrau a degrau",
+  subCasc: "Cada linha tira um custo do valor. O que sobra no fim é o máximo que dá para pagar mantendo a margem.",
+  s_arv: "ARV", s_arvT: "Valor do terreno",
+  s_venda_fs: "Revenda rápida a {p}% do ARV", s_venda_ff: "Revenda a {p}% do ARV", s_vendaT: "Venda a {p}% do valor",
+  s_venda_d: "A BLR precifica para vender rápido e à vista: abaixo do ARV cheio, de propósito.",
+  s_com: "Comissão de venda ({p}%)", s_com_d: "paga no fechamento",
+  s_cv: "Marketing, gestão comercial e fechamento", s_cv_d: "{a}% + {b}% + {c}% da venda",
+  s_margem: "Margem do projeto ({p}%)", s_margem_d: "o lucro que você exige",
+  s_margemT: "Margem ({p}%)", s_margemT_d: "10 pontos abaixo da margem da casa",
+  s_saida: "Custos de saída ({p}%)", s_saida_d: "fechamento e imposto de transmissão",
+  s_proj: "Projeto (PLEI)", s_proj_d: "{p}% do ARV, mínimo {v}, só quando há reforma de verdade",
+  s_obraFf: "Reforma", s_obraFf_d: "{nv}: {pp}/pé² × {a} pés²", s_obraFfX: "o seu orçamento de reforma",
+  s_obraFs: "Limpeza, paisagismo e pintura", s_obraFs_d: "{pp}/pé² × {a} pés²",
+  s_adm: "Administração do ativo", s_admFf_d: "{p}% da obra", s_admFs_d: "maior entre {v} e {p}% do ARV",
+  s_fixos: "Título, licenças e custos fixos", s_fixos_d: "{f} fixos (busca de título, registro, inspeção, seguro){q}{l}",
+  s_fixos_q: " + {v} de quiet title", s_fixos_l: " + {v} de licenças ({p}% da obra, mín. {m})",
+  s_fixosT: "Custos fixos e título", s_fixosT_d: "{f} fixos{q}",
+  s_divida: "Dívidas que sobrevivem", s_divida_d: "você paga além do lance",
+  s_juros: "Juros do lance (6 meses)", s_juros_d: "{p}% ao ano por 6 meses, sobre o lance",
+  s_premio: "Taxa do leilão ({p}%)", s_premio_d: "cobrada sobre o próprio lance",
+  s_teto: "Lance máximo",
+  contaC: "Lance máximo = ARV × {pv}% × (1 − {c}% − {cv}% − {m}%) − projeto − obra − administração − fixos − título{x}",
+  contaT: "Lance máximo = (valor × {pv}% × (1 − {m}% − {s}%) − fixos − título{x}) ÷ (1 + {j}%{b})",
+  contaX1: " − dívidas que sobrevivem", contaX2: ", depois ÷ (1 + {b}% de taxa)", contaX3: " + {b}% de taxa",
+  contaMax: "A BLR faz as duas revendas e fica com o maior lance. Aqui: {m}.",
+  ctaT: "Quer esta conta em todos os leilões do país?", ctaP: "O mapa da BLR roda esta mesma conta em milhares de imóveis reais de tax deed e upset, com comparáveis, dívidas e datas de leilão. Teste grátis por 7 dias, sem cartão.",
+  ctaBt: "Começar o teste grátis", ctaBt2: "Testar a BLR 7 dias grátis",
+  kParam: "Premissas", hParam: "Todos os números que esta calculadora usa", subParam: "Os mesmos valores que o mapa da BLR usa hoje. Margem, reforma e título mudam acima.",
+  p_fs: "Flip simples: preço de revenda", p_ff: "Fix & Flip: preço de revenda", p_com: "Comissão de venda", p_cv: "Marketing + gestão comercial + fechamento",
+  p_adm: "Administração do ativo (Fix & Flip / flip simples)", p_proj: "Projeto (Fix & Flip)", p_lic: "Licenças de obra (Fix & Flip)",
+  p_limp: "Limpeza e pintura (flip simples)", p_fixos: "Custos fixos (busca de título, registro, inspeção, seguro)",
+  p_qt: "Quiet title, por estado", p_rep: "Reforma por nível (leve / média / geral)", p_nivel: "Nível pelo ano da casa",
+  p_terra: "Terreno: venda / margem / saída / juros", p_m: "Margem do projeto",
+  v_fs: "{p}% do ARV", v_adm: "{a}% da obra / maior entre {m} e {b}% do ARV", v_proj: "{p}% do ARV, mín. {m}", v_lic: "{p}% da obra, mín. {m}",
+  v_limp: "{v}/pé²", v_qt: "PA {pa} · MI {mi} · NY {ny} · AR {ar} · outros estados {o}", v_rep: "{l} / {m} / {g} por pé²",
+  v_nivel: "2000 em diante leve · 1970–1999 média · mais velha geral", v_terra: "{v}% / margem −10 pontos / {s}% / 11% ao ano por 6 meses",
+  paramNota: "Custos fixos, taxas do leilão e quiet title mudam de condado para condado. Onde seria preciso o valor do condado, esta página usa o padrão da BLR e avisa. Confira o edital.",
+  kComo: "Como ler", hComo: "Três coisas que a calculadora não sabe",
+  c1t: "O seu ARV decide tudo", c1p: "Errar 10% no ARV mexe no teto muito mais que qualquer linha de custo. Use vendas registradas de casas parecidas no entorno, não estimativa automática.",
+  c2t: "O que sobrevive ao leilão", c2p: "Algumas dívidas caem com o leilão, outras ficam com o imóvel (lien federal de imposto, alguns liens municipais). Ponha essas em “Dívidas que sobrevivem”.",
+  c3t: "O estado por dentro", c3p: "Imóvel de leilão é vendido no estado em que está, muitas vezes sem visita por dentro. Escolha o nível de reforma do pior caso que você aguenta.",
+  hFaq: "Perguntas",
+  q1: "O que é lance máximo num leilão de tax deed?", r1: "É o maior preço que dá para pagar no leilão mantendo a margem de lucro que você definiu, depois dos custos de revenda, da reforma, do título e dos custos fixos. Acima dele o negócio deixa de fazer sentido e você não dá o lance.",
+  q2: "Por que o preço de revenda fica abaixo do ARV?", r2: "A BLR planeja revender rápido e à vista, então precifica abaixo do valor cheio depois de arrumada: 60% do ARV no flip simples e 75% no Fix & Flip. Essa folga é parte do método, não uma previsão do mercado.",
+  q3: "Por que duas formas de revenda?", r3: "Uma venda só com limpeza e uma reforma completa levam a tetos diferentes. A calculadora faz as duas e fica com o maior, como o mapa da BLR.",
+  q4: "As dívidas caem no leilão de imposto?", r4: "Depende do estado e do tipo de leilão. Muitas hipotecas caem no tax deed; alguns liens de governo e, no upset da Pensilvânia, os gravames registrados podem sobreviver. Leia o edital e pesquise o título antes do lance.",
+  q5: "Isto é recomendação de investimento?", r5: "Não. É uma estimativa só para informação, com premissas públicas que você pode mudar. Confira o edital, o título e o imóvel antes de qualquer lance.",
+  discT: "Importante:", disc: "Não é recomendação de investimento; os resultados variam; leilões têm risco; não há garantia de retorno. A BLR Developments oferece dados públicos e análise própria só para informação. É uma estimativa: confira o edital, o título e o imóvel.",
+  rodape: '© BLR Developments · <a href="/privacy/">Privacidade</a> · <a href="/termos/">Termos</a>',
+  titulo_pag: "Calculadora grátis de lance máximo em leilão de imóvel (tax deed) | BLR Developments"
+}};
+
+let LANG = "en";
+function checaI18n(){
+  const falta = [];
+  for (const a of ["en", "pt"]) for (const b of ["en", "pt"]) if (a !== b) for (const k in I[a]) if (!(k in I[b])) falta.push(b + "." + k);
+  document.querySelectorAll("[data-i],[data-ih],[data-ip],[data-it]").forEach(e => {
+    const k = e.dataset.i || e.dataset.ih || e.dataset.ip || e.dataset.it;
+    for (const l of ["en", "pt"]) if (!(k in I[l])) falta.push(l + "." + k);
+  });
+  window.__i18nFaltando = [...new Set(falta)];
+  if (window.__i18nFaltando.length) console.warn("i18n: chave faltando:", window.__i18nFaltando.join(", "));
+}
+const T = (k, v) => { let s = I[LANG] && I[LANG][k];
+  if (s == null) { console.warn("i18n: chave faltando:", LANG + "." + k); (window.__i18nFaltando = window.__i18nFaltando || []).push(LANG + "." + k); s = I.en[k] != null ? I.en[k] : k; }
+  return v ? s.replace(/\{(\w+)\}/g, (_, x) => v[x] != null ? v[x] : "") : s; };
+const $ = s => document.querySelector(s);
+const esc = s => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const guarda = (k, v) => { try { localStorage.setItem(k, v); } catch (e) {} };
+const le = k => { try { return localStorage.getItem(k); } catch (e) { return null; } };
+const loc = () => LANG === "pt" ? "pt-BR" : "en-US";
+// EN $79,600 · PT US$ 79.600
+const din = n => { const r = Math.round(+n || 0), s = Math.abs(r).toLocaleString(loc());
+  return (r < 0 ? "−" : "") + (LANG === "pt" ? "US$ " + s : "$" + s); };
+const pct = (x, d) => (x < 0 ? "−" : "") + Math.abs(x).toLocaleString(loc(), {maximumFractionDigits: d == null ? 1 : d});   // número de %, sem o símbolo
+const nf = n => Math.round(+n).toLocaleString(loc());
+
+/* ---------- formulário ---------- */
+const F = $("#f");
+let TIPO = "casa";
+const num = n => { const e = F.elements[n]; if (!e || e.value.trim() === "") return null; const v = Number(e.value); return isFinite(v) ? v : null; };
+function le_form(){
+  const pos = n => { const v = num(n); return v != null && v >= 0 ? v : null; };
+  return {tipo: TIPO, arv: pos("arv"), area: pos("area"), ano: num("ano"), nivel: F.elements.nivel.value, reforma: pos("reforma"),
+    uf: F.elements.uf.value, abertura: pos("abertura"), divida: pos("divida") || 0, premio: Math.min(40, pos("premio") || 0),
+    m: pos("m") == null ? CONTA0.m : pos("m"), titulo: F.elements.titulo.checked, qt: pos("qt"),
+    p: {leve: pos("pp_leve") ?? CONTA0.p.leve, media: pos("pp_media") ?? CONTA0.p.media, geral: pos("pp_geral") ?? CONTA0.p.geral}};
+}
+function montaUf(){
+  const s = $("#selUf"), atual = s.value || "PA";
+  s.innerHTML = UFS.map(u => `<option value="${u}">${u}${QT[u] ? "" : ""}</option>`).join("");
+  s.value = atual;
+}
+function textoPasso(k, c, x){
+  const md = c.m, P = v => pct(v * 100);
+  switch (k) {
+    case "arv": return [T(c.tipo === "terreno" ? "s_arvT" : "s_arv"), ""];
+    case "venda_fs": case "venda_ff": return [T("s_" + k, {p: P(JVC[md.mod])}), T("s_venda_d")];
+    case "vendaT": return [T("s_vendaT", {p: P(CVENDA_T)}), T("s_venda_d")];
+    case "com": return [T("s_com", {p: P(JVC.com)}), T("s_com_d")];
+    case "cv": return [T("s_cv"), T("s_cv_d", {a: P(JVC.mkt), b: P(JVC.gc), c: P(JVC.fech)})];
+    case "margem": return [T("s_margem", {p: pct(x.m)}), T("s_margem_d")];
+    case "margemT": return [T("s_margemT", {p: pct(c.mT)}), T("s_margemT_d")];
+    case "saida": return [T("s_saida", {p: P(CSAIDA)}), T("s_saida_d")];
+    case "proj": return [T("s_proj"), T("s_proj_d", {p: P(JVC.proj), v: din(JVC.projMin)})];
+    case "obraFf": return [T("s_obraFf"), x.reforma != null ? T("s_obraFfX") : T("s_obraFf_d", {nv: T({leve: "nvLeve", media: "nvMedia", geral: "nvGeral"}[c.nv] || "nvGeral"), pp: din(c.pp), a: nf(x.area)})];
+    case "obraFs": return [T("s_obraFs"), T("s_obraFs_d", {pp: din(JVC.limpeza), a: nf(x.area)})];
+    case "adm": return [T("s_adm"), md.mod === "ff" ? T("s_admFf_d", {p: P(JVC.adm)}) : T("s_admFs_d", {v: din(JVC.admMin), p: P(JVC.admArv)})];
+    case "fixos": return [T("s_fixos"), T("s_fixos_d", {f: din(CFIXOS), q: c.qt ? T("s_fixos_q", {v: din(c.qt)}) : "",
+      l: md.lic ? T("s_fixos_l", {v: din(md.lic), p: P(JVC.lic), m: din(JVC.licMin)}) : ""})];
+    case "fixosT": return [T("s_fixosT"), T("s_fixosT_d", {f: din(CFIXOS), q: c.qt ? T("s_fixos_q", {v: din(c.qt)}) : ""})];
+    case "divida": return [T("s_divida"), T("s_divida_d")];
+    case "juros": return [T("s_juros"), T("s_juros_d", {p: pct(11)})];
+    case "premio": return [T("s_premio", {p: pct(x.premio, 2)}), T("s_premio_d")];
+    case "teto": return [T("s_teto"), ""];
+  }
+  return [k, ""];
+}
+let ULTIMA = null;   // para o teste
+function desenha(){
+  const x = le_form();
+  document.querySelectorAll("[data-so=casa]").forEach(e => e.hidden = TIPO !== "casa");
+  $("#rotArv").textContent = T(TIPO === "terreno" ? "arvT" : "arv");
+  $("#dicaArv").textContent = T(TIPO === "terreno" ? "arvDicaT" : "arvDica");
+  $("#dicaMargem").textContent = TIPO === "terreno" ? T("margemDicaT", {m: pct(x.m + CMARG_T)}) : T("margemDicaC");
+  $("#inQt").disabled = !x.titulo;
+  $("#dicaQt").textContent = T("qtDica", {uf: x.uf, v: din(QT[x.uf] ?? QT0)});
+  const okIn = x.arv > 0 && (TIPO === "terreno" || x.area > 0);
+  const tetoEl = $("#teto"), res = $("#res");
+  if (!okIn) {
+    ULTIMA = null; res.removeAttribute("data-teto");
+    tetoEl.textContent = "–"; tetoEl.classList.remove("neg");
+    $("#exato").textContent = T(TIPO === "terreno" ? "faltaT" : "falta");
+    $("#veredito").hidden = true; $("#kpis").innerHTML = ""; $("#kpiNota").textContent = ""; $("#mods").innerHTML = "";
+    $("#casc").innerHTML = ""; $("#conta").textContent = "";
+    return;
+  }
+  const c = conta(x); ULTIMA = {x, c};
+  res.dataset.teto = String(c.teto); res.dataset.tetoArred = String(arred(c.teto)); res.dataset.base = String(c.base);
+  const fecha = c.teto > 0;
+  tetoEl.textContent = fecha ? din(arred(c.teto)) : T("naoFecha");
+  tetoEl.classList.toggle("neg", !fecha);
+  $("#exato").textContent = fecha ? T("exato", {v: din(c.teto)}) : T("naoFechaTxt");
+  // veredito contra o lance de abertura
+  const v = $("#veredito"); v.hidden = false;
+  if (x.abertura > 0) { const d = c.teto - x.abertura;
+    v.className = "veredito " + (d >= 0 ? "ok" : "bad"); v.textContent = T(d >= 0 ? "vOk" : "vBad", {d: din(Math.abs(d))}); }
+  else { v.className = "veredito neu"; v.textContent = T("vNeu"); }
+  // indicadores no lance de abertura (ou no teto)
+  const L = x.abertura > 0 ? x.abertura : fecha ? c.teto : null;
+  if (L != null) { const e = c.em(L), cl = e.lucro >= 0 ? "pos" : "neg";
+    $("#kpis").innerHTML = [[T("kLance"), din(e.L), ""], [T("kTotal"), din(e.total), ""], [T("kLucro"), din(e.lucro), cl],
+      [T("kRet"), e.ret == null ? "—" : pct(e.ret * 100) + "%", cl], [T("kMarg"), e.margem == null ? "—" : pct(e.margem * 100) + "%", cl]]
+      .map(([a, b, k]) => `<div><span>${esc(a)}</span><b class="${k}">${esc(b)}</b></div>`).join("");
+    $("#kpiNota").textContent = (x.abertura > 0 ? T("kpiAt", {v: din(x.abertura)}) : T("kpiTeto")) + " " + T("kpiDef");
+  } else { $("#kpis").innerHTML = ""; $("#kpiNota").textContent = ""; }
+  // as duas modalidades
+  if (c.tipo === "casa") {
+    const cols = c.ff ? [c.fs, c.ff] : [c.fs], nm = md => T(md.mod === "ff" ? "modFf" : "modFs");
+    const tb = t => t > 0 ? din(t) : T("naoFecha");
+    $("#mods").innerHTML = `<table class="mods"><caption class="nota" style="text-align:left">${esc(T("modT"))}</caption>
+      <tr><th></th>${cols.map(md => `<th class="${md === c.m ? "esc" : ""}">${esc(nm(md))}${md === c.m ? " · " + esc(T("modEsc")) : ""}</th>`).join("")}</tr>
+      <tr><td>${esc(T("modVenda"))}</td>${cols.map(md => `<td>${esc(din(md.V))}</td>`).join("")}</tr>
+      <tr><td>${esc(T("modTeto"))}</td>${cols.map(md => `<td>${esc(tb((md.bmax - x.divida) / (1 + x.premio / 100)))}</td>`).join("")}</tr></table>`;
+  } else $("#mods").innerHTML = "";
+  // cascata: cada degrau na escala do ARV
+  const it = c.passos.filter(p => p[2] || Math.round(p[1]));
+  const lo = Math.min(0, c.teto), hi = x.arv, sx = t => (t - lo) / (hi - lo) * 100;
+  let cur = x.arv;
+  $("#casc").innerHTML = it.map(([k, val, tp]) => {
+    let a, b;
+    if (tp) { a = Math.min(0, val); b = Math.max(0, val); } else { a = cur + val; b = cur; cur = a; }
+    const [nome, det] = textoPasso(k, c, x), w = Math.max(.6, sx(b) - sx(a));
+    const vtxt = tp ? (tp === "f" && val <= 0 ? T("naoFecha") : din(val)) : (val > 0 ? "+" : "−") + din(Math.abs(val));
+    return `<li class="${tp || ""}${tp === "f" && val <= 0 ? " neg" : ""}" data-passo="${k}" data-v="${val}"><div>${esc(nome)}${det ? `<small>${esc(det)}</small>` : ""}</div>
+      <div class="bar" aria-hidden="true"><i style="left:${sx(a).toFixed(2)}%;width:${w.toFixed(2)}%"></i></div><div class="v">${esc(vtxt)}</div></li>`;
+  }).join("");
+  // a fórmula em uma linha
+  const xs = (x.divida ? T("contaX1") : "") + (x.premio && c.tipo === "casa" ? T("contaX2", {b: pct(x.premio, 2)}) : "");
+  $("#conta").textContent = c.tipo === "casa"
+    ? T("contaC", {pv: pct(JVC[c.m.mod] * 100), c: pct(JVC.com * 100), cv: pct((JVC.mkt + JVC.gc + JVC.fech) * 100), m: pct(x.m), x: xs})
+      + " " + T("contaMax", {m: T(c.m.mod === "ff" ? "modFf" : "modFs")})
+    : T("contaT", {pv: pct(CVENDA_T * 100), m: pct(c.mT), s: pct(CSAIDA * 100), x: x.divida ? T("contaX1") : "", j: pct(CJ * 100, 2),
+      b: x.premio ? T("contaX3", {b: pct(x.premio, 2)}) : ""});
+}
+function desenhaParam(){
+  const P = v => pct(v * 100);
+  const lin = [["p_fs", T("v_fs", {p: P(JVC.fs)})], ["p_ff", T("v_fs", {p: P(JVC.ff)})], ["p_com", P(JVC.com) + "%"],
+    ["p_cv", `${P(JVC.mkt)}% + ${P(JVC.gc)}% + ${P(JVC.fech)}%`], ["p_m", pct(CONTA0.m) + "%"],
+    ["p_adm", T("v_adm", {a: P(JVC.adm), m: din(JVC.admMin), b: P(JVC.admArv)})], ["p_proj", T("v_proj", {p: P(JVC.proj), m: din(JVC.projMin)})],
+    ["p_lic", T("v_lic", {p: P(JVC.lic), m: din(JVC.licMin)})], ["p_limp", T("v_limp", {v: din(JVC.limpeza)})], ["p_fixos", din(CFIXOS)],
+    ["p_qt", T("v_qt", {pa: din(QT.PA), mi: din(QT.MI), ny: din(QT.NY), ar: din(QT.AR), o: din(QT0)})],
+    ["p_rep", T("v_rep", {l: din(CONTA0.p.leve), m: din(CONTA0.p.media), g: din(CONTA0.p.geral)})], ["p_nivel", T("v_nivel")],
+    ["p_terra", T("v_terra", {v: P(CVENDA_T), s: P(CSAIDA)})]];
+  $("#param").innerHTML = lin.map(([k, v]) => `<tr><td>${esc(T(k))}</td><td>${esc(v)}</td></tr>`).join("");
+}
+function aplicaLang(l){
+  LANG = l === "pt" ? "pt" : "en"; guarda("blr_lang", LANG);
+  document.documentElement.lang = LANG === "pt" ? "pt-BR" : "en";
+  document.title = T("titulo_pag");
+  document.querySelectorAll("[data-lang]").forEach(b => b.setAttribute("aria-pressed", b.dataset.lang === LANG));
+  document.querySelectorAll("[data-i]").forEach(e => { e.textContent = T(e.dataset.i); });
+  document.querySelectorAll("[data-ih]").forEach(e => { e.innerHTML = T(e.dataset.ih); });   // só texto do próprio dicionário
+  document.querySelectorAll("[data-ip]").forEach(e => { e.placeholder = T(e.dataset.ip); });
+  document.querySelectorAll("[data-it]").forEach(e => { e.title = T(e.dataset.it); e.setAttribute("aria-label", T(e.dataset.it)); });
+  desenhaParam(); desenha();
+}
+
+/* ---------- tema ---------- */
+(function(){ const t = le("blr_tema") || le("blr_semana_tema"); if (t === "light" || t === "dark") document.documentElement.setAttribute("data-theme", t); })();
+$("#btTema").addEventListener("click", () => {
+  const atual = document.documentElement.getAttribute("data-theme") || (matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark");
+  const novo = atual === "light" ? "dark" : "light"; document.documentElement.setAttribute("data-theme", novo); guarda("blr_tema", novo);
+});
+
+/* ---------- início ---------- */
+document.querySelectorAll("[data-lang]").forEach(b => b.addEventListener("click", () => aplicaLang(b.dataset.lang)));
+document.querySelectorAll("[data-tipo]").forEach(b => b.addEventListener("click", () => {
+  TIPO = b.dataset.tipo === "terreno" ? "terreno" : "casa";
+  document.querySelectorAll("[data-tipo]").forEach(y => y.setAttribute("aria-pressed", y.dataset.tipo === TIPO));
+  desenha();
+}));
+F.addEventListener("input", desenha);
+F.addEventListener("change", desenha);
+F.addEventListener("submit", e => e.preventDefault());
+montaUf();
+checaI18n();
+{ const q = new URLSearchParams(location.search).get("lang"), nav = String(navigator.language || "").toLowerCase();
+  aplicaLang(q === "pt" || q === "en" ? q : le("blr_lang") || le("blr_semana_lang") || (nav.startsWith("pt") ? "pt" : "en")); }
+window.BLRCalc = {conta, modDe, nivelAno, arred, CONTA0, QT, QT0, CJ, CSAIDA, CFIXOS, CTIP, CVENDA_T, CMARG_T, JVC, ultima: () => ULTIMA};
+</script>
+</body>
+</html>

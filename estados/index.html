@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="index,follow">
+<meta name="theme-color" content="#0b0d11">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob: https:; connect-src 'self' https://api.blrdevelopment.com; object-src 'none'; base-uri 'self'; form-action 'self'">
+<title>Tax deed and tax lien states map: rules for all 50 states + DC — BLR Developments</title>
+<meta name="description" content="Tax deed and tax lien states map: sale type, lien interest, redemption period, online and over-the-counter sales and the statute for every U.S. state and DC, each linked to the official law. Free, plus real auction counts per state.">
+<link rel="canonical" href="https://www.blrdevelopment.com/estados/">
+<link rel="alternate" hreflang="en" href="https://www.blrdevelopment.com/estados/">
+<link rel="alternate" hreflang="pt-BR" href="https://www.blrdevelopment.com/estados/?lang=pt">
+<link rel="alternate" hreflang="x-default" href="https://www.blrdevelopment.com/estados/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="BLR Developments">
+<meta property="og:title" content="Tax deed and tax lien states map — BLR Developments">
+<meta property="og:description" content="Sale type, interest, redemption, online and OTC sales for every U.S. state, linked to the official statute. Free.">
+<meta property="og:url" content="https://www.blrdevelopment.com/estados/">
+<meta property="og:image" content="https://www.blrdevelopment.com/icon-512.png">
+<meta property="og:locale" content="en_US"><meta property="og:locale:alternate" content="pt_BR">
+<meta name="twitter:card" content="summary">
+<link rel="icon" type="image/svg+xml" href="/blr-icon-small.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Sora:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* 27/11 (Cris): mapa grátis das regras de venda por imposto atrasado, estado a estado (isca de SEO/leads).
+   Regras: estados.json (cada campo com fonte primária e data de conferência; "a confirmar" quando não deu para confirmar).
+   Números da Vitrine: AO VIVO de /atual.json → DADOS.cobertura.uf. Cabeçalho, tokens e tema = site_extra/semana. */
+:root{--bg:#0b0d11;--bg2:#12151b;--card:rgba(255,255,255,.05);--card2:rgba(255,255,255,.085);--ink:#f3f1ec;--mute:#a7abb3;--line:rgba(255,255,255,.12);
+  --gold:#e2b75e;--gold2:#f4d58d;--ok:#7fd6a4;--okbg:rgba(127,214,164,.12);--bad:#f28b82;--badbg:rgba(242,139,130,.12);--warn:#f0b36b;--warnbg:rgba(240,179,107,.12);
+  --sh:0 18px 50px rgba(0,0,0,.45);--r:18px;
+  --t-deed:#e2b75e;--t-lien:#5fb8d6;--t-hibrido:#7fd6a4;--t-redeemable:#c49be8;--t-nd:#3a3f49;--stroke:#0b0d11}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]){--bg:#f4f1ea;--bg2:#ebe6da;--card:rgba(255,255,255,.8);--card2:#fff;--ink:#16181d;--mute:#5c6169;--line:rgba(20,20,30,.12);
+  --gold:#9a6f1c;--gold2:#b8892c;--ok:#1d7a4a;--okbg:#e5f4ec;--bad:#b3261e;--badbg:#fbe9e7;--warn:#9a5413;--warnbg:#fbefe1;--sh:0 14px 34px rgba(60,50,20,.12);
+  --t-deed:#d9a441;--t-lien:#3d93b8;--t-hibrido:#4fae7c;--t-redeemable:#9b6fcf;--t-nd:#cfcabd;--stroke:#f4f1ea}}
+:root[data-theme="light"]{--bg:#f4f1ea;--bg2:#ebe6da;--card:rgba(255,255,255,.8);--card2:#fff;--ink:#16181d;--mute:#5c6169;--line:rgba(20,20,30,.12);
+  --gold:#9a6f1c;--gold2:#b8892c;--ok:#1d7a4a;--okbg:#e5f4ec;--bad:#b3261e;--badbg:#fbe9e7;--warn:#9a5413;--warnbg:#fbefe1;--sh:0 14px 34px rgba(60,50,20,.12);
+  --t-deed:#d9a441;--t-lien:#3d93b8;--t-hibrido:#4fae7c;--t-redeemable:#9b6fcf;--t-nd:#cfcabd;--stroke:#f4f1ea}
+:root{color-scheme:dark}:root[data-theme="light"]{color-scheme:light}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]){color-scheme:light}}
+*,*::before,*::after{box-sizing:border-box}html,body{margin:0}[hidden]{display:none!important}
+body{background:var(--bg);color:var(--ink);font:15px/1.6 Sora,system-ui,sans-serif;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+a{color:inherit}.serif{font-family:Fraunces,Georgia,serif;font-weight:500;letter-spacing:-.01em}
+select option{background:var(--bg);color:var(--ink)}
+.top{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:14px clamp(14px,4vw,40px);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:10;background:var(--bg)}
+.marca{display:flex;align-items:center;gap:8px;text-decoration:none;font-weight:600;min-width:0}
+.marca img{width:26px;height:26px}.marca span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.acoes{display:flex;gap:8px;align-items:center;flex:0 0 auto}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.seg button{all:unset;cursor:pointer;padding:6px 10px;font-size:13px;font-weight:600;color:var(--mute)}
+.seg button[aria-pressed="true"]{background:var(--gold);color:#1a1408}
+.ic{all:unset;cursor:pointer;border:1px solid var(--line);border-radius:10px;padding:5px 9px;font-size:14px;line-height:1}
+.seg button:focus-visible,.ic:focus-visible,.bt:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visible,.leg button:focus-visible,th button:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+main{max-width:1180px;margin:0 auto;padding:0 clamp(14px,4vw,40px) 40px}
+section{padding:30px 0 6px}
+h1{font-size:clamp(28px,5vw,48px);line-height:1.08;margin:8px 0 10px}
+h2{font-size:clamp(22px,3.4vw,30px);line-height:1.15;margin:0 0 12px}
+h3{font-size:17px;margin:0 0 6px}
+.kick{display:inline-block;font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--gold)}
+.sub{color:var(--mute);max-width:720px;margin:0 0 14px;font-size:16px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:18px;box-shadow:var(--sh);min-width:0}
+.bt{all:unset;box-sizing:border-box;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:12px 16px;border-radius:12px;border:1px solid var(--line);background:var(--card2);font-weight:600;font-size:15px;text-align:center}
+.bt:hover{border-color:var(--gold)}.bt.pri{background:var(--gold);color:#1a1408;border-color:var(--gold)}
+.bt.lg{width:100%}
+.nota{color:var(--mute);font-size:12.5px}
+.selos{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 6px}
+.selo{font-size:12.5px;border:1px solid var(--line);border-radius:99px;padding:3px 10px;background:var(--card2)}
+.selo b{color:var(--gold)}
+/* mapa + painel */
+.mapa{display:grid;grid-template-columns:minmax(0,1.45fr) minmax(0,.9fr);gap:18px;align-items:start}
+@media (max-width:900px){.mapa{grid-template-columns:minmax(0,1fr)}}
+.leg{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 10px}
+.leg button{all:unset;cursor:pointer;display:inline-flex;align-items:center;gap:6px;font-size:12.5px;border:1px solid var(--line);border-radius:99px;padding:4px 10px;background:var(--card2)}
+.leg button[aria-pressed="true"]{border-color:var(--gold);box-shadow:inset 0 0 0 1px var(--gold)}
+.leg i{width:12px;height:12px;border-radius:3px;display:inline-block;flex:0 0 auto}
+.leg small{color:var(--mute)}
+#svg{width:100%;height:auto;display:block;touch-action:manipulation}
+#svg path.uf,#svg circle.uf{stroke:var(--stroke);stroke-width:.8;cursor:pointer;transition:opacity .15s}
+#svg .uf:hover,#svg .uf:focus{stroke:var(--ink);stroke-width:1.6;outline:none}
+#svg .uf.sel{stroke:var(--ink);stroke-width:2.2}
+#svg .uf.apaga{opacity:.18}
+#svg text{font:600 9px Sora,system-ui,sans-serif;fill:var(--ink);pointer-events:none}
+.escolhe{display:flex;gap:8px;align-items:center;margin-top:10px}
+.escolhe label{font-size:13px;color:var(--mute);white-space:nowrap}
+select,input[type=search]{font:inherit;font-size:16px;color:var(--ink);background:var(--card2);border:1px solid var(--line);border-radius:10px;padding:8px 10px;min-width:0;width:100%}
+.painel h2{margin:0 0 4px}
+.painel .tp{display:inline-flex;align-items:center;gap:6px;font-weight:700;font-size:13px;border-radius:99px;padding:3px 10px;color:#14161a}
+.painel dl{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.4fr);gap:8px 12px;margin:12px 0;font-size:14px}
+.painel dt{color:var(--mute)}.painel dd{margin:0;overflow-wrap:anywhere}
+.ac{color:var(--warn);font-style:italic}
+.ac-cond{border-left:3px solid var(--warn);padding-left:8px;margin:0 0 8px}
+.vit{border:1px solid var(--line);border-radius:14px;background:var(--card2);padding:12px;margin:12px 0}
+.vit b.n{font-family:Fraunces,Georgia,serif;font-size:19px;font-weight:600}
+.fontes{margin:6px 0 0;padding-left:18px;font-size:12.5px;color:var(--mute)}
+.fontes li{margin:3px 0;overflow-wrap:anywhere}
+.fontes a,.painel dd a,td a{color:var(--gold)}
+/* tabela */
+.filtro{display:flex;flex-wrap:wrap;gap:8px;align-items:end;margin:6px 0 10px}.filtro label{flex:1 1 220px;display:flex;flex-direction:column;gap:4px;font-size:13px;color:var(--mute)}
+.tab{overflow-x:auto;border:1px solid var(--line);border-radius:var(--r);background:var(--card)}
+table{border-collapse:collapse;width:100%;min-width:980px;font-size:13px}
+th,td{text-align:left;vertical-align:top;padding:9px 10px;border-bottom:1px solid var(--line)}
+th{position:sticky;top:0;background:var(--bg2);font-size:12px;color:var(--mute);font-weight:600;white-space:nowrap}
+th button{all:unset;cursor:pointer}th button::after{content:" ↕";opacity:.5}
+tbody tr{cursor:pointer}tbody tr:hover{background:var(--card2)}
+td.uf b{display:block}td.uf small{color:var(--mute)}
+.pill{display:inline-flex;align-items:center;gap:5px;white-space:nowrap}.pill i{width:10px;height:10px;border-radius:3px;display:inline-block}
+/* cartões no celular, no lugar da tabela larga */
+@media (max-width:640px){
+  .tab{overflow:visible;border:0;background:none}
+  table{min-width:0}thead{display:none}
+  table,tbody,tr,td{display:block;width:100%}
+  tbody tr{border:1px solid var(--line);border-radius:14px;background:var(--card);margin-bottom:10px;padding:6px 4px}
+  td{border:0;padding:4px 10px;display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.3fr);gap:8px;overflow-wrap:anywhere}
+  td::before{content:attr(data-r);color:var(--mute);font-size:12px}
+  td.uf{display:block}td.uf::before{content:none}
+}
+.grade4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+@media (max-width:900px){.grade4{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:520px){.grade4{grid-template-columns:minmax(0,1fr)}}
+.grade4 .card p{margin:0;color:var(--mute);font-size:14px}
+.cta{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,.7fr);gap:16px;align-items:center;border-color:var(--gold)}
+@media (max-width:760px){.cta{grid-template-columns:minmax(0,1fr)}}
+.cta p{margin:0;color:var(--mute)}
+footer{border-top:1px solid var(--line);margin-top:34px;padding:22px clamp(14px,4vw,40px) 40px;color:var(--mute);font-size:12.5px}
+footer .disc{max-width:1180px;margin:0 auto;display:flex;flex-direction:column;gap:8px}
+footer b{color:var(--ink)}
+.carrega{color:var(--mute);font-size:14px;padding:12px 0}
+</style>
+</head>
+<body>
+<header class="top">
+  <a class="marca" href="/"><img src="/blr-icon-small.svg" alt=""><span>BLR <span class="serif">Developments</span></span></a>
+  <div class="acoes">
+    <div class="seg" role="group" aria-label="Language"><button type="button" data-lang="en" aria-pressed="true">EN</button><button type="button" data-lang="pt" aria-pressed="false">PT</button></div>
+    <button type="button" class="ic" id="btTema" data-it="tema" aria-label="Theme">◐</button>
+  </div>
+</header>
+<main>
+  <section id="topo">
+    <span class="kick" data-i="kick"></span>
+    <h1 class="serif" data-i="h1"></h1>
+    <p class="sub" data-i="sub"></p>
+    <div class="selos">
+      <span class="selo" data-ih="selo1"></span><span class="selo" data-ih="selo2"></span><span class="selo" data-ih="selo3"></span>
+    </div>
+  </section>
+
+  <section id="mapa" class="mapa" style="padding-top:12px">
+    <div class="card">
+      <div class="leg" id="leg" role="group" data-ia="legAria"></div>
+      <svg id="svg" viewBox="0 0 975 610" role="img" data-ia="mapaAria"></svg>
+      <p class="carrega" id="carrega" data-i="carregando"></p>
+      <div class="escolhe"><label for="selUf" data-i="escolha"></label><select id="selUf"></select></div>
+    </div>
+    <aside class="card painel" id="painel" aria-live="polite">
+      <span class="kick" data-i="kPainel"></span>
+      <h2 class="serif" data-i="pVazioT"></h2>
+      <p class="nota" data-i="pVazio"></p>
+    </aside>
+  </section>
+
+  <section id="tabela">
+    <span class="kick" data-i="kTab"></span>
+    <h2 class="serif" data-i="hTab"></h2>
+    <p class="sub" data-i="subTab"></p>
+    <div class="filtro"><label><span data-i="busca"></span><input type="search" id="busca" data-ip="buscaPh" autocomplete="off"></label></div>
+    <div class="tab"><table>
+      <thead><tr>
+        <th><button type="button" data-ord="nome" data-i="cUf"></button></th>
+        <th><button type="button" data-ord="tipo" data-i="cTipo"></button></th>
+        <th data-i="cJuros"></th><th data-i="cResg"></th>
+        <th><button type="button" data-ord="online" data-i="cOnline"></button></th>
+        <th><button type="button" data-ord="otc" data-i="cOtc"></button></th>
+        <th data-i="cQuando"></th><th data-i="cLei"></th>
+        <th><button type="button" data-ord="lotes" data-i="cVit"></button></th>
+      </tr></thead>
+      <tbody id="tb"></tbody>
+    </table></div>
+    <p class="nota" id="conferidoTab"></p>
+  </section>
+
+  <section id="tipos">
+    <span class="kick" data-i="kTipos"></span>
+    <h2 class="serif" data-i="hTipos"></h2>
+    <div class="grade4">
+      <div class="card"><h3><span class="pill"><i style="background:var(--t-deed)"></i><span data-i="t_deed"></span></span></h3><p data-i="d_deed"></p></div>
+      <div class="card"><h3><span class="pill"><i style="background:var(--t-lien)"></i><span data-i="t_lien"></span></span></h3><p data-i="d_lien"></p></div>
+      <div class="card"><h3><span class="pill"><i style="background:var(--t-redeemable)"></i><span data-i="t_redeemable"></span></span></h3><p data-i="d_redeemable"></p></div>
+      <div class="card"><h3><span class="pill"><i style="background:var(--t-hibrido)"></i><span data-i="t_hibrido"></span></span></h3><p data-i="d_hibrido"></p></div>
+    </div>
+  </section>
+
+  <section id="teste">
+    <div class="card cta">
+      <div><span class="kick" data-i="kCta"></span><h2 class="serif" data-i="hCta" style="margin-top:6px"></h2><p data-i="pCta"></p></div>
+      <div style="display:flex;flex-direction:column;gap:8px"><a class="bt pri lg" href="/?teste=1" id="btTeste" data-i="btTeste"></a>
+        <a class="bt lg" id="btExplorar" href="/#explorar" data-i="btExplorar"></a></div>
+    </div>
+  </section>
+</main>
+<footer><div class="disc">
+  <p><b data-i="discT"></b> <span data-i="disc"></span></p>
+  <p id="conferidoRod"></p>
+  <p data-ih="rodape"></p>
+</div></footer>
+
+<script src="/vendor/d3.min.js"></script>
+<script src="/vendor/topojson.min.js"></script>
+<script>
+"use strict";
+/* ---------- textos: um dicionário só {en, pt}; checaI18n() acusa chave faltando; T() avisa no console ---------- */
+const I = {
+en: {
+  tema: "Switch light/dark theme",
+  kick: "Free · 50 states + DC",
+  h1: "Tax deed and tax lien states map",
+  sub: "How each U.S. state sells property for unpaid taxes: sale type, lien interest, redemption period, online and over-the-counter sales and when sales happen. Every rule links to the state's own law.",
+  selo1: "<b>Free</b>, no signup", selo2: "Each rule linked to the <b>official statute</b>", selo3: "<b>Real auction counts</b> from the BLR Vitrine",
+  legAria: "Filter the map by sale type", mapaAria: "Map of the United States colored by tax sale type",
+  carregando: "Loading the map…", erroDados: "Could not load the map right now. The table below still works — please reload later.",
+  escolha: "Or pick a state:", escolhaOp: "Choose a state…",
+  kPainel: "State rules", pVazioT: "Click a state", pVazio: "Tap any state on the map (or use the list) to see its tax sale rules, the law behind them and how many real lots and auctions the BLR Vitrine has there today.",
+  t_deed: "Tax deed", t_lien: "Tax lien", t_hibrido: "Hybrid", t_redeemable: "Redeemable deed", t_nd: "To be confirmed",
+  d_deed: "The sale transfers the property itself (a deed). Any redemption right usually ends before or at the sale.",
+  d_lien: "The county sells a certificate on the unpaid tax. The buyer earns interest or a penalty; the property only changes hands if the owner never pays.",
+  d_redeemable: "You receive a deed at the sale, but the former owner can still buy it back for a set period by paying you a premium.",
+  d_hibrido: "The state law provides both: lien certificates first and a deed sale later, or a choice left to each county.",
+  aConf: "To be confirmed", sim: "Yes", nao: "No", varia: "Varies by county",
+  fTipo: "Sale type", fJuros: "Interest / penalty", fResg: "Redemption period", fOnline: "Online auctions", fOtc: "Over-the-counter (OTC)",
+  fQuando: "When sales happen", fLei: "State law", fConf: "Checked on", fFontes: "Primary sources", condado: "Some of these rules come from an official county page ({c}). Other counties in this state may differ.", semFonte: "No primary source confirmed yet.",
+  vitT: "On the BLR Vitrine today", vitN: "{n} lots · {l} auctions · {c} counties", vitZero: "No lots on the Vitrine for this state yet.",
+  vitLink: "See them on the map", vitErro: "Vitrine numbers unavailable right now.",
+  verTeste: "Try the Vitrine free",
+  kTab: "Compare", hTab: "All states side by side", subTab: "Click a row to open the state. \"To be confirmed\" means we could not verify that rule on an official source yet, so we left it blank instead of guessing.",
+  busca: "Search a state", buscaPh: "e.g. Florida, lien, online",
+  cUf: "State", cTipo: "Type", cJuros: "Interest / penalty", cResg: "Redemption", cOnline: "Online", cOtc: "OTC", cQuando: "When", cLei: "Statute", cVit: "BLR Vitrine",
+  vitCurto: "{n} lots · {l} auctions", nenhum: "No state matches your search.",
+  conferido: "Rules checked against official sources between {a} and {b}. Laws change: always read the current statute.",
+  kTipos: "Glossary", hTipos: "The four kinds of tax sale",
+  kCta: "Free trial", hCta: "Rules are step one. The lots are step two.",
+  pCta: "The BLR Vitrine lists the real auctions in these states, with bid ceiling, after-repair value and the liens that may survive the sale. Try it free.",
+  btTeste: "Start the free trial", btExplorar: "Open the auction map",
+  discT: "Important:",
+  disc: "General information only, not legal, tax or investment advice. Tax sale rules change and many details are set county by county. Always read the current statute and the county's sale notice, and talk to a local attorney before you bid.",
+  rodape: '© BLR Developments · <a href="/privacy/">Privacy</a> · <a href="/terms/">Terms</a>'
+},
+pt: {
+  tema: "Alternar tema claro/escuro",
+  kick: "Grátis · 50 estados + DC",
+  h1: "Mapa de tax deed e tax lien por estado",
+  sub: "Como cada estado dos EUA vende imóvel por imposto atrasado: tipo de venda, juros do lien, prazo de resgate, leilão online, venda de balcão e quando as vendas acontecem. Cada regra tem link para a lei do próprio estado.",
+  selo1: "<b>Grátis</b>, sem cadastro", selo2: "Cada regra com link para o <b>estatuto oficial</b>", selo3: "<b>Números reais de leilões</b> da Vitrine BLR",
+  legAria: "Filtrar o mapa pelo tipo de venda", mapaAria: "Mapa dos Estados Unidos colorido pelo tipo de venda por imposto",
+  carregando: "Carregando o mapa…", erroDados: "Não deu para carregar o mapa agora. A tabela abaixo continua funcionando — tente recarregar mais tarde.",
+  escolha: "Ou escolha um estado:", escolhaOp: "Escolha um estado…",
+  kPainel: "Regras do estado", pVazioT: "Clique num estado", pVazio: "Toque em qualquer estado no mapa (ou use a lista) para ver as regras de venda por imposto, a lei por trás delas e quantos lotes e leilões reais a Vitrine BLR tem lá hoje.",
+  t_deed: "Tax deed", t_lien: "Tax lien", t_hibrido: "Híbrido", t_redeemable: "Deed resgatável", t_nd: "A confirmar",
+  d_deed: "A venda transfere o próprio imóvel (escritura). O direito de resgate, quando existe, costuma acabar antes ou no dia da venda.",
+  d_lien: "O condado vende um certificado sobre o imposto devido. O comprador recebe juros ou multa; o imóvel só muda de dono se o proprietário nunca pagar.",
+  d_redeemable: "Você recebe a escritura no leilão, mas o antigo dono ainda pode recomprar por um prazo, pagando a você um prêmio.",
+  d_hibrido: "A lei do estado prevê os dois: primeiro certificado de lien e depois venda da escritura, ou a escolha fica com cada condado.",
+  aConf: "A confirmar", sim: "Sim", nao: "Não", varia: "Varia por condado",
+  fTipo: "Tipo de venda", fJuros: "Juros / multa", fResg: "Prazo de resgate", fOnline: "Leilão online", fOtc: "Venda de balcão (OTC)",
+  fQuando: "Quando acontecem", fLei: "Lei do estado", fConf: "Conferido em", fFontes: "Fontes primárias", condado: "Parte destas regras vem da página oficial de um condado ({c}). Outros condados do estado podem ser diferentes.", semFonte: "Nenhuma fonte primária confirmada ainda.",
+  vitT: "Na Vitrine BLR hoje", vitN: "{n} lotes · {l} leilões · {c} condados", vitZero: "Ainda não há lotes na Vitrine para este estado.",
+  vitLink: "Ver no mapa", vitErro: "Números da Vitrine indisponíveis agora.",
+  verTeste: "Testar a Vitrine grátis",
+  kTab: "Comparar", hTab: "Todos os estados lado a lado", subTab: "Clique numa linha para abrir o estado. \"A confirmar\" quer dizer que ainda não conseguimos conferir aquela regra numa fonte oficial, então deixamos em branco em vez de chutar.",
+  busca: "Buscar estado", buscaPh: "ex.: Florida, lien, online",
+  cUf: "Estado", cTipo: "Tipo", cJuros: "Juros / multa", cResg: "Resgate", cOnline: "Online", cOtc: "Balcão", cQuando: "Quando", cLei: "Estatuto", cVit: "Vitrine BLR",
+  vitCurto: "{n} lotes · {l} leilões", nenhum: "Nenhum estado bate com a busca.",
+  conferido: "Regras conferidas em fontes oficiais entre {a} e {b}. Lei muda: leia sempre o estatuto em vigor.",
+  kTipos: "Glossário", hTipos: "Os quatro tipos de venda por imposto",
+  kCta: "Teste grátis", hCta: "A regra é o passo um. O lote é o passo dois.",
+  pCta: "A Vitrine BLR lista os leilões reais nesses estados, com teto de lance, valor depois da reforma e os gravames que podem sobreviver à venda. Teste grátis.",
+  btTeste: "Começar o teste grátis", btExplorar: "Abrir o mapa de leilões",
+  discT: "Importante:",
+  disc: "Informação geral, não é aconselhamento jurídico, fiscal nem de investimento. As regras mudam e muitos detalhes são definidos condado a condado. Leia sempre o estatuto em vigor e o edital do condado, e fale com um advogado local antes de dar lance.",
+  rodape: '© BLR Developments · <a href="/privacy/">Privacidade</a> · <a href="/terms/">Termos</a>'
+}};
+
+let LANG = "en";
+function checaI18n(){
+  const falta = [];
+  for (const a of ["en", "pt"]) for (const b of ["en", "pt"]) if (a !== b) for (const k in I[a]) if (!(k in I[b])) falta.push(b + "." + k);
+  document.querySelectorAll("[data-i],[data-ih],[data-ip],[data-it],[data-ia]").forEach(e => {
+    const k = e.dataset.i || e.dataset.ih || e.dataset.ip || e.dataset.it || e.dataset.ia;
+    for (const l of ["en", "pt"]) if (!(k in I[l])) falta.push(l + "." + k);
+  });
+  window.__i18nFaltando = [...new Set(falta)];
+  if (window.__i18nFaltando.length) console.warn("i18n: chave faltando:", window.__i18nFaltando.join(", "));
+}
+const T = (k, v) => { let s = (I[LANG] && I[LANG][k]);
+  if (s == null) { console.warn("i18n: chave faltando:", LANG + "." + k); (window.__i18nFaltando = window.__i18nFaltando || []).push(LANG + "." + k); s = I.en[k] != null ? I.en[k] : k; }
+  return v ? s.replace(/\{(\w+)\}/g, (_, x) => v[x] != null ? v[x] : "") : s; };
+const $ = s => document.querySelector(s);
+const esc = s => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const nf = n => Number(n || 0).toLocaleString(LANG === "pt" ? "pt-BR" : "en-US");
+const guarda = (k, v) => { try { localStorage.setItem(k, v); } catch (e) {} };
+const le = k => { try { return localStorage.getItem(k); } catch (e) { return null; } };
+const linkOk = u => /^https:\/\//i.test(u || "") ? u : "";
+const AC = "a confirmar";
+const TIPOS = ["deed", "lien", "redeemable", "hibrido", "nd"];
+
+/* ---------- dados ---------- */
+let REG = {}, ORDEM = [], COB = null, COB_ERRO = false, SEL = null, FILTRO = null, ORD = "nome";
+const tipoDe = uf => { const t = (REG[uf] || {}).tipo; return TIPOS.includes(t) && t !== "nd" ? t : "nd"; };
+const nome = uf => { const n = (REG[uf] || {}).nome || {}; return n[LANG] || n.en || uf; };
+const vazio = v => v == null || v === "" || v === AC;
+/* valor de campo: {en,pt} | "sim"/"nao"/"varia" | "a confirmar" → HTML seguro */
+function val(v){
+  if (vazio(v)) return `<span class="ac">${esc(T("aConf"))}</span>`;
+  if (typeof v === "string") return esc(["sim", "nao", "varia"].includes(v) ? T(v) : v);
+  return esc(v[LANG] || v.en || "");
+}
+const txtPuro = v => vazio(v) ? T("aConf") : typeof v === "string" ? (["sim", "nao", "varia"].includes(v) ? T(v) : v) : (v[LANG] || v.en || "");
+function vitrineHref(){ return "/?lang=" + LANG + "#explorar"; }   // a Vitrine não filtra por UF na URL
+
+/* ---------- legenda (também é filtro) ---------- */
+function montaLegenda(){
+  const cont = {}; ORDEM.forEach(uf => { const t = tipoDe(uf); cont[t] = (cont[t] || 0) + 1; });
+  $("#leg").setAttribute("aria-label", T("legAria"));
+  $("#leg").innerHTML = TIPOS.filter(t => cont[t]).map(t =>
+    `<button type="button" data-t="${t}" aria-pressed="${FILTRO === t}"><i style="background:var(--t-${t})"></i>${esc(T("t_" + t))} <small>${cont[t]}</small></button>`).join("");
+  $("#leg").querySelectorAll("button").forEach(b => b.addEventListener("click", () => { FILTRO = FILTRO === b.dataset.t ? null : b.dataset.t; montaLegenda(); pintaMapa(); montaTabela(); }));
+}
+
+/* ---------- mapa (d3-geo + topojson do próprio site: atual.json → EUA, objects.states) ---------- */
+let MAPA_OK = false;
+async function montaMapa(eua){
+  const svg = d3.select("#svg"); svg.selectAll("*").remove();
+  const ok = new Set(ORDEM.map(uf => REG[uf].fips));
+  const fc = topojson.feature(eua, eua.objects.states);
+  fc.features = fc.features.filter(f => ok.has(String(f.id).padStart(2, "0")));
+  const proj = d3.geoAlbersUsa().fitExtent([[8, 8], [967, 602]], fc), path = d3.geoPath(proj);
+  const porFips = {}; ORDEM.forEach(uf => porFips[REG[uf].fips] = uf);
+  const g = svg.append("g");
+  for (const f of fc.features) {
+    const uf = porFips[String(f.id).padStart(2, "0")]; if (!uf) continue;
+    const d = path(f); if (!d) continue;
+    if (uf === "DC") {   // DC some no mapa: um círculo clicável no lugar
+      const c = path.centroid(f);
+      g.append("circle").attr("class", "uf").attr("data-uf", uf).attr("cx", c[0]).attr("cy", c[1]).attr("r", 7);
+      g.append("text").attr("x", c[0] + 10).attr("y", c[1] + 3).text("DC");
+    } else g.append("path").attr("class", "uf").attr("data-uf", uf).attr("d", d);
+  }
+  g.selectAll(".uf").attr("tabindex", 0).attr("role", "button")
+    .on("click", (ev) => abre(ev.currentTarget.dataset.uf, true))
+    .on("keydown", (ev) => { if (ev.key === "Enter" || ev.key === " ") { ev.preventDefault(); abre(ev.currentTarget.dataset.uf, true); } })
+    .append("title");
+  MAPA_OK = true; pintaMapa();
+}
+function pintaMapa(){
+  if (!MAPA_OK) return;
+  d3.selectAll("#svg .uf").each(function(){
+    const uf = this.dataset.uf, t = tipoDe(uf);
+    this.style.fill = `var(--t-${t})`;
+    this.classList.toggle("sel", uf === SEL);
+    this.classList.toggle("apaga", !!FILTRO && FILTRO !== t);
+    this.setAttribute("aria-label", nome(uf) + ": " + T("t_" + t));
+    const tt = this.querySelector("title"); if (tt) tt.textContent = nome(uf) + " — " + T("t_" + t);
+  });
+}
+
+/* ---------- painel ---------- */
+function vitrineBox(uf){
+  if (COB_ERRO) return `<div class="vit"><p class="nota" style="margin:0">${esc(T("vitErro"))}</p></div>`;
+  if (!COB) return "";
+  const c = COB[uf];
+  if (!c || !c.n) return `<div class="vit"><b>${esc(T("vitT"))}</b><p class="nota" style="margin:4px 0 8px">${esc(T("vitZero"))}</p>
+    <a class="bt pri lg" href="/?teste=1">${esc(T("verTeste"))}</a></div>`;
+  return `<div class="vit"><b>${esc(T("vitT"))}</b><p style="margin:4px 0 8px"><b class="n">${esc(T("vitN", {n: nf(c.n), l: nf(c.lei), c: nf(c.co)}))}</b></p>
+    <div style="display:flex;gap:8px;flex-wrap:wrap"><a class="bt" style="flex:1" href="${esc(vitrineHref(uf))}">${esc(T("vitLink"))}</a>
+    <a class="bt pri" style="flex:1" href="/?teste=1">${esc(T("verTeste"))}</a></div></div>`;
+}
+function abre(uf, rolar){
+  if (!REG[uf]) return;
+  SEL = uf; const r = REG[uf], t = tipoDe(uf);
+  const lei = r.lei || {}, leiUrl = linkOk(lei.url);
+  const fontes = (r.fontes || []).filter(f => linkOk(f.url));
+  const vistos = new Set(), lis = [];
+  for (const f of fontes) { if (vistos.has(f.url)) continue; vistos.add(f.url);
+    let host = ""; try { host = new URL(f.url).hostname.replace(/^www\./, ""); } catch (e) {}
+    lis.push(`<li><a class="fonte" href="${esc(f.url)}" target="_blank" rel="noopener nofollow">${esc(host)}</a>${f.cit ? " · " + esc(f.cit) : ""}</li>`); }
+  if (leiUrl && !vistos.has(leiUrl)) lis.unshift(`<li><a class="fonte" href="${esc(leiUrl)}" target="_blank" rel="noopener nofollow">${esc(lei.cit || leiUrl)}</a></li>`);
+  const tn = r.tipo_nota && !vazio(r.tipo_nota) ? `<p class="nota" style="margin:8px 0 0">${val(r.tipo_nota)}</p>` : "";
+  $("#painel").innerHTML = `<span class="kick">${esc(T("kPainel"))}</span>
+    <h2 class="serif">${esc(nome(uf))}</h2>
+    <span class="tp" style="background:var(--t-${t})">${esc(T("t_" + t))}</span>${tn}
+    <dl>
+      <dt>${esc(T("fJuros"))}</dt><dd>${val(r.juros)}</dd>
+      <dt>${esc(T("fResg"))}</dt><dd>${val(r.resgate)}</dd>
+      <dt>${esc(T("fOnline"))}</dt><dd>${val(r.online)}</dd>
+      <dt>${esc(T("fOtc"))}</dt><dd>${val(r.otc)}</dd>
+      <dt>${esc(T("fQuando"))}</dt><dd>${val(r.quando)}</dd>
+      <dt>${esc(T("fLei"))}</dt><dd>${leiUrl ? `<a href="${esc(leiUrl)}" target="_blank" rel="noopener nofollow">${esc(lei.cit || leiUrl)}</a>` : (lei.cit && lei.cit !== AC ? esc(lei.cit) + " · " : "") + `<span class="ac">${esc(T("aConf"))}</span>`}</dd>
+      <dt>${esc(T("fConf"))}</dt><dd>${esc(dataFmt(r.conferido))}</dd>
+    </dl>
+    ${r.condado ? `<p class="nota ac-cond">${esc(T("condado", {c: r.condado}))}</p>` : ""}
+    ${vitrineBox(uf)}
+    <b style="font-size:13px">${esc(T("fFontes"))}</b>
+    ${lis.length ? `<ul class="fontes">${lis.join("")}</ul>` : `<p class="nota">${esc(T("semFonte"))}</p>`}`;
+  $("#selUf").value = uf;
+  pintaMapa();
+  if (location.hash !== "#" + uf) history.replaceState(null, "", "#" + uf);
+  if (rolar && matchMedia("(max-width:900px)").matches) $("#painel").scrollIntoView({behavior: "smooth", block: "start"});
+}
+function painelVazio(){
+  $("#painel").innerHTML = `<span class="kick">${esc(T("kPainel"))}</span><h2 class="serif">${esc(T("pVazioT"))}</h2><p class="nota">${esc(T("pVazio"))}</p>`;
+}
+function dataFmt(s){ if (!/^\d{4}-\d{2}-\d{2}$/.test(s || "")) return T("aConf"); const [y, m, d] = s.split("-").map(Number);
+  return new Date(y, m - 1, d).toLocaleDateString(LANG === "pt" ? "pt-BR" : "en-US", {year: "numeric", month: "short", day: "numeric"}); }
+
+/* ---------- seletor e tabela ---------- */
+function montaSelect(){
+  const s = $("#selUf"), atual = SEL || "";
+  s.innerHTML = `<option value="">${esc(T("escolhaOp"))}</option>` + [...ORDEM].sort((a, b) => nome(a).localeCompare(nome(b), LANG)).map(uf => `<option value="${uf}">${esc(nome(uf))}</option>`).join("");
+  s.value = atual;
+}
+const ordTipo = {deed: 0, redeemable: 1, hibrido: 2, lien: 3, nd: 4}, ordSim = {sim: 0, varia: 1, nao: 2};
+function montaTabela(){
+  const q = ($("#busca").value || "").trim().toLowerCase();
+  let ufs = ORDEM.filter(uf => !FILTRO || tipoDe(uf) === FILTRO);
+  if (q) ufs = ufs.filter(uf => { const r = REG[uf];
+    return [uf, nome(uf), T("t_" + tipoDe(uf)), txtPuro(r.juros), txtPuro(r.resgate), txtPuro(r.quando), r.online === "sim" ? "online" : "", (r.lei || {}).cit].join(" ").toLowerCase().includes(q); });
+  const lotes = uf => (COB && COB[uf] && COB[uf].n) || 0;
+  const k = {nome: uf => nome(uf), tipo: uf => ordTipo[tipoDe(uf)] + nome(uf), online: uf => (ordSim[REG[uf].online] ?? 3) + nome(uf),
+    otc: uf => (ordSim[REG[uf].otc] ?? 3) + nome(uf), lotes: uf => String(1e7 - lotes(uf)).padStart(8, "0") + nome(uf)}[ORD];
+  ufs.sort((a, b) => k(a).localeCompare(k(b), LANG));
+  const R = c => ` data-r="${esc(T(c))}"`;
+  $("#tb").innerHTML = ufs.length ? ufs.map(uf => { const r = REG[uf], t = tipoDe(uf), lei = r.lei || {}, u = linkOk(lei.url), c = COB && COB[uf];
+    return `<tr data-uf="${uf}">
+      <td class="uf"><b>${esc(nome(uf))}</b><small>${uf}</small></td>
+      <td${R("cTipo")}><span class="pill"><i style="background:var(--t-${t})"></i>${esc(T("t_" + t))}</span></td>
+      <td${R("cJuros")}>${val(r.juros)}</td><td${R("cResg")}>${val(r.resgate)}</td>
+      <td${R("cOnline")}>${val(r.online)}</td><td${R("cOtc")}>${val(r.otc)}</td><td${R("cQuando")}>${val(r.quando)}</td>
+      <td${R("cLei")}>${u ? `<a href="${esc(u)}" target="_blank" rel="noopener nofollow">${esc(lei.cit || "link")}</a>` : `<span class="ac">${esc(T("aConf"))}</span>`}</td>
+      <td${R("cVit")}>${c && c.n ? `<a href="${esc(vitrineHref(uf))}">${esc(T("vitCurto", {n: nf(c.n), l: nf(c.lei)}))}</a>` : "–"}</td></tr>`; }).join("")
+    : `<tr><td colspan="9">${esc(T("nenhum"))}</td></tr>`;
+  $("#tb").querySelectorAll("tr[data-uf]").forEach(tr => tr.addEventListener("click", ev => {
+    if (ev.target.closest("a")) return; abre(tr.dataset.uf, false); $("#mapa").scrollIntoView({behavior: "smooth", block: "start"}); }));
+  const datas = ORDEM.map(uf => REG[uf].conferido).filter(d => /^\d{4}-\d{2}-\d{2}$/.test(d || "")).sort();
+  const tx = datas.length ? T("conferido", {a: dataFmt(datas[0]), b: dataFmt(datas[datas.length - 1])}) : "";
+  $("#conferidoTab").textContent = tx; $("#conferidoRod").textContent = tx;
+}
+
+/* ---------- idioma e tema ---------- */
+function aplicaLang(l){
+  LANG = l === "pt" ? "pt" : "en"; guarda("blr_lang", LANG);
+  document.documentElement.lang = LANG === "pt" ? "pt-BR" : "en";
+  document.querySelectorAll("[data-lang]").forEach(b => b.setAttribute("aria-pressed", b.dataset.lang === LANG));
+  document.querySelectorAll("[data-i]").forEach(e => { e.textContent = T(e.dataset.i); });
+  document.querySelectorAll("[data-ih]").forEach(e => { e.innerHTML = T(e.dataset.ih); });   // só texto do próprio dicionário
+  document.querySelectorAll("[data-ip]").forEach(e => { e.placeholder = T(e.dataset.ip); });
+  document.querySelectorAll("[data-it]").forEach(e => { e.title = T(e.dataset.it); e.setAttribute("aria-label", T(e.dataset.it)); });
+  document.querySelectorAll("[data-ia]").forEach(e => { e.setAttribute("aria-label", T(e.dataset.ia)); });
+  $("#btExplorar").href = vitrineHref("");
+  if (ORDEM.length) { montaLegenda(); montaSelect(); montaTabela(); pintaMapa(); if (SEL) abre(SEL, false); else painelVazio(); }
+}
+(function(){ const t = le("blr_semana_tema"); if (t === "light" || t === "dark") document.documentElement.setAttribute("data-theme", t); })();
+$("#btTema").addEventListener("click", () => {
+  const atual = document.documentElement.getAttribute("data-theme") || (matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark");
+  const novo = atual === "light" ? "dark" : "light"; document.documentElement.setAttribute("data-theme", novo); guarda("blr_semana_tema", novo);
+});
+function langInicial(){
+  const q = new URLSearchParams(location.search).get("lang"); if (q === "pt" || q === "en") return q;
+  const s = le("blr_lang") || le("blr_semana_lang"); if (s === "pt" || s === "en") return s;
+  return /^pt/i.test(navigator.language || "") ? "pt" : "en";
+}
+
+/* ---------- início ---------- */
+async function inicia(){
+  const q = u => fetch(u, {cache: "no-cache"}).then(r => { if (!r.ok) throw new Error(u + " " + r.status); return r.json(); });
+  try {
+    const e = await q("/estados/estados.json");
+    REG = e.estados || {}; ORDEM = Object.keys(REG);
+  } catch (err) { console.warn("estados:", err.message); $("#carrega").textContent = T("erroDados"); return; }
+  aplicaLang(LANG);
+  let a = null;
+  try { a = await q("/atual.json"); } catch (err) { console.warn("atual:", err.message); }
+  const pDados = a && a.DADOS ? q("/" + String(a.DADOS).replace(/^\/+/, "")).then(d => { COB = (d.cobertura || {}).uf || {}; }).catch(err => { COB_ERRO = true; console.warn("dados:", err.message); })
+                             : Promise.resolve().then(() => { COB_ERRO = true; });
+  const pMapa = a && a.EUA && window.d3 && window.topojson ? q("/" + String(a.EUA).replace(/^\/+/, "")).then(montaMapa).then(() => $("#carrega").hidden = true)
+                             : Promise.reject(new Error("mapa indisponível"));
+  pMapa.catch(err => { console.warn("mapa:", err.message); $("#carrega").textContent = T("erroDados"); });
+  await pDados; montaTabela(); if (SEL) abre(SEL, false);
+  await pMapa.catch(() => {});
+  const h = location.hash.slice(1).toUpperCase(); if (REG[h]) abre(h, false);
+}
+document.querySelectorAll("[data-lang]").forEach(b => b.addEventListener("click", () => aplicaLang(b.dataset.lang)));
+$("#selUf").addEventListener("change", ev => { if (ev.target.value) abre(ev.target.value, true); });
+$("#busca").addEventListener("input", montaTabela);
+document.querySelectorAll("th button[data-ord]").forEach(b => b.addEventListener("click", () => { ORD = b.dataset.ord; montaTabela(); }));
+window.addEventListener("hashchange", () => { const h = location.hash.slice(1).toUpperCase(); if (REG[h] && h !== SEL) abre(h, false); });
+checaI18n();
+LANG = langInicial(); aplicaLang(LANG);
+inicia();
+</script>
+</body>
+</html>

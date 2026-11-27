@@ -62,12 +62,19 @@ h2{font-size:clamp(22px,3vw,30px);margin:46px 0 14px;line-height:1.15}
 .fim b{font-size:18px}.fim p{margin:4px 0 0;color:var(--mute);font-size:14px}
 footer{border-top:1px solid var(--line);padding:20px clamp(16px,4vw,40px);color:var(--mute);font-size:12.5px;text-align:center}
 footer a{color:var(--mute)}
+/* 27/11: prova real (as compras da BLR, os mesmos números do /semana/) */
+.prova{margin:0 0 46px;padding:22px;border-radius:var(--r);border:1px solid var(--line);background:var(--card2);display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;align-items:end}
+.prova .t{grid-column:1/-1}.prova .t h2{margin:0 0 4px}.prova .t p{margin:0;color:var(--mute);font-size:14px}
+.prova div b{display:block;font-size:26px;font-weight:600;color:var(--gold2);font-variant-numeric:tabular-nums}.prova div span{color:var(--mute);font-size:13px}
+.prova a{grid-column:1/-1;justify-self:start}
+@media (max-width:700px){.prova{grid-template-columns:repeat(2,minmax(0,1fr))}}
 </style>
+<script src="/assinar/i18n.js"></script>
 </head>
 <body>
 <header class="top">
   <a href="/">← BLR Developments</a>
-  <a class="vol" href="/planos/">Planos</a>
+  <a class="vol" href="/planos/" data-lang-aqui>Planos</a>
 </header>
 <main>
   <p class="kick">Por que BLR</p>
@@ -78,13 +85,22 @@ footer a{color:var(--mute)}
     <a class="cta" href="/planos/">Ver os planos</a>
   </div>
 
+  <section class="prova" aria-labelledby="provaT">
+    <div class="t"><h2 class="serif" id="provaT">A gente compra o que mostra</h2><p>A BLR arrematou 11 imóveis em leilões de imposto na Pensilvânia em 2026, com o mesmo método da Vitrine. Os números são dos recibos oficiais.</p></div>
+    <div><b>11</b><span>imóveis arrematados</span></div>
+    <div><b data-usd="49211.18">US$ 49.211</b><span>em lances</span></div>
+    <div><b data-usd="15381.35">US$ 15.381</b><span>em taxas e impostos de transferência</span></div>
+    <div><b data-usd="64592.53">US$ 64.593</b><span>pagos no total</span></div>
+    <a class="cta" href="/semana/">Ver os 11 imóveis, lance e taxas de cada um</a>
+  </section>
+
   <h2 class="serif">O que muda na prática</h2>
   <div class="grade">
     <div class="cx"><span class="ic">◎</span><h3>Leilões de fonte oficial</h3><p>Editais de condados, xerifes, tribunais e órgãos públicos de todo o país: imposto, execução de hipoteca, Upset e Judicial, land bank e imóveis do governo. Cada dado com a fonte e a data da coleta.</p></div>
     <div class="cx"><span class="ic">∑</span><h3>ARV calculado, não digitado</h3><p>O valor depois de pronto sai das vendas reais e do valor oficial do condado. Você não precisa adivinhar o número que decide o negócio.</p></div>
     <div class="cx"><span class="ic">▲</span><h3>Teto de lance</h3><p>O maior lance que ainda deixa a margem depois de reforma, título, impostos e venda. Passou dele, não vale.</p></div>
     <div class="cx"><span class="ic">◆</span><h3>Nota 0–100 com o porquê</h3><p>Margem até o teto, riscos do tipo de leilão (o que sobrevive à venda) e chance de fechar, explicados em palavras.</p></div>
-    <div class="cx"><span class="ic">✦</span><h3>Assistente que responde tudo</h3><p>Pergunte em português, por escrito ou por voz: como funciona cada leilão, os próximos de um estado, a conta de um lote.</p></div>
+    <div class="cx"><span class="ic">✦</span><h3>Assistente que responde tudo</h3><p>Pergunte em português ou em inglês, por escrito ou por voz: como funciona cada leilão, os próximos de um estado, a conta de um lote.</p></div>
     <div class="cx"><span class="ic">⇄</span><h3>Obra com a BLR</h3><p>No UltraPro, levantamento, projeto e gestão de obra com a BLR. Quem só vende software não faz isso.</p></div>
   </div>
 
@@ -122,5 +138,8 @@ footer a{color:var(--mute)}
   <p class="nota">A análise completa da BLR (ARV pelas vendas reais e teto) existe hoje na Flórida; nos outros estados os lotes trazem ARV estimado pelo valor oficial do condado e pelo mercado do CEP. Nota, ARV e teto são estimativas, não avaliação nem recomendação de investimento; o edital oficial é o que vale. Veja os <a href="/termos/">Termos de Uso</a>.</p>
 </main>
 <footer>BLR Developments · <a href="/">Início</a> · <a href="/planos/">Planos</a> · <a href="/termos/">Termos</a> · <a href="/privacy/">Privacidade</a></footer>
+<script>/* 27/11: valores da prova no formato do idioma (EN $49,211 · PT US$ 49.211) */
+document.querySelectorAll("[data-usd]").forEach(b => { const en = window.BLR_I18N && BLR_I18N.en, v = Math.round(+b.dataset.usd);
+  b.textContent = en ? "$" + v.toLocaleString("en-US") : "US$ " + v.toLocaleString("pt-BR"); b.setAttribute("data-sem-traducao", ""); });</script>
 </body>
 </html>
