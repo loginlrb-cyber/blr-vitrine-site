@@ -294,6 +294,12 @@ main#app{min-height:100vh}   /* 27/11: sem isto a faixa de parceiros e o rodapé
 .compara{margin-top:var(--s6);display:grid;grid-template-columns:1fr 1fr;gap:var(--s4)}
 @media (max-width:700px){.compara{grid-template-columns:1fr}}
 .cartao{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:var(--s5)}
+/* 28/11: Meu portfólio na versão nova */
+.port .portN{margin:0;padding:12px 18px;color:var(--muted);font-size:13.5px;border-bottom:1px solid var(--line)}.port .portN:last-child{border-bottom:0}
+.port .portK{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:1px;background:var(--line);border-bottom:1px solid var(--line)}
+.port .portK div{background:var(--surface);padding:12px 18px}.port .portK b{display:block;font:700 18px var(--f-d)}.port .portK small{color:var(--muted);font-size:12px}
+.port .lista{max-height:none}.port .pnota{font-style:italic;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.linha.fora{cursor:default}.linha.fora:hover{background:none}.linha.fora .mini{color:var(--muted);font-size:20px}
 .cartao h3{margin-bottom:6px}
 .cartao p{color:var(--muted);margin:0}
 .grade2{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:var(--s4)}
@@ -1334,13 +1340,46 @@ function avisosHTML(xs){
   return xs.map(a => `<${a.ic === "saiu" ? "div" : "a"} class="aviso${a.novo ? " novo" : ""}" ${a.ic === "saiu" ? "" : `href="#lote-${esc(a.i)}"`}><span class="avic ${a.ic}" aria-hidden="true">${IC_AV[a.ic] || "•"}</span><span><b>${esc(a.t)}</b><small>${esc(a.s)}</small></span>${a.novo ? `<i class="pto" aria-label="novo"></i>` : ""}</${a.ic === "saiu" ? "div" : "a"}>`).join("");
 }
 
+/* ---------- Meu portfólio (28/11: trazido da clássica, mesma fonte de dados) ----------
+   Igual à clássica: ARREMATES fica vazio até o servidor da Clauds ter /api/portfolio, e "Meus projetos" vem do mesmo
+   localStorage da clássica (blr_projetos_v1, mesmo site, então o que a pessoa salvou lá aparece aqui). Aqui só se lê:
+   editar etapa, valores, nota e ver a conta continua na clássica (a conta é a calculadora dela, não refeita aqui).
+   Cada projeto abre a ficha do lote; se o lote saiu da base, mostra o que o projeto guardou. */
+const ARREMATES = [];
+const PROJ_K = "blr_projetos_v1";
+const projetos = () => { const x = LS.get(PROJ_K, []); return Array.isArray(x) ? x.filter(p => p && p.i) : []; };
+function projLinha(x){
+  const l = CARREGADO ? L.find(y => y.i === x.i) : null, et = x.etapa || "Analisando";
+  const tg = `<span class="tag ${et === "Arrematado" ? "ok" : et === "Descartado" ? "acima" : ""}">${esc(et)}</span>`;
+  const val = x.lance != null ? `<small>seu lance</small><b class="num">${usd(x.lance)}</b>` : `<small>abertura</small><b class="num">${usd(l ? l.ab : x.ab)}</b>`;
+  const nota = x.nota ? `<div class="sub pnota" data-sem-traducao>${esc(String(x.nota).slice(0, 140))}</div>` : "";
+  if(l) return `<a class="linha" href="#lote-${esc(l.i)}"><div class="mini${ASSIN && polDe(l) ? " foto" : ""}">${formaSVG(l)}</div>
+    <div style="min-width:0"><h3>${esc(titulo(l))}</h3><div class="sub">${esc((l.ci || l.co) + ", " + l.uf)}${l.d ? " · " + esc(dataCurta(l.d)) : ""}</div>${nota}
+      <div class="tags">${tg}</div></div><div class="val">${val}</div></a>`;
+  return `<div class="linha fora"><div class="mini" aria-hidden="true">◈</div>
+    <div style="min-width:0"><h3 data-sem-traducao>${esc(x.nm || "Lote")}</h3><div class="sub">${esc(x.uf || "")}${x.d ? " · " + esc(dataCurta(x.d)) : ""}</div>${nota}
+      <div class="tags">${tg}${CARREGADO ? `<span class="tag">fora da base agora</span>` : ""}</div></div><div class="val">${val}</div></div>`;
+}
+function portfolioHTML(){
+  const cab = `<header><h2>Meu portfólio</h2>`;
+  if(!EU) return `<div class="painel port" id="portfolio" style="margin-top:var(--s4)">${cab}</header>
+    <div class="vazio">Entre na sua conta para ver os imóveis que você arrematou e os seus projetos.<br><button class="btn pri peq" type="button" data-entrar style="margin-top:12px">Entrar</button></div></div>`;
+  const ps = projetos(), a = ARREMATES, soma = c => a.reduce((t, x) => t + (x[c] || 0), 0), des = soma("desembolso");
+  const kp = a.length ? `<div class="portK"><div><b class="num">${n0(a.length)}</b><small>na carteira</small></div><div><b class="num">${usd(soma("arv"))}</b><small>soma dos ARVs</small></div>
+    <div><b class="num">${des ? usd(des) : "—"}</b><small>desembolso total</small></div><div><b class="num">${des ? Math.round(soma("lucro") / des * 100) + "%" : "—"}</b><small>retorno da carteira</small></div></div>` : "";
+  return `<div class="painel port" id="portfolio" style="margin-top:var(--s4)">${cab}<small>${n0(ps.length)} ${ps.length === 1 ? "projeto" : "projetos"}</small></header>
+    ${kp || `<p class="portN">Nenhum arremate registrado ainda. Quando você arrematar, sozinho ou com a BLR, o imóvel aparece aqui.</p>`}
+    <div class="lista">${ps.length ? ps.map(projLinha).join("") : `<div class="vazio">Nenhum projeto ainda. Os lotes salvos como projeto na versão clássica aparecem aqui.</div>`}</div>
+    <p class="portN">Para mudar a etapa, os valores e as notas, ou ver a conta de cada projeto, use a <a href="/classico/">versão clássica</a>, em Meu portfólio. <span>Valores são estimativas, não garantia de resultado.</span></p></div>`;
+}
+
 /* ---------- Meus lotes, Aprender, Planos, Progresso ---------- */
 function meusLotes(){
   const s = LS.get(SEG, []), xs = L.filter(l => s.includes(l.i)), av = avisos(), nv = av.filter(a => a.novo).length;
   $("#app").innerHTML = `<section class="pag"><h1>Meus lotes</h1><p class="sub">Os lotes que você acompanha. Toque em "Acompanhar" na ficha de um lote para ele aparecer aqui.</p>
     ${s.length ? `<div class="painel avisos" style="margin-bottom:var(--s4)"><header><h2>Notificações${nv ? ` <b class="badge">${nv}</b>` : ""}</h2><small>${n0(av.length)} ${av.length === 1 ? "aviso" : "avisos"}</small></header><div class="lista">${CARREGADO ? avisosHTML(av) : `<div class="carr">Carregando…</div>`}</div></div>` : ""}
     <div class="painel"><header><h2>Acompanhando</h2><small>${n0(xs.length)}</small></header><div class="lista">${CARREGADO ? xs.map(linhaHTML).join("") || `<div class="vazio">Nenhum lote ainda. <a href="#explorar">Explorar o mapa</a></div>` : `<div class="carr">Carregando…</div>`}</div></div>
-    <div class="cartao" style="margin-top:var(--s4)"><h3>Portfólio</h3><p>Os imóveis que você arrematou com a BLR aparecem aqui. Por enquanto ficam na <a href="/classico/">versão clássica</a>, em Meu portfólio.</p></div></section>`;
+    ${portfolioHTML()}</section>`;
   entra(document.querySelectorAll(".linha"));
   if(CARREGADO && nv) setTimeout(() => { if(location.hash === "#meus-lotes") marcaLidos(av); }, 1500);
 }
