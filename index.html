@@ -260,6 +260,17 @@ a.aviso:hover{background:var(--sunk)}
 .contorno img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
 .trava{display:flex;gap:12px;align-items:center;background:var(--amber-soft);border-radius:12px;padding:12px 14px;margin-top:var(--s3);font-size:14px}
 .trava .btn{margin-left:auto}
+/* 28/11: encaixe com o perfil do "Para você" (critérios do próprio usuário) */
+.perfilL{margin-top:var(--s3);font-size:14px;color:var(--muted)}
+.perfilL summary{cursor:pointer;list-style:none;display:inline-flex;align-items:center;gap:8px}
+.perfilL summary::-webkit-details-marker{display:none}
+.perfilL summary b{color:var(--ink);font-weight:600}
+.perfilL summary::after{content:"▾";font-size:11px;transition:transform .2s}.perfilL[open] summary::after{transform:rotate(180deg)}
+.perfilL ul{list-style:none;margin:8px 0 0;padding:0;display:grid;gap:4px}
+.perfilL li{display:flex;gap:8px;align-items:baseline}.perfilL li i{font-style:normal;font-weight:700;width:14px;flex:none}
+.perfilL li.ok i{color:var(--accent)}.perfilL li.nao i{color:var(--bad)}.perfilL li span.v{color:var(--ink)}
+.perfilL p{margin:8px 0 0;font-size:12.5px}
+.tag.perf{background:var(--accent-soft);color:var(--accent)}
 .facoes{display:flex;gap:var(--s2);flex-wrap:wrap;margin-top:var(--s4)}
 /* 27/11 (Cris: "um botão que entrega todas as informações que a clássica já tem, sem carregar de informação"): a ficha completa da
    clássica, só deste lote, num painel por cima; o quadro só é criado no clique */
@@ -510,7 +521,7 @@ function celula(k){
 }
 const polDe = l => { const pv = ASSIN && priv(l); return EXATO[l.i] || (pv && Array.isArray(pv.pol) && pv.pol.length > 2 ? pv.pol : null); };
 async function polDoLote(l){ if(polDe(l)) return polDe(l); if(!ASSIN || !POLK || l.la == null) return null; await celula(celPol(l.la, l.ln)); return EXATO[l.i] || null; }
-const ESTADO = {grupo: "", crit: false, sd: false, uf: "", max: 0, dias: 0, mostrar: 40, prefs: {avisos_xp: true}, leilao: null, foco: "", volta: null};
+const ESTADO = {grupo: "", crit: false, sd: false, uf: "", max: 0, dias: 0, mostrar: 40, perfil: false, prefs: {avisos_xp: true}, leilao: null, foco: "", volta: null};
 const TXT_CAMPOS = ["nt", "fo", "jvq", "tp", "u", "mc", "pa"];
 const REGRAS_TIPO = [["upset", /upset/i], ["reo", /\breo\b|real estate owned|bank-owned|bank owned|homepath|homesteps|fannie|freddie/i], ["sheriff_judicial", /sheriff|(?<!non-)judicial/i],
   ["governo_federal", /\bhud\b|\bva\b|usda|\bgsa\b|marshals|tesouro|treasury/i], ["land_bank", /land\s*bank|repositor|adjudicat/i], ["tax_lien", /\bliens?\b|certificate|certificado/i],
@@ -550,6 +561,7 @@ async function conta_(){
       ASSIN = Object.keys(PREM).length > 0;
     }catch(e){ ASSIN = false; }
   }
+  perfilServidor();
   await importaVisitante();
 }
 /* XP: no servidor para quem tem conta (POST /api/progresso/evento); no navegador para visitante, levado para a conta no 1º login */
@@ -665,12 +677,14 @@ function chips(){
   box.innerHTML = [{id: "", nome: "Todos", q: base.length}].concat(CONTEUDO.grupos.map(g => ({...g, q: n[g.id] || 0}))).filter(g => g.q || g.id !== "outros")
     .map(g => `<button type="button" class="chip" data-g="${g.id}" aria-pressed="${ESTADO.grupo === g.id}" title="${esc(g.sigla || "Todos os tipos")}">${esc(g.nome)}${CARREGADO ? `<b class="num">${n0(g.q)}</b>` : ""}</button>`).join("")
     + `<span class="esp"></span><label class="troca"><input type="checkbox" id="crit" ${ESTADO.crit ? "checked" : ""}> Só os que passam no critério BLR</label>
+       ${perfilOk() ? `<label class="troca" title="Pelos critérios que você escolheu no Para você. Não é recomendação de investimento."><input type="checkbox" id="perf" ${ESTADO.perfil ? "checked" : ""}> Combina comigo primeiro</label>` : ""}
        ${CARREGADO && nSd ? `<label class="troca"><input type="checkbox" id="sd" ${ESTADO.sd ? "checked" : ""}> Incluir lotes só listados (${n0(nSd)})</label>` : ""}
        <button type="button" class="chip" id="btFiltros">Filtros${nf ? ` <b>${nf}</b>` : ""}</button>`;
   $("#escopo").textContent = CARREGADO ? (ESTADO.uf ? `Em ${DADOS.estados_nome[ESTADO.uf] || ESTADO.uf}` : "Nos EUA")
     + ` · ${n0(nCom)} com dados · ${n0(nSd)} só listados · ${n0(nCom + nSd)} no total (sem leilões já realizados)` : "";
   if($("#sd")) $("#sd").onchange = e => { ESTADO.sd = e.target.checked; ESTADO.mostrar = 40; chips(); pintaMapa(); lista(); };
   box.querySelectorAll("[data-g]").forEach(b => b.onclick = () => { ESTADO.grupo = b.dataset.g; ESTADO.mostrar = 40; chips(); pintaMapa(); lista(); });
+  if($("#perf")) $("#perf").onchange = e => { ESTADO.perfil = e.target.checked; ESTADO.mostrar = 40; lista(); };
   $("#crit").onchange = e => { ESTADO.crit = e.target.checked; ESTADO.mostrar = 40; chips(); pintaMapa(); lista(); };
   $("#btFiltros").onclick = abreFiltros;
 }
@@ -1032,19 +1046,21 @@ function ligaEvCab(){
 function lista(){
   const el = $("#lista"); if(!el) return;
   if(!CARREGADO){ el.innerHTML = `<div class="carr">Carregando os leilões…</div>`; return; }
-  if(modoLeiloes()) return listaLeiloes();
+  const PF = ESTADO.perfil && perfilOk();
+  if(modoLeiloes() && !PF) return listaLeiloes();
   $("#tLista") && ($("#tLista").textContent = ESTADO.leilao ? "Lotes do leilão" : "Lotes nesta área");
   let xs = visiveis().filter(l => diasAte(l.d) == null || diasAte(l.d) >= 0);
   const E = ESTADO.leilao;
   if(E) xs = xs.filter(l => l.uf === E.uf && nCo(l.co) === E.nco && (l.d || "") === E.d);
   else if(MAPA && MAPA.getZoom() >= 5){ const b = MAPA.getBounds(); xs = xs.filter(l => { const p = posDe(l); return p && b.contains(p); }); }
   xs.sort((a, b) => (a.d || "9999").localeCompare(b.d || "9999") || CRIT(b) - CRIT(a));
+  if(PF){ const fr = new Map(xs.map(l => { const x = encaixe(l); return [l, x && x.de ? x.n / x.de : 0]; })); xs.sort((a, b) => fr.get(b) - fr.get(a)); }   // estável: empate fica por data
   $("#nLista").textContent = `${n0(xs.length)} ${xs.length === 1 ? "lote" : "lotes"}${E ? "" : MAPA && MAPA.getZoom() >= 5 ? " no mapa visível" : ""}`;
   const cab = evCab(E);
   if(E && !xs.length){ el.innerHTML = cab + `<div class="vazio">A lista de lotes deste leilão ainda não foi publicada${ESTADO.crit || ESTADO.grupo ? " ou nenhum lote passa nos filtros" : ""}. Confira o edital no link acima.</div>`; ligaEvCab(); return; }
   if(!xs.length){ el.innerHTML = `<div class="vazio">Nenhum leilão com esses filtros nesta área.<br><button class="btn peq" type="button" id="verTodos" style="margin-top:12px">Ver todos os estados</button></div>`;
     $("#verTodos").onclick = () => { Object.assign(ESTADO, {grupo: "", crit: false, uf: "", max: 0, dias: 0}); chips(); if(MAPA) MAPA.setView([38.5, -96.5], 4); else lista(); }; return; }
-  el.innerHTML = cab + xs.slice(0, ESTADO.mostrar).map(linhaHTML).join("") + (xs.length > ESTADO.mostrar ? `<button class="mais" type="button" id="mais">Mostrar mais ${n0(Math.min(40, xs.length - ESTADO.mostrar))}</button>` : "");
+  el.innerHTML = cab + (PF ? `<p class="perfilL" style="margin:0 0 8px">Ordem pelos critérios que você escolheu no Para você. Não é recomendação de investimento.</p>` : "") + xs.slice(0, ESTADO.mostrar).map(l => linhaHTML(l, PF)).join("") + (xs.length > ESTADO.mostrar ? `<button class="mais" type="button" id="mais">Mostrar mais ${n0(Math.min(40, xs.length - ESTADO.mostrar))}</button>` : "");
   ligaEvCab();
   entra(el.querySelectorAll(".linha"));
   minisContorno(xs.slice(0, ESTADO.mostrar));
@@ -1064,14 +1080,67 @@ function formaSVG(l){ const p = ASSIN && prem(l), s = p && p.shp, pol = ASSIN &&
   if(pol) return miniAerea(pol);
   if(s && s.length > 2) return `<svg viewBox="-6 -6 112 112" aria-hidden="true"><polygon points="${s.map(q => q.join(",")).join(" ")}" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="2.5" vector-effect="non-scaling-stroke" stroke-linejoin="round"/></svg>`;
   return `<svg viewBox="0 0 44 44" aria-hidden="true"><path d="M10 30V18l12-9 12 9v12z" fill="none" stroke="var(--muted)" stroke-width="2" stroke-linejoin="round"/></svg>`; }
-function linhaHTML(l){
+function linhaHTML(l, pf){
   const t = teto(l), n = diasAte(l.d), ti = CONTEUDO.tipos[l._t] || CONTEUDO.tipos.nao_informado;
   const crit = CRIT(l) ? `<span class="tag ok">no critério BLR</span>` : SEMDADO(l) ? `<span class="tag sd">sem valores ainda</span>` : "";
   const acima = t != null && l.ab > t ? `<span class="tag acima">acima do teto</span>` : "";
   return `<a class="linha" href="#lote-${l.i}"><div class="mini${ASSIN && polDe(l) ? " foto" : ""}">${formaSVG(l)}</div>
     <div style="min-width:0"><h3>${esc(titulo(l))}</h3><div class="sub">${esc((l.ci || l.co) + ", " + l.uf)} · ${esc(ti[0])}</div>
-      <div class="tags"><span class="tag ${n != null && n <= 14 ? "breve" : ""}">${esc(quando(l))}</span>${crit}${acima}</div></div>
+      <div class="tags"><span class="tag ${n != null && n <= 14 ? "breve" : ""}">${esc(quando(l))}</span>${crit}${acima}${pf ? (x => x && x.de ? `<span class="tag perf">combina ${x.n}/${x.de}</span>` : "")(encaixe(l)) : ""}</div></div>
     <div class="val"><small>abertura</small><b class="num">${usd(l.ab)}</b><div class="teto">${t != null ? (t > 0 ? "teto " + usd(t) : "não fecha") : CRIT(l) ? "teto no Pro" : ""}</div></div></a>`;
+}
+
+/* ---------- encaixe com o perfil (28/11) ----------
+   Os critérios são os do questionário "Para você" (../para-voce/, chave blr_perfil_v2 no navegador; logado, também em
+   /api/perfil → perfil.questionario). As regras abaixo são as mesmas do avalia() de lá (tipoDe, preço provável, ônus, enchente,
+   área, ano, perto, quando), contadas uma a uma em vez de eliminar o lote. Não cria critério novo nem é recomendação. */
+let PERFIL = LS.get("blr_perfil_v2", null);
+const perfilOk = () => !!(PERFIL && typeof PERFIL === "object" && PERFIL.obj);
+function perfilServidor(){
+  if(perfilOk() || !EU) return;
+  api("/api/perfil").then(g => { const q = g && g.perfil && g.perfil.questionario;
+    if(q && typeof q === "object" && q.obj){ PERFIL = q; if($("#explorarPag")){ chips(); lista(); } } }).catch(() => {});
+}
+const PV_TIPO_N = {casa: "Casa", terreno: "Terreno", apto: "Apartamento", varias: "Várias unidades", movel: "Casa móvel"};
+function pvTipo(l){   // = tipoDe() do Para você
+  const u = String(l.u || "");
+  if(l.movel || /mobile|manufactured|m[óo]vel/i.test(u)) return "movel";
+  if(/condo|cooperativ/i.test(u)) return "apto";
+  if(/multi|duplex|triplex|plex|apartment/i.test(u)) return "varias";
+  if(/vacant|terreno|land|unimproved/i.test(u)) return "terreno";
+  if(/single|constru|resid|family|house|dwelling/i.test(u)) return "casa";
+  return null;
+}
+const PV_RAZAO = {FL: .57, NJ: .60, PA: .50, IN: .50}, PV_RAZAO_PAD = .55;   // = preço provável do Para você (não é teto nem ARV)
+const pvProvavel = l => l.jv ? Math.max(l.ab, l.jv * (PV_RAZAO[l.uf] || PV_RAZAO_PAD)) : l.ab;
+const pvEnchente = l => /^[AV]/i.test((l.ent && l.ent.fz) || "");
+const pvOnusRuim = l => ["publico", "federal", "hipoteca"].includes(l.on) || l.onr === "alto";
+const PV_PERTO = {es: "Escola", mk: "Mercado", hs: "Hospital"};
+const vSpan = t => `<span class="v" data-sem-traducao>${esc(t)}</span>`;
+const vTr = xs => xs.map(t => `<span class="v">${esc(t)}</span>`).join(", ");
+/* lista de critérios que o próprio usuário marcou; cada um diz se o lote bate (ok) */
+function encaixe(l){
+  if(!perfilOk()) return null;
+  const P = PERFIL, out = [], t = pvTipo(l), dd = diasAte(l.d), e = l.ent || {};
+  const risco = P.exp === "primeira" && P.risco === "juridico" ? "pesada" : P.risco;
+  if(Array.isArray(P.uf) && P.uf.length) out.push({ok: P.uf.includes(l.uf), r: "Estado", v: vSpan(P.uf.join(", "))});
+  if(Array.isArray(P.tipo) && P.tipo.length) out.push({ok: !!t && P.tipo.includes(t), r: "Tipo de imóvel", v: vTr(P.tipo.map(x => PV_TIPO_N[x] || x))});
+  if(P.valor && +P.valor < 1e9) out.push({ok: !!l.ab && pvProvavel(l) <= +P.valor, r: "Preço provável até", v: vSpan(usd(+P.valor))});
+  if(risco && risco !== "juridico") out.push({ok: !pvOnusRuim(l), r: "Sem pendência grave conhecida", v: ""});
+  if(risco === "pronto" || P.obj === "morar" || P.enchente === "nao") out.push({ok: !pvEnchente(l), r: "Fora de zona de enchente (FEMA)", v: ""});
+  if(P.area && +P.area) out.push({ok: t === "terreno" || l.a >= +P.area, r: "Construção a partir de", v: vSpan(EN ? n0(+P.area) + " sq ft" : ({900: 85, 1400: 130, 2000: 185}[+P.area] || Math.round(+P.area * .0929)) + " m²")});
+  if(P.ano && +P.ano) out.push({ok: t === "terreno" || +l.y >= +P.ano, r: "Construída depois de", v: vSpan(String(P.ano))});
+  if(Array.isArray(P.perto) && P.perto.length) out.push({ok: P.perto.every(k => e[k] != null && e[k] <= 5), r: "Perto, até 5 km", v: vTr(P.perto.map(k => PV_PERTO[k] || k))});
+  if(P.quando && +P.quando < 9999) out.push({ok: dd != null && dd >= 0 && dd <= +P.quando, r: "Leilão em até", v: vSpan(EN ? P.quando + " days" : P.quando + " dias")});
+  return {itens: out, n: out.filter(x => x.ok).length, de: out.length};
+}
+function perfilFicha(l){
+  const x = encaixe(l);
+  if(!x) return `<p class="perfilL">Ainda sem perfil? <a href="../para-voce/">Responda o Para você</a> e veja aqui quais lotes combinam com os seus critérios.</p>`;
+  const nota = `<p>Encaixe com os critérios que você escolheu no Para você. Não é recomendação de investimento. <a href="../para-voce/">Mudar o perfil</a></p>`;
+  if(!x.de) return `<details class="perfilL"><summary><span>Seu perfil não tem critérios que separem lotes</span></summary>${nota}</details>`;
+  return `<details class="perfilL"><summary><span>Combina com o seu perfil: ${x.n} de ${x.de} critérios</span></summary>
+    <ul>${x.itens.map(c => `<li class="${c.ok ? "ok" : "nao"}"><i role="img" aria-label="${c.ok ? "bate" : "não bate"}">${c.ok ? "✓" : "✕"}</i><span><span>${esc(c.r)}</span>${c.v ? " " + c.v : ""}</span></li>`).join("")}</ul>${nota}</details>`;
 }
 
 /* ---------- filtros ---------- */
@@ -1111,7 +1180,7 @@ function abreFicha(id){
         <div class="k"><small>ARV (valor depois da reforma)</small><b class="num" id="kA">${arv ? usd(arv) : ASSIN ? "—" : "🔒 Pro"}</b><div class="tr">${jv ? "cadastro " + usd(jv) : ""}</div></div>
         ${ASSIN ? `<div class="k"><small>Folga até o teto</small><b class="num">${folga != null ? usd(folga) : "—"}</b><div class="barra"><i id="kBar"></i></div></div>`
           : `<div class="k"><small>Abertura sobre o cadastro</small><b class="num">${l.desc != null ? "−" + l.desc + "%" : "—"}</b><div class="tr">quanto menor a abertura, maior o desconto</div></div>`}
-      </div>${trava}
+      </div>${perfilFicha(l)}${trava}
       <div class="bloco contLote${ASSIN && pol ? " midia" : ""}"><h3>Contorno do lote</h3>${!ASSIN ? `<p>O contorno, o endereço e o Street View deste lote ficam no Pro.</p>`
         : pol ? capaAerea(pos ? pos[0] : pol[0][0], pos ? pos[1] : pol[0][1], pol) : `<div class="contorno">${cont}</div>`}
         ${ASSIN && pos ? `<p style="margin-top:10px"><a href="${pv && pv.sv ? `https://www.google.com/maps/@?api=1&map_action=pano&pano=${encodeURIComponent(pv.sv.p)}&heading=${pv.sv.h}` : `https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=${pos[0]},${pos[1]}`}" target="_blank" rel="noopener">Abrir o Street View ↗</a> · <a href="https://www.google.com/maps/search/?api=1&query=${pos[0]},${pos[1]}" target="_blank" rel="noopener">Ver no mapa ↗</a></p>` : ""}</div>
@@ -1400,7 +1469,7 @@ function meusLotes(){
   const s = LS.get(SEG, []), xs = L.filter(l => s.includes(l.i)), av = avisos(), nv = av.filter(a => a.novo).length;
   $("#app").innerHTML = `<section class="pag"><h1>Meus lotes</h1><p class="sub">Os lotes que você acompanha. Toque em "Acompanhar" na ficha de um lote para ele aparecer aqui.</p>
     ${s.length ? `<div class="painel avisos" style="margin-bottom:var(--s4)"><header><h2>Notificações${nv ? ` <b class="badge">${nv}</b>` : ""}</h2><small>${n0(av.length)} ${av.length === 1 ? "aviso" : "avisos"}</small></header><div class="lista">${CARREGADO ? avisosHTML(av) : `<div class="carr">Carregando…</div>`}</div></div>` : ""}
-    <div class="painel"><header><h2>Acompanhando</h2><small>${n0(xs.length)}</small></header><div class="lista">${CARREGADO ? xs.map(linhaHTML).join("") || `<div class="vazio">Nenhum lote ainda. <a href="#explorar">Explorar o mapa</a></div>` : `<div class="carr">Carregando…</div>`}</div></div>
+    <div class="painel"><header><h2>Acompanhando</h2><small>${n0(xs.length)}</small></header><div class="lista">${CARREGADO ? xs.map(l => linhaHTML(l)).join("") || `<div class="vazio">Nenhum lote ainda. <a href="#explorar">Explorar o mapa</a></div>` : `<div class="carr">Carregando…</div>`}</div></div>
     ${portfolioHTML()}</section>`;
   entra(document.querySelectorAll(".linha"));
   if(CARREGADO && nv) setTimeout(() => { if(location.hash === "#meus-lotes") marcaLidos(av); }, 1500);
