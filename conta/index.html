@@ -11,7 +11,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600&family=Sora:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-/* 07/11 (Cris, Miro "Conta"): dados pessoais, plano/cobrança, perfil do investidor (Self/Partner Bidder), preferências,
+/* 07/11 (Cris, Miro "Conta"): dados pessoais, plano/cobrança, perfil do investidor (Self Bidder; 28/11 Partner Bidder saiu da conta), preferências,
    uso da IA, privacidade, senha. Antifrágil: tudo que depende do servidor tenta a rota da Clauds e, sem ela, guarda no
    navegador e manda o pedido pela /api/interesse; a página nunca fica em branco. */
 :root{--bg:#0b0d11;--card:rgba(255,255,255,.055);--card2:rgba(255,255,255,.09);--ink:#f3f1ec;--mute:#a7abb3;--line:rgba(255,255,255,.12);
@@ -38,14 +38,11 @@ input,select{font:inherit;color:var(--ink);background:var(--card2);border:1px so
 .bt.perigo{border-color:var(--bad);color:var(--bad)}
 .bt:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
 .nota{color:var(--mute);font-size:13px}.ok{color:var(--ok);font-size:13px}
-.seg{display:inline-flex;border:1px solid var(--line);border-radius:12px;overflow:hidden}
-.seg button{all:unset;cursor:pointer;padding:10px 14px;font-size:14px}
-.seg button[aria-pressed="true"]{background:var(--gold);color:#1a1408;font-weight:600}
 .barra{height:8px;border-radius:99px;background:var(--card2);overflow:hidden;margin:6px 0}.barra i{display:block;height:100%;background:var(--gold)}
 .chk{flex-direction:row;align-items:center;gap:8px;color:var(--ink);font-size:14px;min-width:0;flex:0 0 auto}
 .aviso{border-color:var(--gold)}
 [hidden]{display:none!important}input[type=checkbox]{flex:0 0 auto;width:18px;height:18px}
-@media (max-width:560px){label,label.chk{min-width:0;flex:1 1 100%}.seg{display:flex;flex-direction:column;width:100%}.seg button{text-align:center}.lin .bt{flex:1 1 100%}}
+@media (max-width:560px){label,label.chk{min-width:0;flex:1 1 100%}.lin .bt{flex:1 1 100%}}
 </style>
 </head>
 <body>
@@ -67,10 +64,7 @@ input,select{font:inherit;color:var(--ink);background:var(--card2);border:1px so
     <p class="nota" id="cobTxt">A cobrança é feita pela BLR: depois do pedido você recebe o link de pagamento seguro. Cartão, faturas, recibos e cancelamento vão aparecer aqui quando o pagamento online for ligado. Para cancelar agora, fale com a BLR.</p></section>
 
   <section class="sec"><h2>Perfil do investidor</h2>
-    <div class="seg" role="group" aria-label="Como você quer operar">
-      <button type="button" data-modo="self" aria-pressed="true">Self Bidder · opero sozinho</button>
-      <button type="button" data-modo="partner" aria-pressed="false">Partner Bidder · opero com a BLR</button></div>
-    <p class="nota" id="modoTxt"></p>
+    <p class="nota">Você dá o lance por conta própria, com os dados e a análise da BLR.</p>
     <div class="lin"><a class="bt" href="../para-voce/">✦ Refazer o questionário Para você</a><a class="bt" href="../?listas=1">★ Minhas listas (<span id="nLis">0</span>)</a></div>
     <p class="nota">O questionário só sugere: você continua vendo tudo na vitrine. Cada questionário pode virar uma lista de acompanhamento.</p></section>
 
@@ -109,7 +103,8 @@ const api = (r, corpo, met) => fetch(API + r, corpo ? {method: met || "POST", cr
   : {credentials: "include"}).then(async x => { const j = await x.json().catch(() => ({})); if(!x.ok) throw Object.assign(new Error(j.mensagem || "falha"), {st: x.status}); return j; });
 // 1 lugar para as preferências da conta (lido também pela vitrine): blr_conta_pref
 const PREF0 = {tema: "", fonte: "", idioma: "pt", modo: "self", avisos: {lista: true, data: true, whats: false}};
-let PREF = {...PREF0, ...ler("blr_conta_pref", {})}; PREF.avisos = {...PREF0.avisos, ...(PREF.avisos || {})};
+let PREF = {...PREF0, ...ler("blr_conta_pref", {})}; PREF.modo = "self";   // 28/11: só Self Bidder; quem tinha "partner" salvo vira self
+PREF.avisos = {...PREF0.avisos, ...(PREF.avisos || {})};
 let EU = null;
 const LIMITE_IA = {gratuito: 0, basico: 10, pro: 40, ultra: Infinity};
 const NOME_PL = {gratuito: "Visitante (Gratuito)", basico: "Básico", pro: "Pro", ultra: "UltraPro"};
@@ -119,9 +114,6 @@ function aplica(){
   const r = document.documentElement;
   PREF.tema ? r.setAttribute("data-theme", PREF.tema) : r.removeAttribute("data-theme");
   PREF.fonte ? r.setAttribute("data-fonte", PREF.fonte) : r.removeAttribute("data-fonte");
-  document.querySelectorAll("[data-modo]").forEach(b => b.setAttribute("aria-pressed", b.dataset.modo === PREF.modo));
-  $("#modoTxt").textContent = PREF.modo === "partner" ? "Partner Bidder é do plano UltraPro: a BLR fala com você para combinar como operamos juntos."
-    : "Você dá o lance por conta própria, com os dados e a análise da BLR.";
 }
 /* /api/perfil (Clauds 06/11): 1 objeto por login, até 4.096 bytes, e o PUT SUBSTITUI tudo. Por isso lê, junta e grava,
    sem apagar o que o questionário Para você guardou. Sem a rota: pedido vai como interesse e a BLR atualiza no /admin. */
@@ -146,7 +138,6 @@ $("#pFonte").onchange = e => { PREF.fonte = e.target.value; salvaPref(); };
 $("#pIdioma").onchange = e => { PREF.idioma = e.target.value; salvaPref(); };
 $("#pMoeda").onchange = e => { try{ localStorage.setItem("vitrine_moeda", e.target.value); }catch(er){} avisoPref("Salvo ✓ · os valores do mapa aparecem em " + e.target.options[e.target.selectedIndex].text); };
 [["#nLista", "lista"], ["#nData", "data"], ["#nWhats", "whats"]].forEach(([s, k]) => { $(s).checked = !!PREF.avisos[k]; $(s).onchange = e => { PREF.avisos[k] = e.target.checked; salvaPref(); }; });
-document.querySelectorAll("[data-modo]").forEach(b => b.onclick = () => { PREF.modo = b.dataset.modo; salvaPref(); });
 $("#nLis").textContent = ler("blr_listas_v1", []).length;
 // dados pessoais: do servidor; sem sessão, do último cadastro feito neste navegador
 const cad = ler("vitrine_cadastro", {});
