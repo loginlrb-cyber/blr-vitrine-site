@@ -97,7 +97,7 @@
     "A BLR não concede crédito, não executa obra e não intermedeia a venda; a contratação é direto com o parceiro.": "BLR does not lend, does not perform construction and does not broker sales; you contract directly with the partner.",
     "Enviado ✓": "Sent ✓", "Se a página não abriu,": "If the page didn't open,", ". Se a página não abriu,": ". If the page didn't open,", "abra aqui ↗": "open it here ↗",
     // explorar
-    "Leilões no mapa": "Auctions on the map", "Carregando os leilões…": "Loading auctions…", "Próximos leilões": "Upcoming auctions", "Buscar": "Search",
+    "Leilões no mapa": "Auctions on the map", "Ver mapa": "View map", "O mapa abre quando você chegar nele.": "The map opens when you scroll to it.", "Carregando os leilões…": "Loading auctions…", "Próximos leilões": "Upcoming auctions", "Buscar": "Search",
     "Cidade, condado, CEP, nº da parcela ou endereço": "City, county, ZIP, parcel number or address",
     "Buscar no mapa por cidade, condado, CEP, número da parcela ou endereço": "Search the map by city, county, ZIP, parcel number or address",
     "Tipo de leilão": "Auction type", "Todos": "All", "Todos os tipos": "All types", "Só os que passam no critério BLR": "Only lots that meet BLR criteria",

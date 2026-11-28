@@ -138,6 +138,8 @@ button{font:inherit;color:inherit}
 #mapa{height:min(68vh,620px);background:var(--bg)}
 .lista{max-height:min(68vh,620px);overflow:auto}
 @media (max-width:820px){.explorar{grid-template-columns:1fr}#mapa{height:52vh}.lista{max-height:none}}
+#mapa .mapaEsp{height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;color:var(--muted);text-align:center;padding:16px}
+#mapa .mapaEsp small{font-size:13px}
 .linha{display:grid;grid-template-columns:56px 1fr auto;gap:12px;align-items:center;padding:12px 18px;border-bottom:1px solid var(--line);cursor:pointer;text-decoration:none;color:var(--ink);transition:background .15s}
 .linha:hover{background:var(--sunk)}
 .mini{width:56px;height:56px;border-radius:8px;background:var(--sunk);display:grid;place-items:center;overflow:hidden}
@@ -603,7 +605,7 @@ function rota(){
   const {h, base} = nav();
   const troca = () => {
     if(base === "explorar"){ if(!$("#explorarPag")) explorar(); else { lista(); abrePendente(); } }
-    else { MAPA = null; const f = {"meus-lotes": meusLotes, agenda, aprender, planos, progresso}[base] || explorar; f(); window.scrollTo(0, 0); }
+    else { MAPA = null; if(MAPA_IO){ MAPA_IO.disconnect(); MAPA_IO = null; } const f = {"meus-lotes": meusLotes, agenda, aprender, planos, progresso}[base] || explorar; f(); window.scrollTo(0, 0); }
     if(h.startsWith("lote-")) abreFicha(h.slice(5)); else fechaFicha(true);
   };
   if(document.startViewTransition && !REDUZ && !h.startsWith("lote-") && base !== (rota.ult || "")) document.startViewTransition(troca); else troca();
@@ -648,7 +650,7 @@ function explorar(){
   const fx = () => { LS.set("blr_novo_hero_ok", true); evento("hero_dispensado"); const h = $("#hero"); if(h) h.remove(); };
   if($("#btExpl")) $("#btExpl").onclick = () => { fx(); $("#chips").scrollIntoView({behavior: REDUZ ? "auto" : "smooth"}); };
   if($("#heroX")) $("#heroX").onclick = fx;
-  ligaPassos(); chips(); fazMapa(); ligaBusca(); lista(); abrePendente();
+  ligaPassos(); chips(); mapaPreguicoso(); ligaBusca(); lista(); abrePendente();
 }
 function ligaPassos(){ const x = $("#passosX"); if(x) x.onclick = () => { evento("faixa_dispensada"); $("#passos").remove(); }; }
 function chips(){
@@ -765,6 +767,26 @@ function ttCo(f, nome){
   const lei = x ? x.lei.slice(0, 4).map(a => `${diaSem(a.d)} ${dataCurta(a.d)} · ${esc(a.t || "leilão")}`).join("<br>") : "";
   return `<b>${esc(nome)}${/county|parish|borough/i.test(nome) ? "" : " County"}, ${uf}</b><br>${lei || `<span style="opacity:.7">sem leilão no calendário</span>`}${x && x.n ? `<br>${n0(x.n)} ${x.n === 1 ? "lote" : "lotes"}${x.cr ? ` · ${n0(x.cr)} no critério BLR` : ""}` : ""}`;
 }
+/* 28/11 (Lighthouse celular ~50): criar o Leaflet gerava uma tarefa longa de ~850 ms. No celular o mapa só nasce quando entra na
+   tela ou quando a pessoa toca em "Ver mapa" (ou busca, abre um leilão); até lá a lista e os contadores saem dos dados. Desktop igual. */
+let MAPA_IO = null;
+const MAPA_CEL = () => innerWidth < 820;
+function mapaPreguicoso(){
+  if(MAPA_IO){ MAPA_IO.disconnect(); MAPA_IO = null; }
+  const el = $("#mapa"); if(!el) return;
+  if(!MAPA_CEL() || !("IntersectionObserver" in window)) return fazMapa();
+  el.innerHTML = `<div class="mapaEsp"><button class="btn" type="button" id="btVerMapa">Ver mapa</button><small>O mapa abre quando você chegar nele.</small></div>`;
+  $("#btVerMapa").onclick = () => garanteMapa();
+  MAPA_IO = new IntersectionObserver(es => { if(es.some(e => e.isIntersecting)) garanteMapa(); }, {rootMargin: "0px"});
+  MAPA_IO.observe(el);
+}
+function garanteMapa(){
+  if(MAPA) return true;
+  const el = $("#mapa"); if(!el || !L_) return false;
+  if(MAPA_IO){ MAPA_IO.disconnect(); MAPA_IO = null; }
+  el.innerHTML = ""; fazMapa(); return !!MAPA;
+}
+const zMapa = () => MAPA ? MAPA.getZoom() : 3;
 function fazMapa(){
   MAPA = L_.map("mapa", {zoomControl: true, attributionControl: false, preferCanvas: true, minZoom: 3, maxZoom: 18, zoomSnap: .5, zoomDelta: .5, wheelPxPerZoomLevel: 90, worldCopyJump: false}).setView([38.5, -96.5], 4);
   if(innerWidth < 820) MAPA.setView([39, -96], 3);
@@ -919,7 +941,7 @@ const posDe = l => { const p = ASSIN && priv(l); return p && p.la != null ? [p.l
    lotes. Tocar num leilão leva o mapa ao condado e abre os lotes dele no mesmo lugar. Leilão = lotes com a mesma data no condado,
    juntados ao calendário (DADOS.leiloes); leilão do calendário sem lista publicada aparece com "lista ainda não publicada". */
 const nCo = s => String(s || "").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/^(st\.?|saint)\s+/, "st ").replace(/\s+(county|parish)$/, "").replace(/[^a-z]/g, "");
-const modoLeiloes = () => CARREGADO && !!MAPA && !ESTADO.leilao && !ESTADO.foco && MAPA.getZoom() < 6;
+const modoLeiloes = () => CARREGADO && !ESTADO.leilao && !ESTADO.foco && zMapa() < 6;   // sem mapa (celular, antes de abrir) = visão do país
 let GEOCO = null;
 function condadoGeo(f){
   if(!f || !EUA) return null;
@@ -978,7 +1000,7 @@ function eventosNaTela(){
 }
 function listaLeiloes(){
   const el = $("#lista"); $("#tLista") && ($("#tLista").textContent = "Próximos leilões");
-  const ev = EV_ULT = eventosNaTela(), z = MAPA.getZoom(), nl = ev.reduce((s, e) => s + e.n, 0);
+  const ev = EV_ULT = eventosNaTela(), z = zMapa(), nl = ev.reduce((s, e) => s + e.n, 0);
   $("#nLista").textContent = `${n0(ev.length)} ${ev.length === 1 ? "leilão" : "leilões"} · ${n0(nl)} lotes${z >= 4.5 ? " nesta área" : ""}`;
   if(!ev.length){ el.innerHTML = `<div class="vazio">Nenhum leilão com data nesta área${ESTADO.crit || ESTADO.grupo ? " com esses filtros" : ""}.<br>Aproxime o mapa para ver os lotes sem data (venda direta e listados).</div>`; return; }
   el.innerHTML = ev.slice(0, ESTADO.mostrar).map(evLinha).join("") + (ev.length > ESTADO.mostrar ? `<button class="mais" type="button" id="mais">Mostrar mais ${n0(Math.min(40, ev.length - ESTADO.mostrar))}</button>` : "");
@@ -987,7 +1009,7 @@ function listaLeiloes(){
   const m = $("#mais"); if(m) m.onclick = () => { ESTADO.mostrar += 40; lista(); };
 }
 function abreLeilao(e){
-  if(!e || !MAPA) return;
+  if(!e || !garanteMapa()) return;
   ESTADO.volta = {c: MAPA.getCenter(), z: MAPA.getZoom()};
   ESTADO.leilao = e; ESTADO.foco = e.uf; ESTADO.mostrar = 40; evento("leilao_aberto", e.k);
   const ft = condadoGeo(e.f), b = ft ? L_.geoJSON(ft).getBounds() : e.pos.length ? L_.latLngBounds(e.pos) : null;
@@ -1005,7 +1027,7 @@ function evCab(e){
 function ligaEvCab(){
   const v = $("#evVolta"); if(!v) return;
   v.onclick = () => { const w = ESTADO.volta; ESTADO.leilao = null; ESTADO.foco = ""; ESTADO.mostrar = 40;
-    if(w) MAPA.setView(w.c, Math.min(w.z, 5.5)); else MAPA.setView([38.5, -96.5], 4); };
+    if(!MAPA){ pintaMapa(); lista(); } else if(w) MAPA.setView(w.c, Math.min(w.z, 5.5)); else MAPA.setView([38.5, -96.5], 4); };
 }
 function lista(){
   const el = $("#lista"); if(!el) return;
@@ -1021,7 +1043,7 @@ function lista(){
   const cab = evCab(E);
   if(E && !xs.length){ el.innerHTML = cab + `<div class="vazio">A lista de lotes deste leilão ainda não foi publicada${ESTADO.crit || ESTADO.grupo ? " ou nenhum lote passa nos filtros" : ""}. Confira o edital no link acima.</div>`; ligaEvCab(); return; }
   if(!xs.length){ el.innerHTML = `<div class="vazio">Nenhum leilão com esses filtros nesta área.<br><button class="btn peq" type="button" id="verTodos" style="margin-top:12px">Ver todos os estados</button></div>`;
-    $("#verTodos").onclick = () => { Object.assign(ESTADO, {grupo: "", crit: false, uf: "", max: 0, dias: 0}); chips(); if(MAPA) MAPA.setView([38.5, -96.5], 4); }; return; }
+    $("#verTodos").onclick = () => { Object.assign(ESTADO, {grupo: "", crit: false, uf: "", max: 0, dias: 0}); chips(); if(MAPA) MAPA.setView([38.5, -96.5], 4); else lista(); }; return; }
   el.innerHTML = cab + xs.slice(0, ESTADO.mostrar).map(linhaHTML).join("") + (xs.length > ESTADO.mostrar ? `<button class="mais" type="button" id="mais">Mostrar mais ${n0(Math.min(40, xs.length - ESTADO.mostrar))}</button>` : "");
   ligaEvCab();
   entra(el.querySelectorAll(".linha"));
@@ -1062,7 +1084,7 @@ function abreFiltros(){
     <div class="rod"><button class="btn pri" type="button" id="fOk">Aplicar</button><button class="btn" type="button" id="fLimpa">Limpar</button></div>`;
   $("#drawer").classList.add("on"); $("#veu").classList.add("on");
   $("#fOk").onclick = () => { ESTADO.uf = $("#fUf").value; ESTADO.max = +$("#fMax").value || 0; ESTADO.dias = +$("#fDias").value || 0; ESTADO.mostrar = 40; fechaDrawer();
-    if(ESTADO.uf) ligaSdSeVazio(ESTADO.uf); chips(); if(ESTADO.uf){ evento("estado_explorado", ESTADO.uf); const ly = []; CAM_UF && CAM_UF.eachLayer(x => { if(x._uf === ESTADO.uf) ly.push(x); }); if(ly[0]) MAPA.fitBounds(ly[0].getBounds()); } pintaMapa(); lista(); };
+    if(ESTADO.uf) ligaSdSeVazio(ESTADO.uf); chips(); if(ESTADO.uf){ evento("estado_explorado", ESTADO.uf); const ly = []; CAM_UF && CAM_UF.eachLayer(x => { if(x._uf === ESTADO.uf) ly.push(x); }); if(ly[0] && MAPA) MAPA.fitBounds(ly[0].getBounds()); } pintaMapa(); lista(); };
   $("#fLimpa").onclick = () => { Object.assign(ESTADO, {uf: "", max: 0, dias: 0}); fechaDrawer(); chips(); pintaMapa(); lista(); };
 }
 function fechaDrawer(){ $("#drawer").classList.remove("on"); if(!$("#ficha").classList.contains("on")) $("#veu").classList.remove("on"); }
@@ -1208,7 +1230,7 @@ function voaLotes(xs, rotulo){
 }
 function avisoBusca(t){ const el = $("#toast"); if(!el) return; el.textContent = t; el.classList.add("on"); clearTimeout(tToast); tToast = setTimeout(() => el.classList.remove("on"), 3200); }
 function buscar(q){
-  const v = semAc(q).replace(/\s+/g, " "); if(!v || !MAPA) return false;
+  const v = semAc(q).replace(/\s+/g, " "); if(!v || !garanteMapa()) return false;
   if(!CARREGADO){ avisoBusca("Ainda carregando os leilões. Tente de novo em alguns segundos."); return true; }
   const vivos = L.filter(l => !HIST(l));
   // 1) código do lote
@@ -1296,7 +1318,7 @@ function agenda(){
   entra(document.querySelectorAll("#app .linha"));
 }
 function abrePendente(){
-  if(!PEND_EV || !MAPA || !CARREGADO) return;
+  if(!PEND_EV || !$("#mapa") || !CARREGADO) return;
   const e = eventos().find(x => x.k === PEND_EV); PEND_EV = null;
   if(e) setTimeout(() => { abreLeilao(e); $("#lista") && $("#lista").scrollIntoView({behavior: "auto", block: "nearest"}); }, 60);
 }
